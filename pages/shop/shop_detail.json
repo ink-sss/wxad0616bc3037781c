@@ -1,0 +1,10 @@
+{
+  "navigationBarTitleText": "商户详情",
+  "enablePullDownRefresh": false,
+  "usingComponents": {
+    "header-bar": "/components/header",
+    "request-loading": "/components/liveloading",
+    "tab-bar": "/components/tabbar/footTabbar",
+    "wechat-login": "plugin://wx43134e071b752953/wechat-login"
+  }
+}

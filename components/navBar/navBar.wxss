@@ -1,0 +1,14 @@
+.scroll .top-section {
+    background-color: green;
+    height: 350rpx
+}
+
+.scroll .bottom-section {
+    background-color: #ff0;
+    height: 1500rpx
+}
+
+.scroll .footer-section {
+    background-color: #00f;
+    height: 1500rpx
+}

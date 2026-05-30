@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "文章详情",
+  "usingComponents": {
+    "tab-bar": "../../../components/tabbar/footTabbar",
+    "app-share": "../../../components/app-share"
+  }
+}

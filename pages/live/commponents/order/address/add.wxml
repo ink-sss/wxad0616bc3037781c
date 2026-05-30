@@ -1,0 +1,50 @@
+<view class="data-v-f6dbf855">
+    <uni-popup bind:__l="__l" bindchange="{{K}}" bindmaskClick="{{J}}" class="r data-v-f6dbf855" uI="f6dbf855-0" uP="{{L}}" uR="address_add" uS="{{['d']}}" wx:if="{{L}}">
+        <view class="{{['address-form','data-v-f6dbf855',H]}}" data-theme="{{G}}">
+            <uni-icons bind:__l="__l" bindclick="{{a}}" class="close-icon data-v-f6dbf855" uI="f6dbf855-1,f6dbf855-0" uP="{{b}}" wx:if="{{b}}"></uni-icons>
+            <form bindreset="{{B}}" bindsubmit="{{A}}" class="p24 data-v-f6dbf855" style="padding-top:0">
+                <view class="bg-white p-0-30 f30 address-list data-v-f6dbf855">
+                    <view class="d-s-c border-b data-v-f6dbf855">
+                        <text class="key-name p-30-0 data-v-f6dbf855">收货人</text>
+                        <input bindinput="{{d}}" class="ml20 f32 flex-1 p-30-0 i-p data-v-f6dbf855" name="name" placeholder="请输入收货人姓名" placeholderClass="grary9" type="text" value="{{c}}"></input>
+                    </view>
+                    <view class="d-s-c border-b data-v-f6dbf855">
+                        <text class="key-name p-30-0 data-v-f6dbf855">联系方式</text>
+                        <input bindinput="{{f}}" class="ml20 f32 flex-1 p-30-0 i-p data-v-f6dbf855" maxlength="11" name="phone" placeholder="请输入收货人手机号" placeholderClass="grary9" type="number" value="{{e}}"></input>
+                    </view>
+                    <view bindtap="{{i}}" class="d-s-c border-b data-v-f6dbf855">
+                        <text class="key-name p-30-0 data-v-f6dbf855">所在地区</text>
+                        <view class="input-box flex-1 data-v-f6dbf855">
+                            <input bindinput="{{h}}" class="ml20 f32 flex-1 p-30-0 i-p data-v-f6dbf855" disabled="true" placeholder="" placeholderClass="grary9" style="pointer-events:none" type="text" value="{{g}}"></input>
+                        </view>
+                    </view>
+                    <view class="d-s-c border-b data-v-f6dbf855">
+                        <text class="key-name p-30-0 data-v-f6dbf855">详细地址</text>
+                        <textarea autoHeight="{{true}}" bindinput="{{k}}" class="ml20 flex-1 p-30-0 lh150 data-v-f6dbf855" name="detail" placeholder="请输入街道小区楼牌号等" placeholderClass="grary9" value="{{j}}" wx:if="{{r0}}"></textarea>
+                    </view>
+                    <view class="d-b-c data-v-f6dbf855">
+                        <text class="key-name p-30-0 data-v-f6dbf855">设为默认地址</text>
+                        <view class="radio d-s-c p-30-0 data-v-f6dbf855">
+                            <radio bindtap="{{n}}" checked="{{m}}" class="data-v-f6dbf855" color="{{l}}" style="transform:scale(0.7)"></radio>
+                        </view>
+                    </view>
+                    <view class="clipboard data-v-f6dbf855" wx:if="{{o}}">
+                        <textarea bindinput="{{q}}" class="zt-textarea data-v-f6dbf855" maxlength="{{120}}" placeholder="试试粘贴收件人姓名、手机号、收货地址，可快速识别您的收货信息" value="{{p}}" wx:if="{{r0}}"></textarea>
+                        <view class="clipboard-botton data-v-f6dbf855" wx:if="{{r}}">
+                            <view bindtap="{{s}}" class="data-v-f6dbf855">清除</view>
+                            <view bindtap="{{t}}" class="clipboard-sub data-v-f6dbf855">提交</view>
+                        </view>
+                    </view>
+                    <view bindtap="{{y}}" class="d-c-c zt-box data-v-f6dbf855">地址粘贴板<uni-icons bind:__l="__l" class="zt-icon data-v-f6dbf855" uI="f6dbf855-2,f6dbf855-0" uP="{{w}}" wx:if="{{v}}"></uni-icons>
+                        <uni-icons bind:__l="__l" class="zt-icon data-v-f6dbf855" uI="f6dbf855-3,f6dbf855-0" uP="{{x||''}}" wx:else></uni-icons>
+                    </view>
+                </view>
+                <button bindtap="{{z}}" class="choose-address data-v-f6dbf855" type="primary">获取微信地址</button>
+                <view class="mt24 data-v-f6dbf855">
+                    <button class="theme-btn add-btn data-v-f6dbf855" formType="submit">保存</button>
+                </view>
+            </form>
+            <mpvue-city-picker bind:__l="__l" bindonConfirm="{{E}}" class="r data-v-f6dbf855" uI="f6dbf855-4,f6dbf855-0" uP="{{F}}" uR="mpvueCityPicker" wx:if="{{C}}"></mpvue-city-picker>
+        </view>
+    </uni-popup>
+</view>

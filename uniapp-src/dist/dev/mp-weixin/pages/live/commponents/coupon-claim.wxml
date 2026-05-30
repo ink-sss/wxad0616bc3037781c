@@ -1,0 +1,1 @@
+<view wx:if="{{a}}" class="coupon-claim data-v-d2055cf7" bindtap="{{c}}">{{b}}</view>

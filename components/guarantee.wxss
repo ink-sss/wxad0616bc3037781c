@@ -1,0 +1,113 @@
+.bottom-panel .popup-bg {
+    background: rgba(0,0,0,.6);
+    bottom: 0;
+    left: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+    z-index: 98
+}
+
+.bottom-panel .popup-bg .wechat-box {
+    padding-top: var(--window-top)
+}
+
+.bottom-panel .popup-bg .wechat-box wx-image {
+    width: 100%
+}
+
+.bottom-panel .content {
+    background-color: #fff;
+    border-radius: 12rpx;
+    left: 0;
+    margin: auto;
+    max-height: 900rpx;
+    min-height: 200rpx;
+    position: fixed;
+    right: 0;
+    top: 20vh;
+    -webkit-transform: translate3d(0,1980rpx,0);
+    transform: translate3d(0,1980rpx,0);
+    transition: -webkit-transform .2s cubic-bezier(0,0,.25,1);
+    transition: transform .2s cubic-bezier(0,0,.25,1);
+    transition: transform .2s cubic-bezier(0,0,.25,1),-webkit-transform .2s cubic-bezier(0,0,.25,1);
+    width: 80%;
+    z-index: 99
+}
+
+.bottom-panel.open .content {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0)
+}
+
+.bottom-panel.close .popup-bg {
+    display: none
+}
+
+.module-share .hd {
+    font-size: 36rpx;
+    height: 90rpx;
+    line-height: 90rpx
+}
+
+.module-share .item wx-button,.module-share .item wx-button:after {
+    background: none;
+    border: none
+}
+
+.module-share .icon-box {
+    background: #f6bd1d;
+    border-radius: 50%;
+    height: 100rpx;
+    width: 100rpx
+}
+
+.module-share .icon-box .iconfont {
+    color: #fff;
+    font-size: 60rpx
+}
+
+.module-share .btns {
+    margin-top: 30rpx
+}
+
+.module-share .btns wx-button {
+    border-radius: 0;
+    border-top: 1px solid #eee;
+    height: 90rpx;
+    line-height: 90rpx
+}
+
+.module-share .btns wx-button:after {
+    border-radius: 0
+}
+
+.module-share .share-friend {
+    background: #04be01
+}
+
+.icon-tijiaochenggong {
+    border: 1rpx solid #f63;
+    border-radius: 50%;
+    color: #f63;
+    -webkit-flex-shrink: initial;
+    flex-shrink: 1;
+    font-size: 20rpx;
+    height: 28rpx;
+    line-height: 28rpx;
+    margin-top: 7rpx;
+    text-align: center;
+    width: 28rpx
+}
+
+.mb10 {
+    margin-bottom: 10rpx
+}
+
+.iconfont.icon-guanbi {
+    color: #999;
+    font-size: 32rpx;
+    position: absolute;
+    right: 20rpx;
+    top: 0
+}

@@ -1,0 +1,17 @@
+<view class="data-v-31068d93">
+    <view bindtap="{{d}}" class="item-icon data-v-31068d93" wx:if="{{a}}">
+        <image class="data-v-31068d93" mode="aspectFill" src="{{b}}"></image>
+        <view class="icon-tit data-v-31068d93">{{c}}</view>
+    </view>
+    <view class="s-view data-v-31068d93" wx:if="{{e}}">
+        <view class="st-view data-v-31068d93">
+            <uni-notice-bar bind:__l="__l" class="unb data-v-31068d93" style="background:none" uI="31068d93-0" uP="{{g}}" wx:if="{{f}}"></uni-notice-bar>
+            <uni-icons bind:__l="__l" bindclick="{{h}}" class="s-close data-v-31068d93" uI="31068d93-1" uP="{{i}}" wx:if="{{i}}"></uni-icons>
+        </view>
+        <text class="kb-text data-v-31068d93" wx:for="{{j}}" wx:key="b">{{item.a}}开播</text>
+        <view bindtap="{{m}}" class="ss-view data-v-31068d93">
+            <image class="s-icon data-v-31068d93" src="{{k}}"></image>
+            <view class="ss-text data-v-31068d93">{{l}}</view>
+        </view>
+    </view>
+</view>

@@ -1,0 +1,33 @@
+<view class="{{d}}" data-theme="{{c}}">
+    <view class="list">
+        <view class="listItem" wx:for="{{a}}" wx:key="l">
+            <view class="timeBox">
+                <view class="time">
+                    <text class="data">{{item.a}}</text>
+                    <text class="line"></text>
+                    <text class="mouth">{{item.b}}<text class="unit">月</text>
+                    </text>
+                    <text class="line"></text>
+                    <text class="year">{{item.c}}<text class="unit">年</text>
+                    </text>
+                </view>
+                <view bindtap="{{item.d}}" class="delTxt">删除</view>
+            </view>
+            <view class="con">
+                <view>{{item.e}}</view>
+                <image lazyLoad class="img" mode="aspectFit" src="{{v.a}}" wx:for="{{item.f}}" wx:for-item="v" wx:key="b"></image>
+            </view>
+            <view class="prodcut" wx:if="{{item.g}}">
+                <image lazyLoad model="aspectFit" src="{{item.i}}" wx:if="{{item.h}}"></image>
+                <view class="r">
+                    <view class="title">{{item.j}}</view>
+                    <view class="spec">{{item.k}}</view>
+                </view>
+            </view>
+        </view>
+    </view>
+    <view class="d-c-c p30" wx:if="{{b}}">
+        <text class="iconfont icon-wushuju"></text>
+        <text class="cont">亲，暂无相关记录哦</text>
+    </view>
+</view>

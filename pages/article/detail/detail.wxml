@@ -1,0 +1,17 @@
+<view class="{{[k,'article-detail']}}" data-theme="{{j}}" wx:if="{{a}}">
+    <view class="title fb">{{b}}</view>
+    <view class="info d-b-c f24">
+        <view>
+            <text class="red">{{c}}</text>
+            <text class="ml30">{{d}}</text>
+        </view>
+        <button bindtap="{{f}}" class="share-box" openType="share">
+            <image lazyLoad class="share_img" mode="" src="{{e}}"></image>
+        </button>
+    </view>
+    <view class="article-content">
+        <rich-text nodes="{{g}}"></rich-text>
+    </view>
+    <tab-bar bind:__l="__l" uI="7befeace-0"></tab-bar>
+    <app-share bind:__l="__l" bindclose="{{h}}" uI="7befeace-1" uP="{{i}}" wx:if="{{i}}"></app-share>
+</view>

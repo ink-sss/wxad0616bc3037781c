@@ -1,0 +1,208 @@
+<view class="data-v-c787519a">
+    <view class="people-num data-v-c787519a">
+        <view class="sectionIcon data-v-c787519a" wx:if="{{a}}">
+            <block wx:if="{{b}}">
+                <button class="item-icon data-v-c787519a" openType="contact" wx:if="{{c}}">
+                    <image class="data-v-c787519a" mode="aspectFill" src="{{d}}"></image>
+                    <view class="icon-tit data-v-c787519a">客服</view>
+                </button>
+                <view bindtap="{{g}}" class="item-icon data-v-c787519a" wx:if="{{e}}">
+                    <image class="data-v-c787519a" mode="aspectFill" src="{{f}}"></image>
+                    <view class="icon-tit data-v-c787519a">客服</view>
+                </view>
+                <view bindtap="{{j}}" class="item-icon data-v-c787519a" wx:if="{{h}}">
+                    <image class="data-v-c787519a" mode="aspectFill" src="{{i}}"></image>
+                    <view class="icon-tit data-v-c787519a">客服</view>
+                </view>
+                <view bindtap="{{m}}" class="item-icon data-v-c787519a" wx:if="{{k}}">
+                    <image class="data-v-c787519a" mode="aspectFill" src="{{l}}"></image>
+                    <view class="icon-tit data-v-c787519a">客服</view>
+                </view>
+            </block>
+            <view bindtap="{{p}}" class="item-icon data-v-c787519a" wx:if="{{n}}">
+                <image class="data-v-c787519a" mode="aspectFill" src="{{o}}"></image>
+                <view class="icon-tit data-v-c787519a">订单</view>
+            </view>
+            <view bindtap="{{t}}" class="item-icon data-v-c787519a" wx:if="{{q}}">
+                <image class="data-v-c787519a" mode="aspectFill" src="{{r}}"></image>
+                <text class="icon-tit data-v-c787519a">{{s}}</text>
+            </view>
+            <view bindtap="{{y}}" class="item-icon data-v-c787519a" wx:if="{{v}}">
+                <image class="data-v-c787519a" mode="aspectFill" src="{{w}}"></image>
+                <text class="icon-tit data-v-c787519a">{{x}}</text>
+            </view>
+            <view bindtap="{{C}}" class="item-icon data-v-c787519a" wx:if="{{z}}">
+                <image class="data-v-c787519a" mode="aspectFill" src="{{A}}"></image>
+                <text class="icon-tit data-v-c787519a">{{B}}</text>
+            </view>
+            <view bindtap="{{G}}" class="item-icon data-v-c787519a" wx:if="{{D}}">
+                <image class="data-v-c787519a" mode="aspectFill" src="{{E}}"></image>
+                <text class="icon-tit data-v-c787519a">{{F}}</text>
+            </view>
+            <view bindtap="{{K}}" class="item-icon data-v-c787519a" wx:if="{{H}}">
+                <image class="data-v-c787519a" mode="aspectFill" src="{{I}}"></image>
+                <text class="icon-tit data-v-c787519a">{{J}}</text>
+            </view>
+            <view bindtap="{{M}}" class="item-icon data-v-c787519a">
+                <image class="data-v-c787519a" mode="aspectFill" src="{{L}}"></image>
+                <view class="icon-tit data-v-c787519a">刷新</view>
+            </view>
+            <coupon-claim bind:__l="__l" class="data-v-c787519a" uI="c787519a-0"></coupon-claim>
+            <welfare-voucher bind:__l="__l" class="data-v-c787519a" uI="c787519a-1"></welfare-voucher>
+            <sign-in bind:__l="__l" bindmanualEnd="{{R}}" bindsigninFail="{{Q}}" bindsigninSuccess="{{P}}" bindtaskEnd="{{O}}" class="r data-v-c787519a" uI="c787519a-2" uP="{{S}}" uR="signInRef" wx:if="{{S}}"></sign-in>
+            <check-in bind:__l="__l" bindcallBMethod="{{U}}" class="r data-v-c787519a" uI="c787519a-3" uP="{{V}}" uR="checkInRef" wx:if="{{V}}"></check-in>
+        </view>
+        <view class="data-v-c787519a" wx:else>
+            <view bindtap="{{X}}" class="item-icon-com data-v-c787519a" style="{{Y}}">
+                <image class="data-v-c787519a" mode="aspectFill" src="{{W}}"></image>
+                <view class="icon-tit data-v-c787519a">举报</view>
+            </view>
+        </view>
+        <view class="people-head-num data-v-c787519a" wx:if="{{Z}}">
+            <view class="live_member_box data-v-c787519a">
+                <view class="live_member_num data-v-c787519a">
+                    <image class="data-v-c787519a" mode="aspectFill" src="{{aa}}"></image>{{ab}}</view>
+            </view>
+        </view>
+    </view>
+    <view class="market-view data-v-c787519a" wx:if="{{ac}}">
+        <subscribe bind:__l="__l" class="r data-v-c787519a" uI="c787519a-4" uR="sbRef"></subscribe>
+    </view>
+    <view class="market-view-h1 data-v-c787519a" wx:else>
+        <subscribe bind:__l="__l" class="r data-v-c787519a" style="margin-bottom:20rpx" uI="c787519a-5" uR="sbRef"></subscribe>
+        <view bindtap="{{ai}}" class="item-icon hh data-v-c787519a" wx:if="{{af}}">
+            <image class="data-v-c787519a" mode="aspectFill" src="{{ag}}"></image>
+            <text class="icon-tit data-v-c787519a">{{ah}}</text>
+        </view>
+        <view bindtap="{{am}}" class="item-icon hh data-v-c787519a" wx:if="{{aj}}">
+            <image class="data-v-c787519a" mode="aspectFill" src="{{ak}}"></image>
+            <text class="icon-tit data-v-c787519a">{{al}}</text>
+        </view>
+        <view bindtap="{{aq}}" class="item-icon data-v-c787519a" wx:if="{{an}}">
+            <image class="data-v-c787519a" mode="aspectFill" src="{{ao}}"></image>
+            <text class="icon-tit data-v-c787519a">{{ap}}</text>
+        </view>
+        <view bindtap="{{av}}" class="item-icon hh data-v-c787519a" wx:if="{{ar}}">
+            <image class="data-v-c787519a" mode="aspectFill" src="{{as}}"></image>
+            <text class="icon-tit data-v-c787519a">{{at}}</text>
+        </view>
+        <view bindtap="{{az}}" class="item-icon data-v-c787519a" wx:if="{{aw}}">
+            <image class="data-v-c787519a" mode="aspectFill" src="{{ax}}"></image>
+            <text class="icon-tit data-v-c787519a">{{ay}}</text>
+        </view>
+        <welfare-voucher bind:__l="__l" class="data-v-c787519a" uI="c787519a-6"></welfare-voucher>
+    </view>
+    <my-order bind:__l="__l" class="r data-v-c787519a" uI="c787519a-7" uR="myOrderSc" wx:if="{{aA}}"></my-order>
+    <uni-popup bind:__l="__l" class="r data-v-c787519a" uI="c787519a-8" uP="{{aF}}" uR="kefuPop" uS="{{['d']}}" wx:if="{{aC}}">
+        <view class="kf-pop-view data-v-c787519a">
+            <text class="kf-pop-title data-v-c787519a">客服二维码</text>
+            <image class="data-v-c787519a" mode="widthFix" showMenuByLongpress="{{true}}" src="{{aD}}" style="width:75vw"></image>
+            <view class="kf-pop-tip data-v-c787519a">长按识别图中二维码</view>
+            <text class="kf-pop-tip data-v-c787519a"> 点击空白处关闭 </text>
+        </view>
+    </uni-popup>
+    <uni-popup bind:__l="__l" class="r data-v-c787519a" uI="c787519a-9" uP="{{aT}}" uR="lbInfo" uS="{{['d']}}" wx:if="{{aT}}">
+        <view class="pop-lb-view data-v-c787519a" style="{{'padding-bottom:'+aR}}">
+            <view class="pop-lb-title-view data-v-c787519a">
+                <text class="pop-lb-title data-v-c787519a">{{aG}}</text>
+            </view>
+            <view class="pop-lb-product-view data-v-c787519a">
+                <view class="product-img-view data-v-c787519a">
+                    <image class="product-img data-v-c787519a" mode="aspectFill" src="{{aH}}"></image>
+                </view>
+                <view class="product-info-view data-v-c787519a">
+                    <text class="product-name data-v-c787519a">{{aI}}</text>
+                    <view class="product-sku data-v-c787519a" wx:if="{{aJ}}">{{aK}}</view>
+                    <view class="product-price data-v-c787519a">￥{{aL}}</view>
+                </view>
+            </view>
+            <view class="task-view data-v-c787519a">
+                <view class="task-title data-v-c787519a">参与任务</view>
+                <view class="sent-text data-v-c787519a">发送评论：{{aM}}</view>
+            </view>
+            <view class="pop-lb-btn-view data-v-c787519a">
+                <view bindtap="{{aP}}" class="{{['data-v-c787519a',aO]}}">{{aN}}</view>
+            </view>
+            <view class="pop-lb-tips data-v-c787519a" wx:if="{{aQ}}">请勿离开，否则抽奖资格将失效</view>
+        </view>
+    </uni-popup>
+    <uni-popup bind:__l="__l" class="r data-v-c787519a" uI="c787519a-10" uP="{{bf}}" uR="lbResult" uS="{{['d']}}" wx:if="{{bf}}">
+        <view class="lb-r-v data-v-c787519a">
+            <view class="data-v-c787519a" wx:if="{{aU}}">
+                <view class="frc data-v-c787519a">
+                    <image class="product-img data-v-c787519a" mode="aspectFill" src="{{aV}}"></image>
+                </view>
+                <text class="lb-win-title data-v-c787519a" style="margin-top:10rpx">恭喜抽中福袋</text>
+                <text class="product-name1 data-v-c787519a">{{aW}}</text>
+                <view bindtap="{{aX}}" class="no-win-btn-view data-v-c787519a">
+                    <text class="no-win-btn-text data-v-c787519a">领取奖励</text>
+                </view>
+                <text class="no-win-tip data-v-c787519a">温馨提示：可在待发货里查看福袋订单</text>
+            </view>
+            <view class="data-v-c787519a" wx:else>
+                <view class="no-win-img-view data-v-c787519a">
+                    <image class="no-win-img data-v-c787519a" mode="widthFix" src="{{aY}}"></image>
+                </view>
+                <text class="no-win-text data-v-c787519a">未中奖</text>
+                <view bindtap="{{aZ}}" class="no-win-btn-view data-v-c787519a">
+                    <text class="no-win-btn-text data-v-c787519a">我知道了</text>
+                </view>
+                <text bindtap="{{ba}}" class="no-win-tt data-v-c787519a">查看中奖的用户﹥</text>
+            </view>
+        </view>
+        <view class="lb-r-c data-v-c787519a" wx:if="{{bb}}">
+            <uni-icon bind:__l="__l" bindclick="{{bc}}" class="data-v-c787519a" uI="c787519a-11,c787519a-10" uP="{{bd}}" wx:if="{{bd}}"></uni-icon>
+        </view>
+    </uni-popup>
+    <uni-popup bind:__l="__l" class="r data-v-c787519a" uI="c787519a-12" uP="{{bl}}" uR="lbResultWinner" uS="{{['d']}}" wx:if="{{bl}}">
+        <view class="lb-r-v1 data-v-c787519a">
+            <text class="lb-win-title data-v-c787519a">中奖用户名单</text>
+            <text class="lb-win-count data-v-c787519a">共{{bg}}人</text>
+            <scroll-view class="lb-win-list-view data-v-c787519a" scrollY="{{true}}">
+                <view class="lb-user-item data-v-c787519a" wx:for="{{bh}}" wx:for-item="user" wx:key="c">
+                    <view class="fcc data-v-c787519a">
+                        <image class="data-v-c787519a" mode="aspectFill" src="{{user.a}}" style="width:48rpx;height:48rpx;margin-right:20rpx"></image>
+                    </view>
+                    <view class="fcc data-v-c787519a">
+                        <text class="lb-nickname data-v-c787519a">{{user.b}}</text>
+                    </view>
+                </view>
+            </scroll-view>
+        </view>
+        <view class="lb-r-c data-v-c787519a">
+            <uni-icon bind:__l="__l" bindclick="{{bi}}" class="data-v-c787519a" uI="c787519a-13,c787519a-12" uP="{{bj}}" wx:if="{{bj}}"></uni-icon>
+        </view>
+    </uni-popup>
+    <uni-popup bind:__l="__l" class="r data-v-c787519a" uI="c787519a-14" uP="{{br}}" uR="countdownPointsPop" uS="{{['d']}}" wx:if="{{br}}">
+        <view class="lb-r-v1 data-v-c787519a">
+            <text class="tttt cpt data-v-c787519a">恭喜获得</text>
+            <view class="frc data-v-c787519a">
+                <text class="tttt cp data-v-c787519a">{{bm}}</text>
+                <view class="fcd data-v-c787519a">
+                    <text class="tttt cpp data-v-c787519a">积分</text>
+                </view>
+            </view>
+            <view class="cp-btn-view data-v-c787519a">
+                <text bindtap="{{bo}}" class="cp-btn tttt data-v-c787519a" wx:if="{{bn}}">立即领取</text>
+                <text bindtap="{{bp}}" class="cp-btn tttt data-v-c787519a" wx:else>立即领取</text>
+            </view>
+        </view>
+    </uni-popup>
+    <uni-popup bind:__l="__l" class="r data-v-c787519a" uI="c787519a-15" uP="{{by}}" uR="countdownRedpackPop" uS="{{['d']}}" wx:if="{{by}}">
+        <view class="lb-r-v1 data-v-c787519a">
+            <text class="tttt cpt data-v-c787519a">恭喜获得</text>
+            <view class="frc data-v-c787519a">
+                <text class="tttt cp data-v-c787519a">{{bs}}</text>
+                <view class="fcd data-v-c787519a">
+                    <text class="tttt cpp data-v-c787519a">元</text>
+                </view>
+            </view>
+            <view class="cp-btn-view data-v-c787519a">
+                <text bindtap="{{bv}}" class="cp-btn tttt data-v-c787519a" wx:if="{{bt}}">立即领取</text>
+                <text bindtap="{{bw}}" class="cp-btn tttt data-v-c787519a" wx:else>立即领取</text>
+            </view>
+        </view>
+    </uni-popup>
+    <withdraw-popup bind:__l="__l" class="r data-v-c787519a" uI="c787519a-16" uP="{{bA}}" uR="withdrawSc" wx:if="{{bA}}"></withdraw-popup>
+    <complaint-face bind:__l="__l" class="r data-v-c787519a" uI="c787519a-17" uP="{{bD}}" uR="complaintRef" wx:if="{{bB}}"></complaint-face>
+</view>

@@ -1,0 +1,6 @@
+<view class="glass-container data-v-828d64a6">
+    <view class="glass-mask data-v-828d64a6" style="{{'backdrop-filter:'+a+';'+'webkit-backdrop-filter:'+b}}"></view>
+    <view class="content data-v-828d64a6">
+        <text class="desc data-v-828d64a6">{{c}}</text>
+    </view>
+</view>

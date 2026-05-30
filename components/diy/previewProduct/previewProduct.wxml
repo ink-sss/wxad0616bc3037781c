@@ -1,0 +1,27 @@
+<view class="drag optional data-v-db8cb64d" style="{{'background:'+E+';'+'padding-left:'+F+';'+'padding-right:'+G+';'+'padding-top:'+H+';'+'padding-bottom:'+I}}" wx:if="{{a}}">
+    <view class="diy-sharpproduct data-v-db8cb64d" style="{{'background:'+z+';'+'border-top-left-radius:'+A+';'+'border-top-right-radius:'+B+';'+'border-bottom-left-radius:'+C+';'+'border-bottom-right-radius:'+D}}">
+        <view class="sharpproduct-head d-b-c data-v-db8cb64d" style="{{'background-image:'+m}}">
+            <view class="left d-s-c data-v-db8cb64d">
+                <view class="name data-v-db8cb64d" style="{{'color:'+d+';'+'font-size:'+e}}" wx:if="{{b}}">{{c}}</view>
+                <image lazyLoad class="titleImg data-v-db8cb64d" mode="heightFix" src="{{g}}" wx:if="{{f}}"></image>
+            </view>
+            <view bindtap="{{j}}" class="right white d-c-c data-v-db8cb64d" style="{{'line-height:1'+';'+'color:'+k+';'+'font-size:'+l}}">{{h}}<text class="icon iconfont icon-you data-v-db8cb64d" style="{{'color:'+i+';'+'font-size:'+'22rpx'}}"></text>
+            </view>
+        </view>
+        <view class="product-list column__3 data-v-db8cb64d">
+            <view bindtap="{{item.j}}" class="product-item data-v-db8cb64d" style="{{'background:'+t+';'+'border-bottom-left-radius:'+v+';'+'border-bottom-right-radius:'+w+';'+'border-top-left-radius:'+x+';'+'border-top-right-radius:'+y}}" wx:for="{{n}}" wx:key="k">
+                <view class="product-cover pr data-v-db8cb64d">
+                    <image lazyLoad class="data-v-db8cb64d" mode="aspectFit" src="{{item.a}}" style="{{'border-radius:'+o}}"></image>
+                    <view class="product-tag data-v-db8cb64d" style="{{'color:'+item.b+';'+'background:'+item.c}}" wx:if="{{p}}">预告</view>
+                </view>
+                <view class="product-info p-0-10 data-v-db8cb64d">
+                    <view class="price ww100 f12 tc data-v-db8cb64d">
+                        <view class="f12 tc text-ellipsis data-v-db8cb64d" style="{{'color:'+item.e}}" wx:if="{{q}}">{{item.d}}</view>
+                        <view class="f14 tc data-v-db8cb64d" style="{{'color:'+item.g}}" wx:if="{{r}}">¥{{item.f}}</view>
+                        <view class="f12 text-d-line data-v-db8cb64d" style="{{'color:'+item.i}}" wx:if="{{s}}">¥{{item.h}}</view>
+                    </view>
+                </view>
+            </view>
+        </view>
+    </view>
+</view>

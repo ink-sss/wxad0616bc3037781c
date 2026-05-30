@@ -1,0 +1,48 @@
+{
+  "name": "wxad0616bc3037781c",
+  "appid": "__UNI__WXAD0616",
+  "description": "uni-app Vue 3 source migration for the existing mp-weixin program.",
+  "versionName": "0.1.0",
+  "versionCode": "100",
+  "transformPx": false,
+  "uniStatistics": {
+    "enable": false
+  },
+  "mp-weixin": {
+    "appid": "wxdaf06e5453330fdf",
+    "setting": {
+      "es6": false,
+      "postcss": false,
+      "compileWorklet": false,
+      "minified": false,
+      "uglifyFileName": false,
+      "uploadWithSourceMap": true,
+      "enhance": false,
+      "packNpmManually": false,
+      "packNpmRelationList": [],
+      "minifyWXSS": true,
+      "minifyWXML": true,
+      "localPlugins": false,
+      "disableUseStrict": false,
+      "useCompilerPlugins": false,
+      "condition": false,
+      "swc": false,
+      "disableSWC": true,
+      "babelSetting": {
+        "ignore": [],
+        "disablePlugins": [],
+        "outputPath": ""
+      }
+    },
+    "usingComponents": true,
+    "libVersion": "3.16.1",
+    "permission": {
+      "scope.userLocation": {
+        "desc": "你的位置信息将用于小程序位置接口的效果展示"
+      }
+    },
+    "lazyCodeLoading": "requiredComponents",
+    "renderer": "webview",
+    "componentFramework": "exparser"
+  }
+}

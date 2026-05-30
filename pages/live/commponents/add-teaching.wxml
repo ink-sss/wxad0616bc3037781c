@@ -1,0 +1,14 @@
+<view class="data-v-d86586fc">
+    <uni-popup bind:__l="__l" class="r data-v-d86586fc" uI="d86586fc-0" uP="{{e}}" uR="addTeaching" uS="{{['d']}}" wx:if="{{e}}">
+        <view class="teaching-box data-v-d86586fc">
+            <view class="close-box data-v-d86586fc">
+                <uni-icon bind:__l="__l" bindclick="{{a}}" class="close-icon data-v-d86586fc" uI="d86586fc-1,d86586fc-0" uP="{{b}}" wx:if="{{b}}"></uni-icon>
+            </view>
+            <view class="teaching-text data-v-d86586fc">扫码添加助教老师</view>
+            <view class="teaching-img-box data-v-d86586fc">
+                <image class="teaching-img data-v-d86586fc" src="{{c}}"></image>
+            </view>
+            <view class="teaching-tips data-v-d86586fc">长按识别二维码</view>
+        </view>
+    </uni-popup>
+</view>

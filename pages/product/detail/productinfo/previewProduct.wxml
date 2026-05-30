@@ -1,0 +1,33 @@
+<view class="data-v-855be7fe">
+    <view class="limited-spike m-0-20 d-b-s data-v-855be7fe">
+        <view class="active-name mr20 data-v-855be7fe">
+            <view class="data-v-855be7fe">预</view>
+            <view class="data-v-855be7fe">告</view>
+        </view>
+        <view class="flex-1 pt16 data-v-855be7fe">
+            <view class="white data-v-855be7fe">
+                <text class="f28 fb data-v-855be7fe">￥</text>
+                <text class="f42 fb data-v-855be7fe">{{a}}.</text>
+                <text class="f24 fb data-v-855be7fe">{{b}}</text>
+            </view>
+            <view class="old-price data-v-855be7fe" wx:if="{{c}}">￥{{d}}</view>
+        </view>
+        <view class="right-time data-v-855be7fe">
+            <countdown bind:__l="__l" bindreturnVal="{{f}}" class="r data-v-855be7fe" uI="855be7fe-0" uP="{{g}}" uR="countdown" wx:if="{{g}}"></countdown>
+        </view>
+    </view>
+    <view class="bg-white m-0-20 mb20 p20 mt-down-box data-v-855be7fe">
+        <view class="f30 gray3 data-v-855be7fe">{{h}}</view>
+        <view class="product-describe data-v-855be7fe" wx:if="{{i}}">{{j}}</view>
+        <view class="border-t d-b-c mt20 data-v-855be7fe">
+            <button bindtap="{{k}}" class="flex-1 active-btn d-c-c data-v-855be7fe">
+                <text class="icon iconfont icon-fenxiang3 shoucang-icon data-v-855be7fe"></text>
+                <text class="f28 gray9 data-v-855be7fe">分享</text>
+            </button>
+            <button bindtap="{{n}}" class="flex-1 active-btn d-c-c data-v-855be7fe">
+                <text class="{{[l,'icon','iconfont','shoucang-icon','data-v-855be7fe']}}" mode="" src="/static/icon/sc.png"></text>
+                <text class="{{['f28','data-v-855be7fe',m]}}">收藏</text>
+            </button>
+        </view>
+    </view>
+</view>

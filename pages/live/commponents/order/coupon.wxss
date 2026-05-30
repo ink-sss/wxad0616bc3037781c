@@ -1,0 +1,80 @@
+wx-view.data-v-6b9ebcdc {
+    display: block;
+    -webkit-flex-direction: row;
+    flex-direction: row
+}
+
+.usable-coupon .popup-bg.data-v-6b9ebcdc {
+    background: rgba(0,0,0,.6);
+    bottom: 0;
+    left: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+    z-index: 99
+}
+
+.usable-coupon .main.data-v-6b9ebcdc {
+    background-color: #fff;
+    bottom: 0;
+    bottom: env(safe-area-inset-bottom);
+    left: 0;
+    min-height: 200rpx;
+    position: fixed;
+    -webkit-transform: translate3d(0,1980rpx,0);
+    transform: translate3d(0,1980rpx,0);
+    transition: -webkit-transform .2s cubic-bezier(0,0,.25,1);
+    transition: transform .2s cubic-bezier(0,0,.25,1);
+    transition: transform .2s cubic-bezier(0,0,.25,1),-webkit-transform .2s cubic-bezier(0,0,.25,1);
+    width: 100%;
+    z-index: 99
+}
+
+.usable-coupon.open .main.data-v-6b9ebcdc {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0)
+}
+
+.usable-coupon.close .popup-bg.data-v-6b9ebcdc {
+    display: none
+}
+
+.coupon-btns .btn-cancel.data-v-6b9ebcdc {
+    background: #999;
+    border-radius: 0;
+    color: #fff;
+    font-size: 30rpx;
+    height: 88rpx;
+    line-height: 88rpx
+}
+
+.coupon-item .w100.data-v-6b9ebcdc {
+    padding: 0 75rpx
+}
+
+.b-radio.data-v-6b9ebcdc {
+    border: 1rpx solid #fff;
+    border-radius: 30rpx;
+    padding: 10rpx 30rpx
+}
+
+.item-wrap.data-v-6b9ebcdc {
+    border: 1px solid #eee
+}
+
+.d-b-c.data-v-6b9ebcdc {
+    -webkit-justify-content: space-between;
+    justify-content: space-between
+}
+
+.d-b-c.data-v-6b9ebcdc,.d-s-c.data-v-6b9ebcdc {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex
+}
+
+.d-s-c.data-v-6b9ebcdc {
+    -webkit-justify-content: flex-start;
+    justify-content: flex-start
+}

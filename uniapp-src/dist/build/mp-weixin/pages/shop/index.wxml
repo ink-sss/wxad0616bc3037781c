@@ -1,0 +1,1 @@
+<view class="shop-index-page data-v-02555992"><view class="entry-card data-v-02555992" bindtap="{{a}}"><view class="title data-v-02555992">商户中心</view><view class="desc data-v-02555992">浏览平台商户和店铺商品</view></view><view class="entry-card data-v-02555992" bindtap="{{b}}"><view class="title data-v-02555992">商户入驻</view><view class="desc data-v-02555992">查看入驻申请状态</view></view></view>

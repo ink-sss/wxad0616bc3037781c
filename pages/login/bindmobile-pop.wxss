@@ -1,0 +1,81 @@
+.login-container {
+    padding: 36rpx 32rpx 44rpx
+}
+
+.popup-head {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+    margin-bottom: 24rpx
+}
+
+.head-title {
+    color: #1f2937;
+    font-size: 30rpx;
+    font-weight: 600
+}
+
+.close-icon {
+    background: #f3f4f6;
+    border-radius: 50%;
+    color: #9ca3af;
+    font-size: 28rpx;
+    height: 44rpx;
+    line-height: 44rpx;
+    text-align: center;
+    width: 44rpx
+}
+
+.auth-title {
+    color: #111827;
+    font-size: 40rpx;
+    font-weight: 700;
+    margin-bottom: 20rpx
+}
+
+.auth-subtitle {
+    color: #6b7280;
+    font-size: 27rpx;
+    line-height: 1.6;
+    margin-bottom: 56rpx
+}
+
+.login-btn {
+    padding: 0
+}
+
+.login-btn wx-button {
+    border-radius: 999rpx;
+    font-size: 30rpx;
+    height: 88rpx;
+    line-height: 88rpx;
+    text-align: center
+}
+
+.btn-primary {
+    background: linear-gradient(90deg,#22c55e,#16a34a);
+    color: #fff
+}
+
+.no-login-btn {
+    margin-top: 18rpx;
+    padding: 0
+}
+
+.no-login-btn wx-button {
+    border-radius: 999rpx;
+    font-size: 30rpx;
+    height: 88rpx;
+    line-height: 88rpx;
+    text-align: center
+}
+
+.btn-light {
+    background: #f3f4f6;
+    color: #4b5563
+}

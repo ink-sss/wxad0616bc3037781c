@@ -1,0 +1,36 @@
+<view class="diy-coupon" style="{{'background:'+s+';'+'padding-left:'+t+';'+'padding-right:'+v+';'+'padding-top:'+w+';'+'padding-bottom:'+x}}" wx:if="{{a}}">
+    <view class="pr coupon-wrapper-box" style="{{'background:'+n+';'+'border-top-left-radius:'+o+';'+'border-top-right-radius:'+p+';'+'border-bottom-left-radius:'+q+';'+'border-bottom-right-radius:'+r}}">
+        <image class="bg-couponbg" mode="" src="{{c}}" style="{{'border-top-left-radius:'+d+';'+'border-top-right-radius:'+e+';'+'border-bottom-left-radius:'+f+';'+'border-bottom-right-radius:'+g}}" wx:if="{{b}}"></image>
+        <view class="coupon-wrapper-list d-s-c">
+            <view class="coupon-wrapper" wx:for="{{h}}" wx:for-item="coupon" wx:key="s">
+                <image lazyLoad class="bg-coupon-item" mode="" src="{{i}}"></image>
+                <view class="coupon-item d-c-c d-c">
+                    <view style="{{'height:78px;border-bottom:1px dashed'+';'+'border-color:'+m}}">
+                        <view class="content-top" style="{{'color:'+j}}">
+                            <block wx:if="{{coupon.a}}">
+                                <text class="f24">￥</text>
+                                <text class="f48 fb">{{coupon.b}}</text>
+                            </block>
+                            <block wx:if="{{coupon.c}}">
+                                <text class="f48 fb">{{coupon.d}}</text>
+                                <text class="f24">折</text>
+                            </block>
+                        </view>
+                        <view class="content-bottom d-c f22" style="{{'color:'+k}}">
+                            <text>{{coupon.e}}</text>
+                        </view>
+                        <view class="tc f22" style="{{'color:'+l}}">
+                            <text wx:if="{{coupon.f}}">全品类券</text>
+                            <text wx:if="{{coupon.g}}">指定商品可用</text>
+                            <text wx:if="{{coupon.h}}">指定品类可用</text>
+                        </view>
+                    </view>
+                    <view class="d-c-c" style="height:38px">
+                        <view bindtap="{{coupon.k}}" class="right-receive" style="{{'color:'+coupon.l+';'+'border-radius:'+coupon.m+';'+'background-color:'+coupon.n}}" wx:if="{{coupon.i}}">{{coupon.j}}</view>
+                        <view class="right-receive" style="{{'color:'+coupon.p+';'+'border-radius:'+coupon.q+';'+'background-color:'+coupon.r}}" wx:else>{{coupon.o}}</view>
+                    </view>
+                </view>
+            </view>
+        </view>
+    </view>
+</view>

@@ -1,0 +1,5 @@
+<view class="diy-option" style="{{'background:'+h+';'+'padding-left:'+i+';'+'padding-right:'+j+';'+'padding-top:'+k+';'+'padding-bottom:'+l+';'+'margin-top:'+m}}">
+    <view class="o-h" style="{{'border-top-left-radius:'+c+';'+'border-top-right-radius:'+d+';'+'border-bottom-left-radius:'+e+';'+'border-bottom-right-radius:'+f+';'+'background-image:'+g}}">
+        <nav-bar bind:__l="__l" bindcurrentIndex="{{a}}" class="ww100" uI="ff9891c6-0" uP="{{b}}" wx:if="{{b}}"></nav-bar>
+    </view>
+</view>

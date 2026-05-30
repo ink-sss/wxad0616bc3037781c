@@ -1,0 +1,30 @@
+<view class="data-v-d4f7f200">
+    <view class="address-list bg-white data-v-d4f7f200">
+        <view class="address p30 d-s-c border-b-e data-v-d4f7f200" wx:for="{{a}}" wx:key="j">
+            <view bindtap="{{item.i}}" class="info flex-1 data-v-d4f7f200">
+                <view class="user f34 data-v-d4f7f200">
+                    <text class="data-v-d4f7f200">{{item.a}}</text>
+                </view>
+                <view class="pt10 user f30 gray6 data-v-d4f7f200">
+                    <text class="data-v-d4f7f200">{{item.b}}</text>
+                </view>
+                <view class="pt10 f24 gray6 data-v-d4f7f200">
+                    <text class="data-v-d4f7f200">{{item.c}}{{item.d}}{{item.e}}{{item.f}}</text>
+                </view>
+                <view class="data-v-d4f7f200">
+                    <text class="iconfont icon-dingwei data-v-d4f7f200"></text>
+                    <text class="data-v-d4f7f200">{{item.g}}</text>
+                </view>
+                <view class="shop-item__right data-v-d4f7f200" wx:if="{{item.h}}">
+                    <text class="iconfont icon-iconfontduihaocopy data-v-d4f7f200"></text>
+                </view>
+            </view>
+        </view>
+        <view class="data-v-d4f7f200" wx:if="{{b}}">
+            <view class="yoshop-notcont data-v-d4f7f200">
+                <text class="iconfont icon-wushuju data-v-d4f7f200"></text>
+                <text class="cont data-v-d4f7f200">亲，暂无自提门店哦</text>
+            </view>
+        </view>
+    </view>
+</view>

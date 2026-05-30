@@ -1,0 +1,111 @@
+.more-bargaining {
+    background-color: #fff;
+    bottom: 0;
+    left: 0;
+    padding: 20rpx;
+    position: fixed;
+    right: 0
+}
+
+.more-bargaining .theme-btn {
+    border: none;
+    border-radius: 88rpx;
+    font-size: 30rpx;
+    height: 88rpx;
+    line-height: 88rpx
+}
+
+[data-theme=theme0] .more-bargaining .theme-btn {
+    background-color: #ff5704!important
+}
+
+[data-theme=theme1] .more-bargaining .theme-btn {
+    background-color: #19ad57!important
+}
+
+[data-theme=theme2] .more-bargaining .theme-btn {
+    background-color: #fc0!important
+}
+
+[data-theme=theme3] .more-bargaining .theme-btn {
+    background-color: #33a7ff!important
+}
+
+[data-theme=theme4] .more-bargaining .theme-btn {
+    background-color: #e4e4e4!important
+}
+
+[data-theme=theme5] .more-bargaining .theme-btn {
+    background-color: #c8ba97!important
+}
+
+[data-theme=theme6] .more-bargaining .theme-btn {
+    background-color: #623ceb!important
+}
+
+.progress-box {
+    background: #eee;
+    overflow: hidden;
+    width: 342rpx
+}
+
+.progress-box,.progress-box-active {
+    border-radius: 6rpx;
+    height: 12rpx
+}
+
+[data-theme=theme0] .progress-box-active {
+    background-color: #ff5704!important
+}
+
+[data-theme=theme1] .progress-box-active {
+    background-color: #19ad57!important
+}
+
+[data-theme=theme2] .progress-box-active {
+    background-color: #fc0!important
+}
+
+[data-theme=theme3] .progress-box-active {
+    background-color: #33a7ff!important
+}
+
+[data-theme=theme4] .progress-box-active {
+    background-color: #e4e4e4!important
+}
+
+[data-theme=theme5] .progress-box-active {
+    background-color: #c8ba97!important
+}
+
+[data-theme=theme6] .progress-box-active {
+    background-color: #623ceb!important
+}
+
+.my-bargaing-list {
+    margin: 0 20rpx;
+    padding-bottom: 200rpx
+}
+
+.my-bargaing-list .item {
+    background: #fff;
+    border-radius: 15rpx;
+    margin-top: 24rpx;
+    padding: 24rpx
+}
+
+.my-bargaing-list .item .cover {
+    border-radius: 15rpx;
+    display: block;
+    height: 160rpx;
+    margin-right: 16rpx;
+    width: 160rpx
+}
+
+.my-bargaing-list .surplus-time {
+    background: #fff;
+    border-radius: 4rpx;
+    color: #333;
+    font-size: 26rpx;
+    padding: 4rpx 16rpx
+}

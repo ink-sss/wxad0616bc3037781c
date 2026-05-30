@@ -1,0 +1,152 @@
+<uni-popup bind:__l="__l" class="r" uI="43d2dd70-0" uP="{{z}}" uR="myOrderList" uS="{{['d']}}" wx:if="{{z}}">
+    <view class="{{['order-box',x]}}" data-theme="{{w}}">
+        <view class="top-box">
+            <view class="index-search-box index-search-box_re d-b-c" id="searchBox">
+                <view class="index-search index-search_re t-c flex-1 search-box-top">
+                    <input bindconfirm="{{a}}" bindinput="{{c}}" class="flex-1 f26 gray3" confirmType="search" placeholder="请输入" placeholderClass="f26 gray9" type="text" value="{{b}}"></input>
+                    <text class="icon iconfont icon-sousuo"></text>
+                </view>
+            </view>
+            <view class="top-tabbar">
+                <view bindtap="{{e}}" class="{{d}}">全部订单</view>
+                <view bindtap="{{g}}" class="{{f}}">待付款</view>
+                <view bindtap="{{i}}" class="{{h}}">待发货</view>
+                <view bindtap="{{k}}" class="{{j}}">待收货</view>
+                <view bindtap="{{m}}" class="{{l}}">待评价</view>
+            </view>
+        </view>
+        <scroll-view scrollWithAnimation bindscrolltolower="{{r}}" enablePassive="{{true}}" scrollY="{{true}}" showScrollbar="{{false}}" style="height:78vh">
+            <view class="order-list">
+                <view class="item" wx:for="{{n}}" wx:key="aA">
+                    <view class="d-b-c pb38">
+                        <view bindtap="{{item.c}}" class="item-dianpu">
+                            <view class="item-d-l mr10">
+                                <text class="icon iconfont icon-stores"></text>
+                                <text class="fb gray3 f32" wx:if="{{item.a}}">{{item.b}}</text>
+                            </view>
+                            <view>
+                                <text class="icon iconfont icon-jiantou"></text>
+                            </view>
+                        </view>
+                        <view class="state">
+                            <text class="f24 gray9">{{item.d}}</text>
+                        </view>
+                    </view>
+                    <view class="order-head d-b-c">
+                        <view class="ddh">
+                            <text class="state-text">{{item.e}}</text>
+                            <text class="shop-name flex-1">订单号：{{item.f}}</text>
+                        </view>
+                    </view>
+                    <view bindtap="{{item.k}}" class="product-list pr" wx:if="{{item.g}}">
+                        <scroll-view scrollX="true">
+                            <view class="list d-s-c pr100">
+                                <image lazyLoad class="cover mr10" mode="aspectFit" src="{{img.b}}" wx:for="{{item.h}}" wx:for-item="img" wx:key="a"></image>
+                            </view>
+                        </scroll-view>
+                        <view class="total-count">
+                            <view class="left-shadow"></view>
+                            <view class="price f24 money-price">¥<text class="f32">{{item.i}}</text>
+                            </view>
+                            <view class="count">共{{item.j}}件</view>
+                        </view>
+                    </view>
+                    <view bindtap="{{item.r}}" class="one-product d-s-c" wx:else>
+                        <image lazyLoad class="cover" mode="aspectFit" src="{{img.b}}" wx:for="{{item.l}}" wx:for-item="img" wx:key="a"></image>
+                        <view class="pro-info flex-1">{{item.m}}</view>
+                        <view class="total-count">
+                            <view class="left-shadow"></view>
+                            <view class="price f24 money-price" wx:if="{{item.n}}">¥<text class="f32">{{item.o}}</text>
+                            </view>
+                            <view class="price f24 money-price" wx:else>¥<text class="f32">{{item.p}}</text>
+                            </view>
+                            <view class="count">共{{item.q}}件</view>
+                        </view>
+                    </view>
+                    <view class="order-bts presale" wx:if="{{item.s}}">
+                        <view class="d-b-c line-h-50 f24 gray9">
+                            <view>定金</view>
+                            <view>
+                                <text>{{item.t}}</text>￥{{item.v}}</view>
+                        </view>
+                        <view class="d-b-c line-h-50 f24 gray9">
+                            <view>尾款</view>
+                            <view>
+                                <text>{{item.w}}</text>￥{{item.x}}</view>
+                        </view>
+                        <block wx:if="{{item.y}}">
+                            <view class="d-e-c line-h-50 f24 gray9" wx:if="{{item.z}}">
+                                <view wx:if="{{item.A}}">尾款支付截止时间:<text class="redF11">{{item.B}}</text>
+                                </view>
+                                <view wx:elif="{{item.C}}">尾款支付时间:<text class="redF11">{{item.D}}</text>
+                                </view>
+                            </view>
+                        </block>
+                        <view class="d-e-c line-h-50 f24 gray9" wx:if="{{item.E}}">
+                            <view wx:if="{{item.F}}">定金支付截止时间:<text class="redF11">{{item.G}}</text>
+                            </view>
+                        </view>
+                        <view class="d-e-c">
+                            <view class="d-e-c mt10" wx:if="{{item.H}}">
+                                <button bindtap="{{item.I}}" class="btn-gray-border">撤回取消</button>
+                            </view>
+                            <view class="d-e-c mt10" wx:if="{{item.J}}">
+                                <button bindtap="{{item.K}}" class="btn-gray-border">删除订单</button>
+                            </view>
+                            <block wx:if="{{item.L}}">
+                                <view class="d-e-c mt10" wx:if="{{item.M}}">
+                                    <button bindtap="{{item.N}}" class="pay-btn theme-btn">支付尾款</button>
+                                </view>
+                            </block>
+                            <view class="d-e-c mt10" wx:if="{{item.O}}">
+                                <button bindtap="{{item.P}}" class="pay-btn btn-gray-border">取消订单</button>
+                            </view>
+                            <block wx:if="{{item.Q}}">
+                                <button bindtap="{{item.S}}" class="btn-gray-border" wx:if="{{item.R}}">申请取消</button>
+                            </block>
+                            <view class="d-e-c mt10" wx:if="{{item.T}}">
+                                <button bindtap="{{item.U}}" class="pay-btn theme-btn">支付定金</button>
+                            </view>
+                            <view class="d-e-c mt10" wx:if="{{item.V}}">
+                                <button bindtap="{{item.X}}" class="pay-btn theme-btn" wx:if="{{item.W}}">确认收货</button>
+                                <button bindtap="{{item.Y}}" class="pay-btn theme-btn" wx:else>确认收货</button>
+                            </view>
+                            <view class="d-e-c mt10" wx:if="{{item.Z}}">
+                                <button bindtap="{{item.aa}}" class="pay-btn theme-btn">评价</button>
+                            </view>
+                        </view>
+                    </view>
+                    <view class="order-bts" wx:else>
+                        <button bindtap="{{item.ac}}" class="btn-gray-border" wx:if="{{item.ab}}">取消退款</button>
+                        <button bindtap="{{item.ae}}" class="btn-gray-border" wx:if="{{item.ad}}">删除订单</button>
+                        <block wx:if="{{item.af}}">
+                            <button bindtap="{{item.ah}}" class="btn-gray-border" wx:if="{{item.ag}}">取消</button>
+                            <button bindtap="{{item.aj}}" class="btn-gray-border" wx:if="{{item.ai}}">申请取消</button>
+                            <block wx:if="{{item.ak}}">
+                                <button bindtap="{{item.am}}" class="btn-gray-border" wx:if="{{item.al}}">核销码</button>
+                                <button bindtap="{{item.ao}}" class="btn-gray-border" wx:if="{{item.an}}">核销码</button>
+                            </block>
+                            <button bindtap="{{item.aq}}" class="theme-btn" wx:if="{{item.ap}}">去付款</button>
+                            <block wx:if="{{item.ar}}">
+                                <button bindtap="{{item.at}}" class="theme-btn" wx:if="{{item.as}}">确认收货</button>
+                                <button bindtap="{{item.av}}" class="theme-btn" wx:else>确认收货</button>
+                            </block>
+                        </block>
+                        <button bindtap="{{item.ax}}" class="theme-btn" wx:if="{{item.aw}}">评价</button>
+                        <button bindtap="{{item.az}}" class="theme-btn" wx:if="{{item.ay}}">邀请好友拼单</button>
+                    </view>
+                </view>
+                <view class="d-c-c d-c p30" wx:if="{{o}}">
+                    <image lazyLoad class="list-null-image" mode="" src="{{p}}"></image>
+                    <text class="cont f32 gray9 noOrder">暂无相关订单</text>
+                </view>
+                <uni-load-more bind:__l="__l" uI="43d2dd70-1,43d2dd70-0" uP="{{q||''}}" wx:else></uni-load-more>
+            </view>
+        </scroll-view>
+        <popup bind:__l="__l" bindhidePopup="{{t}}" uI="43d2dd70-2,43d2dd70-0" uP="{{v}}" uS="{{['d']}}" wx:if="{{v}}">
+            <view class="ww100 p20 box-s-b">
+                <image lazyLoad class="ww100" mode="widthFix" src="{{s}}"></image>
+            </view>
+        </popup>
+    </view>
+</uni-popup>

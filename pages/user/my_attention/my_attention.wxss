@@ -1,0 +1,114 @@
+page {
+    background-color: #f2f2f2
+}
+
+.h1 {
+    font-size: 32rpx
+}
+
+.h2 {
+    font-size: 28rpx
+}
+
+.h3 {
+    font-size: 24rpx
+}
+
+.h4 {
+    font-size: 20rpx
+}
+
+.h5 {
+    font-size: 16rpx
+}
+
+.h6 {
+    font-size: 12rpx
+}
+
+.red {
+    color: #e2231a
+}
+
+.huaxianjia {
+    color: #585858;
+    margin-left: 5rpx;
+    text-decoration: line-through
+}
+
+.acttention {
+    background-color: #f2f2f2;
+    width: 100%
+}
+
+.acttention-item {
+    -webkit-align-items: center;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 15rpx;
+    box-sizing: border-box;
+    display: -webkit-flex;
+    display: flex;
+    margin: 24rpx 20rpx 20rpx;
+    padding: 24rpx;
+    position: relative
+}
+
+.acttention-item .item-image {
+    display: block;
+    height: 152rpx;
+    margin-right: 17rpx;
+    width: 152rpx
+}
+
+.item-info {
+    box-sizing: border-box;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex: 1;
+    flex: 1;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    height: 152rpx;
+    -webkit-justify-content: space-between;
+    justify-content: space-between
+}
+
+.item-title {
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    word-wrap: break-word;
+    display: -webkit-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-all
+}
+
+.item-price {
+    -webkit-align-items: flex-end;
+    align-items: flex-end;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: flex-end;
+    justify-content: flex-end
+}
+
+.item-sales {
+    color: #585858
+}
+
+.acttention-item .item-btn {
+    -webkit-align-items: center;
+    align-items: center;
+    border-radius: 56rpx;
+    box-sizing: border-box;
+    display: -webkit-flex;
+    display: flex;
+    font-size: 28rpx;
+    height: 56rpx;
+    -webkit-justify-content: center;
+    justify-content: center;
+    line-height: 56rpx;
+    padding: 0;
+    width: 182rpx
+}

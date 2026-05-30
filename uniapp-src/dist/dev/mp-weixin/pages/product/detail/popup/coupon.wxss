@@ -1,0 +1,34 @@
+.usable-coupon.data-v-f7f34019 { position: fixed; inset: 0; z-index: 85; pointer-events: none; opacity: 0; transition: opacity .2s;
+}
+.usable-coupon.open.data-v-f7f34019 { pointer-events: auto; opacity: 1;
+}
+.popup-bg.data-v-f7f34019 { position: absolute; inset: 0; background: rgba(0,0,0,.45);
+}
+.main.data-v-f7f34019 { position: absolute; left: 0; right: 0; bottom: 0; max-height: 78vh; border-radius: 28rpx 28rpx 0 0; background: #fff; overflow: hidden;
+}
+.pop-title.data-v-f7f34019 { display: flex; align-items: center; justify-content: center; height: 104rpx; position: relative; border-bottom: 1rpx solid #f4f4f4;
+}
+.pop-close.data-v-f7f34019 { position: absolute; right: 30rpx; top: 30rpx; color: #999;
+}
+.text-box.data-v-f7f34019 { display: inline-block; margin-right: 12rpx; padding: 2rpx 10rpx; border-radius: 4rpx; background: #fff2ed; color: #ff5704;
+}
+.scroll-coupon.data-v-f7f34019 { padding: 0 20rpx; box-sizing: border-box;
+}
+.scroll-coupon-tit.data-v-f7f34019 { padding: 20rpx 0; color: #333; font-size: 28rpx; font-weight: 700;
+}
+.item-wrap.data-v-f7f34019 { margin-bottom: 20rpx;
+}
+.coupon-item.data-v-f7f34019 { overflow: hidden; border-radius: 16rpx 16rpx 0 0; background: #fff7f2;
+}
+.coupon-item-gray.data-v-f7f34019 { background: #f5f5f5; color: #999;
+}
+.operation.data-v-f7f34019 { padding: 24rpx;
+}
+.theme-price.data-v-f7f34019 { color: #e2231a;
+}
+.coupon-btn.data-v-f7f34019 { min-width: 132rpx; height: 52rpx; border-radius: 26rpx; line-height: 52rpx; text-align: center;
+}
+.btn-gray.data-v-f7f34019 { background: #ccc;
+}
+.range_item.data-v-f7f34019 { padding: 18rpx 24rpx; border-radius: 0 0 16rpx 16rpx; background: #fafafa;
+}

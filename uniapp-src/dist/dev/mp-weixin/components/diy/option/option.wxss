@@ -1,0 +1,14 @@
+.diy-block.data-v-57f41905 { width: 100%; box-sizing: border-box; overflow: hidden;
+}
+.diy-list.data-v-57f41905 { display: flex; flex-wrap: wrap; gap: 16rpx;
+}
+.diy-card.data-v-57f41905 { background: #fff; border-radius: 8rpx; overflow: hidden;
+}
+.diy-image.data-v-57f41905 { width: 100%; display: block;
+}
+.diy-title.data-v-57f41905 { font-size: 30rpx; color: #222; font-weight: 600;
+}
+.diy-text.data-v-57f41905 { font-size: 26rpx; color: #666; line-height: 1.5;
+}
+.diy-price.data-v-57f41905 { color: #f03b2f; font-weight: 700;
+}

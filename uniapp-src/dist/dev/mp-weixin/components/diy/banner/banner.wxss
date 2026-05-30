@@ -1,0 +1,14 @@
+.diy-banner-box.data-v-53e3b12e { box-sizing: border-box; overflow: hidden;
+}
+.diy-banner-box.data-v-53e3b12e,.diy-banner-box .swiper.data-v-53e3b12e,.diy-banner-box image.data-v-53e3b12e { width: 100%;
+}
+.swiper-dots.data-v-53e3b12e { bottom: 20rpx; left: 0; margin: auto; position: absolute; right: 0; width: 100%; z-index: 2;
+}
+.swiper-dots.round .swiper-dot.data-v-53e3b12e,.swiper-dots.square .swiper-dot.data-v-53e3b12e { background: #ebedf0; height: 14rpx; margin: 0 4rpx; opacity: .3; width: 14rpx;
+}
+.swiper-dots.round .swiper-dot.data-v-53e3b12e { border-radius: 50%;
+}
+.swiper-dots.rectangle .swiper-dot.data-v-53e3b12e { background: #ebedf0; border-radius: 4rpx; height: 6rpx; margin: 0 4rpx; opacity: .3; width: 40rpx;
+}
+.swiper-dots .swiper-dot.active.data-v-53e3b12e { opacity: 1;
+}

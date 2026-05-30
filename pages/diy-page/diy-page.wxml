@@ -1,0 +1,5 @@
+<view class="diy-page">
+    <diy bind:__l="__l" uI="5143d95c-0" uP="{{a}}" wx:if="{{a}}"></diy>
+    <share bind:__l="__l" bindclose="{{b}}" uI="5143d95c-1" uP="{{c}}" wx:if="{{c}}"></share>
+    <app-share bind:__l="__l" bindclose="{{d}}" uI="5143d95c-2" uP="{{e}}" wx:if="{{e}}"></app-share>
+</view>

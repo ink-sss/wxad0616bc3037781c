@@ -1,0 +1,9 @@
+.diy-video {
+    box-sizing: border-box
+}
+
+.diy-video wx-uni-video,.diy-video wx-video {
+    border-radius: 6rpx;
+    box-sizing: border-box;
+    width: 100%
+}

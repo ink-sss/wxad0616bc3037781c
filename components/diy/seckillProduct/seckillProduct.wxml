@@ -1,0 +1,53 @@
+<view class="drag optional data-v-6af3723c" style="{{'padding-left:'+x+';'+'padding-right:'+y+';'+'padding-top:'+z+';'+'padding-bottom:'+A+';'+'margin-top:'+B+';'+'background:'+C}}" wx:if="{{a}}">
+    <view class="diy-product o-h data-v-6af3723c" style="{{w}}">
+        <view class="diy-head d-b-c data-v-6af3723c" style="{{'background:'+r}}">
+            <view class="left d-s-c data-v-6af3723c">
+                <view class="name data-v-6af3723c" style="{{'color:'+d+';'+'font-size:'+e+';'+'font-weight:'+f+';'+'font-style:'+g}}" wx:if="{{b}}">{{c}}</view>
+                <image class="titleImgt data-v-6af3723c" mode="aspectFill" src="{{i}}" wx:if="{{h}}"></image>
+                <view class="datetime d-s-c data-v-6af3723c">
+                    <text class="text data-v-6af3723c" style="{{'color:'+j}}">距结束仅剩</text>
+                    <countdown bind:__l="__l" class="data-v-6af3723c" uI="6af3723c-0" uP="{{k}}" wx:if="{{k}}"></countdown>
+                </view>
+            </view>
+            <view bindtap="{{q}}" class="right white d-c-c data-v-6af3723c" style="{{'line-height:1'+';'+'color:'+o+';'+'font-size:'+p}}">{{l}}<text class="icon iconfont icon-you data-v-6af3723c" style="{{'color:'+m+';'+'font-size:'+n}}"></text>
+            </view>
+        </view>
+        <view class="{{['product-lists-box','data-v-6af3723c',v]}}">
+            <view class="{{['product-lists','data-v-6af3723c',t]}}" wx:for="{{s}}" wx:for-item="listitem" wx:key="b">
+                <view bindtap="{{product.J}}" class="product-item data-v-6af3723c" wx:if="{{product.a}}" wx:for="{{listitem.a}}" wx:for-item="product" wx:key="K">
+                    <image lazyLoad class="product-cover data-v-6af3723c" mode="aspectFill" src="{{product.f}}" style="{{'border-top-left-radius:'+product.b+';'+'border-top-right-radius:'+product.c+';'+'border-bottom-left-radius:'+product.d+';'+'border-bottom-right-radius:'+product.e}}"></image>
+                    <view class="product-info data-v-6af3723c">
+                        <view class="{{['product-name','data-v-6af3723c',product.k]}}" style="{{'color:'+product.j}}" wx:if="{{product.g}}">
+                            <text class="{{['data-v-6af3723c',product.i&&'fb']}}">{{product.h}}</text>
+                        </view>
+                        <view class="d-s-c ww100 data-v-6af3723c" wx:if="{{product.l}}">
+                            <view class="product-labels-boxs data-v-6af3723c" style="{{'background-image:'+product.o}}">
+                                <view class="product-labels data-v-6af3723c">
+                                    <view class="product-labels-width data-v-6af3723c" style="{{'width:'+product.m+';'+'background-image:'+product.n}}"></view>
+                                </view>
+                            </view>
+                            <view class="f22 data-v-6af3723c" style="{{'color:'+product.q}}">已抢{{product.p}}</view>
+                        </view>
+                        <view class="{{['price','data-v-6af3723c',product.F&&'hasbtn']}}">
+                            <view class="price-num data-v-6af3723c" style="{{'color:'+product.z+';'+'background-image:'+product.A}}" wx:if="{{product.r}}">
+                                <image class="price-icon data-v-6af3723c" mode="" src="{{product.t}}" wx:if="{{product.s}}"></image>
+                                <view class="cart-btn data-v-6af3723c" style="{{'color:'+product.w+';'+'background-image:'+product.x}}" wx:if="{{product.v}}">
+                                    <text class="cart-text data-v-6af3723c">抢</text>
+                                </view>
+                                <text class="f22 data-v-6af3723c">¥</text>
+                                <text class="f32 fb data-v-6af3723c">{{product.y}}</text>
+                            </view>
+                            <view class="f22 gray9 text-d-line data-v-6af3723c" style="{{'color:'+product.D+';'+'text-align:'+product.E}}" wx:if="{{product.B}}">
+                                <text class="data-v-6af3723c">¥</text>
+                                <text class="data-v-6af3723c">{{product.C}}</text>
+                            </view>
+                        </view>
+                        <view class="cart-btn data-v-6af3723c" style="{{'color:'+product.H+';'+'background-image:'+product.I}}" wx:if="{{product.G}}">
+                            <text class="cart-text data-v-6af3723c">抢购</text>
+                        </view>
+                    </view>
+                </view>
+            </view>
+        </view>
+    </view>
+</view>

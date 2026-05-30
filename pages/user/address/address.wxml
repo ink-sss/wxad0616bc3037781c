@@ -1,0 +1,36 @@
+<view class="{{['data-v-d9bcd255',j]}}" data-theme="{{i}}" wx:if="{{a}}">
+    <view class="pbenv data-v-d9bcd255" wx:if="{{b}}">
+        <view class="address-list data-v-d9bcd255">
+            <view class="address-item data-v-d9bcd255" wx:for="{{c}}" wx:key="m">
+                <view class="info flex-1 mb10 data-v-d9bcd255">
+                    <view class="user f30 d-b-c data-v-d9bcd255">
+                        <text class="data-v-d9bcd255">{{item.a}}</text>
+                        <text class="ml20 gray3 f28 data-v-d9bcd255">{{item.b}}</text>
+                    </view>
+                    <view bindtap="{{item.g}}" class="pt20 f26 gray3 data-v-d9bcd255">{{item.c}}{{item.d}}{{item.e}}{{item.f}}</view>
+                </view>
+                <view class="d-b-c data-v-d9bcd255">
+                    <view class="radio d-s-c data-v-d9bcd255">
+                        <radio bindtap="{{item.j}}" checked="{{item.i}}" class="data-v-d9bcd255" color="{{d}}" style="transform:scale(0.6)" value="{{item.h}}"></radio>
+                        <text class=" data-v-d9bcd255">默认地址</text>
+                    </view>
+                    <view class="d-s-c data-v-d9bcd255">
+                        <view bindtap="{{item.k}}" class="icon-box plus d-c-c ml30 data-v-d9bcd255">
+                            <image lazyLoad class="add-icon data-v-d9bcd255" mode="aspectFill" src="{{e}}"></image>
+                            <text class="gray9 ml10 data-v-d9bcd255">编辑</text>
+                        </view>
+                        <view bindtap="{{item.l}}" class="icon-box plus d-c-c ml30 data-v-d9bcd255">
+                            <image lazyLoad class="add-icon data-v-d9bcd255" mode="aspectFill" src="{{f}}"></image>
+                            <text class="gray9 ml10 data-v-d9bcd255">删除</text>
+                        </view>
+                    </view>
+                </view>
+            </view>
+        </view>
+    </view>
+    <view class="d-c-c d-c p30 data-v-d9bcd255" wx:else>
+        <image lazyLoad class="list-null-image data-v-d9bcd255" mode="" src="{{g}}"></image>
+        <text class="cont f32 gray9 data-v-d9bcd255">暂无地址信息</text>
+    </view>
+    <view bindtap="{{h}}" class="add-btn theme-btn data-v-d9bcd255">新增收货地址</view>
+</view>

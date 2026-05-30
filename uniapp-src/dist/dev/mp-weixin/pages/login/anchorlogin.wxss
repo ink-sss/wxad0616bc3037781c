@@ -1,0 +1,14 @@
+.anchor-page.data-v-c5054b9f { min-height: 100vh; padding: 80rpx 44rpx; background: #fff; box-sizing: border-box;
+}
+.logo.data-v-c5054b9f { display: block; width: 150rpx; height: 150rpx; margin: 0 auto 24rpx; border-radius: 24rpx;
+}
+.name.data-v-c5054b9f { margin-bottom: 48rpx; text-align: center; font-size: 34rpx; font-weight: 600;
+}
+.input.data-v-c5054b9f { height: 88rpx; margin-bottom: 24rpx; padding: 0 24rpx; background: #f7f7f7; border-radius: 8rpx; font-size: 28rpx; box-sizing: border-box;
+}
+button.data-v-c5054b9f { margin-top: 24rpx; border-radius: 8rpx;
+}
+.primary.data-v-c5054b9f { color: #fff; background: #19ad57;
+}
+.ghost.data-v-c5054b9f { color: #666; background: #f6f6f6;
+}

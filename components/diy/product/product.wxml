@@ -1,0 +1,45 @@
+<view class="drag optional data-v-ec647ca3" style="{{'padding-left:'+e+';'+'padding-right:'+f+';'+'padding-top:'+g+';'+'padding-bottom:'+h+';'+'margin-top:'+i+';'+'background:'+j}}">
+    <view class="diy-product data-v-ec647ca3" style="{{d}}">
+        <view class="{{['product-list-box','data-v-ec647ca3',c]}}">
+            <view class="{{['product-list','data-v-ec647ca3',b]}}" wx:for="{{a}}" wx:for-item="listitem" wx:key="b">
+                <view bindtap="{{product.K}}" class="product-item data-v-ec647ca3" style="{{product.J}}" wx:if="{{product.a}}" wx:for="{{listitem.a}}" wx:for-item="product" wx:key="L">
+                    <image class="product-cover data-v-ec647ca3" mode="aspectFill" src="{{product.f}}" style="{{'border-top-left-radius:'+product.b+';'+'border-top-right-radius:'+product.c+';'+'border-bottom-left-radius:'+product.d+';'+'border-bottom-right-radius:'+product.e}}"></image>
+                    <view class="product-info data-v-ec647ca3">
+                        <view class="product-name text-ellipsis-2 data-v-ec647ca3" style="{{'color:'+product.j}}">
+                            <text class="{{['data-v-ec647ca3',product.i&&'fb']}}" wx:if="{{product.g}}">{{product.h}}</text>
+                        </view>
+                        <view class="price d-s-c data-v-ec647ca3">
+                            <view class="data-v-ec647ca3" style="{{'color:'+product.m}}" wx:if="{{product.k}}">
+                                <text class="f22 data-v-ec647ca3">¥</text>
+                                <text class="f32 fb data-v-ec647ca3">{{product.l}}</text>
+                            </view>
+                            <view class="f22 ml10 gray9 text-d-line data-v-ec647ca3" style="{{'color:'+product.p}}" wx:if="{{product.n}}">
+                                <text class="data-v-ec647ca3">¥</text>
+                                <text class="data-v-ec647ca3">{{product.o}}</text>
+                            </view>
+                        </view>
+                        <view class="d-s-c data-v-ec647ca3">
+                            <view class="product-sale data-v-ec647ca3" wx:if="{{product.q}}">
+                                <text class="data-v-ec647ca3" style="{{'color:'+product.s}}">已售{{product.r}}件</text>
+                            </view>
+                            <view class="product-comment data-v-ec647ca3" wx:if="{{product.t}}">
+                                <text class="data-v-ec647ca3" style="{{'color:'+product.x}}" wx:if="{{product.v}}">好评率{{product.w}}</text>
+                            </view>
+                        </view>
+                        <block wx:if="{{product.y}}">
+                            <view class="cart-btn data-v-ec647ca3" style="{{'color:'+product.B+';'+'background-image:'+product.C}}" wx:if="{{product.z}}">
+                                <text class="cart-text data-v-ec647ca3">{{product.A}}</text>
+                            </view>
+                            <view class="cart-btn icon data-v-ec647ca3" style="{{'background-image:'+product.F}}" wx:if="{{product.D}}">
+                                <text class="icon iconfont icon-icozhuanhuan data-v-ec647ca3" style="{{'color:'+product.E}}"></text>
+                            </view>
+                            <view class="cart-btn icon data-v-ec647ca3" style="{{'background-image:'+product.I}}" wx:if="{{product.G}}">
+                                <text class="icon iconfont icon-jia data-v-ec647ca3" style="{{'color:'+product.H}}"></text>
+                            </view>
+                        </block>
+                    </view>
+                </view>
+            </view>
+        </view>
+    </view>
+</view>

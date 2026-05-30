@@ -1,0 +1,18 @@
+{
+  "navigationStyle": "custom",
+  "navigationBarTitleText": "商品详情",
+  "usingComponents": {
+    "share": "popup/share",
+    "guarantee": "../../../components/guarantee",
+    "coupon": "popup/coupon",
+    "spec": "popup/spec",
+    "uni-popup": "../../../components/uni-popup",
+    "app-share": "../../../components/app-share",
+    "countdown": "../../../components/countdown/countdown-presale",
+    "preview-product": "productinfo/previewProduct",
+    "header-bar": "/components/header",
+    "request-loading": "/components/liveloading",
+    "tab-bar": "/components/tabbar/footTabbar",
+    "wechat-login": "plugin://wx43134e071b752953/wechat-login"
+  }
+}

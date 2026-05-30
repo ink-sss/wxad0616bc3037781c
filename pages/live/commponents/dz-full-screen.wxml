@@ -1,0 +1,7 @@
+<view bindtouchstart="{{b}}" class="live-container data-v-fcadd67b" ref="liveContainer">
+    <view class="like-container data-v-fcadd67b">
+        <view bindanimationend="{{like.f}}" class="like-item data-v-fcadd67b" style="{{'left:'+like.c+';'+'top:'+like.d+';'+'animation-delay:'+like.e}}" wx:for="{{a}}" wx:for-item="like" wx:key="b">
+            <image class="like-icon data-v-fcadd67b" mode="aspectFit" src="{{like.a}}"></image>
+        </view>
+    </view>
+</view>

@@ -1,0 +1,1 @@
+<view bindtap="{{d}}" class="{{['uni-icon',a]}}" style="{{'color:'+b+';'+'font-size:'+c}}"></view>

@@ -1,0 +1,1 @@
+<view class="people-number data-v-026e2678" bindtap="{{b}}"><text class="data-v-026e2678">在线 {{a}}</text></view>

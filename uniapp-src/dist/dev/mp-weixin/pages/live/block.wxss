@@ -1,0 +1,8 @@
+.blocked.data-v-9f875802 { min-height: 100vh; padding-top: 300rpx; box-sizing: border-box;
+}
+.blocked-img.data-v-9f875802 { width: 200rpx; height: 200rpx; margin: 0 auto; display: block;
+}
+.blocked-text.data-v-9f875802 { margin: 50rpx 0; font-size: 44rpx; text-align: center;
+}
+.blocked-btn.data-v-9f875802 { margin: 0 40rpx; border-radius: 10rpx; padding: 10rpx 0; font-size: 32rpx;
+}

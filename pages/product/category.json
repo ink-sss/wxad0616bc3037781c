@@ -1,0 +1,12 @@
+{
+  "navigationBarTitleText": "分类",
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "spec": "detail/popup/spec",
+    "category-mask-vue": "categoryMask",
+    "header-bar": "/components/header",
+    "request-loading": "/components/liveloading",
+    "tab-bar": "/components/tabbar/footTabbar",
+    "wechat-login": "plugin://wx43134e071b752953/wechat-login"
+  }
+}

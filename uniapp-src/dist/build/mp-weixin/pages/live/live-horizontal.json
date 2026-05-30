@@ -1,0 +1,8 @@
+{
+  "navigationStyle": "custom",
+  "enablePullDownRefresh": false,
+  "navigationBarTextStyle": "black",
+  "usingComponents": {
+    "live-room-shell": "./LiveRoomShell"
+  }
+}

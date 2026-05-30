@@ -1,0 +1,30 @@
+<view bindtap="{{f}}" class="{{['bottom-panel','data-v-05f137af',e]}}">
+    <view catchtap="{{d}}" class="content data-v-05f137af">
+        <view class="module-box module-share data-v-05f137af">
+            <view class="hd d-c-c data-v-05f137af">分享</view>
+            <view class="p30 box-s-b data-v-05f137af">
+                <view class="d-c-c data-v-05f137af">
+                    <view class="item flex-1 d-c-c d-c data-v-05f137af">
+                        <button bindtap="{{a}}" class="data-v-05f137af" openType="share">
+                            <view class="icon-box d-c-c share-friend data-v-05f137af">
+                                <text class="iconfont icon-fenxiang data-v-05f137af"></text>
+                            </view>
+                            <text class="pt20 data-v-05f137af">微信好友</text>
+                        </button>
+                    </view>
+                    <view class="item flex-1 d-c-c d-c data-v-05f137af">
+                        <button bindtap="{{b}}" class="data-v-05f137af">
+                            <view class="icon-box d-c-c data-v-05f137af">
+                                <text class="iconfont icon-edit data-v-05f137af"></text>
+                            </view>
+                            <text class="pt20 data-v-05f137af">微信朋友圈</text>
+                        </button>
+                    </view>
+                </view>
+            </view>
+            <view class="btns data-v-05f137af">
+                <button bindtap="{{c}}" class="data-v-05f137af" type="default">取消</button>
+            </view>
+        </view>
+    </view>
+</view>

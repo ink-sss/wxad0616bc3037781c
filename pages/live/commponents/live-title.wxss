@@ -1,0 +1,121 @@
+.nav-box {
+    background-color: transparent;
+    width: 100vw
+}
+
+.nav-box .live_detail {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-flow: row;
+    flex-flow: row;
+    -webkit-justify-content: space-between;
+    justify-content: space-between
+}
+
+.nav-box .live_detail .live_title {
+    background-color: rgba(0,0,0,.2);
+    border-radius: 50rpx;
+    height: 90%;
+    margin-left: 20rpx;
+    margin-top: 5rpx;
+    padding: 10rpx
+}
+
+.nav-box .live_detail .live_title .live_title_box {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-flow: row;
+    flex-flow: row;
+    height: 100%
+}
+
+.nav-box .live_detail .live_title .live_head {
+    border-radius: 50%
+}
+
+.nav-box .live_detail .live_title .subscribe {
+    -webkit-align-items: center;
+    align-items: center;
+    background-color: #34a66b;
+    border-radius: 50rpx;
+    color: #fff;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-flow: row;
+    flex-flow: row;
+    font-size: 24rpx;
+    padding: 10rpx 20rpx
+}
+
+.nav-box .live_detail .live_title .live_title_text {
+    color: #fff;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex: 1;
+    flex: 1;
+    -webkit-flex-flow: column;
+    flex-flow: column;
+    font-size: 24rpx;
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+    margin-left: 10rpx
+}
+
+.nav-box .live_detail .live_title .live_title_text .title_text {
+    display: block;
+    max-width: 280rpx;
+    overflow: hidden;
+    padding-right: 10rpx;
+    text-overflow: ellipsis;
+    white-space: nowrap
+}
+
+.nav-box .live_detail .live_title .live_title_text .live_like {
+    font-size: 20rpx
+}
+
+.nav-box .live-detail-horizontal {
+    height: 100%;
+    width: 100%
+}
+
+.nav-box .live-detail-horizontal .title-name {
+    display: block;
+    font-size: 34rpx;
+    font-weight: 700;
+    overflow: hidden;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap
+}
+
+.item-icon {
+    background-color: rgba(0,0,0,.2);
+    border-radius: 10rpx;
+    height: 60rpx;
+    margin-right: 30rpx;
+    padding: 5rpx;
+    position: relative;
+    width: 60rpx
+}
+
+.item-icon wx-image {
+    height: 50rpx;
+    width: 50rpx
+}
+
+.item-icon .icon-tit {
+    background-color: rgba(0,0,0,.5);
+    border-radius: 0 0 10rpx 10rpx;
+    bottom: 0;
+    color: #fff;
+    font-size: 17rpx;
+    left: 0;
+    position: absolute;
+    text-align: center;
+    width: 100%
+}

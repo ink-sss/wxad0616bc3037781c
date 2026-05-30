@@ -1,0 +1,150 @@
+.diy-sharpproduct {
+    overflow: hidden
+}
+
+.diy-sharpproduct .product-list.assemble {
+    background-color: #fff;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+    -webkit-justify-content: flex-start;
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-left: 20rpx;
+    padding-top: 20rpx
+}
+
+.diy-sharpproduct .product-list.assemble .product-title {
+    margin-bottom: 36rpx
+}
+
+.diy-sharpproduct .product-list.assemble .price {
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
+    margin: 20rpx auto 30rpx;
+    overflow: hidden;
+    text-align: center;
+    width: 100%
+}
+
+.diy-sharpproduct .display__list .column__3 {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+    -webkit-justify-content: space-between;
+    justify-content: space-between
+}
+
+.diy-sharpproduct .product-list.assemble.column__3 {
+    -webkit-flex-wrap: nowrap;
+    flex-wrap: nowrap;
+    overflow-x: auto
+}
+
+.diy-sharpproduct .product-list.assemble.column__3 .product-item {
+    background: #fff;
+    box-sizing: border-box;
+    -webkit-flex-shrink: 0;
+    flex-shrink: 0;
+    margin-bottom: 20rpx;
+    margin-right: 32rpx;
+    overflow: hidden;
+    width: 198rpx
+}
+
+.diy-sharpproduct .product-list.assemble.column__3 .product-item .product-cover {
+    height: 198rpx;
+    overflow: hidden;
+    position: relative;
+    width: 198rpx
+}
+
+.diy-sharpproduct .product-list.assemble.column__3 .product-item .product-cover wx-image {
+    height: 198rpx;
+    width: 198rpx
+}
+
+.diy-sharpproduct .product-list.assemble.column__3 .product-item .product-cover .desc-situation {
+    -webkit-align-items: center;
+    align-items: center;
+    background: linear-gradient(60deg,#fc4528,#fc573c 43%,#fc7639);
+    border-bottom-left-radius: 12rpx;
+    border-top-right-radius: 12rpx;
+    color: #fff!important;
+    display: -webkit-flex;
+    display: flex;
+    height: 40rpx;
+    -webkit-justify-content: center;
+    justify-content: center;
+    left: 0;
+    line-height: 1;
+    padding: 0 24rpx;
+    position: absolute;
+    top: 12rpx
+}
+
+.diy-sharpproduct .product-list.assemble.column__3 .product-title {
+    margin-bottom: 16rpx
+}
+
+.sharpproduct-head {
+    -webkit-align-items: center;
+    align-items: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    box-sizing: border-box;
+    display: -webkit-flex;
+    display: flex;
+    height: 88rpx;
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+    line-height: 1;
+    margin: 0;
+    padding: 0 20rpx
+}
+
+.sharpproduct-head .name.assemble_name {
+    font-size: 36rpx;
+    font-weight: 700;
+    width: 200rpx
+}
+
+.sharpproduct-head .datetime {
+    margin-left: 40rpx
+}
+
+.sharpproduct-head .datetime>wx-text {
+    display: inline-block
+}
+
+.sharpproduct-head .datetime .text {
+    padding: 0 4rpx
+}
+
+.sharpproduct-head .datetime .box {
+    background: #000;
+    color: #fff;
+    padding: 4rpx
+}
+
+.diy-sharpproduct .product-list.assemble .assemble_btns {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    font-size: 20rpx;
+    height: 40rpx;
+    -webkit-justify-content: center;
+    justify-content: center;
+    line-height: 1;
+    text-align: center;
+    width: 126rpx
+}
+
+.titleImg {
+    height: 88rpx;
+    width: 100%
+}

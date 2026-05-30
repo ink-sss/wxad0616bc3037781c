@@ -1,0 +1,48 @@
+<view class="data-v-a05f874e">
+    <view class="data-v-a05f874e" hidden="{{!z}}">
+        <scroll-view class="kj-view data-v-a05f874e" scrollX="{{true}}" showScrollbar="{{false}}" wx:if="{{a}}">
+            <view bindtap="{{item.c}}" class="{{['data-v-a05f874e',c]}}" wx:for="{{b}}" wx:key="b">{{item.a}}</view>
+        </scroll-view>
+        <view class="option-box data-v-a05f874e">
+            <view class="domain-speak data-v-a05f874e">
+                <view bindtap="{{e}}" class="img-box m-zy data-v-a05f874e">
+                    <uni-icon bind:__l="__l" class="data-v-a05f874e" style="margin-bottom:4rpx" uI="a05f874e-0" uP="{{d}}" wx:if="{{d}}"></uni-icon>
+                </view>
+                <view class="speak-box data-v-a05f874e">
+                    <input adjustPosition="{{false}}" bindconfirm="{{g}}" bindinput="{{k}}" bindkeyboardheightchange="{{f}}" bindtap="{{i}}" class="uni-input speak-i data-v-a05f874e" confirmType="send" disabled="{{h}}" placeholder="说点什么……" placeholderStyle="color: #fff;" value="{{j}}"></input>
+                </view>
+            </view>
+            <view class="domain-option data-v-a05f874e">
+                <view bindtap="{{n}}" class="img-box m-zy data-v-a05f874e" wx:if="{{l}}">
+                    <image class="option-img data-v-a05f874e" src="{{m}}"></image>
+                </view>
+                <view bindtap="{{q}}" class="img-box m-zy data-v-a05f874e" wx:if="{{o}}">
+                    <image class="option-img-large data-v-a05f874e" src="{{p}}"></image>
+                </view>
+                <view bindtap="{{s}}" class="img-box m-zy data-v-a05f874e">
+                    <image class="option-img data-v-a05f874e" src="{{r}}"></image>
+                </view>
+                <view bindtap="{{w}}" class="img-box m-zy data-v-a05f874e" wx:if="{{t}}">
+                    <image class="option-img data-v-a05f874e" src="{{v}}"></image>
+                </view>
+                <view bindtap="{{y}}" class="img-box m-zy data-v-a05f874e">
+                    <image class="option-img data-v-a05f874e" src="{{x}}"></image>
+                </view>
+            </view>
+        </view>
+    </view>
+    <view class="real-speak data-v-a05f874e" style="{{K}}" wx:if="{{A}}">
+        <input focus adjustPosition="{{true}}" bindblur="{{C}}" bindconfirm="{{B}}" bindinput="{{F}}" bindkeyboardheightchange="{{D}}" class="uni-input real-i data-v-a05f874e" confirmType="send" placeholder="说点什么……" value="{{E}}"></input>
+        <image bindtap="{{H}}" class="send-pic data-v-a05f874e" mode="widthFix" src="{{I}}" wx:if="{{G}}"></image>
+        <view bindtap="{{J}}" class="go-send data-v-a05f874e">发 送</view>
+    </view>
+    <domain-option bind:__l="__l" bindclearScreen="{{P}}" bindopenMyOrder="{{Q}}" bindopenWelfarePackage="{{T}}" bindopenWithdraw="{{S}}" bindopeninviteRecord="{{R}}" bindoptionShow="{{N}}" bindrefreshCache="{{O}}" class="r data-v-a05f874e" uI="a05f874e-1" uP="{{U}}" uR="domainList" wx:if="{{L}}"></domain-option>
+    <shop-list bind:__l="__l" bindgoShop="{{Y}}" bindopenMyOrder="{{X}}" class="r data-v-a05f874e" uI="a05f874e-2" uP="{{Z}}" uR="shopListSc" wx:if="{{V}}"></shop-list>
+    <share-live bind:__l="__l" class="r data-v-a05f874e" uI="a05f874e-3" uP="{{ac}}" uR="shareLiveSc" wx:if="{{aa}}"></share-live>
+    <confirm-order bind:__l="__l" class="r data-v-a05f874e" uI="a05f874e-4" uP="{{af}}" uR="orderSc" wx:if="{{ad}}"></confirm-order>
+    <my-order bind:__l="__l" class="r data-v-a05f874e" uI="a05f874e-5" uR="myOrderSc" wx:if="{{ag}}"></my-order>
+    <trtc-apply bind:__l="__l" bindcloseTrtc="{{ak}}" class="r data-v-a05f874e" uI="a05f874e-6" uP="{{al}}" uR="trtcSc" wx:if="{{ai}}"></trtc-apply>
+    <invite-record bind:__l="__l" class="r data-v-a05f874e" uI="a05f874e-7" uP="{{ao}}" uR="inviteRecordSc" wx:if="{{am}}"></invite-record>
+    <withdraw-popup bind:__l="__l" class="r data-v-a05f874e" uI="a05f874e-8" uR="withdrawSc"></withdraw-popup>
+    <welfare-package-popup bind:__l="__l" class="r data-v-a05f874e" uI="a05f874e-9" uR="welfarePackageSc"></welfare-package-popup>
+</view>

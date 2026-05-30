@@ -1,0 +1,45 @@
+<view class="store-container bg-white" wx:if="{{a}}">
+    <view class="logo ww100 p-30-0 d-c-c">
+        <image lazyLoad mode="aspectFill" src="{{b}}"></image>
+    </view>
+    <view class="d-c-c d-c ww100">
+        <text class="f40">{{c}}</text>
+        <text class="f28 gray9">营业时间:{{d}}</text>
+    </view>
+    <view class="f30 mt30">
+        <view bindtap="{{f}}" class="d-b-c p30 border-b">
+            <text class="gray9">联系电话</text>
+            <view class="">
+                <text class="iconfont icon-002dianhua"></text>
+                <text>{{e}}</text>
+            </view>
+        </view>
+        <view class="d-b-c p30 border-b">
+            <text class="gray9">联系人</text>
+            <text>{{g}}</text>
+        </view>
+        <view class="d-b-c p30 border-b">
+            <text class="gray9">状态</text>
+            <text class="green">{{h}}</text>
+        </view>
+        <view class="d-b-c p30 border-b">
+            <text class="gray9">是否支持自提核销</text>
+            <text class="green">{{i}}</text>
+        </view>
+        <view class="d-b-c p30 border-b">
+            <text class="gray9">省市区</text>
+            <text>{{j}}{{k}}{{l}}</text>
+        </view>
+        <view class="d-b-c p30 border-b">
+            <text class="gray9">地址</text>
+            <text>{{m}}</text>
+        </view>
+        <view class="d-b-c p30 border-b">
+            <text class="gray9">简介</text>
+            <text class="flex-1 o-h tr">{{n}}</text>
+        </view>
+    </view>
+    <view class="store-map">
+        <map latitude="{{o}}" longitude="{{p}}" markers="{{q}}"></map>
+    </view>
+</view>

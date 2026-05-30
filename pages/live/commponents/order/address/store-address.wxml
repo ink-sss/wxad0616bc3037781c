@@ -1,0 +1,32 @@
+<view class="{{['data-v-08f1f2cd',f]}}" data-theme="{{g}}">
+    <view bindtap="{{b}}" class="pop_bg data-v-08f1f2cd" wx:if="{{a}}"></view>
+    <view class="{{['data-v-08f1f2cd',e]}}">
+        <view class="address-list data-v-08f1f2cd">
+            <view class="distr-tit data-v-08f1f2cd">自提门店列表</view>
+            <scroll-view class="specs mt20 data-v-08f1f2cd" scrollY="true" style="max-height:600rpx">
+                <view class="p20 address-item data-v-08f1f2cd" wx:for="{{c}}" wx:key="j">
+                    <view class="{{[item.i,'address','d-s-c','data-v-08f1f2cd']}}">
+                        <view bindtap="{{item.h}}" class="info flex-1 data-v-08f1f2cd">
+                            <view class="user f34 data-v-08f1f2cd">
+                                <text class="data-v-08f1f2cd">{{item.a}}</text>
+                            </view>
+                            <view class="pt10 user f30 gray6 data-v-08f1f2cd">
+                                <text class="data-v-08f1f2cd">{{item.b}}</text>
+                            </view>
+                            <view class="pt10 f24 gray6 data-v-08f1f2cd">
+                                <text class="data-v-08f1f2cd">{{item.c}}{{item.d}}{{item.e}}{{item.f}}</text>
+                            </view>
+                            <view class="data-v-08f1f2cd">{{item.g}}</view>
+                        </view>
+                    </view>
+                </view>
+                <view class="data-v-08f1f2cd" wx:if="{{d}}">
+                    <view class="yoshop-notcont data-v-08f1f2cd">
+                        <text class="iconfont icon-wushuju data-v-08f1f2cd"></text>
+                        <text class="cont data-v-08f1f2cd">亲，暂无自提门店哦</text>
+                    </view>
+                </view>
+            </scroll-view>
+        </view>
+    </view>
+</view>

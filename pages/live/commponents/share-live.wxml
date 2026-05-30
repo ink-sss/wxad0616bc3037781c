@@ -1,0 +1,52 @@
+<view class="data-v-3d519e47">
+    <uni-popup bind:__l="__l" class="r data-v-3d519e47" uI="3d519e47-0" uP="{{m}}" uR="shareLive" uS="{{['d']}}" wx:if="{{m}}">
+        <view class="share-bottom data-v-3d519e47">
+            <view class="share-many data-v-3d519e47">
+                <view bindtap="{{c}}" class="wechat-share data-v-3d519e47">
+                    <view class="share-option data-v-3d519e47">
+                        <image class="share-option-image data-v-3d519e47" src="{{a}}"></image>
+                        <text class="share-option-text data-v-3d519e47">微信分享</text>
+                    </view>
+                    <button bindtap="{{b}}" class="share-button data-v-3d519e47" openType="share">转发了</button>
+                </view>
+                <view bindtap="{{g}}" class="wechat-share data-v-3d519e47" wx:if="{{d}}">
+                    <view class="share-option data-v-3d519e47">
+                        <image class="share-option-image data-v-3d519e47" src="{{e}}"></image>
+                        <text class="share-option-text data-v-3d519e47">专属分享</text>
+                    </view>
+                    <button bindtap="{{f}}" class="share-button data-v-3d519e47" openType="share">转发了</button>
+                </view>
+                <view bindtap="{{i}}" class="share-option data-v-3d519e47">
+                    <image class="share-option-image data-v-3d519e47" src="{{h}}"></image>
+                    <text class="share-option-text data-v-3d519e47">生成海报</text>
+                </view>
+                <view bindtap="{{k}}" class="share-option data-v-3d519e47">
+                    <image class="share-option-image data-v-3d519e47" src="{{j}}"></image>
+                    <text class="share-option-text data-v-3d519e47">复制链接</text>
+                </view>
+            </view>
+        </view>
+    </uni-popup>
+    <uni-popup bind:__l="__l" class="r data-v-3d519e47" uI="3d519e47-1" uP="{{A}}" uR="sharePoster" uS="{{['d']}}" wx:if="{{A}}">
+        <view class="{{['data-v-3d519e47',y]}}" data-theme="{{x}}">
+            <view class="picker-mask data-v-3d519e47" wx:if="{{n}}">
+                <swiper autoplay="{{false}}" bindchange="{{p}}" class="picker-swiper data-v-3d519e47" current="{{q}}" nextMargin="80rpx" previousMargin="80rpx" touchable="true">
+                    <swiper-item class="picker-item data-v-3d519e47" wx:for="{{o}}" wx:for-item="img" wx:key="c">
+                        <image class="{{['picker-img','data-v-3d519e47',img.b&&'active']}}" mode="aspectFill" src="{{img.a}}"></image>
+                    </swiper-item>
+                </swiper>
+                <button bindtap="{{r}}" class="confirm-btn data-v-3d519e47" size="mini">生成图片分享</button>
+                <button bindtap="{{s}}" class="confirm-btn mt20 data-v-3d519e47" size="mini">关闭</button>
+            </view>
+            <view class="qrcodes d-c-c d-c data-v-3d519e47" wx:else>
+                <image class="single-img data-v-3d519e47" mode="aspectFit" src="{{t}}"></image>
+                <view class="btns-wrap d-c-c data-v-3d519e47">
+                    <view class="d-c d-b-c data-v-3d519e47">
+                        <text bindtap="{{v}}" class="f24 confirm-btn data-v-3d519e47">保存图片</text>
+                        <text bindtap="{{w}}" class="f24 confirm-btn mt20 data-v-3d519e47">关闭</text>
+                    </view>
+                </view>
+            </view>
+        </view>
+    </uni-popup>
+</view>

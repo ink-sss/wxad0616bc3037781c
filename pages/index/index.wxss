@@ -1,0 +1,424 @@
+.top_head {
+    left: 0;
+    line-height: 30px;
+    padding: 0 26rpx;
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    z-index: 100
+}
+
+.head_top {
+    height: var(--status-bar-height);
+    width: 100%
+}
+
+.index_log {
+    -webkit-align-items: center;
+    align-items: center;
+    color: #fff;
+    display: -webkit-flex;
+    display: flex;
+    font-size: 26rpx;
+    font-weight: 800;
+    -webkit-justify-content: center;
+    justify-content: center;
+    line-height: 48rpx;
+    min-height: 48rpx
+}
+
+.index_log wx-image {
+    height: 48rpx;
+    width: 130rpx
+}
+
+.top_search {
+    background: #f7f7f7;
+    border-radius: 30rpx 0 0 30rpx;
+    color: #999;
+    font-size: 30rpx;
+    height: 60rpx;
+    line-height: 60rpx;
+    margin-left: 10rpx
+}
+
+.top_search.search-wx {
+    -webkit-flex: 1;
+    flex: 1
+}
+
+.top_search.special {
+    border-right: none;
+    width: 100%
+}
+
+.top_search_right {
+    background: #f7f7f7;
+    border: none;
+    border-radius: 0 30rpx 30rpx 0;
+    box-sizing: border-box;
+    height: 60rpx;
+    position: relative
+}
+
+.top_search_right:before {
+    background-color: #999;
+    bottom: 0;
+    content: " ";
+    height: 20rpx;
+    left: 0;
+    margin: auto;
+    position: absolute;
+    top: 0;
+    width: 1rpx
+}
+
+.top_search_right .icon-saoyisao1 {
+    -webkit-flex-shrink: 0;
+    flex-shrink: 0;
+    padding: 0 20rpx
+}
+
+.top_search .icon-sousuo {
+    color: #999;
+    font-size: 30rpx;
+    margin-left: 20rpx;
+    margin-right: 10rpx
+}
+
+.top_bg {
+    position: absolute;
+    top: 0;
+    z-index: 0
+}
+
+.top_bg,.top_bg wx-image {
+    height: 350rpx;
+    width: 750rpx
+}
+
+.nuter {
+    display: -webkit-flex;
+    display: flex;
+    font-size: 35rpx;
+    height: 80rpx;
+    -webkit-justify-content: space-around;
+    justify-content: space-around;
+    line-height: 80rpx;
+    padding-bottom: 10rpx;
+    width: 100%
+}
+
+.nuter wx-view {
+    -webkit-flex: 1;
+    flex: 1;
+    font-size: 30rpx;
+    text-align: center;
+    transition: all .5s ease .1s
+}
+
+wx-swiper {
+    height: 80vh;
+    overflow: hidden;
+    width: 100%
+}
+
+.swiper-item {
+    box-sizing: border-box;
+    height: 99%;
+    overflow-y: scroll;
+    width: 100%
+}
+
+.foot_ {
+    height: 98rpx;
+    width: 100%
+}
+
+.banner,.banner wx-image {
+    height: 240rpx;
+    width: 710rpx
+}
+
+.new-people .group-bd {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: space-between;
+    justify-content: space-between
+}
+
+.new-people .list {
+    padding-right: 30rpx
+}
+
+.new-people .list .item {
+    text-align: center;
+    width: 180rpx
+}
+
+.new-people .list .price {
+    font-size: 24rpx
+}
+
+.new-people .list .price .num {
+    font-size: 34rpx;
+    font-weight: 700
+}
+
+.new-people .list wx-button {
+    background: #6170ff;
+    font-size: 24rpx
+}
+
+.new-people .list wx-image {
+    border: 1px dashed #ccc;
+    height: 180rpx;
+    width: 180rpx
+}
+
+.new-people .other {
+    width: 230rpx
+}
+
+.new-people .other wx-image {
+    width: 100%
+}
+
+.group-seckill .left .iconfont {
+    color: #e2231a;
+    font-size: 40rpx;
+    margin-right: 8rpx
+}
+
+.group-seckill .list .item {
+    -webkit-align-items: center;
+    align-items: center;
+    border: 1px dashed #ccc;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    height: 230rpx;
+    -webkit-justify-content: flex-start;
+    justify-content: flex-start;
+    width: 150rpx
+}
+
+.group-seckill .list wx-text {
+    color: #e2231a;
+    line-height: 60rpx
+}
+
+.group-seckill .list wx-image {
+    height: 150rpx;
+    width: 150rpx
+}
+
+.group-hd .datetime .time {
+    background: #e2231a;
+    border-radius: 4rpx;
+    color: #fff;
+    padding: 4rpx
+}
+
+.group-hd .datetime .point {
+    color: #e2231a;
+    padding: 0 10rpx
+}
+
+.every-day-hard .list .item {
+    width: 200rpx
+}
+
+.every-day-hard .list wx-image {
+    height: 200rpx;
+    width: 200rpx
+}
+
+.every-day-hard .list .pic {
+    border: 1px dashed #ccc;
+    height: 200rpx;
+    position: relative;
+    width: 200rpx
+}
+
+.every-day-hard .list .tips {
+    -webkit-align-items: center;
+    align-items: center;
+    background: #ff8a00;
+    border-radius: 0 4rpx 0 0;
+    bottom: -1px;
+    color: #fff;
+    display: -webkit-flex;
+    display: flex;
+    font-size: 22rpx;
+    -webkit-justify-content: flex-start;
+    justify-content: flex-start;
+    left: -1px;
+    padding: 0 10rpx;
+    position: absolute
+}
+
+.every-day-hard .list .tips .iconfont {
+    color: #fff;
+    font-size: 24rpx;
+    margin-right: 6rpx
+}
+
+.every-day-hard .list .tips .svg-icon {
+    color: #fff;
+    height: 20rpx;
+    margin-right: 6rpx;
+    width: 20rpx
+}
+
+.every-day-hard .list .bottom-box {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    height: 80rpx;
+    -webkit-justify-content: space-between;
+    justify-content: space-between
+}
+
+.every-day-hard .list .bottom-box .people {
+    color: #fb8138;
+    font-size: 24rpx
+}
+
+.every-day-hard .list .bottom-box .unit {
+    color: #e2231a;
+    font-size: 22rpx
+}
+
+.every-day-hard .list .bottom-box .price {
+    color: #e2231a;
+    font-size: 30rpx
+}
+
+.collection-box {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 16rpx;
+    box-shadow: 0 0 6rpx rgba(0,0,0,.08);
+    font-size: 24rpx;
+    line-height: 40rpx;
+    padding: 20rpx;
+    position: fixed;
+    right: 20rpx;
+    top: 20rpx;
+    width: 380rpx;
+    z-index: 100
+}
+
+.collection-box:after {
+    background: #fff;
+    border-left: 1px solid #eee;
+    border-top: 1px solid #eee;
+    content: "";
+    display: block;
+    height: 30rpx;
+    position: absolute;
+    right: 140rpx;
+    top: -15rpx;
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+    -webkit-transform: rotate;
+    transform: rotate;
+    width: 30rpx
+}
+
+.collection-box .point {
+    color: #666;
+    font-size: 60rpx;
+    height: 20rpx;
+    line-height: 0;
+    width: 20rpx
+}
+
+.collection-box .point-big {
+    font-size: 80rpx
+}
+
+.collection-box .close-btn {
+    background: #fff;
+    border-radius: 50%;
+    color: #999;
+    height: 40rpx;
+    line-height: 30rpx;
+    padding: 0;
+    position: absolute;
+    right: 10rpx;
+    top: 10rpx;
+    width: 40rpx
+}
+
+.follow-gzh {
+    background: #fff;
+    border-radius: 16rpx;
+    bottom: calc(50px + env(safe-area-inset-bottom));
+    box-shadow: 0 0 20rpx rgba(0,0,0,.1);
+    left: 0;
+    position: fixed;
+    right: 0;
+    z-index: 10
+}
+
+.follow-gzh .iconfont {
+    display: block;
+    position: absolute;
+    right: 10rpx;
+    top: 10rpx;
+    z-index: 99
+}
+
+.product_item.product_item_right {
+    margin-left: 0
+}
+
+.product_item .pro_name {
+    height: 68rpx;
+    line-height: 34rpx
+}
+
+.diy-seckillProduct .sharpproduct-head .datetime .box {
+    background: #ffebeb;
+    color: #f6220c;
+    font-size: 22rpx;
+    padding: 4rpx 10rpx
+}
+
+.bargainProduct-head .datetime .box {
+    background: #fff;
+    color: #4b30ff;
+    font-size: 22rpx;
+    padding: 4rpx 10rpx
+}
+
+.chat {
+    height: 40rpx;
+    width: 40rpx
+}
+
+.newsnum {
+    background-color: #f63;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 20rpx;
+    height: 25rpx;
+    line-height: 25rpx;
+    padding: 5rpx;
+    position: absolute;
+    right: -16rpx;
+    text-align: center;
+    top: -8rpx;
+    width: 25rpx;
+    z-index: 100
+}
+
+.wx-top-right {
+    height: 2rpx;
+    width: 200rpx
+}

@@ -1,0 +1,45 @@
+<view class="{{['address-form','p24','data-v-d10b3654',F]}}" data-theme="{{E}}">
+    <form bindreset="{{z}}" bindsubmit="{{y}}" class="data-v-d10b3654">
+        <view class="bg-white p-0-30 f30 address-list data-v-d10b3654">
+            <view class="d-s-c border-b data-v-d10b3654">
+                <text class="key-name data-v-d10b3654">收货人</text>
+                <input bindinput="{{b}}" class="ml20 f32 flex-1 p-30-0 data-v-d10b3654" name="name" placeholder="请输入收货人姓名" placeholderClass="grary9" type="text" value="{{a}}"></input>
+            </view>
+            <view class="d-s-c border-b data-v-d10b3654">
+                <text class="key-name data-v-d10b3654">联系方式</text>
+                <input bindinput="{{d}}" class="ml20 f32 flex-1 p-30-0 data-v-d10b3654" maxlength="11" name="phone" placeholder="请输入收货人手机号" placeholderClass="grary9" type="number" value="{{c}}"></input>
+            </view>
+            <view bindtap="{{g}}" class="d-s-c border-b data-v-d10b3654">
+                <text class="key-name data-v-d10b3654">所在地区</text>
+                <view class="input-box flex-1 data-v-d10b3654">
+                    <input bindinput="{{f}}" class="ml20 f32 flex-1 p-30-0 data-v-d10b3654" disabled="true" placeholder="" placeholderClass="grary9" style="pointer-events:none" type="text" value="{{e}}"></input>
+                </view>
+            </view>
+            <view class="d-s-c border-b data-v-d10b3654">
+                <text class="key-name data-v-d10b3654">详细地址</text>
+                <textarea autoHeight="{{true}}" bindinput="{{i}}" class="ml20 flex-1 p-30-0 lh150 data-v-d10b3654" name="detail" placeholder="请输入街道小区楼牌号等" placeholderClass="grary9" value="{{h}}" wx:if="{{r0}}"></textarea>
+            </view>
+            <view class="d-b-c border-b data-v-d10b3654">
+                <text class="key-name data-v-d10b3654">设为默认地址</text>
+                <view class="radio d-s-c p-30-0 data-v-d10b3654">
+                    <radio bindtap="{{l}}" checked="{{k}}" class="data-v-d10b3654" color="{{j}}" style="transform:scale(0.7)"></radio>
+                </view>
+            </view>
+            <view class="clipboard data-v-d10b3654" wx:if="{{m}}">
+                <textarea bindinput="{{o}}" class="zt-textarea data-v-d10b3654" maxlength="{{120}}" placeholder="试试粘贴收件人姓名、手机号、收货地址，可快速识别您的收货信息" value="{{n}}" wx:if="{{r0}}"></textarea>
+                <view class="clipboard-botton data-v-d10b3654" wx:if="{{p}}">
+                    <view bindtap="{{q}}" class="data-v-d10b3654">清除</view>
+                    <view bindtap="{{r}}" class="clipboard-sub data-v-d10b3654">提交</view>
+                </view>
+            </view>
+            <view bindtap="{{w}}" class="d-c-c zt-box data-v-d10b3654">地址粘贴板<uni-icons bind:__l="__l" class="zt-icon data-v-d10b3654" uI="d10b3654-0" uP="{{t}}" wx:if="{{s}}"></uni-icons>
+                <uni-icons bind:__l="__l" class="zt-icon data-v-d10b3654" uI="d10b3654-1" uP="{{v||''}}" wx:else></uni-icons>
+            </view>
+        </view>
+        <button bindtap="{{x}}" class="choose-address data-v-d10b3654" type="primary">获取微信地址</button>
+        <view class="mt24 data-v-d10b3654">
+            <button class="theme-btn add-btn data-v-d10b3654" formType="submit">保存</button>
+        </view>
+    </form>
+    <mpvue-city-picker bind:__l="__l" bindonConfirm="{{C}}" class="r data-v-d10b3654" uI="d10b3654-2" uP="{{D}}" uR="mpvueCityPicker" wx:if="{{A}}"></mpvue-city-picker>
+</view>

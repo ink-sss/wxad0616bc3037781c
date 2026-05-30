@@ -1,0 +1,132 @@
+.diy-sharpproduct {
+    overflow: hidden
+}
+
+.diy-sharpproduct .product-list {
+    box-shadow: 0 8rpx 4rpx rgba(6,0,1,.03);
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+    -webkit-justify-content: flex-start;
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-bottom: 20rpx;
+    padding-left: 20rpx;
+    padding-top: 22rpx
+}
+
+.diy-sharpproduct .display__list .column__3 {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+    padding: 20rpx
+}
+
+.diy-sharpproduct .product-list.column__3 .product-item {
+    margin-right: 32rpx;
+    overflow: hidden;
+    padding-bottom: 10rpx;
+    width: 198rpx
+}
+
+.diy-sharpproduct .product-list.column__3 .product-item:last-child {
+    margin-right: 0
+}
+
+.diy-sharpproduct .product-list.column__3 .product-item .product-cover {
+    height: 198rpx;
+    margin-bottom: 12rpx;
+    overflow: hidden;
+    position: relative;
+    width: 198rpx
+}
+
+.diy-sharpproduct .product-list.column__3 .product-item .product-cover wx-image {
+    height: 198rpx;
+    width: 198rpx
+}
+
+.diy-sharpproduct .sharpproduct-head {
+    -webkit-align-items: center;
+    align-items: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    box-sizing: border-box;
+    display: -webkit-flex;
+    display: flex;
+    height: 88rpx;
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+    line-height: 1;
+    margin: 0;
+    padding: 0 20rpx
+}
+
+.sharpproduct-head .name {
+    font-size: 36rpx;
+    font-weight: 700;
+    width: 200rpx
+}
+
+.sharpproduct-head .datetime {
+    margin-left: 40rpx
+}
+
+.sharpproduct-head .datetime>wx-text {
+    display: inline-block
+}
+
+.sharpproduct-head .datetime .text {
+    padding: 0 4rpx
+}
+
+.diy-sharpproduct .product-list .barginbtns {
+    background: linear-gradient(90deg,#ff4545,#f6220c);
+    border-radius: 26rpx;
+    color: #fff;
+    font-size: 26rpx;
+    height: 50rpx;
+    line-height: 50rpx;
+    margin: 0 auto;
+    text-align: center;
+    width: 200rpx
+}
+
+.left .datetime {
+    border: 1px solid #eee;
+    border-radius: 400rpx 0 400rpx 400rpx;
+    padding: 2rpx 8rpx 2rpx 2rpx
+}
+
+.left .datetime .daybox {
+    border-radius: 400rpx;
+    margin-right: 10rpx;
+    padding: 0 20rpx
+}
+
+.titleImg {
+    height: 88rpx;
+    width: auto
+}
+
+.product-info {
+    height: auto
+}
+
+.product-sales {
+    border-top-left-radius: 20rpx;
+    border-top-right-radius: 20rpx;
+    bottom: 0;
+    font-size: 24rpx;
+    left: 0;
+    line-height: 2;
+    margin: 0 auto;
+    position: absolute;
+    right: 0;
+    text-align: center;
+    width: 162rpx
+}

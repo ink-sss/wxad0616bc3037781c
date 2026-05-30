@@ -1,0 +1,25 @@
+<view class="data-v-d54df80d">
+    <uni-popup bind:__l="__l" class="r data-v-d54df80d" uI="d54df80d-0" uP="{{h}}" uR="userSet" uS="{{['d']}}" wx:if="{{h}}">
+        <view class="set-user data-v-d54df80d">
+            <view class="set-top data-v-d54df80d">
+                <view class="set-no data-v-d54df80d">暂不设置</view>
+                <view class="set-top-head data-v-d54df80d">请先设置头像昵称</view>
+                <view bindtap="{{a}}" class="set-close data-v-d54df80d">暂不设置</view>
+            </view>
+            <view class="set-box data-v-d54df80d">
+                <view class="avatar-box data-v-d54df80d">
+                    <button bindchooseavatar="{{c}}" class="info-image data-v-d54df80d" openType="chooseAvatar">
+                        <image lazyLoad class="ava-image data-v-d54df80d" mode="" src="{{b}}"></image>
+                        <view class="icon iconfont icon-shangchuantupian_f data-v-d54df80d"></view>
+                    </button>
+                </view>
+                <view class="set-nickname data-v-d54df80d">
+                    <text class="data-v-d54df80d">昵称</text>
+                    <input bindinput="{{e}}" class="nickname-i data-v-d54df80d" placeholder="请输入昵称" placeholderClass="gray9" type="nickname" value="{{d}}"></input>
+                </view>
+                <view bindtap="{{f}}" class="sub-btn theme-btn data-v-d54df80d">保存</view>
+            </view>
+        </view>
+    </uni-popup>
+    <upload bind:__l="__l" bindgetImgs="{{j}}" class="data-v-d54df80d" uI="d54df80d-1" uP="{{k}}" wx:if="{{i}}"></upload>
+</view>

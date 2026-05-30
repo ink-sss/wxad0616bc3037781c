@@ -1,0 +1,83 @@
+.pickerMask {
+    background: rgba(0,0,0,.6);
+    bottom: 0;
+    left: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+    z-index: 1000
+}
+
+.mpvue-picker-content {
+    bottom: 0;
+    left: 0;
+    position: fixed;
+    -webkit-transform: translateY(100%);
+    transform: translateY(100%);
+    transition: all .3s ease;
+    width: 100%;
+    z-index: 3000
+}
+
+.mpvue-picker-view-show {
+    -webkit-transform: translateY(0);
+    transform: translateY(0)
+}
+
+.mpvue-picker__hd {
+    background-color: #fff;
+    display: -webkit-flex;
+    display: flex;
+    font-size: 17px;
+    padding: 9px 15px;
+    position: relative;
+    text-align: center
+}
+
+.mpvue-picker__hd:after {
+    border-bottom: 1px solid #e5e5e5;
+    bottom: 0;
+    color: #e5e5e5;
+    content: " ";
+    height: 1px;
+    left: 0;
+    position: absolute;
+    right: 0;
+    -webkit-transform: scaleY(.5);
+    transform: scaleY(.5);
+    -webkit-transform-origin: 0 100%;
+    transform-origin: 0 100%
+}
+
+.mpvue-picker__action {
+    color: #1aad19;
+    display: block;
+    -webkit-flex: 1;
+    flex: 1
+}
+
+.mpvue-picker__action:first-child {
+    color: #888;
+    text-align: left
+}
+
+.mpvue-picker__action:last-child {
+    text-align: right
+}
+
+.picker-item {
+    font-size: 16px;
+    line-height: 40px;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap
+}
+
+.mpvue-picker-view {
+    background-color: #fff;
+    bottom: 0;
+    height: 238px;
+    left: 0;
+    position: relative;
+    width: 100%
+}

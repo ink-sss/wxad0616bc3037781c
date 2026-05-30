@@ -1,0 +1,12 @@
+{
+  "component": true,
+  "usingComponents": {
+    "uni-notice-bar": "../../../uni_modules/uni-notice-bar/components/uni-notice-bar/uni-notice-bar",
+    "add-teaching": "add-teaching",
+    "question": "question",
+    "header-bar": "/components/header",
+    "request-loading": "/components/liveloading",
+    "tab-bar": "/components/tabbar/footTabbar",
+    "wechat-login": "plugin://wx43134e071b752953/wechat-login"
+  }
+}

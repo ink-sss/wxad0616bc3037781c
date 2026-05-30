@@ -1,0 +1,19 @@
+{
+  "component": true,
+  "usingComponents": {
+    "domain-option": "domain-option",
+    "shop-list": "shop-list",
+    "share-live": "share-live",
+    "confirm-order": "order/confirm-order",
+    "trtc-apply": "trtc-apply",
+    "uni-icon": "../../../components/uni-icon/uni-icon",
+    "my-order": "myorder",
+    "invite-record": "invite-record",
+    "withdraw-popup": "withdraw-popup",
+    "welfare-package-popup": "welfare-package-popup",
+    "header-bar": "/components/header",
+    "request-loading": "/components/liveloading",
+    "tab-bar": "/components/tabbar/footTabbar",
+    "wechat-login": "plugin://wx43134e071b752953/wechat-login"
+  }
+}

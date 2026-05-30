@@ -1,0 +1,22 @@
+<view class="{{['acttention',f]}}" data-theme="{{g}}">
+    <scroll-view bindscrolltolower="{{e}}" class="scroll-Y" lowerThreshold="50" scrollY="true" style="{{d}}">
+        <view class="acttention-item" wx:for="{{a}}" wx:key="i">
+            <image lazyLoad bindtap="{{item.b}}" class="item-image" src="{{item.a}}"></image>
+            <view bindtap="{{item.h}}" class="item-info">
+                <view class="item-title f28 gray3">{{item.c}}</view>
+                <view class="item-price">
+                    <view class="f24 theme-price">¥<text class="f36 fb">{{item.d}}</text>
+                    </view>
+                    <view class="f24 huaxianjia flex-1" wx:if="{{item.e}}">¥<text class="">{{item.f}}</text>
+                    </view>
+                    <button bindtap="{{item.g}}" class="theme-btn item-btn">取消收藏</button>
+                </view>
+            </view>
+        </view>
+        <view class="d-c-c p30" wx:if="{{b}}">
+            <text class="iconfont icon-wushuju"></text>
+            <text class="cont">亲，暂无相关记录哦</text>
+        </view>
+        <uni-load-more bind:__l="__l" uI="8be79190-0" uP="{{c||''}}" wx:else></uni-load-more>
+    </scroll-view>
+</view>

@@ -1,0 +1,28 @@
+<view class="data-v-63116488">
+    <view bindtap="{{d}}" class="item-icon data-v-63116488" wx:if="{{a}}">
+        <image class="img-icon data-v-63116488" mode="aspectFill" src="{{b}}"></image>
+        <view class="icon-tit data-v-63116488">{{c}}</view>
+    </view>
+    <uni-popup bind:__l="__l" class="r data-v-63116488" uI="63116488-0" uP="{{t}}" uR="couponPopup" uS="{{['d']}}" wx:if="{{t}}">
+        <view class="coupon-pop data-v-63116488">
+            <view class="coupon-pop-header data-v-63116488">
+                <view class="coupon-pop-title data-v-63116488">{{e}}</view>
+            </view>
+            <view class="coupon-pop-card data-v-63116488">
+                <view class="amount data-v-63116488">
+                    <text class="num data-v-63116488">{{f}}</text>
+                    <text class="data-v-63116488" wx:if="{{g}}">元</text>
+                    <text class="unit data-v-63116488" wx:if="{{h}}">折</text>
+                </view>
+                <view class="mj-num data-v-63116488">{{i}}</view>
+                <view class="desc data-v-63116488" wx:if="{{j}}">{{k}}</view>
+                <view class="date data-v-63116488" wx:if="{{l}}">有效期至 {{m}}</view>
+            </view>
+            <view bindtap="{{p}}" class="{{['coupon-pop-btn','data-v-63116488',o&&'disabled']}}">{{n}}</view>
+            <view bindtap="{{r}}" class="coupon-pop-close data-v-63116488">
+                <uni-icon bind:__l="__l" class="data-v-63116488" uI="63116488-1,63116488-0" uP="{{q}}" wx:if="{{q}}"></uni-icon>
+            </view>
+            <view class="coupon-pop-shadow data-v-63116488"></view>
+        </view>
+    </uni-popup>
+</view>

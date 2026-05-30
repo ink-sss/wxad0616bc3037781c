@@ -1,0 +1,39 @@
+.teaching-box.data-v-d86586fc {
+    background-color: #fff4dc;
+    border-radius: 20rpx;
+    height: 500rpx
+}
+
+.close-box.data-v-d86586fc {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    -webkit-justify-content: flex-end;
+    justify-content: flex-end
+}
+
+.teaching-text.data-v-d86586fc {
+    color: #e3742b;
+    font-size: 30rpx;
+    text-align: center
+}
+
+.teaching-img-box.data-v-d86586fc {
+    margin-top: 40rpx
+}
+
+.teaching-img.data-v-d86586fc {
+    border: 2rpx solid #e3a63d;
+    border-radius: 10rpx;
+    height: 230rpx;
+    margin: 0 auto;
+    padding: 10rpx;
+    width: 230rpx
+}
+
+.teaching-tips.data-v-d86586fc {
+    font-size: 28rpx;
+    margin-top: 20rpx;
+    text-align: center
+}

@@ -1,0 +1,51 @@
+<view class="page fc data-v-26afc1d5" wx:if="{{a}}">
+    <scroll-view class="box fc data-v-26afc1d5" scrollY="true" showScrollbar="{{false}}" style="{{'height:'+s+';'+'padding-top:'+'60rpx'}}">
+        <view class="fr img-view data-v-26afc1d5" wx:if="{{b}}">
+            <image class="img data-v-26afc1d5" mode="aspectFill" src="{{c}}"></image>
+        </view>
+        <view class="fr title-view data-v-26afc1d5">
+            <text class="title data-v-26afc1d5">{{d}}</text>
+        </view>
+        <view class="data-v-26afc1d5" wx:if="{{e}}">
+            <text class="tip data-v-26afc1d5">房间开启了密码观看，请输入密码</text>
+            <view class="item-view fr data-v-26afc1d5">
+                <input bindinput="{{g}}" class="input data-v-26afc1d5" placeholder="请输入观看密码" value="{{f}}"></input>
+            </view>
+            <view class="btn-view fr data-v-26afc1d5">
+                <text bindtap="{{h}}" class="btn data-v-26afc1d5">进入观看</text>
+            </view>
+        </view>
+        <view class="data-v-26afc1d5" wx:if="{{i}}">
+            <text class="tip data-v-26afc1d5">房间开启了付费观看，请支付</text>
+            <view class="fr item-view data-v-26afc1d5">
+                <view class="fc jine-view data-v-26afc1d5">
+                    <text class="jine data-v-26afc1d5">￥</text>
+                </view>
+                <text class="price data-v-26afc1d5">{{j}}</text>
+            </view>
+            <view class="btn-view fr data-v-26afc1d5">
+                <text bindtap="{{k}}" class="btn data-v-26afc1d5">立即支付</text>
+            </view>
+        </view>
+        <view class="data-v-26afc1d5" wx:if="{{l}}">
+            <text class="tip data-v-26afc1d5">房间开启了手机号观看，请输入手机号</text>
+            <view class="item-view fr data-v-26afc1d5">
+                <input bindinput="{{n}}" class="input data-v-26afc1d5" placeholder="请输入手机号或后6位" value="{{m}}"></input>
+            </view>
+            <view class="wxts fr data-v-26afc1d5">
+                <uni-icons bind:__l="__l" class="data-v-26afc1d5" style="margin-right:6rpx" uI="26afc1d5-0" uP="{{o}}" wx:if="{{o}}"></uni-icons>
+                <text class="tips data-v-26afc1d5">请输手机号或后6位验证观看</text>
+            </view>
+            <view class="btn-view fr data-v-26afc1d5">
+                <text bindtap="{{p}}" class="btn data-v-26afc1d5">进入观看</text>
+            </view>
+            <text class="tips data-v-26afc1d5">还没有账号？请联系您的业务员获取账号</text>
+        </view>
+        <view class="item-view data-v-26afc1d5" wx:if="{{q}}">
+            <text class="tip data-v-26afc1d5">房间开启了授权观看，请联系管理员授权</text>
+            <view class="fr auth-img-view data-v-26afc1d5">
+                <image class="auth-img data-v-26afc1d5" mode="widthFix" showMenuByLongpress="{{true}}" src="{{r}}"></image>
+            </view>
+        </view>
+    </scroll-view>
+</view>

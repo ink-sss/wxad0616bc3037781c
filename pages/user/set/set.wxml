@@ -1,0 +1,89 @@
+<view class="{{['address-form','o-h',Y]}}" data-theme="{{X}}">
+    <view class="avatar-box">
+        <button bindchooseavatar="{{b}}" class="info-image" openType="chooseAvatar">
+            <image lazyLoad class="ava-image" mode="" src="{{a}}"></image>
+            <view class="icon iconfont icon-shangchuantupian_f"></view>
+        </button>
+    </view>
+    <view class="user-info bg-white f26">
+        <view class="d-b-c">
+            <text class="key-name">会员ID</text>
+            <view class="userinfo-text border-b">{{c}}</view>
+        </view>
+        <view class="d-b-c">
+            <text class="key-name">昵称</text>
+            <input bindinput="{{e}}" class="userinfo-input border-b" placeholder="请输入昵称" placeholderClass="gray9" type="text" value="{{d}}"></input>
+        </view>
+        <view bindtap="{{h}}" class="d-b-c">
+            <text class="key-name">手机</text>
+            <view class="d-s-c border-b flex-1">
+                <text class="userinfo-text">{{f}}</text>
+                <text class="theme-notice dominant">{{g}}</text>
+            </view>
+        </view>
+        <view class="d-b-c">
+            <view class="key-name">性别</view>
+            <radio-group bindchange="{{m}}" class="userinfo-text border-b d-s-c">
+                <label class="d-s-c make-item mr20">
+                    <view>
+                        <radio checked="{{j}}" color="{{i}}" style="transform:scale(0.7)" value="{{1}}"></radio>
+                    </view>
+                    <view class="f26 color-57">男</view>
+                </label>
+                <label class="d-s-c make-item">
+                    <view>
+                        <radio checked="{{l}}" color="{{k}}" style="transform:scale(0.7)" value="{{0}}"></radio>
+                    </view>
+                    <view class="f26 color-57">女</view>
+                </label>
+            </radio-group>
+        </view>
+        <view bindtap="{{p}}" class="d-b-c">
+            <text class="key-name">密码</text>
+            <view class="userinfo-text d-b-c">
+                <text class="gray9">{{n}}</text>
+                <text class="theme-notice dominant">{{o}}</text>
+            </view>
+        </view>
+    </view>
+    <view class="pop-box" wx:if="{{q}}">
+        <view catchtap="{{r}}" class="pop-bg"></view>
+        <view class="pop-content">
+            <view catchtap="{{s}}" class="icon iconfont icon-guanbi1 close-btn"></view>
+            <view class="pop-title">温馨提示</view>
+            <view class="pop-dsc">获取手机号作为用户入会的唯一身份标识,请确定新手机号没有绑定本平台</view>
+            <view class="pop-formitem">
+                <input bindinput="{{v}}" class="flex-1 pop-formitem-input" placeholder="请填写手机号" type="text" value="{{t}}"></input>
+            </view>
+            <view class="pop-formitem" wx:if="{{w}}">
+                <input bindinput="{{y}}" class="flex-1 pop-formitem-input" placeholder="请填写验证码" type="number" value="{{x}}"></input>
+                <button catchtap="{{A}}" class="get-code-btn" disabled="{{B}}">{{z}}</button>
+            </view>
+            <view catchtap="{{C}}" class="pop-sub-btn theme-btn">确定</view>
+        </view>
+    </view>
+    <view class="pop-box" wx:if="{{D}}">
+        <view catchtap="{{E}}" class="pop-bg"></view>
+        <view class="pop-content">
+            <view catchtap="{{F}}" class="icon iconfont icon-guanbi1 close-btn"></view>
+            <view class="pop-title">密码修改</view>
+            <view class="pop-formitem">
+                <view class="flex-1 pop-formitem-input">{{G}}</view>
+            </view>
+            <view class="pop-formitem" wx:if="{{H}}">
+                <input bindinput="{{J}}" class="flex-1 pop-formitem-input" placeholder="请填写验证码" type="number" value="{{I}}"></input>
+                <button catchtap="{{L}}" class="get-code-btn" disabled="{{M}}">{{K}}</button>
+            </view>
+            <view class="pop-formitem">
+                <input password bindinput="{{O}}" class="flex-1 pop-formitem-input" placeholder="请输入密码" type="text" value="{{N}}"></input>
+            </view>
+            <view class="pop-formitem">
+                <input password bindinput="{{Q}}" class="flex-1 pop-formitem-input" placeholder="请再次输入密码" type="text" value="{{P}}"></input>
+            </view>
+            <view catchtap="{{R}}" class="pop-sub-btn theme-btn">确定</view>
+        </view>
+    </view>
+    <view bindtap="{{S}}" class="sub-btn theme-btn">保存</view>
+    <view bindtap="{{T}}" class="setup-btn">退出登录</view>
+    <upload bind:__l="__l" bindgetImgs="{{V}}" uI="0e89f81e-0" uP="{{W}}" wx:if="{{U}}"></upload>
+</view>

@@ -1,0 +1,16 @@
+<view class="manager-box data-v-34d1d611">
+    <view bindtap="{{b}}" class="manager-option data-v-34d1d611">
+        <view class="option-pic-box data-v-34d1d611">
+            <image class="option-pic data-v-34d1d611" mode="widthFix" src="{{a}}"></image>
+        </view>
+        <view class="data-v-34d1d611">会员</view>
+    </view>
+    <view bindtap="{{d}}" class="manager-option data-v-34d1d611">
+        <view class="option-pic-box data-v-34d1d611">
+            <image class="option-pic data-v-34d1d611" mode="widthFix" src="{{c}}"></image>
+        </view>
+        <view class="data-v-34d1d611">马甲</view>
+    </view>
+    <vest-list bind:__l="__l" class="r data-v-34d1d611" uI="34d1d611-0" uP="{{g}}" uR="vestSc" wx:if="{{e}}"></vest-list>
+    <viewer-list bind:__l="__l" class="r data-v-34d1d611" uI="34d1d611-1" uP="{{i}}" uR="viewerListSc" wx:if="{{i}}"></viewer-list>
+</view>

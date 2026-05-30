@@ -1,0 +1,20 @@
+.store-container .logo wx-image {
+    height: 200rpx;
+    width: 200rpx
+}
+
+.store-container .store-map {
+    height: 400rpx;
+    width: 750rpx
+}
+
+.store-container .store-map wx-map {
+    height: 100%;
+    width: 100%
+}
+
+.store-container .icon-002dianhua {
+    color: #e2231a;
+    font-size: 34rpx;
+    font-weight: 700
+}

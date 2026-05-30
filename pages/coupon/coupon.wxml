@@ -1,0 +1,52 @@
+<view class="{{[f,'coupon-wrap']}}" data-theme="{{e}}" wx:if="{{a}}">
+    <block wx:if="{{b}}">
+        <view class="item-wrap" wx:for="{{c}}" wx:key="z">
+            <view bindtap="{{item.s}}" class="{{item.r}}">
+                <view class="operation d-b-c">
+                    <view class="flex-1 coupon-content">
+                        <view class="mb20">
+                            <text class="f40 fb">{{item.a}}</text>
+                        </view>
+                        <view class="f22 gray9 mb20">
+                            <block wx:if="{{item.b}}">有效期：领取{{item.c}}天内有效</block>
+                            <block wx:if="{{item.d}}">有效期：{{item.e}}至{{item.f}}</block>
+                        </view>
+                        <view class="f22" wx:if="{{item.g}}">{{item.h}}</view>
+                    </view>
+                    <view class="right-box d-c-c d-c">
+                        <view class="theme-price mb10" wx:if="{{item.i}}">
+                            <text class="f24">￥</text>
+                            <text class="f52 fb">{{item.j}}</text>
+                        </view>
+                        <view class="mb10 theme-price" wx:if="{{item.k}}">
+                            <text class="f52 fb">{{item.l}}</text>
+                            <text class="f24">折</text>
+                        </view>
+                        <view class="f24 mb10">{{item.m}}</view>
+                        <view catchtap="{{item.o}}" class="f26 coupon-btn theme-btn" wx:if="{{item.n}}">领取</view>
+                        <button catchtap="{{item.q}}" class="f26 coupon-btn btn-gray white" type="default" wx:else>{{item.p}}</button>
+                    </view>
+                </view>
+            </view>
+            <view catchtap="{{item.v}}" class="range_item d-b-c" wx:if="{{item.t}}">
+                <view class="gray9 f24">限指定部分商品<text class="icon iconfont icon-you" style="color:#999999;font-size:22rpx"></text>
+                </view>
+                <view class="gray9 f24">本券不支持转赠</view>
+            </view>
+            <view catchtap="{{item.x}}" class="range_item d-b-c" wx:elif="{{item.w}}">
+                <view class="gray9 f24">限指定分类商品<text class="icon iconfont icon-you" style="color:#999999;font-size:22rpx"></text>
+                </view>
+                <view class="gray9 f24">本券不支持转赠</view>
+            </view>
+            <view catchtap="{{item.y}}" class="range_item d-b-c" wx:else>
+                <view class="gray9 f24">全场通用<text class="icon iconfont icon-you" style="color:#999999;font-size:22rpx"></text>
+                </view>
+                <view class="gray9 f24">本券不支持转赠</view>
+            </view>
+        </view>
+    </block>
+    <view class="none-data-box" wx:else>
+        <image lazyLoad mode="widthFix" src="{{d}}"></image>
+        <text>暂无数据</text>
+    </view>
+</view>

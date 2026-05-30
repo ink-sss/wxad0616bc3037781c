@@ -1,0 +1,10 @@
+.bottom-panel.data-v-4bc10a0e { display: none;
+}
+.bottom-panel.open.data-v-4bc10a0e { display: block;
+}
+.popup-bg.data-v-4bc10a0e { background: rgba(0,0,0,.6); bottom: 0; left: 0; position: fixed; right: 0; top: 0; z-index: 98;
+}
+.wechat-box.data-v-4bc10a0e { padding-top: var(--window-top);
+}
+.wechat-box image.data-v-4bc10a0e { width: 100%;
+}

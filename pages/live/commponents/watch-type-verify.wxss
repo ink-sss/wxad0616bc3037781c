@@ -1,0 +1,129 @@
+.page.data-v-26afc1d5 {
+    background: linear-gradient(135deg,#355df6,#7574f6,#7eade9);
+    height: 100vh;
+    -webkit-justify-content: center;
+    justify-content: center;
+    padding: 0 40rpx;
+    width: 100vw
+}
+
+.box.data-v-26afc1d5 {
+    background-color: #fff;
+    border-radius: 30rpx;
+    padding: 20rpx
+}
+
+.fc.data-v-26afc1d5 {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column
+}
+
+.fr.data-v-26afc1d5 {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-direction: row
+}
+
+.item-view.data-v-26afc1d5 {
+    padding: 10rpx
+}
+
+.btn-view.data-v-26afc1d5,.item-view.data-v-26afc1d5 {
+    -webkit-justify-content: center;
+    justify-content: center
+}
+
+.btn-view.data-v-26afc1d5 {
+    padding: 40rpx 0
+}
+
+.btn.data-v-26afc1d5 {
+    background-color: #3d2d20;
+    border-radius: 15rpx;
+    color: #fff;
+    font-size: 30rpx;
+    padding: 20rpx 0;
+    text-align: center;
+    width: 65vw
+}
+
+.img.data-v-26afc1d5 {
+    border-radius: 10rpx;
+    height: 120rpx;
+    width: 120rpx
+}
+
+.img-view.data-v-26afc1d5 {
+    -webkit-justify-content: center;
+    justify-content: center;
+    padding: 40rpx 40rpx 20rpx
+}
+
+.title-view.data-v-26afc1d5 {
+    -webkit-justify-content: center;
+    justify-content: center;
+    padding: 20rpx 0 40rpx
+}
+
+.title.data-v-26afc1d5 {
+    font-size: 36rpx;
+    font-weight: 700;
+    text-align: center
+}
+
+.input.data-v-26afc1d5 {
+    border: 4rpx solid #e5dccb;
+    border-radius: 10rpx;
+    font-size: 28rpx;
+    height: 90rpx;
+    padding: 0 20rpx;
+    width: 65vw
+}
+
+.auth-img.data-v-26afc1d5 {
+    border-radius: 10rpx;
+    width: 80vw
+}
+
+.auth-img-view.data-v-26afc1d5 {
+    -webkit-justify-content: center;
+    justify-content: center
+}
+
+.tip.data-v-26afc1d5 {
+    font-size: 26rpx;
+    padding: 20rpx;
+    text-align: center
+}
+
+.jine-view.data-v-26afc1d5 {
+    -webkit-justify-content: flex-end;
+    justify-content: flex-end;
+    padding-bottom: 6rpx
+}
+
+.jine.data-v-26afc1d5 {
+    color: #f30;
+    font-size: 26rpx
+}
+
+.price.data-v-26afc1d5 {
+    color: #f30;
+    font-size: 42rpx;
+    font-weight: 700;
+    padding-left: 6rpx
+}
+
+.tips.data-v-26afc1d5 {
+    color: #999;
+    font-size: 24rpx;
+    text-align: center
+}
+
+.wxts.data-v-26afc1d5 {
+    margin: 0 auto;
+    width: 65vw
+}

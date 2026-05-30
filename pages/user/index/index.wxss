@@ -1,0 +1,44 @@
+.bind_phone {
+    box-sizing: border-box;
+    height: 80rpx;
+    margin-top: 20rpx;
+    padding: 0 20rpx;
+    width: 100%
+}
+
+.bind_content {
+    -webkit-align-items: center;
+    align-items: center;
+    background: #fff;
+    border-radius: 16rpx;
+    display: -webkit-flex;
+    display: flex;
+    height: 100%;
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+    padding: 0 20rpx
+}
+
+.bind_btn {
+    background-color: #e2231a;
+    border-radius: 25rpx;
+    color: #fff;
+    font-size: 22rpx;
+    height: 50rpx;
+    line-height: 50rpx;
+    text-align: center;
+    width: 134rpx
+}
+
+.top-view {
+    height: 140rpx;
+    width: 100%
+}
+
+.version {
+    background-color: #f2f2f2;
+    color: #666;
+    font-size: 28rpx;
+    padding: 20rpx;
+    text-align: center
+}

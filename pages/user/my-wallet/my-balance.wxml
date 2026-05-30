@@ -1,0 +1,17 @@
+<view>
+    <view class="p-0-30 bg-white">
+        <view class="d-b-c border-b p-30-0" wx:for="{{a}}" wx:key="f">
+            <view class="d-s-s f-w d-c flex-1">
+                <text class="30">{{item.a}}</text>
+                <text class="pt10 gray9 f22">{{item.b}}</text>
+            </view>
+            <view class="red" wx:if="{{item.c}}">+{{item.d}}元</view>
+            <view class="red" wx:else>{{item.e}}元</view>
+        </view>
+    </view>
+    <view class="d-c-c p30" wx:if="{{b}}">
+        <text class="iconfont icon-wushuju"></text>
+        <text class="cont">亲，暂无相关记录哦</text>
+    </view>
+    <uni-load-more bind:__l="__l" uI="436ac917-0" uP="{{c||''}}" wx:else></uni-load-more>
+</view>

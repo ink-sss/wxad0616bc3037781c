@@ -1,0 +1,44 @@
+.live-wait-countdown.data-v-fda3e475 {
+    background-color: rgba(0,0,0,.4);
+    border-radius: 10rpx;
+    color: #fff;
+    font-size: 34rpx;
+    font-weight: 700;
+    height: 100%;
+    -webkit-justify-content: space-around;
+    justify-content: space-around;
+    padding: 20rpx;
+    width: 100%
+}
+
+.countdown-name.data-v-fda3e475 {
+    color: #fff;
+    text-align: center
+}
+
+.countdown-num.data-v-fda3e475 {
+    -webkit-align-items: flex-end;
+    align-items: flex-end;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    -webkit-justify-content: center;
+    justify-content: center
+}
+
+.countdown-text.data-v-fda3e475 {
+    color: hsla(0,0%,85%,.6);
+    font-size: 28rpx;
+    margin: 0 10rpx
+}
+
+.countdown-text1.data-v-fda3e475 {
+    color: #fff;
+    font-size: 38rpx
+}
+
+.countdown-tips.data-v-fda3e475 {
+    color: hsla(0,0%,85%,.6);
+    font-size: 28rpx
+}

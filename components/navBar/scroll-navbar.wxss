@@ -1,0 +1,100 @@
+.ss-scroll-navbar.optionType .nav-item {
+    padding: 0
+}
+
+.ss-scroll-navbar {
+    height: 86rpx;
+    line-height: 52rpx;
+    text-align: start;
+    white-space: nowrap;
+    width: 100%
+}
+
+.ss-scroll-navbar .list {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    height: 86rpx;
+    -webkit-justify-content: flex-start;
+    justify-content: flex-start;
+    padding-left: 20rpx
+}
+
+.ss-scroll-navbar ::-webkit-scrollbar {
+    display: none
+}
+
+.ss-scroll-navbar .nav-item {
+    color: #333;
+    display: inline-block;
+    -webkit-flex-shrink: 0;
+    flex-shrink: 0;
+    font-size: 32rpx;
+    height: 52rpx;
+    padding: 0rpx 20rpx;
+    position: relative;
+    text-align: center
+}
+
+.ss-scroll-navbar .nav-item .title {
+    line-height: 52rpx
+}
+
+.ss-scroll-navbar .nav-item .after {
+    border-bottom: 4rpx solid #fff;
+    bottom: 4rpx;
+    content: "";
+    height: 0;
+    left: 50%;
+    position: absolute;
+    -webkit-transform: translate(-50%);
+    transform: translate(-50%);
+    transition: .3s;
+    width: 0
+}
+
+.ss-scroll-navbar .nav-item .after.op3 {
+    border: 0 solid;
+    border-left: 6rpx solid transparent!important;
+    border-radius: 50%;
+    border-right: 6rpx solid transparent!important;
+    border-top: 6rpx solid transparent!important;
+    bottom: -8rpx;
+    height: 60rpx
+}
+
+.ss-scroll-navbar .current {
+    color: #fff;
+    font-weight: 700
+}
+
+.ss-scroll-navbar .current .after {
+    width: 50%
+}
+
+.ss-scroll-navbar .current .after.op3 {
+    border: 6rpx solid;
+    width: 60rpx
+}
+
+.optionType1 .item {
+    height: 64rpx;
+    line-height: 64rpx;
+    margin-right: 36rpx
+}
+
+.optionType1 .item.active {
+    font-size: 32rpx;
+    font-weight: 600
+}
+
+.optionType2 .item.active {
+    border-radius: 200rpx;
+    color: #fff
+}
+
+.optionType3 .item.active {
+    font-size: 32rpx;
+    font-weight: 600
+}

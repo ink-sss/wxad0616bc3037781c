@@ -1,0 +1,17 @@
+<view class="data-v-3ee4d983" style="{{'background:'+e+';'+'padding:'+f}}">
+    <view class="drag optional data-v-3ee4d983">
+        <view class="diy-Order data-v-3ee4d983" style="{{'background:'+c+';'+'border-radius:'+d}}">
+            <view class="list column-5 data-v-3ee4d983">
+                <view bindtap="{{item.f}}" class="item data-v-3ee4d983" wx:for="{{a}}" wx:key="e">
+                    <view class="item-image d-c d-c-c pr data-v-3ee4d983">
+                        <image lazyLoad class="data-v-3ee4d983" mode="widthFix" src="{{item.a}}"></image>
+                        <block wx:if="{{b}}">
+                            <text class="dot d-c-c data-v-3ee4d983" wx:if="{{item.b}}">{{item.c}}</text>
+                        </block>
+                    </view>
+                    <view class="item-text text-ellipsis data-v-3ee4d983">{{item.d}}</view>
+                </view>
+            </view>
+        </view>
+    </view>
+</view>

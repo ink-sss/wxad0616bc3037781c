@@ -1,0 +1,5 @@
+<view class="diy-imageSingle" style="{{f}}">
+    <view bindtap="{{imageSingle.c}}" class="d-c-c o-h" style="{{'border-top-left-radius:'+b+';'+'border-top-right-radius:'+c+';'+'border-bottom-left-radius:'+d+';'+'border-bottom-right-radius:'+e}}" wx:for="{{a}}" wx:for-item="imageSingle" wx:key="b">
+        <image lazyLoad mode="widthFix" src="{{imageSingle.a}}"></image>
+    </view>
+</view>

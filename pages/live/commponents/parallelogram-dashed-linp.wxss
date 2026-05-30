@@ -1,0 +1,33 @@
+.dashed-line-container.data-v-86d9edd6 {
+    -webkit-justify-content: center;
+    justify-content: center;
+    overflow: hidden
+}
+
+.dashed-line-container.data-v-86d9edd6,.dashed-line.data-v-86d9edd6 {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-direction: row
+}
+
+.dashed-line.data-v-86d9edd6 {
+    -webkit-align-items: center;
+    align-items: center
+}
+
+.parallelogram.data-v-86d9edd6 {
+    height: 6rpx;
+    margin: 0 8rpx;
+    -webkit-transform: skew(20deg);
+    transform: skew(20deg);
+    width: 24rpx
+}
+
+.orange.data-v-86d9edd6 {
+    background-color: #f94600
+}
+
+.blue.data-v-86d9edd6 {
+    background-color: #0056f6
+}

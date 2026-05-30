@@ -1,0 +1,117 @@
+<view>
+    <block wx:for="{{a}}" wx:key="p">
+        <block wx:if="{{item.a}}">
+            <options bind:__l="__l" bindsetIndex="{{item.b}}" uI="{{item.c}}" uP="{{item.d}}" wx:if="{{item.d}}"></options>
+        </block>
+        <block wx:if="{{item.e}}">
+            <top-merge bind:__l="__l" bindparentFunc="{{item.f}}" bindsetIndex="{{item.g}}" uI="{{item.h}}" uP="{{item.i}}" wx:if="{{item.i}}"></top-merge>
+        </block>
+        <block wx:if="{{item.j}}">
+            <search bind:__l="__l" uI="{{item.k}}" uP="{{item.l}}" wx:if="{{item.l}}"></search>
+        </block>
+        <block wx:if="{{item.m}}">
+            <surface bind:__l="__l" uI="{{item.n}}" uP="{{item.o}}" wx:if="{{item.o}}"></surface>
+        </block>
+    </block>
+    <view wx:if="{{b}}">
+        <block wx:for="{{c}}" wx:key="az">
+            <block wx:if="{{item.a}}">
+                <banner bind:__l="__l" uI="{{item.b}}" uP="{{item.c}}" wx:if="{{item.c}}"></banner>
+            </block>
+            <block wx:if="{{item.d}}">
+                <imagesingle bind:__l="__l" uI="{{item.e}}" uP="{{item.f}}" wx:if="{{item.f}}"></imagesingle>
+            </block>
+            <block wx:if="{{item.g}}">
+                <windows bind:__l="__l" uI="{{item.h}}" uP="{{item.i}}" wx:if="{{item.i}}"></windows>
+            </block>
+            <block wx:if="{{item.j}}">
+                <videos bind:__l="__l" uI="{{item.k}}" uP="{{item.l}}" wx:if="{{item.l}}"></videos>
+            </block>
+            <block wx:if="{{item.m}}">
+                <articles bind:__l="__l" uI="{{item.n}}" uP="{{item.o}}" wx:if="{{item.o}}"></articles>
+            </block>
+            <block wx:if="{{item.p}}">
+                <special bind:__l="__l" uI="{{item.q}}" uP="{{item.r}}" wx:if="{{item.r}}"></special>
+            </block>
+            <block wx:if="{{item.s}}">
+                <notice bind:__l="__l" uI="{{item.t}}" uP="{{item.v}}" wx:if="{{item.v}}"></notice>
+            </block>
+            <block wx:if="{{item.w}}">
+                <titles bind:__l="__l" uI="{{item.x}}" uP="{{item.y}}" wx:if="{{item.y}}"></titles>
+            </block>
+            <block wx:if="{{item.z}}">
+                <nav-bar bind:__l="__l" uI="{{item.A}}" uP="{{item.B}}" wx:if="{{item.B}}"></nav-bar>
+            </block>
+            <block wx:if="{{item.C}}">
+                <product bind:__l="__l" uI="{{item.D}}" uP="{{item.E}}" wx:if="{{item.E}}"></product>
+            </block>
+            <block wx:if="{{item.F}}">
+                <coupon bind:__l="__l" uI="{{item.G}}" uP="{{item.H}}" wx:if="{{item.H}}"></coupon>
+            </block>
+            <block wx:if="{{item.I}}">
+                <service bind:__l="__l" uI="{{item.J}}" uP="{{item.K}}" wx:if="{{item.K}}"></service>
+            </block>
+            <block wx:if="{{item.L}}">
+                <shipin-live-index bind:__l="__l" class="r-i-f" uI="{{item.N}}" uP="{{item.O}}" uR="shipinLiveRef" wx:if="{{item.O}}"></shipin-live-index>
+            </block>
+            <block wx:if="{{item.P}}">
+                <rich-text bind:__l="__l" uI="{{item.Q}}" uP="{{item.R}}" wx:if="{{item.R}}"></rich-text>
+            </block>
+            <block wx:if="{{item.S}}">
+                <blank bind:__l="__l" uI="{{item.T}}" uP="{{item.U}}" wx:if="{{item.U}}"></blank>
+            </block>
+            <block wx:if="{{item.V}}">
+                <guide bind:__l="__l" uI="{{item.W}}" uP="{{item.X}}" wx:if="{{item.X}}"></guide>
+            </block>
+            <block wx:if="{{item.Y}}">
+                <seckill-product bind:__l="__l" uI="{{item.Z}}" uP="{{item.aa}}" wx:if="{{item.aa}}"></seckill-product>
+            </block>
+            <block wx:if="{{item.ab}}">
+                <preview-product bind:__l="__l" uI="{{item.ac}}" uP="{{item.ad}}" wx:if="{{item.ad}}"></preview-product>
+            </block>
+            <block wx:if="{{item.ae}}">
+                <assemble-product bind:__l="__l" uI="{{item.af}}" uP="{{item.ag}}" wx:if="{{item.ag}}"></assemble-product>
+            </block>
+            <block wx:if="{{item.ah}}">
+                <bargain-product bind:__l="__l" uI="{{item.ai}}" uP="{{item.aj}}" wx:if="{{item.aj}}"></bargain-product>
+            </block>
+            <block wx:if="{{item.ak}}">
+                <live bind:__l="__l" uI="{{item.al}}" uP="{{item.am}}" wx:if="{{item.am}}"></live>
+            </block>
+            <block wx:if="{{item.an}}">
+                <user-base bind:__l="__l" bindbg="{{item.ap}}" bindscanQrcode="{{item.ao}}" uI="{{item.aq}}" uP="{{item.ar}}" uS="{{['d']}}" wx:if="{{item.ar}}">
+                    <slot></slot>
+                </user-base>
+            </block>
+            <block wx:if="{{item.as}}">
+                <store bind:__l="__l" uI="{{item.at}}" uP="{{item.av}}" wx:if="{{item.av}}"></store>
+            </block>
+            <block wx:if="{{item.aw}}">
+                <order bind:__l="__l" uI="{{item.ax}}" uP="{{item.ay}}" wx:if="{{item.ay}}"></order>
+            </block>
+        </block>
+    </view>
+    <view class="nav-product" style="width:750rpx" wx:if="{{d}}">
+        <view class="product-list">
+            <view bindtap="{{pitem.h}}" class="{{['product_item','o-h',pitem.g]}}" wx:for="{{e}}" wx:for-item="pitem" wx:key="f">
+                <view>
+                    <image lazyLoad mode="" src="{{pitem.a}}" style="width:345rpx;height:345rpx"></image>
+                </view>
+                <view class="text-ellipsis-2 f26 pro_name p-0-20 mt20">{{pitem.b}}</view>
+                <view class="mt36 mb20 p-0-20">
+                    <text class="f20 fb redF6">￥</text>
+                    <text class="f32 fb redF6">{{pitem.c}}</text>
+                    <block wx:if="{{pitem.d}}">
+                        <text class="text-d-line f20 gray9 ml10">￥</text>
+                        <text class="text-d-line f24 gray9">{{pitem.e}}</text>
+                    </block>
+                </view>
+            </view>
+        </view>
+        <view class="d-c-c p30" wx:if="{{f}}">
+            <text class="iconfont icon-wushuju"></text>
+            <text class="cont">亲，暂无相关记录哦</text>
+        </view>
+        <uni-load-more bind:__l="__l" uI="308cf962-28" uP="{{g||''}}" wx:else></uni-load-more>
+    </view>
+</view>

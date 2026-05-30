@@ -1,0 +1,1 @@
+<view wx:if="{{a}}" class="verify-mask data-v-b19079c7"><view class="verify-panel data-v-b19079c7"><view class="title data-v-b19079c7">{{b}}</view><input class="input data-v-b19079c7" password="{{c}}" placeholder="{{d}}" value="{{e}}" bindinput="{{f}}"/><button class="primary data-v-b19079c7" loading="{{g}}" bindtap="{{h}}">确认</button></view></view>

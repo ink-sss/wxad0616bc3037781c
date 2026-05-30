@@ -1,0 +1,173 @@
+page {
+    background-color: #fff
+}
+
+.d-c-c {
+    -webkit-flex-flow: row;
+    flex-flow: row
+}
+
+.set-user {
+    background-color: #fff;
+    border-radius: 20rpx 20rpx 0 0;
+    display: -webkit-flex;
+    display: flex;
+    height: 350rpx;
+    -webkit-justify-content: space-around;
+    justify-content: space-around;
+    width: 750rpx
+}
+
+.login-container {
+    padding: 25rpx
+}
+
+.wechatapp {
+    margin-bottom: 72rpx;
+    padding: 120rpx 0 48rpx;
+    text-align: center
+}
+
+.wechatapp .logo-image {
+    border-radius: 50%;
+    height: 145rpx;
+    margin: 0 auto 20rpx;
+    width: 145rpx
+}
+
+.m-0-a {
+    margin: 0 auto
+}
+
+.wechatapp .header {
+    border: 2px solid #fff;
+    border-radius: 50%;
+    box-shadow: 1px 0 5px rgba(50,50,50,.3);
+    height: 190rpx;
+    margin: 0rpx auto 0;
+    overflow: hidden;
+    width: 190rpx
+}
+
+.auth-title {
+    color: #333;
+    font-size: 30rpx;
+    margin-bottom: 85rpx;
+    margin-top: 170rpx;
+    text-align: center
+}
+
+.auth-subtitle {
+    color: #777;
+    font-size: 22rpx;
+    margin-bottom: 20rpx;
+    text-align: center
+}
+
+.login-btn {
+    padding: 0 20rpx
+}
+
+.login-btn wx-button {
+    border-radius: 44rpx;
+    width: 592rpx
+}
+
+.login-btn wx-button,.login-btn wx-button.login-btn-ali {
+    font-size: 30rpx;
+    height: 88rpx;
+    line-height: 88rpx;
+    text-align: center
+}
+
+.login-btn wx-button.login-btn-ali {
+    background: #1678ff;
+    border-radius: 999rpx;
+    color: #fff
+}
+
+.no-login-btn {
+    bottom: 220rpx;
+    left: 0;
+    position: fixed;
+    width: 100%
+}
+
+.agreement {
+    -webkit-align-items: center;
+    align-items: center;
+    background: #fff;
+    border: 1px solid #ccc!important;
+    border-radius: 50%;
+    box-sizing: border-box;
+    color: #fff;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    font-size: 18rpx;
+    font-weight: 700;
+    height: 28rpx;
+    -webkit-justify-content: center;
+    justify-content: center;
+    margin-right: 10rpx;
+    position: relative;
+    top: 2rpx;
+    width: 28rpx
+}
+
+[data-theme=theme0] .agreement.active {
+    background-color: #ff5704!important
+}
+
+[data-theme=theme1] .agreement.active {
+    background-color: #19ad57!important
+}
+
+[data-theme=theme2] .agreement.active {
+    background-color: #fc0!important
+}
+
+[data-theme=theme3] .agreement.active {
+    background-color: #33a7ff!important
+}
+
+[data-theme=theme4] .agreement.active {
+    background-color: #e4e4e4!important
+}
+
+[data-theme=theme5] .agreement.active {
+    background-color: #c8ba97!important
+}
+
+[data-theme=theme6] .agreement.active {
+    background-color: #623ceb!important
+}
+
+[data-theme=theme0] .agreement.active {
+    border-color: #ff5704!important
+}
+
+[data-theme=theme1] .agreement.active {
+    border-color: #19ad57!important
+}
+
+[data-theme=theme2] .agreement.active {
+    border-color: #fc0!important
+}
+
+[data-theme=theme3] .agreement.active {
+    border-color: #33a7ff!important
+}
+
+[data-theme=theme4] .agreement.active {
+    border-color: #e4e4e4!important
+}
+
+[data-theme=theme5] .agreement.active {
+    border-color: #c8ba97!important
+}
+
+[data-theme=theme6] .agreement.active {
+    border-color: #623ceb!important
+}

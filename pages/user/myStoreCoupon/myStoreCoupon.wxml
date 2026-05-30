@@ -1,0 +1,52 @@
+<view class="{{['page-wrap',y]}}" data-theme="{{x}}">
+    <view class="header-bar">
+        <view class="mp-status" style="{{a}}"></view>
+        <view class="header-mp" style="{{c}}">
+            <view bindtap="{{b}}" class="header-back">
+                <text class="icon iconfont icon-jiantou reg180"></text>
+            </view>
+            <view class="header-title">福利券包</view>
+        </view>
+    </view>
+    <view class="tab-wrap">
+        <view bindtap="{{e}}" class="{{d}}">待使用</view>
+        <view bindtap="{{g}}" class="{{f}}">已过期/已使用</view>
+        <view bindtap="{{i}}" class="{{h}}">使用记录</view>
+    </view>
+    <scroll-view bindscrolltolower="{{r}}" class="list-scroll" lowerThreshold="{{40}}" scrollY="true">
+        <view class="coupon-list" wx:if="{{j}}">
+            <view class="coupon-item" wx:for="{{k}}" wx:key="h">
+                <view class="coupon-top">
+                    <view class="coupon-left">
+                        <text class="coupon-type">{{item.a}}</text>
+                        <view class="coupon-info">
+                            <text class="coupon-name">{{item.b}}</text>
+                            <text class="coupon-remark" wx:if="{{item.c}}">{{item.d}}</text>
+                        </view>
+                    </view>
+                    <text class="coupon-count" wx:if="{{l}}">x{{item.e}}</text>
+                </view>
+                <view class="coupon-divider"></view>
+                <view class="coupon-bottom">
+                    <text class="coupon-time">{{item.f}}</text>
+                    <view bindtap="{{item.g}}" class="coupon-action" wx:if="{{m}}">立即使用</view>
+                </view>
+            </view>
+            <view class="list-status" wx:if="{{n}}">加载更多中...</view>
+            <view class="list-status" wx:elif="{{o}}">没有更多了</view>
+        </view>
+        <view class="empty-wrap" wx:elif="{{p}}">
+            <text class="iconfont icon-wushuju"></text>
+            <text class="empty-text">暂无福利券数据</text>
+        </view>
+        <view class="list-status" wx:if="{{q}}">加载中...</view>
+    </scroll-view>
+    <view class="qrCode">
+        <uni-popup bind:__l="__l" class="r" uI="67760e90-0" uP="{{w}}" uR="qrCodeRef" uS="{{['d']}}" wx:if="{{w}}">
+            <view class="qrpop">
+                <image mode="aspectFill" src="{{s}}"></image>
+                <view class="qr-pop-tip">{{t}}</view>
+            </view>
+        </uni-popup>
+    </view>
+</view>

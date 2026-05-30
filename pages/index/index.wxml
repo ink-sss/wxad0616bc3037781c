@@ -1,0 +1,22 @@
+<view class="{{p}}" data-theme="{{o}}">
+    <diy bind:__l="__l" bindgetData="{{d}}" bindopenSearch="{{b}}" bindstopPush="{{c}}" class="r" uI="2cf857b8-0" uP="{{e}}" uR="diy" wx:if="{{e}}"></diy>
+    <view class="collection-box" style="{{h}}" wx:if="{{f}}">
+        <view class="inner">
+            <text>点击“</text>
+            <text class="point">.</text>
+            <text class="point point-big">.</text>
+            <text class="point">.</text>
+            <text>”添加到我的小程序，
+微信首页下拉即可快速访问店铺</text>
+        </view>
+        <button bindtap="{{g}}" class="close-btn" type="primary">x</button>
+    </view>
+    <view class="follow-gzh" wx:if="{{i}}">
+        <text bindtap="{{j}}" class="icon iconfont icon-guanbi"></text>
+        <official-account></official-account>
+    </view>
+    <homepush bind:__l="__l" uI="2cf857b8-1" uP="{{l}}" wx:if="{{k}}"></homepush>
+    <search-product bind:__l="__l" bindclose="{{m}}" uI="2cf857b8-2" uP="{{n}}" wx:if="{{n}}"></search-product>
+    <live-tab bind:__l="__l" uI="2cf857b8-3"></live-tab>
+    <tab-bar bind:__l="__l" uI="2cf857b8-4"></tab-bar>
+</view>

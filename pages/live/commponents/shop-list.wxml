@@ -1,0 +1,44 @@
+<view class="data-v-5f3e3be0">
+    <uni-popup bind:__l="__l" class="r data-v-5f3e3be0" uI="5f3e3be0-0" uP="{{g}}" uR="shopList" uS="{{['d']}}" wx:if="{{g}}">
+        <view class="shop-box data-v-5f3e3be0">
+            <view class="data-v-5f3e3be0">
+                <view class="top-head data-v-5f3e3be0">
+                    <text class="head-more data-v-5f3e3be0">讲解列表</text>
+                    <view class="head-r data-v-5f3e3be0">
+                        <view bindtap="{{c}}" class="head-option data-v-5f3e3be0" wx:if="{{a}}">
+                            <image class="order-pic data-v-5f3e3be0" mode="widthFix" src="{{b}}"></image>
+                            <text class="data-v-5f3e3be0">订单</text>
+                        </view>
+                    </view>
+                </view>
+                <scroll-view scrollWithAnimation bindscrolltolower="{{e}}" class="list-sc data-v-5f3e3be0" enablePassive="{{true}}" scrollY="{{true}}" showScrollbar="{{false}}">
+                    <view class="shop-one data-v-5f3e3be0" wx:for="{{d}}" wx:for-item="val" wx:key="i">
+                        <view class="left-pic data-v-5f3e3be0">
+                            <image class="data-v-5f3e3be0" src="{{val.a}}"></image>
+                            <text class="shop-tag data-v-5f3e3be0">{{val.b}}</text>
+                            <view class="explain-box data-v-5f3e3be0" wx:if="{{val.c}}">
+                                <image class="explain-gif data-v-5f3e3be0" src="{{val.d}}"></image>
+                                <text class="data-v-5f3e3be0">讲解中</text>
+                            </view>
+                        </view>
+                        <view class="right-data data-v-5f3e3be0">
+                            <view class="data-v-5f3e3be0">
+                                <text class="shop-name data-v-5f3e3be0">{{val.e}}</text>
+                                <text class="shop-point data-v-5f3e3be0">{{val.f}}</text>
+                            </view>
+                            <view class="picce-data data-v-5f3e3be0">
+                                <text class="data-v-5f3e3be0">
+                                    <text class="money-fh data-v-5f3e3be0">￥</text>
+                                    <text class="money-big data-v-5f3e3be0">{{val.g}}</text>
+                                </text>
+                                <view class="go-buy-box data-v-5f3e3be0">
+                                    <view bindtap="{{val.h}}" class="go-shopping data-v-5f3e3be0">去抢购</view>
+                                </view>
+                            </view>
+                        </view>
+                    </view>
+                </scroll-view>
+            </view>
+        </view>
+    </uni-popup>
+</view>

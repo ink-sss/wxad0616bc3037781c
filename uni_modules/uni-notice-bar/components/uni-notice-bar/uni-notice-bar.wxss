@@ -1,0 +1,110 @@
+.uni-noticebar.data-v-7ba25369 {
+    -webkit-align-items: center;
+    align-items: center;
+    box-sizing: border-box;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    width: 100%
+}
+
+.uni-noticebar-close.data-v-7ba25369 {
+    margin-left: 8px;
+    margin-right: 5px
+}
+
+.uni-noticebar-icon.data-v-7ba25369 {
+    margin-right: 5px
+}
+
+.uni-noticebar__content-wrapper.data-v-7ba25369 {
+    -webkit-flex: 1;
+    flex: 1;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    overflow: hidden
+}
+
+.uni-noticebar__content-wrapper--single.data-v-7ba25369 {
+    line-height: 18px
+}
+
+.uni-noticebar__content-wrapper--scrollable.data-v-7ba25369,.uni-noticebar__content-wrapper--single.data-v-7ba25369 {
+    -webkit-flex-direction: row;
+    flex-direction: row
+}
+
+.uni-noticebar__content-wrapper--scrollable.data-v-7ba25369 {
+    position: relative
+}
+
+.uni-noticebar__content--scrollable.data-v-7ba25369 {
+    display: block;
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: hidden
+}
+
+.uni-noticebar__content--single.data-v-7ba25369 {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex: none;
+    flex: none;
+    -webkit-justify-content: center;
+    justify-content: center;
+    width: 100%
+}
+
+.uni-noticebar__content-text.data-v-7ba25369 {
+    font-size: 14px;
+    line-height: 18px;
+    word-break: break-all
+}
+
+.uni-noticebar__content-text--single.data-v-7ba25369 {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%
+}
+
+.uni-noticebar__content-text--scrollable.data-v-7ba25369 {
+    -webkit-animation: notice-7ba25369 10s linear 0s infinite both;
+    animation: notice-7ba25369 10s linear 0s infinite both;
+    -webkit-animation-play-state: paused;
+    animation-play-state: paused;
+    display: block;
+    height: 18px;
+    line-height: 18px;
+    padding-left: 100%;
+    position: absolute;
+    white-space: nowrap
+}
+
+.uni-noticebar__more.data-v-7ba25369 {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-inline-flex;
+    display: inline-flex;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    -webkit-flex-wrap: nowrap;
+    flex-wrap: nowrap;
+    padding-left: 5px
+}
+
+@-webkit-keyframes notice-7ba25369 {
+    to {
+        -webkit-transform: translate3d(-100%,0,0);
+        transform: translate3d(-100%,0,0)
+    }
+}
+
+@keyframes notice-7ba25369 {
+    to {
+        -webkit-transform: translate3d(-100%,0,0);
+        transform: translate3d(-100%,0,0)
+    }
+}

@@ -1,0 +1,44 @@
+<view class="home-push-wrap">
+    <popup bind:__l="__l" bindhidePopup="{{q}}" uI="49186827-0" uP="{{r}}" uS="{{['d']}}" wx:if="{{r}}">
+        <view class="{{['home-push',o]}}">
+            <view class="image-text" wx:if="{{a}}">
+                <view class="pic">
+                    <image lazyLoad mode="aspectFill" src="{{b}}"></image>
+                </view>
+                <view class="title">{{c}}</view>
+                <view class="des">{{d}}</view>
+                <view class="btns">
+                    <button bindtap="{{f}}" type="primary">{{e}}</button>
+                </view>
+            </view>
+            <view bindtap="{{i}}" class="image-only" wx:if="{{g}}">
+                <view class="pic">
+                    <image lazyLoad mode="aspectFill" src="{{h}}"></image>
+                </view>
+            </view>
+            <view class="cuopon" wx:if="{{j}}">
+                <view class="cuopon-title d-c-c" wx:if="{{k}}">
+                    <image lazyLoad mode="aspectFill" src="{{l}}"></image>
+                </view>
+                <view class="list">
+                    <view class="item" wx:for="{{m}}" wx:key="c">
+                        <view class="info">
+                            <view class="num">
+                                <text class="f30">{{item.a}}</text>
+                            </view>
+                        </view>
+                        <view class="explan">
+                            <text class="name">{{item.b}}</text>
+                        </view>
+                    </view>
+                </view>
+                <view class="btns">
+                    <button bindtap="{{n}}" type="primary">立即领取</button>
+                </view>
+            </view>
+        </view>
+        <view bindtap="{{p}}" class="close-btns">
+            <text class="icon iconfont icon-guanbi"></text>
+        </view>
+    </popup>
+</view>

@@ -1,0 +1,11 @@
+<view class="drag optional diy-search-box data-v-697b2b80" style="{{'background:'+r+';'+'padding-left:'+s+';'+'padding-right:'+t+';'+'padding-top:'+v+';'+'padding-bottom:'+w}}">
+    <view class="top_head pr data-v-697b2b80">
+        <view class="head_top data-v-697b2b80" style="{{a}}"></view>
+    </view>
+    <view class="diy-search navigation d-s-c data-v-697b2b80" style="{{'background:'+m+';'+'border-top-left-radius:'+n+';'+'border-top-right-radius:'+o+';'+'border-bottom-left-radius:'+p+';'+'border-bottom-right-radius:'+q}}">
+        <image class="logo-img data-v-697b2b80" mode="aspectFill" src="{{c}}" wx:if="{{b}}"></image>
+        <view class="f30 data-v-697b2b80" style="{{'color:'+f}}" wx:if="{{d}}">{{e}}</view>
+        <view bindtap="{{i}}" class="phone-top-search-box d-s-c data-v-697b2b80" style="{{'background:'+j+';'+'color:'+k+';'+'margin-right:'+l}}">
+            <text class="icon iconfont icon-sousuo1 data-v-697b2b80" style="{{'color:'+g}}"></text>{{h}}</view>
+    </view>
+</view>

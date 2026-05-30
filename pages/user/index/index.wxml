@@ -1,0 +1,15 @@
+<view class="{{k}}" data-theme="{{j}}">
+    <view class="top-view" style="{{'background:'+a}}"></view>
+    <diy bind:__l="__l" bindbg="{{g}}" bindscanQrcode="{{f}}" style="position:relative" uI="d0201884-0" uP="{{h}}" uS="{{['d']}}" wx:if="{{h}}">
+        <view class="bind_phone" wx:if="{{b}}">
+            <view class="bind_content">
+                <view class="bind_txt">确保账户安全，请绑定手机号</view>
+                <button bindgetphonenumber="{{d}}" class="bind_btn" openType="getPhoneNumber" wx:if="{{c}}">去绑定</button>
+                <button bindtap="{{e}}" class="bind_btn" wx:else>去绑定</button>
+            </view>
+        </view>
+    </diy>
+    <request-loading bind:__l="__l" uI="d0201884-1" uP="{{i}}" wx:if="{{i}}"></request-loading>
+    <live-tab bind:__l="__l" uI="d0201884-2"></live-tab>
+    <tab-bar bind:__l="__l" uI="d0201884-3"></tab-bar>
+</view>

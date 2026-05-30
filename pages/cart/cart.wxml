@@ -1,0 +1,86 @@
+<view class="{{['data-v-dd7e0e8e',v]}}" data-theme="{{t}}">
+    <view class="card data-v-dd7e0e8e" wx:if="{{a}}">
+        <view class="{{['data-v-dd7e0e8e',r&&'pb100']}}" style="position:relative">
+            <block wx:if="{{b}}">
+                <view class="address-bar d-b-c data-v-dd7e0e8e">
+                    <view class="f24 gray3 data-v-dd7e0e8e">共计<text class="f28 theme-price fb data-v-dd7e0e8e">{{c}}</text>件</view>
+                    <view bindtap="{{e}}" class="f28 gray9 data-v-dd7e0e8e">
+                        <text class="data-v-dd7e0e8e" wx:if="{{d}}">取消</text>
+                        <text class="data-v-dd7e0e8e" wx:else>编辑</text>
+                    </view>
+                </view>
+                <view class="section data-v-dd7e0e8e">
+                    <view class="data-v-dd7e0e8e" wx:for="{{f}}" wx:for-item="supplier_item" wx:key="f">
+                        <view class="supplier_list data-v-dd7e0e8e">
+                            <view class="supplier_list_tit data-v-dd7e0e8e">
+                                <checkbox-group bindchange="{{supplier_item.b}}" class="data-v-dd7e0e8e">
+                                    <label class="d-c-c data-v-dd7e0e8e">
+                                        <checkbox checked="{{supplier_item.a}}" class="checkbox data-v-dd7e0e8e" color="red" value="cb"></checkbox>
+                                    </label>
+                                </checkbox-group>
+                                <view bindtap="{{supplier_item.d}}" class="d-a-c data-v-dd7e0e8e" wx:if="{{g}}">
+                                    <view class="icon iconfont icon-stores data-v-dd7e0e8e"></view>
+                                    <text class="f28 fb gray3 data-v-dd7e0e8e">{{supplier_item.c}}</text>
+                                </view>
+                            </view>
+                            <view class="item data-v-dd7e0e8e" wx:for="{{supplier_item.e}}" wx:key="p">
+                                <checkbox-group bindchange="{{item.b}}" class="data-v-dd7e0e8e">
+                                    <label class="d-c-c data-v-dd7e0e8e">
+                                        <checkbox checked="{{item.a}}" class="checkbox data-v-dd7e0e8e" color="red" value="cb"></checkbox>
+                                    </label>
+                                </checkbox-group>
+                                <view class="data-v-dd7e0e8e" style="overflow:hidden">
+                                    <image bindtap="{{item.c}}" class="cover data-v-dd7e0e8e" mode="aspectFit" src="{{item.d}}"></image>
+                                </view>
+                                <view class="info data-v-dd7e0e8e">
+                                    <view class="title text-ellipsis data-v-dd7e0e8e">{{item.e}}</view>
+                                    <view class="describe data-v-dd7e0e8e">{{item.f}}</view>
+                                    <view class="level-box count_choose data-v-dd7e0e8e">
+                                        <view class="price fb flex-1 data-v-dd7e0e8e">¥<text class="num data-v-dd7e0e8e">{{item.g}}</text>
+                                        </view>
+                                        <view class="num-wrap data-v-dd7e0e8e">
+                                            <view catchtap="{{item.k}}" class="d-c-c data-v-dd7e0e8e">
+                                                <image lazyLoad class="reduce_icon data-v-dd7e0e8e" mode="" src="{{item.i}}" wx:if="{{item.h}}"></image>
+                                                <image lazyLoad class="reduce_icon data-v-dd7e0e8e" mode="" src="{{item.j}}" wx:else></image>
+                                            </view>
+                                            <view class="text-wrap data-v-dd7e0e8e">{{item.l}}</view>
+                                            <view catchtap="{{item.o}}" class="d-c-c data-v-dd7e0e8e" wx:if="{{item.m}}">
+                                                <image lazyLoad class="add_icon data-v-dd7e0e8e" mode="" src="{{item.n}}"></image>
+                                            </view>
+                                        </view>
+                                    </view>
+                                </view>
+                            </view>
+                        </view>
+                    </view>
+                </view>
+            </block>
+            <view class="none-data-box cart_none data-v-dd7e0e8e" wx:else>
+                <image lazyLoad class="cart_none_img data-v-dd7e0e8e" mode="widthFix" src="{{h}}"></image>
+                <view class="f26 gray9 pt10 data-v-dd7e0e8e">购物车为空</view>
+                <view class="f26 gray9 pt10 data-v-dd7e0e8e">赶紧去逛逛，购买心仪的商品吧</view>
+                <button bindtap="{{i}}" class="theme-btn mt30 none_btn data-v-dd7e0e8e">去逛逛</button>
+            </view>
+            <view class="bottom-btns f28 data-v-dd7e0e8e" wx:if="{{j}}">
+                <checkbox-group bindchange="{{l}}" class="data-v-dd7e0e8e">
+                    <label class="d-c-c mr20 w-nr data-v-dd7e0e8e">
+                        <checkbox checked="{{k}}" class="checkbox data-v-dd7e0e8e" color="red" value="cb"></checkbox>全选</label>
+                </checkbox-group>
+                <view class="d-e-c pr20 data-v-dd7e0e8e" wx:if="{{m}}">
+                    <view class="total d-s-c flex-1 mr20 data-v-dd7e0e8e">
+                        <text class="f28 gray3 w-nr data-v-dd7e0e8e">合计：</text>
+                        <view class="price fb f26 data-v-dd7e0e8e">¥<text class="num f40 data-v-dd7e0e8e">{{n}}</text>
+                        </view>
+                    </view>
+                    <button bindtap="{{o}}" class="buy-btn theme-btn data-v-dd7e0e8e" type="primary">去结算</button>
+                </view>
+                <view class="pr20 data-v-dd7e0e8e" wx:else>
+                    <button bindtap="{{p}}" class="delete-btn theme-btn mr20 data-v-dd7e0e8e" type="primary">删除</button>
+                </view>
+            </view>
+            <recommend-product bind:__l="__l" class="data-v-dd7e0e8e" uI="dd7e0e8e-0" uP="{{q}}" wx:if="{{q}}"></recommend-product>
+        </view>
+    </view>
+    <request-loading bind:__l="__l" class="data-v-dd7e0e8e" uI="dd7e0e8e-1" uP="{{s}}" wx:if="{{s}}"></request-loading>
+    <tab-bar bind:__l="__l" class="data-v-dd7e0e8e" uI="dd7e0e8e-2"></tab-bar>
+</view>

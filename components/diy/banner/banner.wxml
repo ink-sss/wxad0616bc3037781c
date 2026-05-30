@@ -1,0 +1,12 @@
+<view class="diy-banner-box pr" style="{{'background:'+m+';'+'padding-left:'+n+';'+'padding-right:'+o+';'+'padding-top:'+p+';'+'padding-bottom:'+q}}">
+    <view class="pr">
+        <view class="{{['swiper-dots','ww100','d-c-c',c]}}">
+            <view class="{{item.a}}" style="{{b}}" wx:for="{{a}}" wx:key="b"></view>
+        </view>
+        <swiper autoplay="{{i}}" bindchange="{{k}}" class="swiper" duration="{{j}}" interval="{{2000}}" style="{{l}}">
+            <swiper-item bindtap="{{item.c}}" class="o-h" style="{{'height:'+g+';'+'border-radius:'+h}}" wx:for="{{d}}" wx:key="b">
+                <image lazyLoad src="{{item.a}}" style="{{'height:'+e+';'+'border-radius:'+f}}"></image>
+            </swiper-item>
+        </swiper>
+    </view>
+</view>

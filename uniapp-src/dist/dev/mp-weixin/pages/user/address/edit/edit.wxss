@@ -1,0 +1,12 @@
+.address-form.data-v-cfe99c51 { min-height: 100vh; padding: 24rpx; background: #f5f5f5; box-sizing: border-box;
+}
+.card.data-v-cfe99c51 { padding: 24rpx; background: #fff; border-radius: 8rpx;
+}
+.input.data-v-cfe99c51, .picker.data-v-cfe99c51 { height: 88rpx; line-height: 88rpx; border-bottom: 1px solid #eee; font-size: 28rpx; color: #333;
+}
+.textarea.data-v-cfe99c51 { width: 100%; min-height: 150rpx; padding: 20rpx 0; font-size: 28rpx; box-sizing: border-box;
+}
+.default-row.data-v-cfe99c51 { display: flex; align-items: center; gap: 18rpx; padding-top: 20rpx; color: #666; font-size: 26rpx;
+}
+.primary.data-v-cfe99c51 { margin-top: 28rpx; color: #fff; background: #19ad57; border-radius: 8rpx;
+}

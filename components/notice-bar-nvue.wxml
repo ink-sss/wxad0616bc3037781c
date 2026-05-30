@@ -1,0 +1,18 @@
+<view class="box data-v-6849269c" style="{{'background:'+F+';'+'width:'+G}}" wx:if="{{a}}">
+    <view bindtap="{{d}}" class="icon-box data-v-6849269c" wx:if="{{b}}">
+        <uni-icons bind:__l="__l" class="data-v-6849269c" uI="6849269c-0" uP="{{c}}" wx:if="{{c}}"></uni-icons>
+    </view>
+    <view bindtap="{{j}}" class="left-text data-v-6849269c" style="{{'left:'+i}}" wx:if="{{e}}">
+        <text class="data-v-6849269c" style="{{'color:'+g+';'+'font-size:'+h}}">{{f}}</text>
+    </view>
+    <view bindtap="{{q}}" class="text-box data-v-6849269c" style="{{'width:'+o+';'+'margin-left:'+p}}">
+        <text class="text data-v-6849269c" style="{{'margin-left:'+l+';'+'color:'+m+';'+'font-size:'+n}}">{{k}}</text>
+    </view>
+    <text bindtap="{{x}}" class="more-text data-v-6849269c" style="{{'color:'+t+';'+'font-size:'+v+';'+'right:'+w}}" wx:if="{{r}}">{{s}}</text>
+    <view class="more-icon-box data-v-6849269c" style="{{'right:'+B}}" wx:if="{{y}}">
+        <uni-icons bind:__l="__l" bindclick="{{z}}" class="data-v-6849269c" uI="6849269c-1" uP="{{A}}" wx:if="{{A}}"></uni-icons>
+    </view>
+    <view class="close-icon-box data-v-6849269c" wx:if="{{C}}">
+        <uni-icons bind:__l="__l" bindclick="{{D}}" class="data-v-6849269c" uI="6849269c-2" uP="{{E}}" wx:if="{{E}}"></uni-icons>
+    </view>
+</view>

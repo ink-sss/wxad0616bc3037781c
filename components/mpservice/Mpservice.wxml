@@ -1,0 +1,36 @@
+<popup bind:__l="__l" bindhidePopup="{{q}}" uI="0f8172be-0" uP="{{r}}" uS="{{['d']}}" wx:if="{{r}}">
+    <view class="d-c-c ww100 kf-close">
+        <view bindtap="{{a}}" class="p20">
+            <text class="icon iconfont icon-guanbi"></text>
+        </view>
+    </view>
+    <view class="d-s-s d-c p20 mpservice-wrap" wx:if="{{b}}">
+        <view class="noDatamodel" wx:if="{{c}}">该商家尚未设置客服</view>
+        <block wx:if="{{d}}">
+            <view bindtap="{{h}}" class="d-b-c p-30-0 f34 ww100 border-b" wx:if="{{e}}">
+                <image lazyLoad class="imgIcon" mode="widthFix" src="{{f}}"></image>
+                <view class="p-0-30 flex-1">
+                    <view>官方QQ</view>
+                    <view class="desc">{{g}}</view>
+                </view>
+                <text class="txt">点击复制</text>
+            </view>
+            <view bindtap="{{l}}" class="d-b-c p-30-0 f34 ww100 border-b" wx:if="{{i}}">
+                <image lazyLoad class="imgIcon" mode="widthFix" src="{{j}}"></image>
+                <view class="p-0-30 flex-1">
+                    <view>官方微信</view>
+                    <view class="desc">{{k}}</view>
+                </view>
+                <text class="txt">点击复制</text>
+            </view>
+            <view bindtap="{{p}}" class="d-b-c p-30-0 f34 ww100" wx:if="{{m}}">
+                <image lazyLoad class="imgIcon" mode="widthFix" src="{{n}}"></image>
+                <view class="p-0-30 flex-1">
+                    <view>官方热线</view>
+                    <view class="desc">{{o}}</view>
+                </view>
+                <text class="txt">一键拨打</text>
+            </view>
+        </block>
+    </view>
+</popup>

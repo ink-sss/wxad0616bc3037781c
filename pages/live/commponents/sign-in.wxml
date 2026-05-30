@@ -1,0 +1,31 @@
+<view bindtap="{{e}}" class="item-icon data-v-db405dd6" wx:if="{{a}}">
+    <image class="data-v-db405dd6" mode="aspectFill" src="{{b}}"></image>
+    <view class="icon-tit data-v-db405dd6" wx:if="{{c}}">{{d}}</view>
+    <view class="icon-tit data-v-db405dd6" wx:else>签到</view>
+</view>
+<view bindtap="{{j}}" class="float-sign-btn data-v-db405dd6" wx:if="{{f}}">
+    <image class="sign-icon data-v-db405dd6" mode="aspectFill" src="{{g}}"></image>
+    <view class="icon-tit data-v-db405dd6" wx:if="{{h}}">{{i}}</view>
+    <view class="icon-tit data-v-db405dd6" wx:else>签到</view>
+</view>
+<uni-popup bind:__l="__l" class="r data-v-db405dd6" uI="db405dd6-0" uP="{{v}}" uR="signinPop" uS="{{['d']}}" wx:if="{{v}}">
+    <view class="red-packet-modal data-v-db405dd6">
+        <view class="modal-title data-v-db405dd6">{{k}}</view>
+        <view class="condition-box data-v-db405dd6">
+            <view class="getTitle data-v-db405dd6">领取条件</view>
+            <view class="condition-content data-v-db405dd6">
+                <view class="watch-time data-v-db405dd6">
+                    <view class="label data-v-db405dd6">观看满 {{l}}</view>
+                    <view class="time data-v-db405dd6">已看 {{m}}</view>
+                </view>
+                <view class="plus data-v-db405dd6">+</view>
+                <view class="check-in data-v-db405dd6">
+                    <view class="label data-v-db405dd6">已经打卡({{n}}/{{o}})次</view>
+                    <view class="status data-v-db405dd6"></view>
+                </view>
+            </view>
+        </view>
+        <button bindtap="{{q}}" class="get-btn data-v-db405dd6" disabled="{{r}}">{{p}}</button>
+        <view class="tips data-v-db405dd6">{{s}}</view>
+    </view>
+</uni-popup>

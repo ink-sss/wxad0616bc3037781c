@@ -1,0 +1,18 @@
+<view catchtap="{{m}}" class="{{l}}">
+    <view catchtap="{{k}}" class="pop-content">
+        <view class="recharge-top theme-bg mb30">
+            <view class="recharge-icon left"></view>
+            <view class="recharge-icon right"></view>
+        </view>
+        <view class="f30 gray3 ww100 mb35 tc fb">{{a}}提现</view>
+        <view class="input-box">
+            <input bindinput="{{d}}" placeholder="{{b}}" type="digit" value="{{c}}"></input>
+            <image lazyLoad bindtap="{{f}}" class="input-err" mode="" src="{{e}}"></image>
+        </view>
+        <view class="gray9 f26 tc mt30" style="margin-bottom:56rpx">注:1{{g}} = {{h}} 余额</view>
+        <view class="ww100 d-c-c">
+            <view bindtap="{{i}}" class="sub-btn theme-btn">确认</view>
+            <view bindtap="{{j}}" class="close-btn theme-borderbtn">取消</view>
+        </view>
+    </view>
+</view>

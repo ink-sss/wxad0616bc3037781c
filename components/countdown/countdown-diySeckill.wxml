@@ -1,0 +1,7 @@
+<view class="d-s-c f24">
+    <view class="box" style="{{b}}">{{a}}</view>
+    <text class="p-0-10" style="{{c}}">:</text>
+    <view class="box" style="{{e}}">{{d}}</view>
+    <text class="p-0-10" style="{{f}}">:</text>
+    <view class="box" style="{{h}}">{{g}}</view>
+</view>

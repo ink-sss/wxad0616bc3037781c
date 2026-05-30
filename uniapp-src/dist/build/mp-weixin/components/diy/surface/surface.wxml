@@ -1,0 +1,1 @@
+<view class="{{['data-v-dcb80b6e', 'diy-surface', 'drag', 'optional', 'drag__nomove', c]}}" style="{{d}}"><view class="surface-icon data-v-dcb80b6e" bindtap="{{b}}"><image class="data-v-dcb80b6e" lazy-load mode="aspectFill" src="{{a}}"></image></view></view>

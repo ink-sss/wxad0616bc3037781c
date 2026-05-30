@@ -1,0 +1,29 @@
+<view style="{{'padding-left:'+m+';'+'padding-right:'+n+';'+'padding-top:'+o+';'+'padding-bottom:'+p}}">
+    <view class="diy-store" style="{{'background:'+h+';'+'border-top-left-radius:'+i+';'+'border-top-right-radius:'+j+';'+'border-bottom-left-radius:'+k+';'+'border-bottom-right-radius:'+l}}">
+        <view class="diy-head d-b-c">
+            <view class="left d-s-c">
+                <view class="name">线下门店</view>
+            </view>
+        </view>
+        <view class="p-0-20">
+            <view class="store-item d-s-c p-30-0">
+                <view class="flex-1 o-h">
+                    <view class="ww100 f34 gray3 text-ellipsis">
+                        <text>{{a}}</text>
+                    </view>
+                    <view class="text-ellipsis mt10 f24 gray3">
+                        <text class="gray3">门店地址：</text>
+                        <text class="gray6">{{b}}{{c}}{{d}}{{e}}</text>
+                    </view>
+                    <view class="mt10 f24 phoneCall">
+                        <view>
+                            <text class="gray3">联系电话：</text>
+                            <text class="gray6">{{f}}</text>
+                        </view>
+                        <view bindtap="{{g}}" class="callBtn">拨打</view>
+                    </view>
+                </view>
+            </view>
+        </view>
+    </view>
+</view>

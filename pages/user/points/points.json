@@ -1,0 +1,11 @@
+{
+  "navigationBarTitleText": "积分",
+  "usingComponents": {
+    "uni-load-more": "../../../components/uni-load-more",
+    "recharge": "part/recharge",
+    "header-bar": "/components/header",
+    "request-loading": "/components/liveloading",
+    "tab-bar": "/components/tabbar/footTabbar",
+    "wechat-login": "plugin://wx43134e071b752953/wechat-login"
+  }
+}

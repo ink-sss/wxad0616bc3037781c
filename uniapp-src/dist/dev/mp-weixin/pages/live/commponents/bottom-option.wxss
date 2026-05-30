@@ -1,0 +1,6 @@
+.bottom-option.data-v-17f926e3 { display: flex; align-items: center; gap: 12rpx; padding: 18rpx 20rpx calc(18rpx + env(safe-area-inset-bottom)); background: rgba(0, 0, 0, .55); box-sizing: border-box;
+}
+.comment-input.data-v-17f926e3 { flex: 1; height: 68rpx; padding: 0 24rpx; border-radius: 34rpx; background: #fff; color: #333; font-size: 26rpx;
+}
+.icon-btn.data-v-17f926e3 { min-width: 92rpx; height: 64rpx; line-height: 64rpx; padding: 0 12rpx; border-radius: 8rpx; color: #fff; background: #ff5704; font-size: 24rpx;
+}

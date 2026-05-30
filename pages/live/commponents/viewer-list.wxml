@@ -1,0 +1,68 @@
+<view class="data-v-aeb455d0">
+    <uni-popup bind:__l="__l" class="r data-v-aeb455d0" uI="aeb455d0-0" uP="{{q}}" uR="viewerPup" uS="{{['d']}}" wx:if="{{q}}">
+        <view class="box data-v-aeb455d0">
+            <view class="title data-v-aeb455d0">会员列表</view>
+            <view class="search-view data-v-aeb455d0">
+                <view class="search-icon-view data-v-aeb455d0">
+                    <image class="search-icon data-v-aeb455d0" src="{{a}}"></image>
+                </view>
+                <view class="search-input-view data-v-aeb455d0">
+                    <input clearable bindconfirm="{{b}}" bindinput="{{d}}" class="data-v-aeb455d0" confirmType="search" placeholder="输入昵称、手机号搜索" style="width:100%;font-size:26rpx" value="{{c}}"></input>
+                </view>
+                <view class="fcc data-v-aeb455d0" wx:if="{{e}}">
+                    <uni-icons bind:__l="__l" bindclick="{{f}}" class="data-v-aeb455d0" uI="aeb455d0-1,aeb455d0-0" uP="{{g}}" wx:if="{{g}}"></uni-icons>
+                </view>
+            </view>
+            <view class="filter-box data-v-aeb455d0">
+                <view bindtap="{{i}}" class="filter-btn data-v-aeb455d0">筛选<image class="filter-icon data-v-aeb455d0" src="{{h}}"></image>
+                </view>
+                <view bindtap="{{j}}" class="reset-btn data-v-aeb455d0">重置搜索条件</view>
+            </view>
+            <view class="count-view data-v-aeb455d0">会员列表（共{{k}}人）</view>
+            <scroll-view bindscrolltolower="{{o}}" class="list-view data-v-aeb455d0" lowerThreshold="50" scrollY="true" showScrollbar="{{false}}">
+                <viewer-list-item bind:__l="__l" bindrefresh="{{item.b}}" bindsetTags="{{item.a}}" class="data-v-aeb455d0" uI="{{item.c}}" uP="{{item.d}}" wx:if="{{item.d}}" wx:for="{{l}}" wx:key="e"></viewer-list-item>
+                <view class="d-c-c p30 data-v-aeb455d0" style="height:100%" wx:if="{{m}}">
+                    <text class="iconfont icon-wushuju data-v-aeb455d0"></text>
+                    <text class="cont data-v-aeb455d0">亲，暂无相关记录哦</text>
+                </view>
+                <uni-load-more bind:__l="__l" class="data-v-aeb455d0" uI="aeb455d0-3,aeb455d0-0" uP="{{n||''}}" wx:else></uni-load-more>
+            </scroll-view>
+        </view>
+    </uni-popup>
+    <uni-popup bind:__l="__l" class="r data-v-aeb455d0" uI="aeb455d0-4" uP="{{G}}" uR="tag_box" uS="{{['d']}}" wx:if="{{G}}">
+        <view class="tag-main data-v-aeb455d0">
+            <view class="pop-main data-v-aeb455d0" style="{{C}}">
+                <view class="grade-box data-v-aeb455d0">
+                    <view class="small-title data-v-aeb455d0">会员等级</view>
+                    <view class="grade-list data-v-aeb455d0">
+                        <view bindtap="{{item.d}}" class="{{['grade-list-item','data-v-aeb455d0',item.c&&'active']}}" wx:for="{{r}}" wx:key="b">{{item.a}}</view>
+                        <view bindtap="{{x}}" class="grade-list-item data-v-aeb455d0" wx:if="{{s}}">{{t}}<image class="{{['expand-icon','data-v-aeb455d0',v]}}" src="{{w}}"></image>
+                        </view>
+                    </view>
+                </view>
+                <view class="grade-box mt30 data-v-aeb455d0">
+                    <view class="small-title data-v-aeb455d0">标签</view>
+                    <view class="grade-list data-v-aeb455d0">
+                        <view bindtap="{{item.d}}" class="{{['grade-list-item','data-v-aeb455d0',item.c&&'active']}}" wx:for="{{y}}" wx:key="b">{{item.a}}</view>
+                        <view bindtap="{{B}}" class="grade-list-item data-v-aeb455d0" wx:if="{{z}}">{{A}}</view>
+                    </view>
+                </view>
+            </view>
+            <view class="pop-btn data-v-aeb455d0">
+                <button bindtap="{{D}}" class="sub-tag-left data-v-aeb455d0">取消</button>
+                <button bindtap="{{E}}" class="sub-tag-right data-v-aeb455d0">确定</button>
+            </view>
+        </view>
+    </uni-popup>
+    <uni-popup bind:__l="__l" bindmaskClick="{{N}}" class="r data-v-aeb455d0" uI="aeb455d0-5" uP="{{O}}" uR="setTagPop" uS="{{['d']}}" wx:if="{{O}}">
+        <view class="tag-pop-view data-v-aeb455d0" wx:if="{{H}}">
+            <view class="tag-pop-title data-v-aeb455d0">设置会员标签</view>
+            <uni-icons bind:__l="__l" bindclick="{{I}}" class="pop-tag-close data-v-aeb455d0" uI="aeb455d0-6,aeb455d0-5" uP="{{J}}" wx:if="{{J}}"></uni-icons>
+            <view class="tag-pop-box data-v-aeb455d0">
+                <view bindtap="{{item.e}}" class="{{['data-v-aeb455d0','pop-tag-item',item.g]}}" wx:for="{{K}}" wx:key="f">{{item.a}}<uni-icons bind:__l="__l" class="tag-selected data-v-aeb455d0" uI="{{item.c}}" uP="{{item.d}}" wx:if="{{item.b}}"></uni-icons>
+                </view>
+            </view>
+            <view bindtap="{{L}}" class="tag-pop-btn data-v-aeb455d0">确定</view>
+        </view>
+    </uni-popup>
+</view>

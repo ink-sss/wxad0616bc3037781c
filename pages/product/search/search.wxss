@@ -1,0 +1,40 @@
+.search-wrap .index-search-box .search-box {
+    background: #f7f7f7;
+    border-radius: 50rpx;
+    box-sizing: border-box;
+    color: #999;
+    font-size: 28rpx;
+    height: 64rpx;
+    line-height: 64rpx;
+    overflow: hidden;
+    padding: 0 20rpx
+}
+
+.search-wrap .index-search-box wx-button {
+    background: #fff;
+    border: 1rpx solid #ccc;
+    color: #333;
+    height: 78rpx;
+    line-height: 78rpx
+}
+
+.before-search {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-flow: wrap;
+    flex-flow: wrap;
+    -webkit-justify-content: flex-start;
+    justify-content: flex-start
+}
+
+.before-search .item {
+    background: #f0f2f5;
+    border-radius: 8rpx;
+    color: #686868;
+    font-size: 24rpx;
+    margin-bottom: 16rpx;
+    margin-right: 16rpx;
+    padding: 16rpx
+}

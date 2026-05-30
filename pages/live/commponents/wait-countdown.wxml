@@ -1,0 +1,14 @@
+<view class="live-wait-countdown data-v-fda3e475">
+    <text class="countdown-name data-v-fda3e475">{{a}}</text>
+    <view class="countdown-num data-v-fda3e475">
+        <text class="countdown-text1 data-v-fda3e475">{{b}}</text>
+        <text class="countdown-text data-v-fda3e475">天</text>
+        <text class="countdown-text1 data-v-fda3e475">{{c}}</text>
+        <text class="countdown-text data-v-fda3e475">时</text>
+        <text class="countdown-text1 data-v-fda3e475">{{d}}</text>
+        <text class="countdown-text data-v-fda3e475">分</text>
+        <text class="countdown-text1 data-v-fda3e475">{{e}}</text>
+        <text class="countdown-text data-v-fda3e475">秒</text>
+        <text class="countdown-tips data-v-fda3e475">后开始</text>
+    </view>
+</view>

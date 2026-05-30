@@ -1,0 +1,21 @@
+.diy-service {
+    bottom: 0;
+    position: fixed;
+    right: 0;
+    z-index: 90
+}
+
+.diy-service,.diy-service .service-icon {
+    height: 120rpx;
+    width: 120rpx
+}
+
+.diy-service wx-button.service-icon {
+    background: none;
+    padding: 0
+}
+
+.diy-service .service-icon wx-image {
+    height: 100%;
+    width: 100%
+}

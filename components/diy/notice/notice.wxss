@@ -1,0 +1,37 @@
+.diy-notice {
+    -webkit-align-items: center;
+    align-items: center;
+    border-radius: 6rpx;
+    display: -webkit-flex;
+    display: flex;
+    height: 96rpx;
+    -webkit-justify-content: flex-start;
+    justify-content: flex-start
+}
+
+.diy-notice .notice-icon {
+    height: 64rpx;
+    margin-right: 20rpx;
+    width: 64rpx
+}
+
+.diy-notice .notice-icon wx-image {
+    height: 100%;
+    width: 100%
+}
+
+.diy-notice .notice-text {
+    height: 64rpx;
+    overflow: hidden;
+    position: relative;
+    white-space: nowrap
+}
+
+.transtext {
+    bottom: 0;
+    left: 0;
+    line-height: 64rpx;
+    margin: auto;
+    position: absolute;
+    top: 0
+}

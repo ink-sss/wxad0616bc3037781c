@@ -1,0 +1,11 @@
+<view class="diy-service drag optional drag__nomove" style="{{'right:'+i+';'+'bottom:'+j+';'+'opacity:'+k}}">
+    <view bindtap="{{c}}" class="service-icon" wx:if="{{a}}">
+        <image lazyLoad mode="aspectFill" src="{{b}}"></image>
+    </view>
+    <button class="service-icon" openType="contact" sessionFrom="wxapp" showMessageCard="true" wx:if="{{d}}">
+        <image lazyLoad mode="aspectFill" src="{{e}}"></image>
+    </button>
+    <button bindtap="{{h}}" class="service-icon" wx:if="{{f}}">
+        <image lazyLoad mode="aspectFill" src="{{g}}"></image>
+    </button>
+</view>

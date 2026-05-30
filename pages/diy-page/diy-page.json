@@ -1,0 +1,12 @@
+{
+  "navigationBarTitleText": "页面",
+  "usingComponents": {
+    "diy": "../../components/diy/diy",
+    "share": "../../components/mp-share",
+    "app-share": "../../components/app-share",
+    "header-bar": "/components/header",
+    "request-loading": "/components/liveloading",
+    "tab-bar": "/components/tabbar/footTabbar",
+    "wechat-login": "plugin://wx43134e071b752953/wechat-login"
+  }
+}

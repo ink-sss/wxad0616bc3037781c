@@ -1,0 +1,55 @@
+<view class="h5-live-container data-v-6f071e31" hidden="{{!aW}}">
+    <view class="data-v-6f071e31" wx:if="{{a}}">
+        <view class="live-video data-v-6f071e31" wx:if="{{b}}">
+            <live-player autoplay="{{true}}" bindenterpictureinpicture="{{h}}" bindleavepictureinpicture="{{i}}" bindnetstatus="{{g}}" bindstatechange="{{f}}" class="live-video data-v-6f071e31" id="live-video" maxCache="{{0.8}}" minCache="{{0.2}}" mode="live" objectFit="fillCrop" pictureInPictureInitPosition="(right,20)" pictureInPictureMode="{{e}}" src="{{d}}" wx:if="{{c}}"></live-player>
+            <video autoplay="{{true}}" bindbindenterpictureinpicture="{{o}}" bindbindleavepictureinpicture="{{p}}" bindended="{{r}}" binderror="{{s}}" bindplay="{{t}}" bindtimeupdate="{{q}}" class="live-video data-v-6f071e31" controls="{{false}}" direction="{{90}}" initialTime="{{l}}" loop="{{m}}" nableProgressGesture="{{false}}" objectFit="cover" pictureInPictureInitPosition="(right,20)" pictureInPictureMode="{{n}}" showBottomProgress="{{false}}" showCenterPlayBtn="{{false}}" showFullscreenBtn="{{false}}" showPlayBtn="{{false}}" src="{{k}}" wx:elif="{{j}}"></video>
+        </view>
+        <view class="live-end data-v-6f071e31" wx:if="{{v}}">
+            <view class="live-title data-v-6f071e31">
+                <live-title bind:__l="__l" class="r data-v-6f071e31" uI="6f071e31-0" uP="{{x}}" uR="live_title" wx:if="{{x}}"></live-title>
+                <end-topicon bind:__l="__l" bindgoShop="{{z}}" class="r data-v-6f071e31" uI="6f071e31-1" uP="{{A}}" uR="end-topicon" wx:if="{{A}}"></end-topicon>
+            </view>
+            <image class="live-end-img data-v-6f071e31" mode="" src="https://weilive.yukelive.com/static/xiuxi (1).png"></image>
+            <view class="live-end-text data-v-6f071e31">本场次已结束</view>
+            <view class="bottom-option data-v-6f071e31">
+                <bottom-option bind:__l="__l" bindclearScreen="{{C}}" bindsendBarrage="{{D}}" class="r data-v-6f071e31" uI="6f071e31-2" uP="{{E}}" uR="bottom_option" wx:if="{{E}}"></bottom-option>
+            </view>
+        </view>
+        <view class="live-end data-v-6f071e31" wx:if="{{F}}">
+            <view class="live-title data-v-6f071e31">
+                <live-title bind:__l="__l" class="r data-v-6f071e31" uI="6f071e31-3" uP="{{H}}" uR="live_title" wx:if="{{H}}"></live-title>
+                <end-topicon bind:__l="__l" bindgoShop="{{J}}" class="r data-v-6f071e31" uI="6f071e31-4" uP="{{K}}" uR="end-topicon" wx:if="{{K}}"></end-topicon>
+            </view>
+            <image class="live-end-img data-v-6f071e31" mode="" src="https://weilive.yukelive.com/static/xiuxi (1).png"></image>
+            <view class="live-end-text data-v-6f071e31">{{L}}</view>
+        </view>
+    </view>
+    <view class="live-content data-v-6f071e31" wx:if="{{M}}">
+        <dz-full-screen bind:__l="__l" bindclikeLike="{{O}}" class="dz-screen data-v-6f071e31" uI="6f071e31-5" wx:if="{{N}}"></dz-full-screen>
+        <trtc-live bind:__l="__l" bindcloseLm="{{R}}" class="dz-screen trtcLiveSc r data-v-6f071e31" uI="6f071e31-6" uP="{{S}}" uR="trtc_live_sc" wx:if="{{P}}"></trtc-live>
+        <live-title bind:__l="__l" class="r data-v-6f071e31" uI="6f071e31-7" uP="{{U}}" uR="live_title" wx:if="{{U}}"></live-title>
+        <view class="comment-notice-view live-content-view data-v-6f071e31" wx:if="{{V}}">
+            <uni-notice-bar bind:__l="__l" class="data-v-6f071e31" uI="6f071e31-8" uP="{{W}}" wx:if="{{W}}"></uni-notice-bar>
+        </view>
+        <people-number bind:__l="__l" bindcallBMethod="{{Z}}" bindgoShop="{{Y}}" bindsendLbMsg="{{aa}}" class="r data-v-6f071e31" uI="6f071e31-9" uP="{{ab}}" uR="people_number" wx:if="{{ab}}"></people-number>
+        <manager-permission bind:__l="__l" class="r data-v-6f071e31" uI="6f071e31-10" uP="{{ae}}" uR="manager_permission" wx:if="{{ac}}"></manager-permission>
+        <view class="bottom-option live-content-view data-v-6f071e31" style="{{'margin-bottom:'+aC}}">
+            <barrage-list bind:__l="__l" bindauthSuccess="{{ap}}" bindcartChange="{{aj}}" bindendLive="{{ai}}" bindgoShop="{{ah}}" bindgoTrtc="{{ak}}" bindhideCountdownPoints="{{ar}}" bindhideCountdownRedpack="{{at}}" bindhideLuckyBag="{{am}}" bindluckyBagResult="{{ao}}" bindrefresh="{{al}}" bindsetAssistant="{{av}}" bindshowCountdownPoints="{{aq}}" bindshowCountdownRedpack="{{as}}" bindshowLuckyBag="{{an}}" class="r data-v-6f071e31" uI="6f071e31-11" uP="{{aw}}" uR="barrage_list" wx:if="{{af}}"></barrage-list>
+            <bottom-option bind:__l="__l" bindclearScreen="{{ay}}" bindcloseTrtc="{{aA}}" bindsendBarrage="{{az}}" class="r data-v-6f071e31" uI="6f071e31-12" uP="{{aB}}" uR="bottom_option" wx:if="{{aB}}"></bottom-option>
+        </view>
+        <full-screen-loading bind:__l="__l" class="dz-screen data-v-6f071e31" uI="6f071e31-13" uP="{{aE}}" wx:if="{{aD}}"></full-screen-loading>
+    </view>
+    <view class="live-video live-wait data-v-6f071e31" wx:if="{{aF}}">
+        <view class="cover-img-view data-v-6f071e31" wx:if="{{aG}}">
+            <image class="cover-img data-v-6f071e31" mode="widthFix" src="{{aH}}"></image>
+        </view>
+        <subscribe bind:__l="__l" class="sb-view r data-v-6f071e31" uI="6f071e31-14" uR="sbRef"></subscribe>
+        <wait-countdown bind:__l="__l" bindcountdownEnd="{{aJ}}" class="wait-countdown data-v-6f071e31" uI="6f071e31-15" uP="{{aK}}" wx:if="{{aK}}"></wait-countdown>
+        <view class="bottom-option data-v-6f071e31">
+            <bottom-option bind:__l="__l" bindclearScreen="{{aM}}" bindcloseTrtc="{{aO}}" bindsendBarrage="{{aN}}" class="r data-v-6f071e31" uI="6f071e31-16" uP="{{aP}}" uR="bottom_option" wx:if="{{aP}}"></bottom-option>
+        </view>
+    </view>
+    <user-login bind:__l="__l" bindloginOk="{{aR}}" class="r data-v-6f071e31" style="z-index:200" uI="6f071e31-17" uR="user_login"></user-login>
+    <watch-type-verify bind:__l="__l" bindok="{{aT}}" class="r data-v-6f071e31" uI="6f071e31-18" uP="{{aU}}" uR="watchTypeVerifyRef" wx:if="{{aU}}"></watch-type-verify>
+    <view class="onScreenRecord data-v-6f071e31" wx:if="{{aV}}"></view>
+</view>

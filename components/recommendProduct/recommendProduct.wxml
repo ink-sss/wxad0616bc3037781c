@@ -1,0 +1,22 @@
+<view class="{{['recommend-product',e]}}" data-theme="{{d}}" wx:if="{{a}}">
+    <view class="title d-c-c">
+        <text class="line-left"></text>
+        <text class="name">{{b}}</text>
+        <text class="line-right"></text>
+    </view>
+    <view class="recommend-product-list">
+        <view bindtap="{{item.f}}" class="item" wx:for="{{c}}" wx:key="e">
+            <view class="product-cover">
+                <image lazyLoad mode="aspectFill" src="{{item.a}}"></image>
+            </view>
+            <view class="product-info d-c d-b-s">
+                <view class="product-title">{{item.b}}</view>
+                <view class="flex-1">
+                    <view class="price f24 theme-price">¥<text class="num">{{item.c}}</text>
+                    </view>
+                    <view class="f24 gray9">已售{{item.d}}件</view>
+                </view>
+            </view>
+        </view>
+    </view>
+</view>

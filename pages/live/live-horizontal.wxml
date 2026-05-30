@@ -1,0 +1,54 @@
+<view class="look-box data-v-777498e0" hidden="{{!aH}}">
+    <live-title bind:__l="__l" class="data-v-777498e0" uI="777498e0-0" uP="{{a}}" wx:if="{{a}}"></live-title>
+    <view class="live-box data-v-777498e0">
+        <view bindtap="{{e}}" class="marquee-tips data-v-777498e0" wx:if="{{b}}">
+            <view class="tips-title data-v-777498e0">广播：</view>
+            <view class="marquee-container data-v-777498e0">
+                <uni-notice-bar bind:__l="__l" class="marquee-text data-v-777498e0" uI="777498e0-1" uP="{{c}}" wx:if="{{c}}"></uni-notice-bar>
+            </view>
+            <uni-icon bind:__l="__l" class="data-v-777498e0" uI="777498e0-2" uP="{{d}}" wx:if="{{d}}"></uni-icon>
+        </view>
+        <coupon-claim bind:__l="__l" class="coupon-claim-horizontal data-v-777498e0" uI="777498e0-3" wx:if="{{f}}"></coupon-claim>
+        <view class="live-video data-v-777498e0" wx:if="{{g}}">
+            <live-player controls autoplay="{{true}}" bindenterpictureinpicture="{{t}}" bindfullscreenchange="{{w}}" bindleavepictureinpicture="{{v}}" bindnetstatus="{{s}}" bindstatechange="{{r}}" bindtap="{{x}}" class="live-video data-v-777498e0" id="live-video" maxCache="{{0.8}}" minCache="{{0.2}}" objectFit="contain" pictureInPictureInitPosition="(right,20)" pictureInPictureMode="{{q}}" src="{{p}}" wx:if="{{h}}">
+                <view class="data-v-777498e0"></view>
+                <view class="live-utils data-v-777498e0" wx:if="{{i}}">
+                    <view class="bottom-control data-v-777498e0">
+                        <view class="data-v-777498e0"></view>
+                        <view class="{{['utils-right','data-v-777498e0',o]}}">
+                            <image bindtap="{{k}}" class="full-screen data-v-777498e0" mode="widthFix" src="{{l}}" wx:if="{{j}}"></image>
+                            <image bindtap="{{m}}" class="full-screen-qp data-v-777498e0" mode="widthFix" src="{{n}}" wx:else></image>
+                        </view>
+                    </view>
+                </view>
+            </live-player>
+            <video controls autoplay="{{true}}" bindbindenterpictureinpicture="{{E}}" bindbindleavepictureinpicture="{{F}}" bindended="{{J}}" binderror="{{K}}" bindplay="{{L}}" bindtimeupdate="{{I}}" class="live-video data-v-777498e0" direction="{{90}}" enableProgressGesture="{{H}}" initialTime="{{z}}" loop="{{true}}" objectFit="contain" pictureInPictureInitPosition="(right,20)" pictureInPictureMode="{{D}}" showBottomProgress="{{C}}" showPlayBtn="{{G}}" showProgress="{{B}}" src="{{A}}" wx:elif="{{y}}"></video>
+        </view>
+        <view class="cover-img-view data-v-777498e0" wx:if="{{M}}">
+            <image class="cover-img data-v-777498e0" mode="heightFix" src="{{N}}"></image>
+        </view>
+        <subscribe bind:__l="__l" class="r data-v-777498e0" uI="777498e0-4" uR="sbRef"></subscribe>
+        <wait-countdown bind:__l="__l" bindcountdownEnd="{{R}}" class="{{['data-v-777498e0',Q]}}" uI="777498e0-5" uP="{{S}}" wx:if="{{P}}"></wait-countdown>
+    </view>
+    <view class="live-end data-v-777498e0" wx:if="{{T}}">
+        <image class="live-end-img data-v-777498e0" mode="" src="https://weilive.yukelive.com/static/xiuxi (1).png"></image>
+        <view class="live-end-text data-v-777498e0">本场次已结束</view>
+        <bottom-option bind:__l="__l" bindclearScreen="{{W}}" bindsendBarrage="{{V}}" class="bottom-option r data-v-777498e0" uI="777498e0-6" uP="{{X}}" uR="bottom_option" wx:if="{{X}}"></bottom-option>
+    </view>
+    <view class="live-end data-v-777498e0" wx:if="{{Y}}">
+        <people-number bind:__l="__l" bindgoShop="{{aa}}" class="r data-v-777498e0" uI="777498e0-7" uP="{{ab}}" uR="people_number" wx:if="{{ab}}"></people-number>
+        <image class="live-end-img data-v-777498e0" mode="" src="https://weilive.yukelive.com/static/xiuxi (1).png"></image>
+        <view class="live-end-text data-v-777498e0">{{ac}}</view>
+    </view>
+    <view class="content-box data-v-777498e0" style="{{aG}}" wx:if="{{ad}}">
+        <people-number bind:__l="__l" bindgoShop="{{af}}" bindsendLbMsg="{{ag}}" class="r data-v-777498e0" uI="777498e0-8" uP="{{ah}}" uR="people_number" wx:if="{{ah}}"></people-number>
+        <manager-permission bind:__l="__l" class="r data-v-777498e0" uI="777498e0-9" uP="{{ak}}" uR="manager_permission" wx:if="{{ai}}"></manager-permission>
+        <barrage-list-horizontal bind:__l="__l" bindauthSuccess="{{av}}" bindcartChange="{{ap}}" bindendLive="{{ao}}" bindgoShop="{{an}}" bindhideCountdownPoints="{{ax}}" bindhideCountdownRedpack="{{az}}" bindhideLuckyBag="{{ar}}" bindluckyBagResult="{{at}}" bindrefresh="{{aq}}" bindsetAssistant="{{aA}}" bindshowCountdownPoints="{{aw}}" bindshowCountdownRedpack="{{ay}}" bindshowLuckyBag="{{as}}" bindswiperChange="{{am}}" class="barrage_list r data-v-777498e0" uI="777498e0-10" uP="{{aB}}" uR="barrage_list" wx:if="{{aB}}"></barrage-list-horizontal>
+        <bottom-option bind:__l="__l" bindclearScreen="{{aE}}" bindsendBarrage="{{aD}}" class="bottom-option r data-v-777498e0" uI="777498e0-11" uP="{{aF}}" uR="bottom_option" wx:if="{{aF}}"></bottom-option>
+    </view>
+</view>
+<user-login bind:__l="__l" bindloginOk="{{aJ}}" class="r data-v-777498e0" uI="777498e0-12" uR="user_login"></user-login>
+<sign-in bind:__l="__l" bindmanualEnd="{{aP}}" bindsigninFail="{{aO}}" bindsigninSuccess="{{aN}}" bindtaskEnd="{{aM}}" class="r data-v-777498e0" uI="777498e0-13" uP="{{aQ}}" uR="signInRef" wx:if="{{aK}}"></sign-in>
+<check-in bind:__l="__l" bindcallBMethod="{{aS}}" class="r data-v-777498e0" uI="777498e0-14" uP="{{aT}}" uR="checkInRef" wx:if="{{aT}}"></check-in>
+<watch-type-verify bind:__l="__l" bindok="{{aV}}" class="r data-v-777498e0" uI="777498e0-15" uP="{{aW}}" uR="watchTypeVerifyRef" wx:if="{{aW}}"></watch-type-verify>
+<view class="onScreenRecord data-v-777498e0" wx:if="{{aX}}"></view>

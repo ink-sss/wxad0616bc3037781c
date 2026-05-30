@@ -1,0 +1,46 @@
+<view class="data-v-dfe9cc39">
+    <uni-popup bind:__l="__l" class="r data-v-dfe9cc39" uI="dfe9cc39-0" uP="{{k}}" uR="inviteRecord" uS="{{['d']}}" wx:if="{{k}}">
+        <view class="record-box data-v-dfe9cc39">
+            <view class="top-head data-v-dfe9cc39">
+                <text class="head-more data-v-dfe9cc39">邀请记录</text>
+                <view class="head-r data-v-dfe9cc39">
+                    <view bindtap="{{b}}" class="head-option data-v-dfe9cc39">
+                        <image class="order-pic data-v-dfe9cc39" mode="widthFix" src="{{a}}"></image>
+                        <text class="data-v-dfe9cc39">更新数据</text>
+                    </view>
+                </view>
+            </view>
+            <view class="top-box data-v-dfe9cc39">
+                <view class="index-search-box_re d-b-c data-v-dfe9cc39">
+                    <view class="index-search_re flex-1 data-v-dfe9cc39">
+                        <input bindconfirm="{{c}}" bindinput="{{e}}" class="flex-1 f26 gray3 data-v-dfe9cc39" confirmType="search" placeholder="请输入昵称" placeholderClass="f26 gray9" type="text" value="{{d}}"></input>
+                        <text class="icon iconfont icon-sousuo data-v-dfe9cc39"></text>
+                    </view>
+                </view>
+            </view>
+            <scroll-view scrollWithAnimation bindscrolltolower="{{i}}" class="list-sc data-v-dfe9cc39" enablePassive="{{true}}" scrollY="{{true}}" showScrollbar="{{false}}">
+                <view class="data-v-dfe9cc39" wx:if="{{f}}">
+                    <view class="record-item data-v-dfe9cc39" wx:for="{{g}}" wx:key="g">
+                        <view class="member-cover data-v-dfe9cc39">
+                            <image class="data-v-dfe9cc39" mode="aspectFill" src="{{item.b}}" wx:if="{{item.a}}"></image>
+                            <image class="data-v-dfe9cc39" mode="aspectFill" src="{{item.c}}" wx:else></image>
+                        </view>
+                        <view class="member-info data-v-dfe9cc39">
+                            <view class="member-info-top data-v-dfe9cc39">
+                                <view class="nick-tag data-v-dfe9cc39">{{item.d}}</view>
+                                <view class="look-time data-v-dfe9cc39">观看时长<view class="data-v-dfe9cc39"></view>{{item.e}}</view>
+                            </view>
+                            <view class="member-info-bottom data-v-dfe9cc39">
+                                <text class="data-v-dfe9cc39">注册: {{item.f}}</text>
+                            </view>
+                        </view>
+                    </view>
+                </view>
+                <view class="empty-state data-v-dfe9cc39" wx:if="{{h}}">
+                    <text class="icon iconfont icon-wushuju data-v-dfe9cc39"></text>
+                    <text class="empty-text data-v-dfe9cc39">暂无记录</text>
+                </view>
+            </scroll-view>
+        </view>
+    </uni-popup>
+</view>

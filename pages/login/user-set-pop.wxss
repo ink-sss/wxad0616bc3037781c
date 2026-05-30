@@ -1,0 +1,124 @@
+.set-user.data-v-d54df80d {
+    background-color: #fff;
+    border-radius: 20rpx 20rpx 0 0;
+    height: 550rpx;
+    width: 750rpx
+}
+
+.set-box.data-v-d54df80d {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    height: 80%;
+    -webkit-justify-content: space-around;
+    justify-content: space-around
+}
+
+.set-top.data-v-d54df80d {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-flow: row;
+    flex-flow: row;
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+    padding: 20rpx 10rpx
+}
+
+.set-top-head.data-v-d54df80d {
+    font-size: 32rpx
+}
+
+.set-no.data-v-d54df80d {
+    opacity: 0
+}
+
+.set-close.data-v-d54df80d {
+    color: #b6b6b6
+}
+
+.avatar-box.data-v-d54df80d {
+    -webkit-align-items: center;
+    align-items: center;
+    background: #fff;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    height: 161rpx;
+    -webkit-justify-content: center;
+    justify-content: center
+}
+
+.avatar-box .info-image.data-v-d54df80d {
+    background: none;
+    border: none;
+    overflow: initial;
+    padding: 0;
+    position: relative
+}
+
+.avatar-box .info-image .ava-image.data-v-d54df80d,.avatar-box .info-image.data-v-d54df80d {
+    border-radius: 50%;
+    height: 128rpx;
+    width: 128rpx
+}
+
+.avatar-box .info-image .icon.iconfont.data-v-d54df80d {
+    -webkit-align-items: center;
+    align-items: center;
+    background: rgba(0,0,0,.55);
+    border-radius: 50%;
+    bottom: 0;
+    color: #fff;
+    display: -webkit-flex;
+    display: flex;
+    font-size: 28rpx;
+    height: 46rpx;
+    -webkit-justify-content: center;
+    justify-content: center;
+    position: absolute;
+    right: 0;
+    width: 46rpx;
+    z-index: 1
+}
+
+.info-image.data-v-d54df80d {
+    margin-right: 20rpx
+}
+
+.info-image wx-image.data-v-d54df80d,.info-image.data-v-d54df80d {
+    border-radius: 10rpx;
+    height: 112rpx;
+    width: 112rpx
+}
+
+.set-nickname.data-v-d54df80d {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-flow: row;
+    flex-flow: row;
+    font-size: 30rpx;
+    -webkit-justify-content: center;
+    justify-content: center
+}
+
+.set-nickname .nickname-i.data-v-d54df80d {
+    margin-left: 20rpx
+}
+
+.sub-btn.data-v-d54df80d {
+    border-radius: 44rpx;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-flow: row;
+    flex-flow: row;
+    font-size: 30rpx;
+    font-weight: 700;
+    height: 68rpx;
+    -webkit-justify-content: center;
+    justify-content: center;
+    line-height: 68rpx;
+    margin: 0 auto;
+    width: 692rpx
+}

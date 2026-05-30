@@ -1,0 +1,42 @@
+<view>
+    <view>
+        <view class="drag optional" style="{{'padding:'+ag+';'+'background:'+ah}}">
+            <view catchtap="{{af}}" class="{{['diy-title',ac]}}" style="{{'background:'+ad+';'+'border-radius:'+ae}}">
+                <view style="{{'color:'+c+';'+'font-size:'+d}}" wx:if="{{a}}">{{b}}</view>
+                <view class="type8-before" style="{{'background:'+f+';'+'height:'+g}}" wx:if="{{e}}"></view>
+                <view class="d-b-c">
+                    <text class="text-type6" style="{{'color:'+j+';'+'font-size:'+k}}" wx:if="{{h}}">{{i}}</text>
+                    <view class="text-type4" wx:if="{{l}}">
+                        <view class="line" style="{{'background:'+m}}"></view>
+                        <view class="dot" style="{{'border-color:'+n}}"></view>
+                    </view>
+                    <view class="text-type1" style="margin-right:20rpx" wx:if="{{o}}">
+                        <text class="line fb op3" style="{{'color:'+p}}"></text>
+                        <text class="line fb" style="{{'color:'+q}}"></text>
+                    </view>
+                    <text class="{{['title-text','text-ellipsis','pr',s&&'noBg']}}" style="{{'color:'+t+';'+'background:'+v+';'+'font-size:'+w+';'+'font-weight:'+x}}">{{r}}</text>
+                    <view class="text-type4" wx:if="{{y}}">
+                        <view class="dot" style="{{'border-color:'+z}}"></view>
+                        <view class="line" style="{{'background:'+A}}"></view>
+                    </view>
+                    <view class="text-type1" style="margin-left:40rpx" wx:if="{{B}}">
+                        <text class="line fb" style="{{'color:'+C}}"></text>
+                        <text class="line fb op3" style="{{'color:'+D}}"></text>
+                    </view>
+                    <view class="title-line" style="{{'background:'+F}}" wx:if="{{E}}"></view>
+                    <view class="title-line3" wx:if="{{G}}">
+                        <view class="block3"></view>
+                    </view>
+                </view>
+                <view class="flex-1 d-s-c" wx:if="{{H}}">
+                    <view class="type8-subbox" style="{{'color:'+K+';'+'font-size:'+L+';'+'background:'+M}}" wx:if="{{I}}">{{J}}</view>
+                </view>
+                <view catchtap="{{P}}" class="more" style="{{'color:'+Q}}" wx:if="{{N}}">{{O}}</view>
+                <view class="type7-subbox" style="{{'color:'+T+';'+'font-size:'+U+';'+'background:'+V}}" wx:if="{{R}}">{{S}}</view>
+                <view class="block5" wx:if="{{W}}"></view>
+                <view class="block6" wx:if="{{X}}"></view>
+                <view style="{{'color:'+aa+';'+'font-size:'+ab}}" wx:if="{{Y}}">{{Z}}</view>
+            </view>
+        </view>
+    </view>
+</view>

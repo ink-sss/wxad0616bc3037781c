@@ -1,0 +1,88 @@
+.diy-window {
+    overflow: hidden
+}
+
+.diy-window .data-list {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap
+}
+
+.diy-window wx-image {
+    height: 100%;
+    width: 100%
+}
+
+.diy-window .data-list.column__2 .item {
+    width: 50%
+}
+
+.diy-window .data-list.column__3 .item {
+    width: 33.333333333333%
+}
+
+.diy-window .data-list.column__4 .item {
+    width: 25%
+}
+
+.diy-window .data-list.column__2 .item {
+    padding-top: 50%;
+    position: relative
+}
+
+.diy-window .data-list.column__3 .item {
+    padding-top: 33.3333333%;
+    position: relative
+}
+
+.diy-window .data-list.column__4 .item {
+    padding-top: 25%;
+    position: relative
+}
+
+.diy-window .data-list .item .item-image,.diy-window .display .img-box {
+    box-sizing: border-box;
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%
+}
+
+.diy-window .display {
+    display: -webkit-flex;
+    display: flex
+}
+
+.diy-window .display .img-box-wrap-1 {
+    padding-top: 50%;
+    position: relative;
+    width: 50%
+}
+
+.diy-window .display .img-box-wrap-2 {
+    height: 50%;
+    position: relative;
+    width: 100%
+}
+
+.diy-window .display .percent-w50 {
+    box-sizing: border-box;
+    width: 50%
+}
+
+.diy-window .display .img-box .item-image {
+    height: 100%
+}
+
+.diy-window .display .img-box-wrap-3 {
+    height: 50%;
+    width: 100%
+}
+
+.diy-window .display .img-box-wrap-4 {
+    height: 100%;
+    position: relative;
+    width: 50%
+}

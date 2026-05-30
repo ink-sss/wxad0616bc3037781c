@@ -1,0 +1,30 @@
+<view class="data-v-68d5928e" style="flex:1">
+    <view bindtap="{{b}}" class="d-b-c store-item-info data-v-68d5928e" wx:if="{{a}}">
+        <view class="add-info d-s-c data-v-68d5928e">
+            <view class="icon-box mr10 data-v-68d5928e">
+                <text class="icon iconfont icon-dizhi data-v-68d5928e"></text>
+            </view>
+            <text class="f28 gray3 data-v-68d5928e">请选择自提点</text>
+        </view>
+        <text class="iconfont icon-jiantou data-v-68d5928e"></text>
+    </view>
+    <view bindtap="{{i}}" class="d-b-c store-item-info data-v-68d5928e" wx:else>
+        <view class="add-info data-v-68d5928e">
+            <view class="info d-s-s mb16 data-v-68d5928e">
+                <text class="tips-box theme-borderbtn data-v-68d5928e">当前自提点</text>
+                <view class="f24 gray9 d-s-s flex-1 data-v-68d5928e">
+                    <text class="data-v-68d5928e">{{c}}</text>
+                    <text class="data-v-68d5928e">{{d}}</text>
+                    <text class="data-v-68d5928e">{{e}}</text>
+                </view>
+            </view>
+            <view class="f28 gray3 mb16 data-v-68d5928e">{{f}}</view>
+            <view class="f24 gray9 data-v-68d5928e">
+                <text class="data-v-68d5928e">{{g}}</text>
+                <text class="ml10 data-v-68d5928e">{{h}}</text>
+            </view>
+        </view>
+        <text class="iconfont icon-jiantou data-v-68d5928e"></text>
+    </view>
+    <adress bind:__l="__l" bindclose="{{j}}" class="data-v-68d5928e" uI="68d5928e-0" uP="{{k}}" wx:if="{{k}}"></adress>
+</view>

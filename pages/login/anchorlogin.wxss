@@ -1,0 +1,233 @@
+wx-page.data-v-df58a860 {
+    background: #fff;
+    background-color: #fff
+}
+
+.login-container.data-v-df58a860 {
+    background-color: #fff;
+    min-height: 100vh;
+    padding: 0 68rpx;
+    position: relative
+}
+
+.login_topbpx.data-v-df58a860 {
+    padding: 148rpx 0 52rpx
+}
+
+.login_tit.data-v-df58a860 {
+    color: #000;
+    font-size: 38rpx;
+    font-weight: 700;
+    margin-bottom: 28rpx
+}
+
+.login_top.data-v-df58a860 {
+    color: #000;
+    font-size: 26rpx
+}
+
+.login-container .form-level.data-v-df58a860 {
+    border-bottom: 1px solid #eee;
+    height: 99rpx;
+    line-height: 99rpx;
+    padding-top: 19rpx
+}
+
+.login-container .form-level .login-input.data-v-df58a860 {
+    -webkit-flex: 1;
+    flex: 1;
+    font-size: 26rpx;
+    height: 99rpx;
+    line-height: 99rpx
+}
+
+.get-code-btn.data-v-df58a860 {
+    background-color: #fff;
+    border-radius: 50rpx;
+    box-sizing: border-box;
+    font-size: 26rpx;
+    height: 58rpx;
+    line-height: 58rpx;
+    min-width: 182rpx;
+    padding: 0rpx 30rpx;
+    white-space: nowrap
+}
+
+[data-theme=theme0] .get-code-btn.data-v-df58a860 {
+    color: #ff5704!important
+}
+
+[data-theme=theme1] .get-code-btn.data-v-df58a860 {
+    color: #19ad57!important
+}
+
+[data-theme=theme2] .get-code-btn.data-v-df58a860 {
+    color: #fc0!important
+}
+
+[data-theme=theme3] .get-code-btn.data-v-df58a860 {
+    color: #33a7ff!important
+}
+
+[data-theme=theme4] .get-code-btn.data-v-df58a860 {
+    color: #e4e4e4!important
+}
+
+[data-theme=theme5] .get-code-btn.data-v-df58a860 {
+    color: #c8ba97!important
+}
+
+[data-theme=theme6] .get-code-btn.data-v-df58a860 {
+    color: #623ceb!important
+}
+
+.get-code-btn[disabled=true].data-v-df58a860 {
+    background: #f7f7f7
+}
+
+.sub-btn.data-v-df58a860 {
+    border-radius: 45rpx;
+    font-size: 30rpx;
+    font-weight: 700;
+    height: 88rpx;
+    line-height: 88rpx;
+    margin: 30rpx auto 28rpx;
+    width: 596rpx
+}
+
+.bottom_nav.data-v-df58a860 {
+    bottom: 100rpx;
+    position: absolute;
+    width: 100%
+}
+
+.bottom-box.data-v-df58a860 {
+    margin: 0 auto;
+    width: 70%
+}
+
+.other_tit.data-v-df58a860 {
+    background-color: #cacaca;
+    height: 1rpx;
+    line-height: 1rpx;
+    text-align: center;
+    width: 100%
+}
+
+.weixin_box.data-v-df58a860 {
+    background-color: #04be01;
+    border-radius: 50%;
+    height: 80rpx;
+    line-height: 80rpx;
+    text-align: center;
+    width: 80rpx
+}
+
+.weixin_box .icon-weixin.data-v-df58a860 {
+    color: #fff;
+    font-size: 40rpx
+}
+
+.skip.data-v-df58a860 {
+    color: #999;
+    font-size: 26rpx;
+    position: absolute;
+    right: 66rpx;
+    top: 70rpx
+}
+
+.xieyi-box.data-v-df58a860 {
+    bottom: 62rpx;
+    left: 0;
+    position: fixed;
+    width: 100%
+}
+
+.agreement.data-v-df58a860 {
+    -webkit-align-items: center;
+    align-items: center;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    box-sizing: border-box;
+    color: #fff;
+    display: -webkit-flex;
+    display: flex;
+    font-size: 18rpx;
+    font-weight: 700;
+    height: 28rpx;
+    -webkit-justify-content: center;
+    justify-content: center;
+    margin-right: 10rpx;
+    position: relative;
+    width: 28rpx
+}
+
+[data-theme=theme0] .agreement.active.data-v-df58a860 {
+    background-color: #ff5704!important
+}
+
+[data-theme=theme1] .agreement.active.data-v-df58a860 {
+    background-color: #19ad57!important
+}
+
+[data-theme=theme2] .agreement.active.data-v-df58a860 {
+    background-color: #fc0!important
+}
+
+[data-theme=theme3] .agreement.active.data-v-df58a860 {
+    background-color: #33a7ff!important
+}
+
+[data-theme=theme4] .agreement.active.data-v-df58a860 {
+    background-color: #e4e4e4!important
+}
+
+[data-theme=theme5] .agreement.active.data-v-df58a860 {
+    background-color: #c8ba97!important
+}
+
+[data-theme=theme6] .agreement.active.data-v-df58a860 {
+    background-color: #623ceb!important
+}
+
+[data-theme=theme0] .agreement.active.data-v-df58a860 {
+    border-color: #ff5704!important
+}
+
+[data-theme=theme1] .agreement.active.data-v-df58a860 {
+    border-color: #19ad57!important
+}
+
+[data-theme=theme2] .agreement.active.data-v-df58a860 {
+    border-color: #fc0!important
+}
+
+[data-theme=theme3] .agreement.active.data-v-df58a860 {
+    border-color: #33a7ff!important
+}
+
+[data-theme=theme4] .agreement.active.data-v-df58a860 {
+    border-color: #e4e4e4!important
+}
+
+[data-theme=theme5] .agreement.active.data-v-df58a860 {
+    border-color: #c8ba97!important
+}
+
+[data-theme=theme6] .agreement.active.data-v-df58a860 {
+    border-color: #623ceb!important
+}
+
+.wechatapp.data-v-df58a860 {
+    margin-bottom: 72rpx;
+    padding: 120rpx 0 48rpx;
+    text-align: center
+}
+
+.wechatapp .logo-image.data-v-df58a860 {
+    border-radius: 50%;
+    height: 145rpx;
+    margin: 0 auto 20rpx;
+    width: 145rpx
+}

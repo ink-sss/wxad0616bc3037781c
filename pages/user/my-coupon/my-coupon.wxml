@@ -1,0 +1,80 @@
+<view class="{{['data-v-588fa5e0',p]}}" data-theme="{{o}}">
+    <view class="top-tabbar data-v-588fa5e0">
+        <view bindtap="{{b}}" class="{{['data-v-588fa5e0',a]}}">未使用</view>
+        <view bindtap="{{d}}" class="{{['data-v-588fa5e0',c]}}">已使用</view>
+        <view bindtap="{{f}}" class="{{['data-v-588fa5e0',e]}}">已过期</view>
+    </view>
+    <scroll-view bindscrolltolower="{{n}}" bindscrolltoupper="{{m}}" class="scroll-Y data-v-588fa5e0" lowerThreshold="50" scrollY="true" style="{{l}}">
+        <view class=" data-v-588fa5e0">
+            <block wx:if="{{g}}">
+                <view class="item-wrap mb20 data-v-588fa5e0" wx:for="{{h}}" wx:for-item="v" wx:key="d">
+                    <view class="d-f data-v-588fa5e0" wx:if="{{v.a}}">
+                        <text class="icon iconfont icon-stores data-v-588fa5e0"></text>
+                        <view class="con_tit data-v-588fa5e0">{{v.b}}</view>
+                    </view>
+                    <view class="mb20 data-v-588fa5e0" style="background-color:#ffffff;border-radius:15rpx" wx:for="{{v.c}}" wx:key="z">
+                        <view class="{{['data-v-588fa5e0',item.t]}}">
+                            <image lazyLoad class="coupon-disabled data-v-588fa5e0" mode="" src="{{item.b}}" wx:if="{{item.a}}"></image>
+                            <image lazyLoad class="coupon-disabled data-v-588fa5e0" mode="" src="{{item.d}}" wx:if="{{item.c}}"></image>
+                            <view class="operation d-b-c data-v-588fa5e0">
+                                <view class="flex-1 coupon-content data-v-588fa5e0">
+                                    <view class="mb20 text-ellipsis data-v-588fa5e0">
+                                        <text class="f40 fb data-v-588fa5e0">{{item.e}}</text>
+                                    </view>
+                                    <view class="f22 gray9 mb20 data-v-588fa5e0">
+                                        <block wx:if="{{item.f}}">有效期：领取{{item.g}}天内有效</block>
+                                        <block wx:if="{{item.h}}">有效期：{{item.i}}至{{item.j}}</block>
+                                    </view>
+                                </view>
+                                <view class="right-box d-c-c d-c data-v-588fa5e0">
+                                    <view class="theme-price mb10 data-v-588fa5e0" wx:if="{{item.k}}">
+                                        <text class="f24 data-v-588fa5e0">￥</text>
+                                        <text class="f52 fb data-v-588fa5e0">{{item.l}}</text>
+                                    </view>
+                                    <view class="mb10 theme-price data-v-588fa5e0" wx:if="{{item.m}}">
+                                        <text class="f52 fb data-v-588fa5e0">{{item.n}}</text>
+                                        <text class="f24 data-v-588fa5e0">折</text>
+                                    </view>
+                                    <view class="f24 mb10 data-v-588fa5e0">{{item.o}}</view>
+                                    <block wx:if="{{item.p}}">
+                                        <view catchtap="{{item.r}}" class="f26 coupon-btn theme-btn data-v-588fa5e0" wx:if="{{item.q}}">去使用</view>
+                                        <view catchtap="{{item.s}}" class="f26 coupon-btn theme-btn data-v-588fa5e0" wx:else>去使用</view>
+                                    </block>
+                                </view>
+                            </view>
+                        </view>
+                        <view catchtap="{{item.w}}" class="range_item d-b-c data-v-588fa5e0" wx:if="{{item.v}}">
+                            <view class="gray9 f24 data-v-588fa5e0">限指定部分商品<text class="icon iconfont icon-jiantou data-v-588fa5e0" style="color:#999999;font-size:22rpx"></text>
+                            </view>
+                            <view class="gray9 f24 data-v-588fa5e0">本券不支持转赠</view>
+                        </view>
+                        <view catchtap="{{item.y}}" class="range_item d-b-c data-v-588fa5e0" wx:elif="{{item.x}}">
+                            <view class="gray9 f24 data-v-588fa5e0">限指定分类商品<text class="icon iconfont icon-jiantou data-v-588fa5e0" style="color:#999999;font-size:22rpx"></text>
+                            </view>
+                            <view class="gray9 f24 data-v-588fa5e0">本券不支持转赠</view>
+                        </view>
+                        <view class="range_item d-b-c data-v-588fa5e0" wx:else>
+                            <view class="gray9 f24 data-v-588fa5e0">全场通用<text class="icon iconfont icon-jiantou data-v-588fa5e0" style="color:#999999;font-size:22rpx"></text>
+                            </view>
+                            <view class="gray9 f24 data-v-588fa5e0">本券不支持转赠</view>
+                        </view>
+                    </view>
+                </view>
+            </block>
+            <view class=" data-v-588fa5e0">
+                <view class="bottom-refresh data-v-588fa5e0">
+                    <view class="d-c-c p30 data-v-588fa5e0" wx:if="{{i}}">
+                        <text class="gray3 data-v-588fa5e0">加载中...</text>
+                    </view>
+                    <view class="d-c-c p30 data-v-588fa5e0" wx:if="{{j}}">
+                        <text class="gray3 data-v-588fa5e0">~~加载完成~~</text>
+                    </view>
+                </view>
+            </view>
+            <view class="d-c-c p30 data-v-588fa5e0" wx:if="{{k}}">
+                <text class="iconfont icon-wushuju data-v-588fa5e0"></text>
+                <text class="cont data-v-588fa5e0">亲，暂无相关记录哦</text>
+            </view>
+        </view>
+    </scroll-view>
+</view>

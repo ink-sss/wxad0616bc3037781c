@@ -1,0 +1,13 @@
+<view catchtap="{{f}}">
+    <view class="foot-bottom" wx:if="{{a}}"></view>
+    <view class="foot-tavbar-container d-a-c" style="{{c}}">
+        <view bindtap="{{item.i}}" class="{{['item','d-c-c',item.h&&'active']}}" wx:if="{{item.a}}" wx:for="{{b}}" wx:key="j">
+            <view style="height:0;width:0;opacity:0">{{item.b}}</view>
+            <view class="inner d-c-c d-c">
+                <image lazyLoad mode="aspectFill" src="{{item.d}}" wx:if="{{item.c}}"></image>
+                <text class="text-name" style="{{item.g}}" wx:if="{{item.e}}">{{item.f}}</text>
+            </view>
+        </view>
+    </view>
+    <bind-mobile bind:__l="__l" class="r" uI="155a5a46-0" uP="{{e}}" uR="bindmobile" wx:if="{{e}}"></bind-mobile>
+</view>

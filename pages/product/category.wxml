@@ -1,0 +1,111 @@
+<view class="{{['category-wrap',S]}}" data-theme="{{R}}">
+    <view class="index-search-box-cate d-b-c" id="searchBox" style="{{c}}">
+        <view bindtap="{{b}}" class="index-search-cate flex-1 t-c">
+            <text class="icon iconfont icon-sousuo"></text>
+            <text class="ml10">{{a}}</text>
+        </view>
+        <view class="wx-top-right"></view>
+    </view>
+    <view class="category-content">
+        <view class="cotegory-type cotegory-type-1" wx:if="{{d}}">
+            <scroll-view class="scroll-Y" scrollY="true" style="{{f}}">
+                <view class="list cotegory-padding">
+                    <view bindtap="{{item.d}}" class="item" wx:for="{{e}}" wx:key="c">
+                        <view class="pic">
+                            <image lazyLoad mode="widthFix" src="{{item.a}}"></image>
+                        </view>
+                        <view class="p-20-0 tc f28">{{item.b}}</view>
+                    </view>
+                </view>
+            </scroll-view>
+        </view>
+        <view class="cotegory-type cotegory-type-3" wx:if="{{g}}">
+            <view class="category-tab f-s-0" wx:if="{{h}}">
+                <scroll-view class="scroll-Y" scrollY="true" style="{{j}}">
+                    <view class="cotegory-padding">
+                        <view bindtap="{{item.d}}" class="{{item.b}}" wx:for="{{i}}" wx:key="c">
+                            <text>{{item.a}}</text>
+                        </view>
+                    </view>
+                </scroll-view>
+            </view>
+            <view class="category-tab f-s-0" wx:if="{{k}}">
+                <scroll-view class="scroll-Y" scrollY="true" style="{{m}}">
+                    <view class="cotegory-padding">
+                        <view bindtap="{{item.d}}" class="{{item.b}}" wx:for="{{l}}" wx:key="c">
+                            <text>{{item.a}}</text>
+                        </view>
+                    </view>
+                </scroll-view>
+            </view>
+            <view class="cotegory-type cotegory-type-2 flex-1" wx:if="{{n}}">
+                <scroll-view class="scroll-Y" scrollY="true" style="{{p}}">
+                    <view class="list cotegory-padding">
+                        <view bindtap="{{item.d}}" class="item" wx:for="{{o}}" wx:key="c">
+                            <image lazyLoad mode="widthFix" src="{{item.a}}"></image>
+                            <text>{{item.b}}</text>
+                        </view>
+                    </view>
+                </scroll-view>
+            </view>
+            <view class="cotegory-type cotegory-type-2 flex-1" wx:if="{{q}}">
+                <scroll-view class="scroll-Y" scrollY="true" style="{{s}}">
+                    <view class="list cotegory-padding">
+                        <view bindtap="{{item.d}}" class="item" wx:for="{{r}}" wx:key="c">
+                            <image lazyLoad mode="widthFix" src="{{item.a}}"></image>
+                            <text>{{item.b}}</text>
+                        </view>
+                    </view>
+                </scroll-view>
+            </view>
+            <view class="category-content pr" wx:if="{{t}}">
+                <scroll-view bindscrolltolower="{{y}}" class="scroll-Y scroll-3" lowerThreshold="10" scrollY="true" style="{{z}}">
+                    <view class="catescroll2-top" wx:if="{{v}}">
+                        <view catchtap="{{item.b}}" class="{{['catescroll2-top-item',item.c&&'active']}}" wx:for="{{w}}" wx:key="d">{{item.a}}</view>
+                    </view>
+                    <view class="cotegory-padding">
+                        <view bindtap="{{item.g}}" class="product-item-2" wx:for="{{x}}" wx:key="h">
+                            <view class="image-boxs">
+                                <view class="sallsell-out" wx:if="{{item.a}}">
+                                    <view class="sallsell-out-btn">当前售罄</view>
+                                </view>
+                                <image lazyLoad class="product-image-2" mode="" src="{{item.b}}"></image>
+                            </view>
+                            <view class="flex-1 d-c d-b-s" style="height:154rpx">
+                                <view class="text-ellipsis-2 f28 gray3">{{item.c}}</view>
+                                <view class="theme-price f36 fb price-wrap">
+                                    <text class="f24">￥</text>{{item.d}}<view catchtap="{{item.f}}" class="add-shopping-wrap theme-bg" wx:if="{{item.e}}">
+                                        <view class="icon iconfont icon-icozhuanhuan"></view>
+                                    </view>
+                                </view>
+                            </view>
+                        </view>
+                    </view>
+                </scroll-view>
+            </view>
+        </view>
+    </view>
+    <category-mask-vue bind:__l="__l" bindgetShoppingNum="{{B}}" class="r" uI="bdcd1b6a-0" uP="{{C}}" uR="categoryMaskRef" wx:if="{{C}}"></category-mask-vue>
+    <view class="shopping d-b-c customTabBar" id="shopping" wx:if="{{D}}">
+        <view class="shopping-l d-s-c">
+            <view bindtap="{{G}}" class="shopping-circle">
+                <view class="shopping-icon icon iconfont icon-icozhuanhuan"></view>
+                <view class="shopping-num" wx:if="{{E}}">{{F}}</view>
+            </view>
+            <view class="shopping-price d-s-c">
+                <view class="shopping-symbol">￥</view>
+                <view>{{H}}</view>
+            </view>
+        </view>
+        <button bindtap="{{I}}" class="shopping-r">去结算</button>
+    </view>
+    <view id="footBottom" wx:if="{{J}}"></view>
+    <tab-bar bind:__l="__l" uI="bdcd1b6a-1" uP="{{K}}" wx:if="{{K}}"></tab-bar>
+    <spec bind:__l="__l" bindclose="{{L}}" uI="bdcd1b6a-2" uP="{{M}}" wx:if="{{M}}"></spec>
+    <view catchtap="{{Q}}" class="pop-bg" wx:if="{{N}}">
+        <view class="pop-cate">
+            <view class="ww100" style="{{O}}"></view>
+            <view bindtap="{{item.b}}" class="{{['pop-cate-item','text-ellipsis',item.c&&'active']}}" wx:for="{{P}}" wx:key="d">{{item.a}}</view>
+        </view>
+    </view>
+</view>

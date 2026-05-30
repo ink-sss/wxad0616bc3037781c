@@ -1,0 +1,16 @@
+<uni-popup bind:__l="__l" class="r" uI="e6786b94-0" uP="{{g}}" uR="userLogin" uS="{{['d']}}" wx:if="{{g}}">
+    <view class="login-container">
+        <view class="popup-head">
+            <view class="head-title">手机号授权</view>
+            <text bindtap="{{b}}" class="close-icon" wx:if="{{a}}">x</text>
+        </view>
+        <view class="auth-title">请授权手机号</view>
+        <view class="auth-subtitle">用于订单通知等，保障账户与服务体验</view>
+        <view class="login-btn">
+            <button bindgetphonenumber="{{c}}" class="btn-normal btn-primary" openType="getPhoneNumber">微信一键授权</button>
+        </view>
+        <view class="no-login-btn" wx:if="{{d}}">
+            <button bindtap="{{e}}" class="btn-normal btn-light">暂不授权</button>
+        </view>
+    </view>
+</uni-popup>

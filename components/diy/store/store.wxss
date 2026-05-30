@@ -1,0 +1,35 @@
+.diy-store .diy-head {
+    height: 100rpx;
+    padding: 0 20rpx
+}
+
+.diy-store .diy-head .name {
+    font-size: 36rpx;
+    font-weight: 700
+}
+
+.diy-store .store-item {
+    border-top: 1rpx solid #eee
+}
+
+.diy-store .store-item-logo,.diy-store .store-item-logo wx-image {
+    height: 120rpx;
+    width: 120rpx
+}
+
+.phoneCall {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-direction: row
+}
+
+.callBtn {
+    background: #e54643;
+    border-radius: 20rpx;
+    color: #fff;
+    margin-left: 20rpx;
+    padding: 4rpx 16rpx
+}

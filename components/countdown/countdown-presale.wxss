@@ -1,0 +1,4 @@
+.countdown {
+    color: #fff;
+    font-size: 22rpx
+}

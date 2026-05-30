@@ -1,0 +1,64 @@
+wx-view.data-v-68d5928e {
+    display: block;
+    -webkit-flex-direction: row;
+    flex-direction: row
+}
+
+.add-info.data-v-68d5928e {
+    -webkit-flex-shrink: 1;
+    flex-shrink: 1;
+    padding: 34rpx 0
+}
+
+.buy-checkout.vender .item .key.data-v-68d5928e {
+    width: 200rpx
+}
+
+.store-item-info.data-v-68d5928e {
+    border-bottom: 1px solid #eee;
+    margin-bottom: 34rpx;
+    padding-right: 0
+}
+
+.store-item-info .icon.iconfont.data-v-68d5928e {
+    color: #333;
+    font-size: 32rpx
+}
+
+.store-item-info .icon-jiantou.data-v-68d5928e {
+    color: #999;
+    font-size: 26rpx
+}
+
+.tips-box.data-v-68d5928e {
+    border-radius: 5rpx;
+    font-size: 22rpx;
+    height: 30rpx;
+    -webkit-justify-content: center;
+    justify-content: center;
+    line-height: 30rpx;
+    margin-right: 9rpx;
+    text-align: center;
+    width: 123rpx
+}
+
+.d-b-c.data-v-68d5928e,.tips-box.data-v-68d5928e {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex
+}
+
+.d-b-c.data-v-68d5928e {
+    -webkit-justify-content: space-between;
+    justify-content: space-between
+}
+
+.d-s-c.data-v-68d5928e {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: flex-start;
+    justify-content: flex-start
+}

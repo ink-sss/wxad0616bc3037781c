@@ -1,0 +1,28 @@
+<view class="{{o}}" data-theme="{{n}}">
+    <view class="points-top theme-bg d-b-c">
+        <image lazyLoad class="bg-points" mode="" src="{{a}}"></image>
+        <view class="d-c d-c-c pr ww100 hh100">
+            <text class="f28 mb30">{{b}}</text>
+            <text class="f72 fb">{{c}}</text>
+            <text bindtap="{{e}}" class="f24 re-btn dominant" wx:if="{{d}}">提现</text>
+        </view>
+        <button bindtap="{{h}}" class="right-btn" wx:if="{{f}}">{{g}}商城<text class="icon iconfont icon-sanjiao1 ml10" style="color:#ffffff;font-size:28rpx"></text>
+        </button>
+    </view>
+    <view class="p-0-30 bg-white">
+        <view class="d-b-c border-b p-30-0" wx:for="{{i}}" wx:key="f">
+            <view class="d-s-s f-w d-c flex-1">
+                <text class="f28">{{item.a}}</text>
+                <text class="pt10 gray9 20">{{item.b}}</text>
+            </view>
+            <view class="red f28" wx:if="{{item.c}}">+{{item.d}}</view>
+            <view class="red f28" wx:else>{{item.e}}</view>
+        </view>
+    </view>
+    <view class="d-c-c p30" wx:if="{{j}}">
+        <text class="iconfont icon-wushuju"></text>
+        <text class="cont">亲，暂无相关记录哦</text>
+    </view>
+    <uni-load-more bind:__l="__l" uI="069470b8-0" uP="{{k||''}}" wx:else></uni-load-more>
+    <recharge bind:__l="__l" bindclose="{{l}}" uI="069470b8-1" uP="{{m}}" wx:if="{{m}}"></recharge>
+</view>

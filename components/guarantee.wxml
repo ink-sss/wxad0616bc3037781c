@@ -1,0 +1,24 @@
+<view bindtap="{{e}}" class="{{['bottom-panel',d]}}">
+    <view class="popup-bg"></view>
+    <view catchtap="{{c}}" class="content">
+        <view class="module-box module-share">
+            <view class="hd d-c-c">
+                <text class="">基础服务</text>
+                <text bindtap="{{a}}" class="iconfont icon-guanbi"></text>
+            </view>
+            <scroll-view scrollY="true" style="height:600rpx;min-height:300rpx">
+                <view class="p30 box-s-b" wx:for="{{b}}" wx:key="c">
+                    <view class="d-s-s">
+                        <view>
+                            <view class="icon iconfont icon-tijiaochenggong"></view>
+                        </view>
+                        <view class="ml30">
+                            <view class="f26 gray9 mb10">{{item.a}}</view>
+                            <view class="f22 gray9">{{item.b}}</view>
+                        </view>
+                    </view>
+                </view>
+            </scroll-view>
+        </view>
+    </view>
+</view>

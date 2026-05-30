@@ -1,0 +1,41 @@
+{
+  "miniprogramRoot": "dist/build/mp-weixin/",
+  "__compileDebugInfo__": {
+    "useSummer": true
+  },
+  "setting": {
+    "es6": false,
+    "postcss": false,
+    "compileWorklet": false,
+    "minified": false,
+    "uglifyFileName": false,
+    "uploadWithSourceMap": true,
+    "enhance": false,
+    "packNpmManually": false,
+    "packNpmRelationList": [],
+    "minifyWXSS": true,
+    "minifyWXML": true,
+    "localPlugins": false,
+    "disableUseStrict": false,
+    "useCompilerPlugins": false,
+    "condition": false,
+    "swc": false,
+    "disableSWC": true,
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    }
+  },
+  "compileType": "miniprogram",
+  "simulatorPluginLibVersion": {},
+  "packOptions": {
+    "ignore": [],
+    "include": []
+  },
+  "editorSetting": {},
+  "appid": "wx5e2915f9f18a64dd",
+  "libVersion": "3.16.1",
+  "projectname": "wxad0616bc3037781c-uniapp-src",
+  "description": "uni-app Vue 3 source migration scaffold"
+}

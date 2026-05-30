@@ -1,0 +1,1 @@
+<view wx:if="{{a}}" class="task-card data-v-f3fcd964"><view class="title data-v-f3fcd964">签到任务</view><view wx:for="{{b}}" wx:for-item="item" wx:key="c" class="task-row data-v-f3fcd964"><text class="data-v-f3fcd964">{{item.a}}</text><button class="data-v-f3fcd964" size="mini" bindtap="{{item.b}}">领取</button></view></view>

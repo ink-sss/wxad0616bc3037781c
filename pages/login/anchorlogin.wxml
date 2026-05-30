@@ -1,0 +1,23 @@
+<view class="{{['login-container','data-v-df58a860',m]}}" data-theme="{{l}}">
+    <view class="wechatapp data-v-df58a860">
+        <image lazyLoad class="logo-image data-v-df58a860" src="{{a}}"></image>
+        <view class="d-c-c f30 gray3 data-v-df58a860">{{b}}-主播登录</view>
+    </view>
+    <view class="group-bd data-v-df58a860">
+        <view class="form-level d-s-c data-v-df58a860">
+            <input adjustPosition="{{false}}" bindinput="{{d}}" class="login-input data-v-df58a860" maxlength="{{11}}" placeholder="请填写手机号" type="number" value="{{c}}"></input>
+        </view>
+        <view class="form-level d-s-c data-v-df58a860">
+            <input adjustPosition="{{false}}" bindinput="{{f}}" class="login-input data-v-df58a860" password="true" placeholder="请输入密码" type="text" value="{{e}}"></input>
+        </view>
+    </view>
+    <button bindtap="{{g}}" class="theme-btn sub-btn data-v-df58a860">立即登录</button>
+    <view class="d-c-c f24 gray9 data-v-df58a860" style="margin-top:20rpx" wx:if="{{h}}">请先登录主播账号才能创建房间</view>
+    <view class="d-c-c data-v-df58a860" style="margin-top:40rpx" wx:if="{{i}}">
+        <text class="f26 gray3 data-v-df58a860">没有账号？</text>
+        <text bindtap="{{j}}" class="f26 data-v-df58a860" style="color:#2979ff;margin-left:10rpx">立即创建</text>
+    </view>
+    <view class="d-c-c data-v-df58a860" style="margin-top:60rpx">
+        <text bindtap="{{k}}" class="f26 data-v-df58a860" style="color:#2979ff">已是主播，直接开始</text>
+    </view>
+</view>

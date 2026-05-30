@@ -1,0 +1,20 @@
+{
+  "component": true,
+  "usingComponents": {
+    "myinfo": "my-info",
+    "coupon": "coupon",
+    "dist": "distr",
+    "upload": "../../../../components/upload/upload",
+    "uni-icons": "../../../../components/uni-icon/uni-icon",
+    "line-dashed": "../parallelogram-dashed-linp",
+    "input-modal": "../input-modal",
+    "address-add": "address/add",
+    "address-list": "address/address",
+    "cashier": "cashier",
+    "uni-popup": "../../../../uni_modules/uni-popup/components/uni-popup/uni-popup",
+    "header-bar": "/components/header",
+    "request-loading": "/components/liveloading",
+    "tab-bar": "/components/tabbar/footTabbar",
+    "wechat-login": "plugin://wx43134e071b752953/wechat-login"
+  }
+}

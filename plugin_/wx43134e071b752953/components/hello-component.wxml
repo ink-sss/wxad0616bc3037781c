@@ -1,0 +1,3 @@
+<functional-page-navigator bind:cancel="loginCancel" bind:fail="loginFail" bind:success="loginSuccess" name="loginAndGetUserInfo">
+    <button style="{{styleCon}}">{{bottomText}}</button>
+</functional-page-navigator>

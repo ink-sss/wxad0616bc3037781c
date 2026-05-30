@@ -1,0 +1,34 @@
+<view class="{{[j,'article-list-wrap']}}" data-theme="{{i}}">
+    <view class="top-tabbar">
+        <scroll-view scrollWithAnimation="true" scrollX="true">
+            <view class="type-list d-s-c">
+                <view bindtap="{{b}}" class="{{a}}">全部</view>
+                <view bindtap="{{item.d}}" class="{{item.b}}" wx:for="{{c}}" wx:key="c">{{item.a}}</view>
+            </view>
+        </scroll-view>
+    </view>
+    <scroll-view bindscrolltolower="{{h}}" class="scroll-Y" lowerThreshold="50" scrollY="true" style="{{g}}">
+        <view class="article-list">
+            <view bindtap="{{item.h}}" class="item" wx:for="{{d}}" wx:key="g">
+                <view class="info">
+                    <view class="title">{{item.a}}</view>
+                    <view class="summary">{{item.b}}</view>
+                    <view class="datatime d-s-c">
+                        <text>{{item.c}}</text>
+                        <text class="icon iconfont icon-chakan ml30"></text>
+                        <text class="ml10">{{item.d}}</text>
+                    </view>
+                </view>
+                <view class="pic" wx:if="{{item.e}}">
+                    <image lazyLoad mode="aspectFill" src="{{item.f}}"></image>
+                </view>
+            </view>
+        </view>
+        <view class="d-c-c p30" wx:if="{{e}}">
+            <text class="iconfont icon-wushuju"></text>
+            <text class="cont">亲，暂无相关记录哦</text>
+        </view>
+        <uni-load-more bind:__l="__l" uI="70f9d339-0" uP="{{f||''}}" wx:else></uni-load-more>
+    </scroll-view>
+    <tab-bar bind:__l="__l" uI="70f9d339-1"></tab-bar>
+</view>

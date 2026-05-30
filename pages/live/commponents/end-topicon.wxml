@@ -1,0 +1,37 @@
+<view class="data-v-644740ee">
+    <view class="people-num data-v-644740ee">
+        <view class="sectionIcon data-v-644740ee">
+            <block wx:if="{{a}}">
+                <button class="item-icon data-v-644740ee" openType="contact" wx:if="{{b}}">
+                    <image class="data-v-644740ee" mode="aspectFill" src="{{c}}"></image>
+                    <view class="icon-tit data-v-644740ee">客服</view>
+                </button>
+                <view bindtap="{{f}}" class="item-icon data-v-644740ee" wx:if="{{d}}">
+                    <image class="data-v-644740ee" mode="aspectFill" src="{{e}}"></image>
+                    <view class="icon-tit data-v-644740ee">客服</view>
+                </view>
+                <view bindtap="{{i}}" class="item-icon data-v-644740ee" wx:if="{{g}}">
+                    <image class="data-v-644740ee" mode="aspectFill" src="{{h}}"></image>
+                    <view class="icon-tit data-v-644740ee">客服</view>
+                </view>
+                <view bindtap="{{l}}" class="item-icon data-v-644740ee" wx:if="{{j}}">
+                    <image class="data-v-644740ee" mode="aspectFill" src="{{k}}"></image>
+                    <view class="icon-tit data-v-644740ee">客服</view>
+                </view>
+            </block>
+            <view bindtap="{{o}}" class="item-icon data-v-644740ee" wx:if="{{m}}">
+                <image class="data-v-644740ee" mode="aspectFill" src="{{n}}"></image>
+                <view class="icon-tit data-v-644740ee">订单</view>
+            </view>
+        </view>
+    </view>
+    <my-order bind:__l="__l" class="r data-v-644740ee" uI="644740ee-0" uR="myOrderSc" wx:if="{{p}}"></my-order>
+    <uni-popup bind:__l="__l" class="r data-v-644740ee" uI="644740ee-1" uP="{{v}}" uR="kefuPop" uS="{{['d']}}" wx:if="{{r}}">
+        <view class="kf-pop-view data-v-644740ee">
+            <view class="kf-pop-title data-v-644740ee">客服二维码</view>
+            <image class="data-v-644740ee" mode="widthFix" showMenuByLongpress="{{true}}" src="{{s}}" style="width:75vw"></image>
+            <view class="kf-pop-tip data-v-644740ee">长按识别图中二维码</view>
+            <view class="kf-pop-tip data-v-644740ee">点击空白处关闭</view>
+        </view>
+    </uni-popup>
+</view>

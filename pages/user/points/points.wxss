@@ -1,0 +1,41 @@
+.points-top {
+    box-sizing: border-box;
+    color: #fff;
+    height: 346rpx;
+    padding: 0 30rpx;
+    position: relative;
+    z-index: 1
+}
+
+.points-top .bg-points {
+    height: 346rpx;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 750rpx;
+    z-index: 0
+}
+
+.re-btn {
+    background-color: #fff;
+    border-radius: 30rpx;
+    font-size: 28rpx;
+    height: 60rpx;
+    line-height: 60rpx;
+    margin-top: 46rpx;
+    padding: 0 8rpx;
+    text-align: center;
+    width: 190rpx
+}
+
+.right-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 28rpx;
+    font-weight: 500;
+    padding: 0;
+    position: absolute;
+    right: 21rpx;
+    top: 12rpx
+}

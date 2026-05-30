@@ -1,0 +1,35 @@
+.article-detail {
+    background: #fff;
+    padding: 30rpx
+}
+
+.article-detail .title {
+    font-size: 44rpx
+}
+
+.article-detail .info {
+    color: #999;
+    padding: 40rpx 0
+}
+
+.article-detail .article-content {
+    box-sizing: border-box;
+    font-size: 34 rpx;
+    line-height: 60rpx;
+    overflow: hidden;
+    width: 100%
+}
+
+.article-detail .article-content wx-image,.article-detail .article-content wx-img {
+    display: block;
+    max-width: 100%
+}
+
+.share-box {
+    background: none
+}
+
+.share_img {
+    height: 32rpx;
+    width: 32rpx
+}

@@ -1,0 +1,23 @@
+<view class="{{['login-container',t]}}" data-theme="{{s}}">
+    <view class="wechatapp">
+        <image lazyLoad class="logo-image" src="{{a}}"></image>
+        <view class="d-c-c f30 gray3">{{b}}</view>
+    </view>
+    <view class="login-btn d-c-c">
+        <view wx:if="{{c}}">
+            <block wx:if="{{d}}">
+                <button bindgetphonenumber="{{f}}" class="theme-btn" openType="getPhoneNumber" wx:if="{{e}}">一键登录</button>
+                <button bindtap="{{g}}" class="theme-btn" wx:else>立即登录</button>
+            </block>
+            <button bindtap="{{h}}" class="theme-btn" wx:else>一键登录</button>
+        </view>
+        <wechat-login bind:__l="__l" bindloginCancel="{{k}}" bindloginFail="{{j}}" bindloginSuccess="{{i}}" bottomText="立即登录" styleCon="color: #ffffff;background-color: green;" uI="011e9eb4-0" uT="m" wx:else></wechat-login>
+    </view>
+    <view bindtap="{{o}}" class="d-c-c gray6 mt20">
+        <view class="{{['icon','iconfont','icon-tijiaochenggong',l]}}"></view>我已阅读并接受<text bindtap="{{m}}" class="dominant">《用户协议》</text>和<text bindtap="{{n}}" class="dominant">《隐私政策》</text>
+    </view>
+    <view class="no-login-btn d-c d-c-c">
+        <view bindtap="{{p}}" class="f26 gray9">暂不登录</view>
+    </view>
+    <user-set-pop bind:__l="__l" bindsetOk="{{r}}" class="r" uI="011e9eb4-1" uR="userSetPop"></user-set-pop>
+</view>

@@ -1,0 +1,121 @@
+.coupon_bg.data-v-0f36766f {
+    background: linear-gradient(-180deg,#394263,hsla(0,0%,100%,0));
+    height: 1134rpx;
+    left: 0;
+    position: fixed;
+    top: 0;
+    width: 750rpx;
+    z-index: 0
+}
+
+.top_box.data-v-0f36766f {
+    padding: 32rpx 20rpx 30rpx
+}
+
+.coupon-wrap.data-v-0f36766f {
+    padding: 30rpx
+}
+
+.coupon-detail-top.data-v-0f36766f {
+    position: relative;
+    z-index: 1
+}
+
+.item-wrap.data-v-0f36766f {
+    margin: 30rpx 0 0
+}
+
+.coupon-item .btns wx-button.data-v-0f36766f {
+    border: none
+}
+
+.coupon-item .circles wx-text.data-v-0f36766f {
+    border-radius: 0 10rpx 10rpx 0;
+    display: block;
+    height: 20rpx;
+    width: 10rpx
+}
+
+.coupon-item .circles wx-text.data-v-0f36766f,.coupon-item .info.data-v-0f36766f:after,.coupon-item .info.data-v-0f36766f:before {
+    background: linear-gradient(0deg,#fffdd7,#fee6df)
+}
+
+.decorate.data-v-0f36766f {
+    height: 16rpx;
+    width: 16rpx
+}
+
+.pro_list.data-v-0f36766f {
+    padding: 40rpx 20rpx 80rpx
+}
+
+.pro_item.data-v-0f36766f {
+    background-color: #fff;
+    border-radius: 15rpx;
+    margin-bottom: 12rpx;
+    overflow: hidden;
+    width: 342rpx
+}
+
+.pro_item_image.data-v-0f36766f {
+    border-radius: 15rpx;
+    display: block;
+    height: 304rpx;
+    margin: 20rpx auto 12rpx;
+    width: 304rpx
+}
+
+.head_top.data-v-0f36766f {
+    color: #fff;
+    font-size: 32rpx;
+    line-height: 30px;
+    position: relative
+}
+
+.reg180.data-v-0f36766f {
+    -webkit-align-items: center;
+    align-items: center;
+    bottom: 0;
+    display: -webkit-flex;
+    display: flex;
+    height: 100%;
+    left: 0;
+    padding-right: 20rpx;
+    position: absolute;
+    text-align: right;
+    -webkit-transform: rotateY(180deg);
+    transform: rotateY(180deg)
+}
+
+.icon-jiantou.data-v-0f36766f {
+    color: #333;
+    font-size: 32rpx
+}
+
+.product-info.data-v-0f36766f {
+    padding: 0 20rpx 30rpx
+}
+
+.title-text.data-v-0f36766f {
+    position: relative
+}
+
+.title-text.data-v-0f36766f:after,.title-text.data-v-0f36766f:before {
+    background: #fff;
+    bottom: 0;
+    content: "";
+    height: 2rpx;
+    margin: auto;
+    position: absolute;
+    top: 0;
+    width: 40rpx;
+    z-index: 1
+}
+
+.title-text.data-v-0f36766f:after {
+    left: -60rpx
+}
+
+.title-text.data-v-0f36766f:before {
+    right: -60rpx
+}

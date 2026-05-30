@@ -1,0 +1,14 @@
+.address-list.data-v-d4f7f200 {
+    padding-bottom: 90rpx
+}
+
+.foot-btns.data-v-d4f7f200 {
+    padding: 0
+}
+
+.foot-btns .btn-red.data-v-d4f7f200 {
+    border-radius: 0;
+    height: 90rpx;
+    line-height: 90rpx;
+    width: 100%
+}

@@ -1,0 +1,32 @@
+.open-login.data-v-8adfc4cc { min-height: 100vh; padding: 48rpx; background: #fff; box-sizing: border-box;
+}
+.tabs.data-v-8adfc4cc { display: flex; margin-bottom: 40rpx; border-bottom: 1px solid #eee;
+}
+.tabs view.data-v-8adfc4cc { flex: 1; height: 88rpx; line-height: 88rpx; text-align: center; color: #777; font-size: 30rpx;
+}
+.tabs .active.data-v-8adfc4cc { color: #111; font-weight: 600; border-bottom: 4rpx solid #19ad57;
+}
+.panel.data-v-8adfc4cc { display: flex; flex-direction: column; gap: 22rpx;
+}
+.input.data-v-8adfc4cc { height: 88rpx; padding: 0 24rpx; background: #f7f7f7; border-radius: 8rpx; font-size: 28rpx; box-sizing: border-box;
+}
+.code-row.data-v-8adfc4cc { display: flex; gap: 18rpx; align-items: center;
+}
+.flex.data-v-8adfc4cc { flex: 1;
+}
+button.data-v-8adfc4cc { border-radius: 8rpx;
+}
+.code-btn.data-v-8adfc4cc { width: 210rpx; height: 88rpx; line-height: 88rpx; font-size: 26rpx; color: #19ad57; background: #eef8f2;
+}
+.switch.data-v-8adfc4cc { color: #666; background: #f7f7f7; font-size: 26rpx;
+}
+.primary.data-v-8adfc4cc { color: #fff; background: #19ad57;
+}
+.agreement.data-v-8adfc4cc { margin-top: 36rpx; color: #666; font-size: 24rpx; line-height: 40rpx; text-align: center;
+}
+.check.data-v-8adfc4cc { display: inline-flex; align-items: center; justify-content: center; width: 30rpx; height: 30rpx; margin-right: 8rpx; border: 1px solid #bbb; border-radius: 50%; color: transparent; font-size: 20rpx;
+}
+.check.active.data-v-8adfc4cc { color: #fff; background: #19ad57; border-color: #19ad57;
+}
+.link.data-v-8adfc4cc { color: #1d7afc;
+}

@@ -1,0 +1,41 @@
+<view class="question-container data-v-62f983ee" style="{{'height:'+m+';'+'margin-top:'+n}}">
+    <scroll-view scrollY class="question-scroll data-v-62f983ee">
+        <view class="question-box data-v-62f983ee">
+            <view class="question-header data-v-62f983ee" style="display:flex;flex-direction:row;justify-content:space-between">
+                <text class="question-count data-v-62f983ee">第 {{a}} / {{b}} 题</text>
+                <text class="data-v-62f983ee" style="color:#ff6a00" wx:if="{{c}}">奖励<block wx:if="{{d}}">（红包）</block>
+                    <block wx:else>（积分）</block>：{{e}}</text>
+            </view>
+            <view class="question-content data-v-62f983ee">
+                <text class="question-text data-v-62f983ee">{{f}}</text>
+            </view>
+            <view class="options-list data-v-62f983ee">
+                <view bindtap="{{option.f}}" class="{{['data-v-62f983ee','option-item',option.e]}}" wx:for="{{g}}" wx:for-item="option" wx:key="d">
+                    <view class="data-v-62f983ee">
+                        <text class="option-label data-v-62f983ee">{{option.a}}</text>
+                    </view>
+                    <view class="data-v-62f983ee">
+                        <text class="option-text data-v-62f983ee">{{option.b}}</text>
+                    </view>
+                    <view class="data-v-62f983ee">
+                        <text class="check-text data-v-62f983ee" wx:if="{{option.c}}">✓</text>
+                    </view>
+                </view>
+            </view>
+            <view class="submit-box data-v-62f983ee">
+                <button bindtap="{{j}}" class="submit-btn data-v-62f983ee" wx:if="{{h}}">
+                    <text class="btn-text data-v-62f983ee">提交答案</text>
+                    <uni-icon bind:__l="__l" class="btn-icon data-v-62f983ee" style="margin-bottom:4rpx" uI="62f983ee-0" uP="{{i}}" wx:if="{{i}}"></uni-icon>
+                </button>
+                <view class="data-v-62f983ee" style="display:flex;flex-direction:row;gap:40rpx" wx:else>
+                    <button bindtap="{{k}}" class="submit-btn data-v-62f983ee">
+                        <text class="btn-text data-v-62f983ee">上一题</text>
+                    </button>
+                    <button bindtap="{{l}}" class="submit-btn data-v-62f983ee">
+                        <text class="btn-text data-v-62f983ee">下一题</text>
+                    </button>
+                </view>
+            </view>
+        </view>
+    </scroll-view>
+</view>

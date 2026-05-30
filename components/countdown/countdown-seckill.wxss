@@ -1,0 +1,24 @@
+.countdown.data-v-8fb67228 {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    font-size: 24rpx;
+    -webkit-justify-content: flex-start;
+    justify-content: flex-start
+}
+
+.countdown .p-0-6.data-v-8fb67228 {
+    padding: 0 6rpx
+}
+
+.countdown .box.data-v-8fb67228 {
+    background: #fff;
+    border-radius: 5rpx;
+    color: #f02811;
+    display: inline-block;
+    height: 36rpx;
+    line-height: 36rpx;
+    text-align: center;
+    width: 36rpx
+}

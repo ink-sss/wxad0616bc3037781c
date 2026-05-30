@@ -1,0 +1,6 @@
+{
+  "publicComponents": {
+    "wechat-login": "components/hello-component"
+  },
+  "main": "index.js"
+}

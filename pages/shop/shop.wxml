@@ -1,0 +1,219 @@
+<view class="{{['pr',aF]}}" data-theme="{{aE}}">
+    <view class="bg_topimg">
+        <view class="bg-head-shoadow" style="{{a}}"></view>
+        <image lazyLoad class="bg-head" mode="aspectFill" src="{{d}}" style="{{c}}" wx:if="{{b}}"></image>
+    </view>
+    <view class="{{['shop_head',B&&'bgNull']}}">
+        <view class="head_top" style="{{e}}"></view>
+        <view class="d-b-c serach-box" style="{{k}}">
+            <view bindtap="{{f}}" class="icon iconfont icon-Homehomepagemenu"></view>
+            <view class="d-s-c flex-1">
+                <view class="top_search search-wx d-s-c" style="{{j}}">
+                    <text class="icon iconfont icon-sousuo"></text>
+                    <input bindconfirm="{{g}}" bindinput="{{i}}" class="flex-1 ml10 f26 gray3" confirmType="search" placeholder="搜索商品" placeholderClass="f26 gray9" type="text" value="{{h}}"></input>
+                </view>
+            </view>
+        </view>
+        <view class="shop_head_info">
+            <view class="d-s-s mb30">
+                <view class="shop_logo">
+                    <image lazyLoad class="shop_logo_image" mode="aspectFill" src="{{l}}"></image>
+                </view>
+                <view bindtap="{{w}}" class="shop_info">
+                    <view class="white f30 fb title mb10">{{m}}<text class="icon iconfont icon-jiantou1"></text>
+                    </view>
+                    <view class="d-s-c white f24 mb10">
+                        <view class="pr d-s-c">
+                            <view class="starts-box">
+                                <image lazyLoad class="starts" mode="" src="{{o}}" wx:for="{{n}}" wx:for-item="itme" wx:key="a"></image>
+                                <image lazyLoad class="starts" mode="" src="{{q}}" wx:if="{{p}}"></image>
+                            </view>
+                            <image lazyLoad class="starts" mode="" src="{{s}}" wx:for="{{r}}" wx:for-item="itme" wx:key="a"></image>
+                        </view>{{t}}分</view>
+                    <view class="f24 white">主营品牌：{{v}}</view>
+                </view>
+            </view>
+            <view class="d-b-c f24 white">
+                <view class="d-c d-c-c p-0-30">
+                    <view class="mb10">{{x}}</view>
+                    <view>销量</view>
+                </view>
+                <view class="d-c d-c-c p-0-30">
+                    <view class="mb10">{{y}}</view>
+                    <view>粉丝</view>
+                </view>
+                <view class="flex-1 d-e-c">
+                    <view bindtap="{{A}}" class="collected">{{z}}</view>
+                </view>
+            </view>
+        </view>
+    </view>
+    <scroll-view bindscrolltolower="{{ar}}" class="scroll-Y pr" lowerThreshold="50" scrollY="true" style="{{aq}}">
+        <view class="swiper-box pr" wx:if="{{C}}">
+            <swiper autoplay bindchange="{{E}}" class="swiper" interval="{{2000}}">
+                <swiper-item class="o-h d-c-c" wx:for="{{D}}" wx:key="b">
+                    <image lazyLoad src="{{item.a}}"></image>
+                </swiper-item>
+            </swiper>
+            <view class="swiper-dots rectangle ww100 d-c-c">
+                <view class="{{item.a}}" wx:for="{{F}}" wx:key="b"></view>
+            </view>
+        </view>
+        <view class="inner-tab" wx:if="{{G}}">
+            <view bindtap="{{I}}" class="{{H}}">
+                <view class="box">综合</view>
+            </view>
+            <view bindtap="{{K}}" class="{{J}}">
+                <view class="box">销量</view>
+            </view>
+            <view bindtap="{{M}}" class="{{L}}">
+                <view class="box">
+                    <text>价格</text>
+                </view>
+            </view>
+            <view bindtap="{{O}}" class="item">
+                <view class="box">
+                    <image lazyLoad class="box-type" src="{{N}}"></image>
+                </view>
+            </view>
+        </view>
+        <view class="{{['product-lists',R]}}" wx:if="{{P}}">
+            <view bindtap="{{item.i}}" class="product_item" wx:for="{{Q}}" wx:key="h">
+                <view class="product_images pr">
+                    <view class="product-sellout" wx:if="{{item.a}}">
+                        <view class="product-sellout-btn">售罄</view>
+                    </view>
+                    <image lazyLoad class="product_image" mode="aspectFill" src="{{item.b}}"></image>
+                </view>
+                <view class="product_item_info">
+                    <view class="product-name">{{item.c}}</view>
+                    <view class="product-sale">累计成交：{{item.d}}笔</view>
+                    <view class="d-s-c pb10">
+                        <view class="f24 theme-price mr16">¥<text class="f32 fb">{{item.e}}</text>
+                        </view>
+                        <view class="text-d-line gray9 f24" wx:if="{{item.f}}">¥{{item.g}}</view>
+                    </view>
+                </view>
+            </view>
+        </view>
+        <view wx:if="{{S}}">
+            <view class="live_list" wx:if="{{T}}">
+                <view bindtap="{{liveitem.e}}" class="live_item" wx:for="{{U}}" wx:for-item="liveitem" wx:key="d">
+                    <view class="record" wx:if="{{liveitem.a}}">可回放</view>
+                    <view class="record_off" wx:if="{{liveitem.b}}">回放生成中</view>
+                    <view class="live_img">
+                        <image lazyLoad mode="" src="{{liveitem.c}}"></image>
+                    </view>
+                </view>
+            </view>
+            <view class="ww100" wx:else>
+                <view class="f30 gray6 tc mt50 pt20">暂无数据</view>
+            </view>
+        </view>
+        <view class="coupon" wx:if="{{V}}">
+            <view class="diy-coupon">
+                <view class="item-wrap" wx:for="{{W}}" wx:key="x">
+                    <view class="{{['coupon-item',item.q]}}">
+                        <view class="operation d-b-c">
+                            <view class="flex-1 coupon-content">
+                                <view class="mb20 text-ellipsis">
+                                    <text class="f40 fb">{{item.a}}</text>
+                                </view>
+                                <view class="f22 gray9 mb20">
+                                    <block wx:if="{{item.b}}">有效期：领取{{item.c}}天内有效</block>
+                                    <block wx:if="{{item.d}}">有效期：{{item.e}}至{{item.f}}</block>
+                                </view>
+                                <view class="f22" wx:if="{{item.g}}">(最大优惠{{item.h}}元)</view>
+                            </view>
+                            <view class="right-box d-c-c d-c">
+                                <view class="theme-price mb10" wx:if="{{item.i}}">
+                                    <text class="f24">￥</text>
+                                    <text class="f52 fb">{{item.j}}</text>
+                                </view>
+                                <view class="mb10 theme-price" wx:if="{{item.k}}">
+                                    <text class="f52 fb">{{item.l}}</text>
+                                    <text class="f24">折</text>
+                                </view>
+                                <view class="f24 mb10">{{item.m}}</view>
+                                <view bindtap="{{item.o}}" class="f26 coupon-btn theme-btn" wx:if="{{item.n}}">领取</view>
+                                <button catchtap="{{item.p}}" class="f26 coupon-btn btn-gray white" type="default" wx:else>已领取</button>
+                            </view>
+                        </view>
+                    </view>
+                    <view catchtap="{{item.s}}" class="range_item d-b-c" wx:if="{{item.r}}">
+                        <view class="gray9 f24">限指定部分商品<text class="icon iconfont icon-jiantou" style="color:#999999;font-size:22rpx"></text>
+                        </view>
+                        <view class="gray9 f24">本券不支持转赠</view>
+                    </view>
+                    <view catchtap="{{item.v}}" class="range_item d-b-c" wx:elif="{{item.t}}">
+                        <view class="gray9 f24">限指定分类商品<text class="icon iconfont icon-jiantou" style="color:#999999;font-size:22rpx"></text>
+                        </view>
+                        <view class="gray9 f24">本券不支持转赠</view>
+                    </view>
+                    <view catchtap="{{item.w}}" class="range_item d-b-c" wx:else>
+                        <view class="gray9 f24">全场通用<text class="icon iconfont icon-jiantou" style="color:#999999;font-size:22rpx"></text>
+                        </view>
+                        <view class="gray9 f24">本券不支持转赠</view>
+                    </view>
+                </view>
+            </view>
+        </view>
+        <view wx:if="{{X}}">
+            <view class="d-s-s d-c p20 mpservice-wrap" wx:if="{{Y}}">
+                <view class="noDatamodel" wx:if="{{Z}}">该商家尚未设置客服</view>
+                <block wx:if="{{aa}}">
+                    <view bindtap="{{ae}}" class="d-b-c p-30-0 f34 ww100 border-b" wx:if="{{ab}}">
+                        <image lazyLoad class="imgIcon" mode="widthFix" src="{{ac}}"></image>
+                        <view class="p-0-30 flex-1">
+                            <view>官方QQ</view>
+                            <view class="desc">{{ad}}</view>
+                        </view>
+                        <text class="txt">点击复制</text>
+                    </view>
+                    <view bindtap="{{ai}}" class="d-b-c p-30-0 f34 ww100 border-b" wx:if="{{af}}">
+                        <image lazyLoad class="imgIcon" mode="widthFix" src="{{ag}}"></image>
+                        <view class="p-0-30 flex-1">
+                            <view>官方微信</view>
+                            <view class="desc">{{ah}}</view>
+                        </view>
+                        <text class="txt">点击复制</text>
+                    </view>
+                    <view bindtap="{{am}}" class="d-b-c p-30-0 f34 ww100" wx:if="{{aj}}">
+                        <image lazyLoad class="imgIcon" mode="widthFix" src="{{ak}}"></image>
+                        <view class="p-0-30 flex-1">
+                            <view>官方热线</view>
+                            <view class="desc">{{al}}</view>
+                        </view>
+                        <text class="txt">一键拨打</text>
+                    </view>
+                </block>
+            </view>
+        </view>
+        <view wx:if="{{an}}">
+            <view class="d-c-c p30" wx:if="{{ao}}">
+                <text class="iconfont icon-wushuju"></text>
+                <text class="cont">亲，暂无相关记录哦</text>
+            </view>
+            <uni-load-more bind:__l="__l" uI="fa394adc-0" uP="{{ap||''}}" wx:else></uni-load-more>
+            <view class="" style="width:100%;height:100rpx"></view>
+        </view>
+    </scroll-view>
+    <view class="d-a-c nav_bottom">
+        <view bindtap="{{at}}" class="{{as}}">
+            <view class="icon iconfont icon-Homehomepagemenu"></view>
+            <view>首页</view>
+        </view>
+        <view bindtap="{{ax}}" class="{{aw}}" wx:if="{{av}}">
+            <view class="icon iconfont icon-zhibo2"></view>
+            <view>视频</view>
+        </view>
+        <view bindtap="{{aA}}" class="{{az}}" wx:if="{{ay}}">
+            <view class="icon iconfont icon-hongbao1"></view>
+            <view>优惠券</view>
+        </view>
+        <view bindtap="{{aD}}" class="{{aC}}" wx:if="{{aB}}">
+            <view class="icon iconfont icon-kefu3"></view>
+            <view>客服</view>
+        </view>
+    </view>
+</view>

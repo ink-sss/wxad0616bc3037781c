@@ -1,0 +1,17 @@
+.d-f.data-v-588fa5e0 {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    padding: 20rpx 0
+}
+
+.con_tit.data-v-588fa5e0 {
+    font-size: 31rpx;
+    font-weight: 800;
+    margin-left: 15rpx
+}
+
+.item-wrap.data-v-588fa5e0 {
+    background: none
+}

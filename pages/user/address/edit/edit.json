@@ -1,0 +1,10 @@
+{
+  "navigationBarTitleText": "地址编辑",
+  "usingComponents": {
+    "mpvue-city-picker": "../../../../components/mpvue-citypicker/mpvueCityPicker",
+    "header-bar": "/components/header",
+    "request-loading": "/components/liveloading",
+    "tab-bar": "/components/tabbar/footTabbar",
+    "wechat-login": "plugin://wx43134e071b752953/wechat-login"
+  }
+}

@@ -1,0 +1,18 @@
+.store-detail-page.data-v-9c12344e { min-height: 100vh; background: #f7f7f7; padding: 24rpx; box-sizing: border-box;
+}
+.detail.data-v-9c12344e { padding: 28rpx; border-radius: 14rpx; background: #fff;
+}
+.logo.data-v-9c12344e { width: 150rpx; height: 150rpx; border-radius: 12rpx; background: #eee;
+}
+.name.data-v-9c12344e { margin-top: 20rpx; color: #222; font-size: 34rpx; font-weight: 700;
+}
+.line.data-v-9c12344e { margin-top: 14rpx; color: #555; font-size: 26rpx; line-height: 1.5;
+}
+.summary.data-v-9c12344e { margin-top: 22rpx; color: #777; font-size: 26rpx; line-height: 1.7;
+}
+.plain-btn.data-v-9c12344e { margin: 20rpx 0 6rpx; height: 68rpx; border-radius: 34rpx; font-size: 26rpx; line-height: 68rpx;
+}
+.store-map.data-v-9c12344e { width: 100%; height: 420rpx; margin-top: 28rpx; border-radius: 12rpx; overflow: hidden;
+}
+.empty.data-v-9c12344e { padding: 120rpx 0; color: #999; text-align: center; font-size: 26rpx;
+}

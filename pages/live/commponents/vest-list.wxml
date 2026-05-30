@@ -1,0 +1,148 @@
+<view class="data-v-5c5fc14e">
+    <uni-popup bind:__l="__l" bindchange="{{S}}" class="r data-v-5c5fc14e" uI="5c5fc14e-0" uP="{{T}}" uR="vestSc" uS="{{['d']}}" wx:if="{{T}}">
+        <view class="vest-box data-v-5c5fc14e">
+            <view class="top-head data-v-5c5fc14e">
+                <view bindtap="{{c}}" class="fc data-v-5c5fc14e">
+                    <text class="{{['data-v-5c5fc14e','head-base',a]}}">马甲列表</text>
+                    <view class="{{['data-v-5c5fc14e','hl',b]}}"></view>
+                </view>
+                <view bindtap="{{f}}" class="fc data-v-5c5fc14e">
+                    <text class="{{['data-v-5c5fc14e','head-base',d]}}">评论列表</text>
+                    <view class="{{['data-v-5c5fc14e','hl',e]}}"></view>
+                </view>
+                <view bindtap="{{i}}" class="fc data-v-5c5fc14e">
+                    <text class="{{['data-v-5c5fc14e','head-base',g]}}">固定马甲</text>
+                    <view class="{{['data-v-5c5fc14e','hl',h]}}"></view>
+                </view>
+                <view bindtap="{{k}}" class="add-btn data-v-5c5fc14e" wx:if="{{j}}">添加评论</view>
+            </view>
+            <view class="data-v-5c5fc14e" wx:if="{{l}}">
+                <scroll-view scrollWithAnimation bindscrolltolower="{{p}}" class="vest-sc data-v-5c5fc14e" enablePassive="{{true}}" scrollY="{{true}}" showScrollbar="{{false}}">
+                    <view class="data-v-5c5fc14e" wx:if="{{m}}">
+                        <checkbox-group bindchange="{{o}}" class="vest-group data-v-5c5fc14e">
+                            <label class="vest-item data-v-5c5fc14e" wx:for="{{n}}" wx:key="e">
+                                <view class="avatar-cover data-v-5c5fc14e">
+                                    <image class="data-v-5c5fc14e" mode="aspectFill" src="{{item.a}}"></image>
+                                    <text class="nickname data-v-5c5fc14e">{{item.b}}</text>
+                                </view>
+                                <view class="data-v-5c5fc14e">
+                                    <checkbox checked="{{item.d}}" class="data-v-5c5fc14e" color="#4D67E3" value="{{item.c}}"></checkbox>
+                                </view>
+                            </label>
+                        </checkbox-group>
+                    </view>
+                </scroll-view>
+                <view class="sendmsg data-v-5c5fc14e">
+                    <input bindinput="{{r}}" class="data-v-5c5fc14e" placeholder="输入您要发送的评论内容" type="text" value="{{q}}"></input>
+                    <button bindtap="{{t}}" class="data-v-5c5fc14e" disabled="{{s}}">发送</button>
+                </view>
+            </view>
+            <view class="data-v-5c5fc14e" wx:if="{{v}}">
+                <scroll-view scrollWithAnimation bindrefresherrefresh="{{B}}" bindscrolltolower="{{C}}" class="vest-sc1 data-v-5c5fc14e" refresherEnabled="{{true}}" refresherTriggered="{{A}}" scrollY="{{true}}" showScrollbar="{{false}}">
+                    <view class="{{['data-v-5c5fc14e','c-item','fr',item.g]}}" wx:for="{{w}}" wx:key="f">
+                        <view class="ict data-v-5c5fc14e">{{item.a}}</view>
+                        <view class="fr btn-view data-v-5c5fc14e">
+                            <view bindtap="{{item.b}}" class="bbtn data-v-5c5fc14e">发送多条</view>
+                            <view bindtap="{{item.c}}" class="bbtn data-v-5c5fc14e">发 送</view>
+                            <view bindtap="{{item.e}}" class="bbtnm data-v-5c5fc14e">
+                                <uni-icons bind:__l="__l" class="data-v-5c5fc14e" uI="{{item.d}}" uP="{{x}}" wx:if="{{x}}"></uni-icons>
+                            </view>
+                        </view>
+                    </view>
+                    <view class="nodata data-v-5c5fc14e" wx:if="{{y}}">{{z}}</view>
+                </scroll-view>
+            </view>
+            <view class="data-v-5c5fc14e" wx:if="{{D}}">
+                <view class="bbb data-v-5c5fc14e">
+                    <view class="d-r-v fr data-v-5c5fc14e">
+                        <view class="fr ttt data-v-5c5fc14e">
+                            <view class="fcc data-v-5c5fc14e">
+                                <image class="robot-img data-v-5c5fc14e" src="{{E}}"></image>
+                            </view>
+                            <view class="fcc r-nm data-v-5c5fc14e">{{F}}</view>
+                        </view>
+                        <view class="fr aaa data-v-5c5fc14e">
+                            <view bindtap="{{G}}" class="bbtn bb data-v-5c5fc14e">换一个</view>
+                            <view bindtap="{{H}}" class="bbtn bb data-v-5c5fc14e">快速评论</view>
+                        </view>
+                    </view>
+                    <view class="fr ccc data-v-5c5fc14e">
+                        <view class="fcc data-v-5c5fc14e">固定马甲数量（{{I}}/30）</view>
+                        <view bindtap="{{J}}" class="bbtn data-v-5c5fc14e">添加马甲</view>
+                    </view>
+                </view>
+                <scroll-view scrollWithAnimation bindrefresherrefresh="{{P}}" bindscrolltolower="{{Q}}" class="vest-sc2 data-v-5c5fc14e" refresherEnabled="{{true}}" refresherTriggered="{{O}}" scrollY="{{true}}" showScrollbar="{{false}}">
+                    <view class="{{['data-v-5c5fc14e','c-item','fr',item.g]}}" wx:for="{{K}}" wx:key="f">
+                        <view class="fr f1 data-v-5c5fc14e">
+                            <view class="fcc data-v-5c5fc14e">
+                                <image class="robot-img data-v-5c5fc14e" src="{{item.a}}"></image>
+                            </view>
+                            <view class="fcc r-nm data-v-5c5fc14e">{{item.b}}</view>
+                        </view>
+                        <view class="fr btn-view data-v-5c5fc14e">
+                            <view bindtap="{{item.c}}" class="bbtn data-v-5c5fc14e">快速评论</view>
+                            <view bindtap="{{item.e}}" class="bbtnm data-v-5c5fc14e">
+                                <uni-icons bind:__l="__l" class="data-v-5c5fc14e" uI="{{item.d}}" uP="{{L}}" wx:if="{{L}}"></uni-icons>
+                            </view>
+                        </view>
+                    </view>
+                    <view class="nodata data-v-5c5fc14e" wx:if="{{M}}">{{N}}</view>
+                </scroll-view>
+            </view>
+        </view>
+    </uni-popup>
+    <uni-popup bind:__l="__l" class="r data-v-5c5fc14e" uI="5c5fc14e-3" uR="sendCountPop" uS="{{['d']}}">
+        <view class="pop-view data-v-5c5fc14e">
+            <view class="data-v-5c5fc14e" style="padding:20rpx 0">请输入发送数量</view>
+            <input bindinput="{{V}}" class="data-v-5c5fc14e" placeholder="请输入1~30之间的整数" style="border:1px solid #f2f2f2;padding:0 20rpx;height:80rpx;line-height:80rpx;border-radius:10rpx;font-size:26rpx" type="number" value="{{U}}"></input>
+            <view bindtap="{{W}}" class="send-btn data-v-5c5fc14e">发 送</view>
+        </view>
+    </uni-popup>
+    <uni-popup bind:__l="__l" bindmaskClick="{{ad}}" class="r data-v-5c5fc14e" uI="5c5fc14e-4" uR="addCommentPop" uS="{{['d']}}">
+        <view class="pop-view data-v-5c5fc14e">
+            <view class="data-v-5c5fc14e" style="padding:20rpx 0">请输入评论内容</view>
+            <textarea bindinput="{{aa}}" class="data-v-5c5fc14e" maxlength="{{30}}" placeholder="请输入评论内容，最多输入30个字" placeholderStyle="font-size:26rpx;color:#999" style="width:100%;padding:20rpx;height:110rpx;border:1px solid #f2f2f2;border-radius:10rpx;font-size:26rpx" value="{{Z}}" wx:if="{{Y}}"></textarea>
+            <view bindtap="{{ab}}" class="send-btn data-v-5c5fc14e">保 存</view>
+        </view>
+    </uni-popup>
+    <uni-popup bind:__l="__l" class="r data-v-5c5fc14e" uI="5c5fc14e-5" uR="moreAction" uS="{{['d']}}">
+        <view class="more-action data-v-5c5fc14e">
+            <view bindtap="{{ae}}" class="ma-i data-v-5c5fc14e">编 辑</view>
+            <view bindtap="{{af}}" class="ma-i data-v-5c5fc14e">删 除</view>
+            <view bindtap="{{ag}}" class="ma-i data-v-5c5fc14e">复制到剪切板</view>
+        </view>
+    </uni-popup>
+    <uni-popup bind:__l="__l" bindmaskClick="{{ax}}" class="r data-v-5c5fc14e" uI="5c5fc14e-6" uR="addRobotPop" uS="{{['d']}}">
+        <view class="pop-view data-v-5c5fc14e" wx:if="{{ai}}">
+            <view class="data-v-5c5fc14e" style="padding:20rpx 0;font-size:28rpx">马甲昵称</view>
+            <input bindinput="{{ak}}" class="data-v-5c5fc14e" focus="{{true}}" placeholder="请输入马甲昵称" style="border:1px solid #f2f2f2;padding:0 20rpx;height:80rpx;line-height:80rpx;border-radius:10rpx;font-size:26rpx" value="{{aj}}"></input>
+            <view class="data-v-5c5fc14e" style="padding:20rpx 0;font-size:28rpx">马甲头像</view>
+            <view class="fr data-v-5c5fc14e">
+                <image bindtap="{{an}}" class="robot-img data-v-5c5fc14e" src="{{am}}" wx:if="{{al}}"></image>
+                <uni-icons bind:__l="__l" bindclick="{{ao}}" class="data-v-5c5fc14e" uI="5c5fc14e-7,5c5fc14e-6" uP="{{ap||''}}" wx:else></uni-icons>
+                <view bindtap="{{aq}}" class="random-btn data-v-5c5fc14e">随机头像</view>
+            </view>
+            <view bindtap="{{ar}}" class="send-btn data-v-5c5fc14e">保 存</view>
+            <upload bind:__l="__l" bindgetImgs="{{at}}" class="data-v-5c5fc14e" uI="5c5fc14e-8,5c5fc14e-6" uP="{{av}}" wx:if="{{as}}"></upload>
+        </view>
+    </uni-popup>
+    <uni-popup bind:__l="__l" class="r data-v-5c5fc14e" uI="5c5fc14e-9" uR="moreAction1" uS="{{['d']}}">
+        <view class="more-action data-v-5c5fc14e">
+            <view bindtap="{{ay}}" class="ma-i data-v-5c5fc14e">编 辑</view>
+            <view bindtap="{{az}}" class="ma-i data-v-5c5fc14e">删 除</view>
+        </view>
+    </uni-popup>
+    <uni-popup bind:__l="__l" class="r data-v-5c5fc14e" uI="5c5fc14e-10" uP="{{aM}}" uR="quickComment" uS="{{['d']}}" wx:if="{{aM}}">
+        <scroll-view bindrefresherrefresh="{{aF}}" bindscrolltolower="{{aG}}" class="qc-view data-v-5c5fc14e" refresherEnabled="{{true}}" refresherTriggered="{{aE}}" scrollY="{{true}}" showScrollbar="{{false}}">
+            <view class="{{['data-v-5c5fc14e','c-item','fr',item.c]}}" wx:for="{{aB}}" wx:key="d">
+                <view class="ict data-v-5c5fc14e">{{item.a}}</view>
+                <view bindtap="{{item.b}}" class="bbtn data-v-5c5fc14e">发送</view>
+            </view>
+            <view class="nodata data-v-5c5fc14e" wx:if="{{aC}}">{{aD}}</view>
+        </scroll-view>
+        <view class="quick-input-view fr data-v-5c5fc14e">
+            <input bindconfirm="{{aH}}" bindinput="{{aJ}}" class="quick-input data-v-5c5fc14e" confirmType="send" placeholder="请输入评论内容" value="{{aI}}"></input>
+            <view bindtap="{{aK}}" class="send-btn1 data-v-5c5fc14e">发 送</view>
+        </view>
+    </uni-popup>
+</view>

@@ -1,0 +1,31 @@
+<view class="drag optional" style="{{'background:'+D+';'+'padding-left:'+E+';'+'padding-right:'+F+';'+'padding-top:'+G+';'+'padding-bottom:'+H}}" wx:if="{{a}}">
+    <view class="diy-sharpproduct" style="{{'background:'+y+';'+'border-top-left-radius:'+z+';'+'border-top-right-radius:'+A+';'+'border-bottom-left-radius:'+B+';'+'border-bottom-right-radius:'+C}}">
+        <view class="sharpproduct-head d-b-c" style="{{'background-image:'+k}}">
+            <view class="left d-s-c">
+                <view class="name" wx:if="{{b}}">{{c}}</view>
+                <image lazyLoad class="titleImg" mode="heightFix" src="{{e}}" wx:if="{{d}}"></image>
+            </view>
+            <view bindtap="{{h}}" class="right white d-c-c" style="{{'line-height:1'+';'+'color:'+i+';'+'font-size:'+j}}">{{f}}<text class="icon iconfont icon-you" style="{{'color:'+g+';'+'font-size:'+'22rpx'}}"></text>
+            </view>
+        </view>
+        <view class="product-list assemble column__3 d-s-c">
+            <view bindtap="{{item.n}}" class="product-item" style="{{'background:'+s+';'+'border-top-left-radius:'+t+';'+'border-top-right-radius:'+v+';'+'border-bottom-left-radius:'+w+';'+'border-bottom-right-radius:'+x}}" wx:for="{{l}}" wx:key="o">
+                <view class="product-cover">
+                    <image lazyLoad mode="aspectFit" src="{{item.a}}" style="{{'border-radius:'+m}}"></image>
+                    <view class="desc-situation product-sale" style="{{'color:'+item.c+';'+'background-image:'+item.d}}" wx:if="{{n}}">
+                        <text class="">{{item.b}}人团</text>
+                    </view>
+                </view>
+                <view class="d-c d-c-c">
+                    <view class="product-title text-ellipsis tc" wx:if="{{o}}">{{item.e}}</view>
+                    <view class="mb10" style="{{'color:'+item.g}}" wx:if="{{p}}">
+                        <text class="f24">¥</text>
+                        <text class="f28 fb">{{item.f}}</text>
+                    </view>
+                    <view class="text-d-line-through gray9 f24 mb10" style="{{'color:'+item.i}}" wx:if="{{q}}">¥{{item.h}}</view>
+                    <view class="assemble_btns text-ellipsis tc" style="{{'background:'+item.k+';'+'border-radius:'+item.l+';'+'color:'+item.m}}" wx:if="{{r}}">{{item.j}}</view>
+                </view>
+            </view>
+        </view>
+    </view>
+</view>

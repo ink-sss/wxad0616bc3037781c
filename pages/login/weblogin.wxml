@@ -1,0 +1,63 @@
+<view class="{{['login-container','data-v-6d71fea3',X]}}" data-theme="{{W}}">
+    <view bindtap="{{a}}" class="skip data-v-6d71fea3">跳过→</view>
+    <view class=" data-v-6d71fea3" wx:if="{{b}}">
+        <view class="login_topbpx data-v-6d71fea3">
+            <view class="login_tit data-v-6d71fea3" wx:if="{{c}}">快速登录</view>
+            <view class="login_tit data-v-6d71fea3" wx:if="{{d}}">账号登录</view>
+            <view class="login_top data-v-6d71fea3" wx:if="{{e}}">首次登录会自动注册</view>
+        </view>
+        <view class="group-bd data-v-6d71fea3">
+            <view class="form-level d-s-c data-v-6d71fea3">
+                <input adjustPosition="{{false}}" bindinput="{{h}}" class="login-input data-v-6d71fea3" disabled="{{f}}" placeholder="请填写手机号" type="text" value="{{g}}"></input>
+            </view>
+            <view class="form-level d-s-c data-v-6d71fea3" wx:if="{{i}}">
+                <input adjustPosition="{{false}}" bindinput="{{k}}" class="login-input data-v-6d71fea3" password="true" placeholder="请输入密码" type="text" value="{{j}}"></input>
+                <button bindtap="{{l}}" class="get-code-btn data-v-6d71fea3">忘记密码？</button>
+            </view>
+            <view class="form-level d-b-c data-v-6d71fea3" wx:if="{{m}}">
+                <input bindinput="{{o}}" class="login-input data-v-6d71fea3" placeholder="请填写验证码" type="number" value="{{n}}"></input>
+                <button bindtap="{{q}}" class="get-code-btn data-v-6d71fea3" disabled="{{r}}">{{p}}</button>
+            </view>
+        </view>
+    </view>
+    <view class=" data-v-6d71fea3" wx:if="{{s}}">
+        <view class="login_topbpx data-v-6d71fea3">
+            <view class="login_tit data-v-6d71fea3">找回密码</view>
+            <view class="login_top data-v-6d71fea3">请确认您的账号已绑定此手机号码</view>
+        </view>
+        <view class="group-bd data-v-6d71fea3">
+            <view class="form-level d-s-c data-v-6d71fea3">
+                <view class="val flex-1 data-v-6d71fea3">
+                    <input bindinput="{{w}}" class="data-v-6d71fea3" disabled="{{t}}" placeholder="请填写手机号" type="text" value="{{v}}"></input>
+                </view>
+            </view>
+            <view class="form-level d-s-c data-v-6d71fea3">
+                <view class="val flex-1 d-b-c data-v-6d71fea3">
+                    <input adjustPosition="{{false}}" bindinput="{{y}}" class="flex-1 data-v-6d71fea3" placeholder="请填写验证码" type="number" value="{{x}}"></input>
+                    <button bindtap="{{A}}" class="get-code-btn data-v-6d71fea3" disabled="{{B}}">{{z}}</button>
+                </view>
+            </view>
+            <view class="form-level d-s-c data-v-6d71fea3">
+                <view class="val flex-1 data-v-6d71fea3">
+                    <input adjustPosition="{{false}}" bindinput="{{D}}" class="data-v-6d71fea3" password="true" placeholder="请输入密码" type="text" value="{{C}}"></input>
+                </view>
+            </view>
+            <view class="form-level d-s-c data-v-6d71fea3">
+                <view class="val flex-1 data-v-6d71fea3">
+                    <input adjustPosition="{{false}}" bindinput="{{F}}" class="data-v-6d71fea3" password="true" placeholder="请再次输入密码" type="text" value="{{E}}"></input>
+                </view>
+            </view>
+        </view>
+    </view>
+    <view bindtap="{{J}}" class="d-s-c gray6 mt30 data-v-6d71fea3">
+        <view class="{{['icon','iconfont','icon-tijiaochenggong','data-v-6d71fea3',G]}}"></view>我已阅读并接受<text bindtap="{{H}}" class="dominant data-v-6d71fea3">《用户协议》</text>和<text bindtap="{{I}}" class="dominant data-v-6d71fea3">《隐私政策》</text>
+    </view>
+    <button bindtap="{{L}}" class="theme-btn sub-btn data-v-6d71fea3" wx:if="{{K}}">立即登录</button>
+    <button bindtap="{{N}}" class="theme-btn sub-btn data-v-6d71fea3" wx:if="{{M}}">立即登录</button>
+    <button bindtap="{{P}}" class="theme-btn sub-btn data-v-6d71fea3" wx:if="{{O}}">确认</button>
+    <view class="f30 gray6 d-c-c data-v-6d71fea3">
+        <view bindtap="{{R}}" class="data-v-6d71fea3" wx:if="{{Q}}">手机登录</view>
+        <view bindtap="{{T}}" class="data-v-6d71fea3" wx:if="{{S}}">账号登录</view>
+        <view bindtap="{{V}}" class="data-v-6d71fea3" wx:if="{{U}}">立即登录</view>
+    </view>
+</view>

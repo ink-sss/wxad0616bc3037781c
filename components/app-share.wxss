@@ -1,0 +1,91 @@
+.bottom-panel .popup-bg.data-v-05f137af {
+    background: rgba(0,0,0,.6);
+    bottom: 0;
+    left: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+    z-index: 101
+}
+
+.bottom-panel .popup-bg .wechat-box.data-v-05f137af {
+    padding-top: var(--window-top)
+}
+
+.bottom-panel .popup-bg .wechat-box wx-image.data-v-05f137af {
+    width: 100%
+}
+
+.bottom-panel .content.data-v-05f137af {
+    background-color: #fff;
+    border-radius: 25rpx 25rpx 0rpx 0rpx;
+    bottom: 0;
+    bottom: env(safe-area-inset-bottom);
+    max-height: 900rpx;
+    min-height: 200rpx;
+    position: fixed;
+    -webkit-transform: translate3d(0,980rpx,0);
+    transform: translate3d(0,980rpx,0);
+    transition: -webkit-transform .2s cubic-bezier(0,0,.25,1);
+    transition: transform .2s cubic-bezier(0,0,.25,1);
+    transition: transform .2s cubic-bezier(0,0,.25,1),-webkit-transform .2s cubic-bezier(0,0,.25,1);
+    width: 100%;
+    z-index: 102
+}
+
+.bottom-panel.open .content.data-v-05f137af {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0)
+}
+
+.bottom-panel.close .popup-bg.data-v-05f137af {
+    display: none
+}
+
+.module-share .hd.data-v-05f137af {
+    font-size: 36rpx;
+    height: 90rpx;
+    line-height: 90rpx
+}
+
+.module-share .item wx-button.data-v-05f137af,.module-share .item wx-button.data-v-05f137af:after {
+    background: none;
+    border: none;
+    line-height: 1;
+    padding: 0
+}
+
+.module-share .icon-box.data-v-05f137af {
+    background: #f6bd1d;
+    border-radius: 50%;
+    height: 104rpx;
+    width: 104rpx
+}
+
+.module-share .icon-box .iconfont.data-v-05f137af {
+    color: #fff;
+    font-size: 42rpx
+}
+
+.module-share .btns.data-v-05f137af {
+    margin-top: 30rpx
+}
+
+.module-share .btns wx-button.data-v-05f137af {
+    background: #f2f2f2;
+    border-radius: 0;
+    border-radius: 88rpx;
+    font-size: 28rpx;
+    height: 88rpx;
+    line-height: 88rpx;
+    margin: 0 auto 30rpx;
+    width: 674rpx
+}
+
+.module-share .btns wx-button.data-v-05f137af:after {
+    border-radius: 0
+}
+
+.module-share .share-friend.data-v-05f137af {
+    background: #04be01
+}

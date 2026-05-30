@@ -1,0 +1,16 @@
+<view class="{{['countdown',q]}}" data-theme="{{p}}">
+    <block wx:if="{{a}}">
+        <text wx:if="{{b}}">{{c}}</text>
+        <text wx:if="{{d}}">活动具体时间：</text>
+        <text wx:if="{{e}}">活动结束时间：</text>
+        <text class="box">{{f}}</text>
+        <text class="p-0-10">天</text>
+        <text class="box">{{g}}</text>
+        <text class="p-0-10">:</text>
+        <text class="box">{{h}}</text>
+        <text class="p-0-10">:</text>
+        <text class="box">{{i}}</text>
+        <text class="p-0-10"></text>
+    </block>
+    <text class="{{o}}" wx:if="{{j}}">{{k}}{{l}}:{{m}}:{{n}}</text>
+</view>

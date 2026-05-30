@@ -1,0 +1,25 @@
+<view class="{{v}}" data-theme="{{t}}">
+    <uni-popup bind:__l="__l" class="r" uI="5c2c02ac-0" uP="{{o}}" uR="userLogin" uS="{{['d']}}" wx:if="{{o}}">
+        <view class="set-user login-container">
+            <view class="login-btn d-c-c mt20">
+                <view wx:if="{{a}}">
+                    <block wx:if="{{b}}">
+                        <button bindgetphonenumber="{{d}}" class="theme-btn" openType="getPhoneNumber" wx:if="{{c}}">一键登录</button>
+                        <button bindtap="{{e}}" class="theme-btn" wx:else>立即登录</button>
+                    </block>
+                    <button bindtap="{{f}}" class="theme-btn" wx:else>一键登录</button>
+                </view>
+                <wechat-login bind:__l="__l" bindloginCancel="{{i}}" bindloginFail="{{h}}" bindloginSuccess="{{g}}" bottomText="立即登录" styleCon="color: #ffffff;background-color: green;" uI="5c2c02ac-1,5c2c02ac-0" uT="m" wx:else></wechat-login>
+            </view>
+            <view bindtap="{{m}}" class="d-c-c gray6 xy">
+                <view class="{{['icon','iconfont','icon-tijiaochenggong',j]}}"></view>
+                <text class="f28 gray6">我已阅读并接受</text>
+                <text bindtap="{{k}}" class="dominant f28">《用户协议》</text>
+                <text class="f28 gray6">和</text>
+                <text bindtap="{{l}}" class="dominant f28">《隐私政策》</text>
+            </view>
+        </view>
+    </uni-popup>
+    <user-set-pop bind:__l="__l" bindsetOk="{{q}}" class="r" uI="5c2c02ac-2" uR="userSetPop"></user-set-pop>
+    <bind-mobile bind:__l="__l" class="r" uI="5c2c02ac-3" uP="{{s}}" uR="bindmobile" wx:if="{{s}}"></bind-mobile>
+</view>

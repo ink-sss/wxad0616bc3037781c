@@ -1,0 +1,75 @@
+<view class="{{['o-h',A]}}" data-theme="{{z}}">
+    <view class="bg-top"></view>
+    <view class="task-center mb20">
+        <view class="task-center-item d-s-c">
+            <image lazyLoad class="task-logo" mode="aspectFill" src="{{a}}"></image>
+            <view class="flex-1">
+                <view class="text-ellipsis f30 fb gray3 mb10">{{b}}</view>
+                <view class="h3 shop_info">
+                    <view class="d-s-c white f24 mb10" style="white-space:nowrap">
+                        <view class="pr d-s-c" style="white-space:nowrap">
+                            <view class="starts-box">
+                                <image lazyLoad class="starts" mode="" src="{{d}}" wx:for="{{c}}" wx:for-item="itmes" wx:key="a"></image>
+                                <image lazyLoad class="starts" mode="" src="{{f}}" wx:if="{{e}}"></image>
+                            </view>
+                            <image lazyLoad class="starts" mode="" src="{{h}}" wx:for="{{g}}" wx:for-item="itmes" wx:key="a"></image>
+                        </view>
+                        <view style="color:#666666;white-space:nowrap;margin-right:10rpx">{{i}}分</view>
+                        <view style="color:#999999;white-space:nowrap">{{j}}人关注</view>
+                    </view>
+                </view>
+            </view>
+            <button bindtap="{{l}}" class="collected">{{k}}</button>
+        </view>
+    </view>
+    <view class="task-center1 mb20" wx:if="{{false}}">
+        <view bindtap="{{m}}" class="task-center-item1 d-b-c">
+            <text class="tiltles">联系客服</text>
+            <text class="icon iconfont icon-kefu"></text>
+        </view>
+    </view>
+    <view class="task-center2 mb20">
+        <view bindtap="{{o}}" class="task-center-item2 d-s-c">
+            <text class="tiltles">商户简介</text>
+            <view class="flex-1 tr f28 gray9">{{n}}</view>
+        </view>
+        <view class="task-center-item2 d-s-c">
+            <text class="tiltles">所在地区</text>
+            <view class="flex-1 tr f28 gray9">{{p}}</view>
+        </view>
+        <view class="task-center-item2 d-s-c">
+            <text class="tiltles">开店时间</text>
+            <view class="flex-1 tr f28 gray9">{{q}}</view>
+        </view>
+    </view>
+    <view class="task-center3 mb20">
+        <view bindtap="{{r}}" class="task-center-item3 d-s-c">
+            <text class="tiltles">证件信息</text>
+            <view class="flex-1"></view>
+            <view>
+                <text class="icon iconfont icon-he_15zhengzhaoguanli"></text>
+                <text class="icon iconfont icon-jiantou"></text>
+            </view>
+        </view>
+        <view class="task-center-item3 d-s-c">
+            <text class="tiltles">保证金</text>
+            <view class="flex-1 tr f28 gray9" wx:if="{{s}}">已缴纳</view>
+            <view class="flex-1 tr f28 gray9" wx:if="{{t}}">未缴纳</view>
+        </view>
+    </view>
+    <view class="modal" wx:if="{{v}}">
+        <view class="modal-mask"></view>
+        <view class="modal-content">
+            <text bindtap="{{w}}" class="icon iconfont icon-guanbi close-icon"></text>
+            <view class="modal-header">
+                <view class="modal-text">提示</view>
+            </view>
+            <view class="modal-body">
+                <view>{{x}}</view>
+            </view>
+        </view>
+    </view>
+    <view class="">
+        <button bindtap="{{y}}" class="shop-btns">查看全部商品</button>
+    </view>
+</view>

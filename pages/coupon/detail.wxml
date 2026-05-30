@@ -1,0 +1,63 @@
+<view class="{{['data-v-0f36766f',x]}}" data-theme="{{w}}" wx:if="{{a}}">
+    <view class="coupon_bg data-v-0f36766f"></view>
+    <view class="coupon-detail-top data-v-0f36766f">
+        <view class="top_box data-v-0f36766f">
+            <view class="data-v-0f36766f">
+                <text class="icon iconfont icon-stores data-v-0f36766f" style="color:#fff;font-size:32rpx"></text>
+                <text class="white fb f32 ml10 data-v-0f36766f">{{b}}</text>
+            </view>
+            <view class="item-wrap data-v-0f36766f">
+                <view class="{{['data-v-0f36766f',q]}}">
+                    <view class="operation d-b-c w-b data-v-0f36766f">
+                        <view class="flex-1 coupon-content data-v-0f36766f">
+                            <view class="mb20 text-ellipsis data-v-0f36766f">
+                                <text class="f40 fb data-v-0f36766f">{{c}}</text>
+                            </view>
+                            <view class="f22 gray9 mb20 data-v-0f36766f">
+                                <block wx:if="{{d}}">有效期：领取{{e}}天内有效</block>
+                                <block wx:if="{{f}}">有效期：{{g}} 至 {{h}}</block>
+                            </view>
+                        </view>
+                        <view class="right-box d-c-c d-c data-v-0f36766f">
+                            <view class="theme-price mb10 data-v-0f36766f" wx:if="{{i}}">
+                                <text class="f24 data-v-0f36766f">￥</text>
+                                <text class="f52 fb data-v-0f36766f">{{j}}</text>
+                            </view>
+                            <view class="mb10 theme-price data-v-0f36766f" wx:if="{{k}}">
+                                <text class="f52 fb data-v-0f36766f">{{l}}</text>
+                                <text class="f24 data-v-0f36766f">折</text>
+                            </view>
+                            <view class="f24 mb10 data-v-0f36766f">{{m}}</view>
+                            <view bindtap="{{o}}" class="f26 coupon-btn theme-btn data-v-0f36766f" wx:if="{{n}}">领取</view>
+                            <button bindtap="{{p}}" class="f26 coupon-btn btn-gray data-v-0f36766f" type="default" wx:else>已领取</button>
+                        </view>
+                    </view>
+                </view>
+            </view>
+        </view>
+        <block wx:if="{{r}}">
+            <view class="white f30 fb d-c-c data-v-0f36766f">
+                <text class="ml10 mr10 title-text data-v-0f36766f">指定以下商品使用</text>
+            </view>
+            <view class="o-h pro_list d-b-c f-w data-v-0f36766f">
+                <view bindtap="{{item.h}}" class="pro_item data-v-0f36766f" wx:for="{{s}}" wx:key="g">
+                    <image lazyLoad class="pro_item_image data-v-0f36766f" mode="aspectFill" src="{{item.a}}"></image>
+                    <view class="product-info data-v-0f36766f">
+                        <view class="f28 gray3 text-ellipsis data-v-0f36766f">{{item.b}}</view>
+                        <view class="f22 gray9 mt10 mb10 data-v-0f36766f">累计成交：{{item.c}}笔</view>
+                        <view class="f24 data-v-0f36766f">
+                            <text class="f24 theme-price data-v-0f36766f">￥</text>
+                            <text class="f32 fb theme-price data-v-0f36766f">{{item.d}}</text>
+                            <text class="gray9 text-d-line data-v-0f36766f" wx:if="{{item.e}}">￥{{item.f}}</text>
+                        </view>
+                    </view>
+                </view>
+            </view>
+            <view class="d-c-c p30 ww100 data-v-0f36766f" wx:if="{{t}}">
+                <text class="iconfont icon-wushuju data-v-0f36766f"></text>
+                <text class="cont data-v-0f36766f">亲，暂无相关记录哦</text>
+            </view>
+            <uni-load-more bind:__l="__l" class="data-v-0f36766f" uI="0f36766f-0" uP="{{v||''}}" wx:else></uni-load-more>
+        </block>
+    </view>
+</view>

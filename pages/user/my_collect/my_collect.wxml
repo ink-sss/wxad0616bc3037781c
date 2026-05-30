@@ -1,0 +1,40 @@
+<view>
+    <scroll-view bindscrolltolower="{{e}}" class="scroll-Y" lowerThreshold="50" scrollY="true" style="{{d}}">
+        <view class="shop_list_body">
+            <view class="shop_list_body_item" wx:for="{{a}}" wx:key="k">
+                <view bindtap="{{item.g}}" class="shop_list_body_item_shop">
+                    <view class="shop_list_body_item_shop_logo">
+                        <image lazyLoad src="{{item.a}}"></image>
+                    </view>
+                    <view class="shop_list_body_item_shop_info">
+                        <view class="h1 title">{{item.b}}</view>
+                        <view class="h3 brand">主营品牌：{{item.c}}</view>
+                        <view class="h3 sales">销量{{item.d}}件</view>
+                    </view>
+                    <view class="shop_list_body_item_shop_others">
+                        <view class="h3 attention">
+                            <text class="red">{{item.e}}</text>人关注</view>
+                        <view class="h3 collect">商户评分：<text class="red">{{item.f}}</text>
+                        </view>
+                    </view>
+                </view>
+                <view class="{{item.j}}" wx:if="{{item.h}}">
+                    <view bindtap="{{item.f}}" class="shop_list_body_item_product_item" wx:for="{{item.i}}" wx:key="e">
+                        <image lazyLoad src="{{item.a}}"></image>
+                        <view class="shop_list_body_item_product_item_price">
+                            <view class="h4 red">¥<text class="h3">{{item.b}}</text>
+                            </view>
+                            <view class="h6 huaxianjia" wx:if="{{item.c}}">¥<text class="h5">{{item.d}}</text>
+                            </view>
+                        </view>
+                    </view>
+                </view>
+            </view>
+        </view>
+        <view class="d-c-c p30" wx:if="{{b}}">
+            <text class="iconfont icon-wushuju"></text>
+            <text class="cont">亲，暂无相关记录哦</text>
+        </view>
+        <uni-load-more bind:__l="__l" uI="b66abd90-0" uP="{{c||''}}" wx:else></uni-load-more>
+    </scroll-view>
+</view>

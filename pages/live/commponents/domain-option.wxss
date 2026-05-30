@@ -1,0 +1,107 @@
+.dimain-box.data-v-73e3e6f4 {
+    background-color: #fff;
+    border-radius: 30rpx;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-flow: row;
+    flex-flow: row;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+    font-size: 26rpx;
+    padding: 30rpx
+}
+
+.domain-option.data-v-73e3e6f4 {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-flow: column;
+    flex-flow: column;
+    -webkit-justify-content: center;
+    justify-content: center;
+    margin: 20rpx 12rpx;
+    width: 21%
+}
+
+.option-pic-box.data-v-73e3e6f4 {
+    height: 60rpx;
+    line-height: 60rpx;
+    margin-bottom: 20rpx;
+    width: 60rpx
+}
+
+.option-pic-box1.data-v-73e3e6f4 {
+    height: 72rpx;
+    line-height: 72rpx;
+    margin-bottom: 10rpx;
+    width: 72rpx
+}
+
+.option-pic.data-v-73e3e6f4 {
+    width: 60rpx
+}
+
+.option-pic-sel.data-v-73e3e6f4 {
+    color: #ff0026;
+    -webkit-filter: sepia(100%) hue-rotate(300deg) saturate(2000%) brightness(110%);
+    filter: sepia(100%) hue-rotate(300deg) saturate(2000%) brightness(110%)
+}
+
+.domain-option1.data-v-73e3e6f4 {
+    -webkit-align-items: center;
+    align-items: center;
+    background: #fff;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-flow: column;
+    flex-flow: column;
+    -webkit-justify-content: center;
+    justify-content: center;
+    margin: 20rpx 12rpx;
+    padding: 0;
+    width: 21%
+}
+
+.option-pic1.data-v-73e3e6f4 {
+    width: 72rpx
+}
+
+.kf-pop-view.data-v-73e3e6f4 {
+    padding: 30rpx 30rpx 50rpx
+}
+
+.kf-pop-title.data-v-73e3e6f4 {
+    font-size: 32rpx;
+    padding: 30rpx;
+    text-align: center
+}
+
+.kf-pop-tip.data-v-73e3e6f4 {
+    color: #999;
+    font-size: 24rpx;
+    padding-top: 30rpx;
+    text-align: center
+}
+
+.w40.data-v-73e3e6f4 {
+    height: 80rpx!important;
+    width: 80rpx!important
+}
+
+.ITSupport.data-v-73e3e6f4 {
+    color: #999;
+    font-size: 28rpx;
+    margin-bottom: 26px;
+    text-align: center
+}
+
+.IT-box.data-v-73e3e6f4 {
+    height: 60vh;
+    max-width: 640rpx
+}
+
+.ITCode.data-v-73e3e6f4 {
+    border-radius: 30rpx;
+    height: 100%
+}

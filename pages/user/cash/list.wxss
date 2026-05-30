@@ -1,0 +1,9 @@
+.cash-btn {
+    font-size: 24rpx
+}
+
+.list-item {
+    background-color: #fff;
+    border-radius: 20rpx;
+    margin-top: 24rpx
+}

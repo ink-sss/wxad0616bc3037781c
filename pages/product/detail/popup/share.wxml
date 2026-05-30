@@ -1,0 +1,35 @@
+<view bindtap="{{h}}" class="{{['bottom-panel','data-v-e06b5b58',g]}}">
+    <view class="popup-bg data-v-e06b5b58">
+        <view class="wechat-box data-v-e06b5b58" wx:if="{{a}}">
+            <image lazyLoad class="data-v-e06b5b58" mode="widthFix" src="{{b}}"></image>
+        </view>
+    </view>
+    <view catchtap="{{f}}" class="content data-v-e06b5b58">
+        <view class="module-box module-share data-v-e06b5b58">
+            <view class="hd d-c-c data-v-e06b5b58">分享</view>
+            <view class="p30 box-s-b data-v-e06b5b58">
+                <view class="d-c-c data-v-e06b5b58">
+                    <view class="item flex-1 d-c-c d-c data-v-e06b5b58">
+                        <button bindtap="{{c}}" class="d-c d-c-c data-v-e06b5b58" openType="share">
+                            <view class="icon-box d-c-c share-friend data-v-e06b5b58">
+                                <text class="iconfont icon-fenxiang data-v-e06b5b58"></text>
+                            </view>
+                            <text class="pt20 data-v-e06b5b58">分享好友</text>
+                        </button>
+                    </view>
+                    <view class="item flex-1 d-c-c d-c data-v-e06b5b58">
+                        <button bindtap="{{d}}" class="d-c d-c-c data-v-e06b5b58">
+                            <view class="icon-box d-c-c data-v-e06b5b58">
+                                <text class="iconfont icon-edit data-v-e06b5b58"></text>
+                            </view>
+                            <text class="pt20 data-v-e06b5b58">生成海报</text>
+                        </button>
+                    </view>
+                </view>
+            </view>
+            <view class="btns data-v-e06b5b58">
+                <button bindtap="{{e}}" class="data-v-e06b5b58">取消</button>
+            </view>
+        </view>
+    </view>
+</view>

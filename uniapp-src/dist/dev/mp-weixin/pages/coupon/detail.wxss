@@ -1,0 +1,34 @@
+.coupon-detail-page.data-v-b19997f8 { min-height: 100vh; background: #f7f7f7;
+}
+.coupon-hero.data-v-b19997f8 { margin: 24rpx; padding: 36rpx 28rpx; border-radius: 18rpx; background: linear-gradient(135deg,#f03b2f,#ff7d45); color: #fff; text-align: center;
+}
+.supplier.data-v-b19997f8 { font-size: 24rpx; opacity: .9;
+}
+.name.data-v-b19997f8 { margin-top: 12rpx; font-size: 34rpx; font-weight: 700;
+}
+.value.data-v-b19997f8 { margin-top: 20rpx; font-size: 58rpx; font-weight: 800;
+}
+.limit.data-v-b19997f8, .time.data-v-b19997f8 { margin-top: 10rpx; font-size: 24rpx;
+}
+.receive.data-v-b19997f8 { width: 360rpx; height: 72rpx; margin-top: 28rpx; border-radius: 36rpx; background: #fff; color: #f03b2f; font-size: 28rpx; line-height: 72rpx;
+}
+.receive.disabled.data-v-b19997f8 { color: #999;
+}
+.product-section.data-v-b19997f8 { padding: 0 24rpx 32rpx;
+}
+.section-title.data-v-b19997f8 { padding: 20rpx 0; color: #222; font-size: 30rpx; font-weight: 700;
+}
+.product-item.data-v-b19997f8 { display: flex; gap: 20rpx; margin-bottom: 18rpx; padding: 20rpx; border-radius: 12rpx; background: #fff;
+}
+.product-image.data-v-b19997f8 { width: 170rpx; height: 170rpx; border-radius: 8rpx; background: #eee;
+}
+.product-info.data-v-b19997f8 { flex: 1; min-width: 0;
+}
+.product-name.data-v-b19997f8 { color: #222; font-size: 28rpx; line-height: 1.4;
+}
+.sales.data-v-b19997f8 { margin-top: 14rpx; color: #999; font-size: 24rpx;
+}
+.price.data-v-b19997f8 { margin-top: 16rpx; color: #f03b2f; font-size: 32rpx; font-weight: 700;
+}
+.empty.data-v-b19997f8 { padding: 100rpx 0; color: #999; text-align: center; font-size: 26rpx;
+}

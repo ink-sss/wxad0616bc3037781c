@@ -1,0 +1,52 @@
+<view>
+    <uni-popup bind:__l="__l" bindmaskClick="{{r}}" class="r" uI="80e84ab0-0" uP="{{s}}" uR="cashier" uS="{{['d']}}" wx:if="{{s}}">
+        <view class="{{['wrap',p]}}" data-theme="{{o}}">
+            <view class="head-top">
+                <uni-icons bind:__l="__l" bindclick="{{a}}" uI="80e84ab0-1,80e84ab0-0" uP="{{b}}" wx:if="{{b}}"></uni-icons>
+                <view class="head-title">计单支付</view>
+                <view>
+                    <view class="head-option"></view>
+                </view>
+            </view>
+            <view class="tc buy-checkout-top">
+                <view class="f24">待支付</view>
+                <view class="f34 fb pay-info">￥<text class="f58">{{c}}</text>
+                </view>
+            </view>
+            <view class="buy-checkout">
+                <view bindtap="{{item.d}}" class="{{item.c}}" key="{{item.b}}" wx:if="{{item.a}}" wx:for="{{d}}" wx:key="e">
+                    <view class="d-s-c" style="flex-direction:row">
+                        <view class="icon-box d-c-c mr10">
+                            <label class="icon iconfont icon-weixin"></label>
+                        </view>
+                        <text class="key">微信支付：</text>
+                    </view>
+                    <view class="icon-box d-c-c">
+                        <label class="icon iconfont icon-xuanze"></label>
+                    </view>
+                </view>
+                <view class="item" wx:if="{{e}}">
+                    <view class="d-s-c" style="flex-direction:row">
+                        <view class="icon-box d-c-c mr10">
+                            <label class="icon iconfont icon-yue"></label>
+                        </view>
+                        <view class="key d-s-c" style="flex-direction:row">余额抵扣：<view class="gray9" style="flex-direction:row">(剩余：<text class="theme-price">{{f}}</text>)</view>
+                        </view>
+                    </view>
+                    <switch bindchange="{{i}}" checked="{{h}}" color="{{g}}" style="transform:scale(0.7);margin-right:-20rpx"></switch>
+                </view>
+                <view class="item" wx:if="{{j}}">
+                    <view class="d-s-c" style="flex-direction:row">
+                        <view class="icon-box d-c-c mr10">
+                            <label class="icon iconfont icon-daishouhuo"></label>
+                        </view>
+                        <view class="key d-s-c" style="flex-direction:row">货到付款：<view class="gray9" style="flex-direction:row">(<text class="theme-price">收到货物时付款给商家</text>)</view>
+                        </view>
+                    </view>
+                    <switch bindchange="{{m}}" checked="{{l}}" color="{{k}}" style="transform:scale(0.7);margin-right:-20rpx"></switch>
+                </view>
+            </view>
+            <view bindtap="{{n}}" class="bottom-btn theme-btn">立即支付</view>
+        </view>
+    </uni-popup>
+</view>

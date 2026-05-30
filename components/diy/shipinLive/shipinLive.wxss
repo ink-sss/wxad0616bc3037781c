@@ -1,0 +1,27 @@
+.shipin-wrap.data-v-e494dc70 {
+    background: hsla(0,0%,100%,.8);
+    border: 1px solid #e2e2e2;
+    border-radius: 20rpx;
+    padding: 20rpx 18rpx
+}
+
+.shipin-wrap .img.data-v-e494dc70 {
+    height: 90rpx;
+    width: 90rpx
+}
+
+.shipin-wrap .txt.data-v-e494dc70 {
+    color: #1f1f1f;
+    font-size: 24rpx;
+    font-weight: 700;
+    margin-top: 20rpx;
+    text-align: center
+}
+
+.shipin-live.data-v-e494dc70 {
+    bottom: 0;
+    position: fixed;
+    right: 0;
+    width: 120rpx;
+    z-index: 100
+}

@@ -1,0 +1,5 @@
+<view style="padding-top:200rpx">
+    <uni-notice-bar bind:__l="__l" uI="85a6c1ea-0" uP="{{b}}" wx:if="{{a}}"></uni-notice-bar>
+    <view style="height:10rpx"></view>
+    <notice-bar-nvue bind:__l="__l" uI="85a6c1ea-1" uP="{{c}}" wx:if="{{c}}"></notice-bar-nvue>
+</view>

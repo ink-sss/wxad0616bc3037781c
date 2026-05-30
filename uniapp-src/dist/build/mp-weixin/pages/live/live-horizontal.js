@@ -1,0 +1,1 @@
+"use strict";const e=require("../../common/vendor.js"),o={components:{LiveRoomShell:()=>"./LiveRoomShell.js"}};if(!Array){e.resolveComponent("live-room-shell")()}const r=e._export_sfc(o,[["render",function(o,r,n,t,i,s){return{a:e.p({orientation:"horizontal"})}}]]);wx.createPage(r);

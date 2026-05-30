@@ -1,0 +1,28 @@
+<view class="{{['login-container','data-v-4902a772',k]}}" data-theme="{{j}}">
+    <view class="p30 data-v-4902a772">
+        <view class="group-bd data-v-4902a772">
+            <view class="form-level d-s-c data-v-4902a772">
+                <view class="d-s-c field-name data-v-4902a772">
+                    <text class="orange data-v-4902a772">*</text>
+                    <text class="gray3 data-v-4902a772">手机号：</text>
+                </view>
+                <view class="val flex-1 data-v-4902a772">
+                    <input bindinput="{{c}}" class="data-v-4902a772" disabled="{{a}}" placeholder="请输入要绑定的新手机号" type="text" value="{{b}}"></input>
+                </view>
+            </view>
+            <view class="form-level d-s-c data-v-4902a772">
+                <view class="d-s-c field-name data-v-4902a772">
+                    <text class="orange data-v-4902a772">*</text>
+                    <text class="gray3 data-v-4902a772">验证码：</text>
+                </view>
+                <view class="val flex-1 d-b-c data-v-4902a772">
+                    <input bindinput="{{e}}" class="flex-1 data-v-4902a772" placeholder="请输入验证码" type="number" value="{{d}}"></input>
+                    <button bindtap="{{g}}" class="get-code-btn data-v-4902a772" disabled="{{h}}" type="default">{{f}}</button>
+                </view>
+            </view>
+        </view>
+    </view>
+    <view class="btns p30 data-v-4902a772">
+        <button bindtap="{{i}}" class="data-v-4902a772" type="default">提交</button>
+    </view>
+</view>

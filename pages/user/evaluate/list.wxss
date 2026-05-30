@@ -1,0 +1,81 @@
+.list,.listItem {
+    padding: 20rpx
+}
+
+.listItem {
+    background-color: #fff;
+    margin-bottom: 20rpx
+}
+
+.listItem .timeBox {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: space-between;
+    justify-content: space-between
+}
+
+.listItem .delTxt {
+    color: #fd6a03
+}
+
+.listItem .time .unit {
+    color: rgba(0,0,0,.9);
+    font-weight: 400
+}
+
+.listItem .time wx-text {
+    color: #000;
+    font-size: 26rpx;
+    font-weight: 800
+}
+
+.listItem .time .data {
+    font-size: 38rpx
+}
+
+.listItem .time .line {
+    background-color: #fd6a03;
+    display: inline-block;
+    height: 22rpx;
+    margin: 0 6rpx;
+    -webkit-transform: rotate(18deg);
+    transform: rotate(18deg);
+    width: 4rpx
+}
+
+.listItem .con {
+    letter-spacing: 1rpx;
+    line-height: 42rpx;
+    margin: 60rpx 0 30rpx
+}
+
+.listItem .con .img {
+    display: inline-block;
+    height: 200rpx;
+    margin-right: 20rpx;
+    width: 200rpx
+}
+
+.listItem .prodcut {
+    -webkit-align-items: center;
+    align-items: center;
+    background: hsla(0,0%,92%,.8);
+    display: -webkit-flex;
+    display: flex;
+    font-size: 26rpx
+}
+
+.listItem .prodcut wx-image {
+    border-radius: 6rpx;
+    height: 90rpx;
+    margin-right: 6rpx;
+    width: 90rpx
+}
+
+.listItem .prodcut .spec {
+    color: #959595;
+    font-size: 24rpx;
+    margin-top: 6rpx
+}

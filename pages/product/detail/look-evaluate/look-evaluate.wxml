@@ -1,0 +1,68 @@
+<view class="look-evaluate">
+    <view class="top-tabbar">
+        <view bindtap="{{c}}" class="{{b}}">全部({{a}})</view>
+        <view bindtap="{{f}}" class="{{e}}">
+            <view class="d-c-c">
+                <text class="icon iconfont icon-pingjiahaoping"></text>
+                <text class="ml10 gray9">好评({{d}})</text>
+            </view>
+        </view>
+        <view bindtap="{{i}}" class="{{h}}">
+            <view class="d-c-c">
+                <text class="icon iconfont icon-pingjiazhongping"></text>
+                <text class="ml10 gray9">中评({{g}})</text>
+            </view>
+        </view>
+        <view bindtap="{{l}}" class="{{k}}">
+            <view class="d-c-c">
+                <text class="icon iconfont icon-pingjiachaping"></text>
+                <text class="ml10 gray9">差评({{j}})</text>
+            </view>
+        </view>
+    </view>
+    <scroll-view bindscrolltolower="{{r}}" class="scroll-Y" lowerThreshold="50" scrollY="true" style="{{q}}">
+        <view class="comment-list">
+            <view class="item" wx:for="{{m}}" wx:key="i">
+                <view class="cmt-user">
+                    <view class="left">
+                        <image lazyLoad class="photo" mode="aspectFill" src="{{item.a}}"></image>
+                        <text class="name">{{item.b}}</text>
+                    </view>
+                </view>
+                <view class="d-b-c p20">
+                    <view class="d-s-c">
+                        <view class="d-c-c mr20" wx:if="{{item.c}}">
+                            <text class="icon iconfont icon-pingjiahaoping"></text>
+                            <text class="ml10 gray9">好评</text>
+                        </view>
+                        <view class="d-c-c mr20" wx:if="{{item.d}}">
+                            <text class="icon iconfont icon-pingjiazhongping"></text>
+                            <text class="ml10 gray9">中评</text>
+                        </view>
+                        <view class="d-c-c mr20" wx:if="{{item.e}}">
+                            <text class="icon iconfont icon-pingjiachaping"></text>
+                            <text class="ml10 gray9">差评</text>
+                        </view>
+                    </view>
+                    <text class="datetime gray9">{{item.f}}</text>
+                </view>
+                <view class="p-0-20 f24 gray3">{{item.g}}</view>
+                <view class="imgs d-s-c p-0-20">
+                    <view class="box" wx:for="{{item.h}}" wx:for-item="imgs" wx:key="c">
+                        <image lazyLoad bindtap="{{imgs.a}}" mode="aspectFill" src="{{imgs.b}}" width=""></image>
+                    </view>
+                </view>
+            </view>
+            <view class="d-c-c p30" wx:if="{{n}}">
+                <view class="none-data-box">
+                    <image lazyLoad mode="widthFix" src="{{o}}"></image>
+                    <text>亲，暂无相关记录哦</text>
+                </view>
+            </view>
+            <uni-load-more bind:__l="__l" uI="7e4cf6ce-0" uP="{{p||''}}" wx:else></uni-load-more>
+        </view>
+    </scroll-view>
+    <view bindtap="{{v}}" class="popimg" wx:if="{{s}}">
+        <image lazyLoad mode="aspectFit" src="{{t}}"></image>
+    </view>
+</view>

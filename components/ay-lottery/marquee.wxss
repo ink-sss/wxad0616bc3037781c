@@ -1,0 +1,288 @@
+.box-ly-pm {
+    border-radius: 25rpx;
+    margin: 0 auto;
+    position: relative
+}
+
+.box-in {
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    border-radius: 40rpx;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    right: 0;
+    top: 0
+}
+
+.box-in,.dot {
+    position: absolute
+}
+
+.dot {
+    border-radius: 50%;
+    display: block;
+    height: 16rpx;
+    width: 16rpx
+}
+
+.dot:nth-child(odd) {
+    -webkit-animation: odd .5s linear infinite;
+    animation: odd .5s linear infinite;
+    background: #fff
+}
+
+.dot:nth-child(2n) {
+    -webkit-animation: even .5s linear infinite;
+    animation: even .5s linear infinite;
+    background: #fdf1ae
+}
+
+.dot-1 {
+    left: 43rpx;
+    top: 9rpx
+}
+
+.dot-2 {
+    left: 153rpx;
+    top: 9rpx
+}
+
+.dot-3 {
+    left: 262rpx;
+    top: 9rpx
+}
+
+.dot-4 {
+    left: 372rpx;
+    top: 9rpx
+}
+
+.dot-5 {
+    left: 481rpx;
+    top: 9rpx
+}
+
+.dot-6 {
+    left: 591rpx;
+    top: 9rpx
+}
+
+.dot-7 {
+    left: 642rpx;
+    top: 76rpx
+}
+
+.dot-8 {
+    left: 642rpx;
+    top: 178rpx
+}
+
+.dot-9 {
+    left: 642rpx;
+    top: 280rpx
+}
+
+.dot-10 {
+    left: 642rpx;
+    top: 383rpx
+}
+
+.dot-11 {
+    left: 642rpx;
+    top: 485rpx
+}
+
+.dot-12 {
+    left: 642rpx;
+    top: 587rpx
+}
+
+.dot-13 {
+    left: 591rpx;
+    top: 651rpx
+}
+
+.dot-14 {
+    left: 481rpx;
+    top: 651rpx
+}
+
+.dot-15 {
+    left: 372rpx;
+    top: 651rpx
+}
+
+.dot-16 {
+    left: 262rpx;
+    top: 651rpx
+}
+
+.dot-17 {
+    left: 153rpx;
+    top: 651rpx
+}
+
+.dot-18 {
+    left: 43rpx;
+    top: 651rpx
+}
+
+.dot-19 {
+    left: 6rpx;
+    top: 588rpx
+}
+
+.dot-20 {
+    left: 6rpx;
+    top: 486rpx
+}
+
+.dot-21 {
+    left: 6rpx;
+    top: 383rpx
+}
+
+.dot-22 {
+    left: 6rpx;
+    top: 280rpx
+}
+
+.dot-23 {
+    left: 6rpx;
+    top: 178rpx
+}
+
+.dot-24 {
+    left: 6rpx;
+    top: 76rpx
+}
+
+@-webkit-keyframes odd {
+    0% {
+        background: #fff;
+        box-shadow: 0 3rpx 7rpx rgba(195,117,41,.35),0 3rpx 7rpx hsla(24,69%,92%,.35)
+    }
+
+    to {
+        background: #ffe211;
+        box-shadow: 0 3rpx 7rpx hsla(27,74%,67%,.35),0 3rpx 7rpx rgba(255,226,17,.35)
+    }
+}
+
+@keyframes odd {
+    0% {
+        background: #fff;
+        box-shadow: 0 3rpx 7rpx rgba(195,117,41,.35),0 3rpx 7rpx hsla(24,69%,92%,.35)
+    }
+
+    to {
+        background: #ffe211;
+        box-shadow: 0 3rpx 7rpx hsla(27,74%,67%,.35),0 3rpx 7rpx rgba(255,226,17,.35)
+    }
+}
+
+@-webkit-keyframes even {
+    0% {
+        background: #ffe211;
+        box-shadow: 0 3rpx 7rpx hsla(27,74%,67%,.35),0 3rpx 7rpx rgba(255,226,17,.35)
+    }
+
+    to {
+        background: #fff;
+        box-shadow: 0 3rpx 7rpx rgba(195,117,41,.35),0 3rpx 7rpx hsla(24,69%,92%,.35)
+    }
+}
+
+@keyframes even {
+    0% {
+        background: #ffe211;
+        box-shadow: 0 3rpx 7rpx hsla(27,74%,67%,.35),0 3rpx 7rpx rgba(255,226,17,.35)
+    }
+
+    to {
+        background: #fff;
+        box-shadow: 0 3rpx 7rpx rgba(195,117,41,.35),0 3rpx 7rpx hsla(24,69%,92%,.35)
+    }
+}
+
+.ct-out {
+    background-color: #fff;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    border-radius: 35rpx;
+    box-shadow: 0 14rpx #f0f0ee;
+    box-sizing: border-box;
+    height: 168rpx;
+    padding: 0 15rpx;
+    position: absolute;
+    width: 182rpx
+}
+
+.award-1 {
+    left: 18rpx;
+    top: 19rpx
+}
+
+.award-2 {
+    left: 212rpx;
+    top: 19rpx
+}
+
+.award-3 {
+    left: 408rpx;
+    top: 19rpx
+}
+
+.award-4 {
+    left: 408rpx;
+    top: 212rpx
+}
+
+.award-5 {
+    left: 408rpx;
+    top: 404rpx
+}
+
+.award-6 {
+    left: 212rpx;
+    top: 404rpx
+}
+
+.award-7 {
+    left: 18rpx;
+    top: 404rpx
+}
+
+.award-8 {
+    left: 18rpx;
+    top: 212rpx
+}
+
+.btn-start {
+    background-color: #f62e12;
+    background: linear-gradient(0deg,#ff6c4b,#f93b24 53%,#fd645a 99%);
+    border-radius: 35rpx;
+    box-shadow: 0 14rpx #f62e12;
+    color: #fff;
+    font-size: 48rpx;
+    font-weight: 700;
+    height: 168rpx;
+    left: 212rpx;
+    line-height: 168rpx;
+    position: absolute;
+    text-align: center;
+    top: 212rpx;
+    width: 182rpx
+}
+
+.award-image {
+    border-radius: 15rpx;
+    height: 104rpx;
+    width: 104rpx
+}
+
+.awardSelect {
+    background-color: #ffffd9!important;
+    box-shadow: 0 14rpx #f0b257!important
+}

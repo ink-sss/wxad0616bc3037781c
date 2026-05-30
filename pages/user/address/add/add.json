@@ -1,0 +1,11 @@
+{
+  "navigationBarTitleText": "添加收货地址",
+  "usingComponents": {
+    "mpvue-city-picker": "../../../../components/mpvue-citypicker/mpvueCityPicker",
+    "uni-icons": "../../../../uni_modules/uni-icons/components/uni-icons/uni-icons",
+    "header-bar": "/components/header",
+    "request-loading": "/components/liveloading",
+    "tab-bar": "/components/tabbar/footTabbar",
+    "wechat-login": "plugin://wx43134e071b752953/wechat-login"
+  }
+}

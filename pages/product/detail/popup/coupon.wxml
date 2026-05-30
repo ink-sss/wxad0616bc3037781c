@@ -1,0 +1,77 @@
+<view class="{{['data-v-bebd5c9e',m]}}">
+    <view bindtap="{{a}}" class="popup-bg data-v-bebd5c9e"></view>
+    <view catchtap="{{l}}" class="main data-v-bebd5c9e">
+        <view class="pop-title data-v-bebd5c9e">
+            <view class="f36 fb data-v-bebd5c9e">优惠</view>
+            <view catchtap="{{b}}" class="pop-close data-v-bebd5c9e">
+                <text class="icon iconfont icon-guanbi data-v-bebd5c9e"></text>
+            </view>
+        </view>
+        <view class="p-0-20 data-v-bebd5c9e">
+            <view class=" data-v-bebd5c9e" wx:if="{{c}}">
+                <view class="f22 gray3 line-h-50 p-20-0 data-v-bebd5c9e">
+                    <text class="text-box data-v-bebd5c9e">满减</text>
+                    <text class="data-v-bebd5c9e" label="{{item.j}}" value="{{item.k}}" wx:for="{{d}}" wx:key="i">
+                        <text class="ml20 data-v-bebd5c9e" wx:if="{{item.a}}">满{{item.b}}元</text>
+                        <text class="ml20 data-v-bebd5c9e" wx:if="{{item.c}}">满{{item.d}}件</text>
+                        <text class="data-v-bebd5c9e" wx:if="{{item.e}}">减{{item.f}}元</text>
+                        <text class="data-v-bebd5c9e" wx:if="{{item.g}}">{{item.h}}折</text>
+                    </text>
+                </view>
+            </view>
+            <view class="p-20-0 line-h-50 f22 gray3 data-v-bebd5c9e" wx:if="{{e}}">
+                <text class="text-box data-v-bebd5c9e">返{{f}}</text>商城购物返{{g}}，订单完成后最高返{{h}}{{i}}</view>
+        </view>
+        <scroll-view class="scroll-Y scroll-coupon data-v-bebd5c9e" scrollY="true" style="{{k}}">
+            <view class="data-v-bebd5c9e">
+                <view class="scroll-coupon-tit data-v-bebd5c9e">可领取优惠券</view>
+                <view class="item-wrap data-v-bebd5c9e" wx:for="{{j}}" wx:key="v">
+                    <view class="{{['data-v-bebd5c9e',item.p]}}">
+                        <view class="operation d-b-c data-v-bebd5c9e">
+                            <view class="flex-1 coupon-content data-v-bebd5c9e">
+                                <view class="mb20 data-v-bebd5c9e">
+                                    <text class="f40 fb data-v-bebd5c9e">{{item.a}}</text>
+                                </view>
+                                <view class="f22 gray9 mb20 data-v-bebd5c9e">
+                                    <block wx:if="{{item.b}}">有效期：领取{{item.c}}天内有效</block>
+                                    <block wx:if="{{item.d}}">有效期：{{item.e}}至{{item.f}}</block>
+                                </view>
+                                <view class="f22 data-v-bebd5c9e" wx:if="{{item.g}}">{{item.h}}</view>
+                            </view>
+                            <view class="right-box d-c-c d-c data-v-bebd5c9e">
+                                <view class="theme-price mb10 data-v-bebd5c9e" wx:if="{{item.i}}">
+                                    <text class="f24 data-v-bebd5c9e">￥</text>
+                                    <text class="f52 fb data-v-bebd5c9e">{{item.j}}</text>
+                                </view>
+                                <view class="mb10 theme-price data-v-bebd5c9e" wx:if="{{item.k}}">
+                                    <text class="f52 fb data-v-bebd5c9e">{{item.l}}</text>
+                                    <text class="f24 data-v-bebd5c9e">折</text>
+                                </view>
+                                <view class="f24 mb10 data-v-bebd5c9e">{{item.m}}</view>
+                                <view bindtap="{{item.o}}" class="f26 coupon-btn theme-btn data-v-bebd5c9e" wx:if="{{item.n}}">立即领取</view>
+                                <view class="f26 coupon-btn btn-gray white data-v-bebd5c9e" wx:else>
+                                    <text class="data-v-bebd5c9e">已领取</text>
+                                </view>
+                            </view>
+                        </view>
+                    </view>
+                    <view catchtap="{{item.r}}" class="range_item d-b-c data-v-bebd5c9e" wx:if="{{item.q}}">
+                        <view class="gray9 f24 data-v-bebd5c9e">限指定部分商品<text class="icon iconfont icon-you data-v-bebd5c9e" style="color:#999999;font-size:22rpx"></text>
+                        </view>
+                        <view class="gray9 f24 data-v-bebd5c9e">本券不支持转赠</view>
+                    </view>
+                    <view catchtap="{{item.t}}" class="range_item d-b-c data-v-bebd5c9e" wx:elif="{{item.s}}">
+                        <view class="gray9 f24 data-v-bebd5c9e">限指定分类商品<text class="icon iconfont icon-you data-v-bebd5c9e" style="color:#999999;font-size:22rpx"></text>
+                        </view>
+                        <view class="gray9 f24 data-v-bebd5c9e">本券不支持转赠</view>
+                    </view>
+                    <view class="range_item d-b-c data-v-bebd5c9e" wx:else>
+                        <view class="gray9 f24 data-v-bebd5c9e">全场通用<text class="icon iconfont icon-you data-v-bebd5c9e" style="color:#999999;font-size:22rpx"></text>
+                        </view>
+                        <view class="gray9 f24 data-v-bebd5c9e">本券不支持转赠</view>
+                    </view>
+                </view>
+            </view>
+        </scroll-view>
+    </view>
+</view>

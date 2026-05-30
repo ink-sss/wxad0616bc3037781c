@@ -1,0 +1,39 @@
+.manager-box.data-v-34d1d611 {
+    background: rgba(0,0,0,.6);
+    border-bottom-left-radius: 22rpx;
+    border-top-left-radius: 22rpx;
+    padding: 16rpx;
+    position: fixed;
+    right: 0;
+    top: 30%;
+    z-index: 9
+}
+
+.manager-option.data-v-34d1d611 {
+    -webkit-align-items: center;
+    align-items: center;
+    color: #fff;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-flow: column;
+    flex-flow: column;
+    font-size: 20rpx;
+    -webkit-justify-content: center;
+    justify-content: center;
+    margin-top: 20rpx;
+    width: 100%
+}
+
+.manager-option.data-v-34d1d611:first-child {
+    margin-top: 0
+}
+
+.option-pic-box.data-v-34d1d611 {
+    height: 42rpx;
+    margin-bottom: 6rpx;
+    width: 42rpx
+}
+
+.option-pic.data-v-34d1d611 {
+    width: 42rpx
+}

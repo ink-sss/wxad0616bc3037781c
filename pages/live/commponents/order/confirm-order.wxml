@@ -1,0 +1,292 @@
+<view class="data-v-4d544580">
+    <uni-popup bind:__l="__l" bindchange="{{ap}}" bindmaskClick="{{ao}}" class="r data-v-4d544580" uI="4d544580-0" uP="{{aq}}" uR="orderList" uS="{{['d']}}" wx:if="{{aq}}">
+        <view class="{{['wrap','data-v-4d544580',am]}}" data-theme="{{al}}" wx:if="{{a}}">
+            <view class="head-top data-v-4d544580">
+                <uni-icons bind:__l="__l" bindclick="{{b}}" class="data-v-4d544580" uI="4d544580-1,4d544580-0" uP="{{c}}" wx:if="{{c}}"></uni-icons>
+                <view class="head-title data-v-4d544580">{{d}}</view>
+                <view class="data-v-4d544580">
+                    <view class="head-option data-v-4d544580"></view>
+                </view>
+            </view>
+            <myinfo bind:__l="__l" bindgoAddressPage="{{f}}" class="data-v-4d544580" uI="4d544580-2,4d544580-0" uP="{{g}}" wx:if="{{e}}"></myinfo>
+            <line-dashed bind:__l="__l" class="data-v-4d544580" uI="4d544580-3,4d544580-0" wx:if="{{h}}"></line-dashed>
+            <view class="vender data-v-4d544580">
+                <view class="list data-v-4d544580">
+                    <view class="data-v-4d544580" wx:for="{{i}}" wx:for-item="supplier_item" wx:key="S">
+                        <view class="sup_itemtit data-v-4d544580" wx:if="{{j}}">
+                            <text class="icon iconfont icon-stores data-v-4d544580"></text>
+                            <view class="f26 gray3 data-v-4d544580">{{supplier_item.a}}</view>
+                        </view>
+                        <block wx:if="{{supplier_item.b}}">
+                            <view class="item data-v-4d544580" wx:for="{{supplier_item.c}}" wx:key="o">
+                                <view class="d-f data-v-4d544580">
+                                    <view class="cover data-v-4d544580">
+                                        <image lazyLoad class="data-v-4d544580" mode="aspectFit" src="{{item.a}}"></image>
+                                    </view>
+                                    <view class="info d-b-s data-v-4d544580">
+                                        <view class="flex-1 data-v-4d544580">
+                                            <view class="d-b-s data-v-4d544580">
+                                                <view class="title f32 gray3 data-v-4d544580">{{item.b}}</view>
+                                            </view>
+                                            <view class="d-b-c data-v-4d544580">
+                                                <view class="theme-price mt10 f30 data-v-4d544580">¥<text class="f38 fb data-v-4d544580">{{item.c}}</text>
+                                                </view>
+                                                <view class="gray9 f24 data-v-4d544580" wx:if="{{item.d}}">
+                                                    <text class=" data-v-4d544580">立减：</text>
+                                                    <text class="theme-price data-v-4d544580">￥{{item.e}}</text>
+                                                </view>
+                                            </view>
+                                            <view class="d-s-c data-v-4d544580">
+                                                <view class="gray9 f24 data-v-4d544580" wx:if="{{item.f}}">
+                                                    <text class=" data-v-4d544580">会员折扣价：</text>
+                                                    <text class="theme-price data-v-4d544580">￥</text>
+                                                    <text class="theme-price f26 data-v-4d544580">{{item.g}}</text>
+                                                </view>
+                                                <text class="theme-borderbtn delivery_name data-v-4d544580" wx:if="{{item.h}}">{{item.i}}</text>
+                                            </view>
+                                            <view class="num-edit-num data-v-4d544580">
+                                                <view class="num-edit-num-box data-v-4d544580">
+                                                    <view bindtap="{{item.j}}" class="pro-num-del data-v-4d544580">
+                                                        <image class="pro-num-img data-v-4d544580" lazyLoad="{{true}}" mode="widthFix" src="{{supplier_item.d}}"></image>
+                                                    </view>
+                                                    <view bindtap="{{item.k}}" class="pro-num data-v-4d544580">{{supplier_item.e}}</view>
+                                                    <view bindtap="{{item.l}}" class="pro-num-add data-v-4d544580">
+                                                        <image class="pro-num-img data-v-4d544580" lazyLoad="{{true}}" mode="widthFix" src="{{supplier_item.f}}"></image>
+                                                    </view>
+                                                </view>
+                                                <view bindtap="{{item.n}}" class="go-shop-detail data-v-4d544580">
+                                                    <text class="data-v-4d544580">商品详情</text>
+                                                    <uni-icons bind:__l="__l" class="shop-detail-icon data-v-4d544580" uI="{{item.m}}" uP="{{supplier_item.g}}" wx:if="{{supplier_item.g}}"></uni-icons>
+                                                </view>
+                                            </view>
+                                        </view>
+                                    </view>
+                                </view>
+                            </view>
+                        </block>
+                        <view class="specifications-list data-v-4d544580">
+                            <view class="spec-list data-v-4d544580" wx:for="{{supplier_item.h}}" wx:key="c">
+                                <view class="spec-name data-v-4d544580">{{item.a}}</view>
+                                <view class="spec-option-list data-v-4d544580">
+                                    <view bindtap="{{val.b}}" class="{{['data-v-4d544580','spec-option',val.c&&'spec-option-sel']}}" wx:for="{{item.b}}" wx:for-item="val" wx:key="d">{{val.a}}</view>
+                                </view>
+                            </view>
+                        </view>
+                        <view class="item data-v-4d544580" wx:for="{{supplier_item.i}}" wx:key="h">
+                            <view class="d-f data-v-4d544580">
+                                <view class="cover data-v-4d544580">
+                                    <image lazyLoad class="data-v-4d544580" mode="aspectFill" src="{{item.a}}"></image>
+                                </view>
+                                <view class="info d-b-s data-v-4d544580">
+                                    <view class="flex-1 d-b-s d-c hh100 data-v-4d544580">
+                                        <view class="data-v-4d544580">
+                                            <view class="f28 gray3 text-ellipsis mb6 data-v-4d544580">
+                                                <text class="gift-tips data-v-4d544580">赠品</text>{{item.b}}</view>
+                                        </view>
+                                        <view class="describe mt10 f24 data-v-4d544580" wx:if="{{item.c}}">{{item.d}}</view>
+                                        <view class="f24 text-d-line gray9 data-v-4d544580" wx:if="{{item.e}}">¥{{item.f}}</view>
+                                    </view>
+                                    <view class="f24 tr gray9 data-v-4d544580">×{{item.g}}</view>
+                                </view>
+                            </view>
+                        </view>
+                        <view bindtap="{{supplier_item.q}}" class="d-f-c data-v-4d544580">
+                            <view class="data-v-4d544580" wx:if="{{supplier_item.j}}">配送方式<text class="extp data-v-4d544580">普通快递</text>
+                            </view>
+                            <view class="data-v-4d544580" wx:if="{{supplier_item.k}}">
+                                <view class="info d-s-s data-v-4d544580" style="padding-left:0">
+                                    <text class="zt theme-btn data-v-4d544580">当前自提点</text>
+                                    <view class="province-c-a d-s-s flex-1 data-v-4d544580">
+                                        <text class="data-v-4d544580">{{supplier_item.l}}</text>
+                                    </view>
+                                </view>
+                            </view>
+                            <view class="data-v-4d544580" wx:if="{{supplier_item.m}}">虚拟商品：无需物流</view>
+                            <view class="dfjac data-v-4d544580" wx:if="{{supplier_item.n}}">
+                                <view class="data-v-4d544580" wx:if="{{supplier_item.o}}">{{supplier_item.p}}</view>
+                                <text class="iconfont icon-jiantou1 data-v-4d544580"></text>
+                            </view>
+                        </view>
+                        <block wx:if="{{k}}">
+                            <view class="d-f-c data-v-4d544580">
+                                <text class="key f26 data-v-4d544580">定金：</text>
+                                <view class="f24 data-v-4d544580">￥{{supplier_item.r}}</view>
+                            </view>
+                            <view class="d-f-c data-v-4d544580">
+                                <text class="key f26 data-v-4d544580">尾款：</text>
+                                <view class="f24 data-v-4d544580">￥{{supplier_item.s}}</view>
+                            </view>
+                            <view class="f-d-c p30 data-v-4d544580">
+                                <view class="ww100 d-e-c red data-v-4d544580">(单件商品尾款已减{{supplier_item.t}}元)</view>
+                                <view class="ww100 d-e-c gray9 data-v-4d544580">{{supplier_item.v}}-{{supplier_item.w}}支付尾款</view>
+                            </view>
+                        </block>
+                        <block wx:else>
+                            <view class="d-f-c data-v-4d544580" wx:if="{{supplier_item.x}}">
+                                <view class=" data-v-4d544580">优惠券</view>
+                                <block wx:if="{{supplier_item.y}}">
+                                    <text bindtap="{{supplier_item.B}}" class="vlaue theme-price data-v-4d544580" wx:if="{{supplier_item.z}}">-￥{{supplier_item.A}}</text>
+                                    <text bindtap="{{supplier_item.D}}" class="vlaue theme-price data-v-4d544580" wx:else>有{{supplier_item.C}}张优惠券可用<view class="iconfont icon-jiantou1 data-v-4d544580"></view>
+                                    </text>
+                                </block>
+                                <text class="f24 gray9 data-v-4d544580" wx:else>无优惠券可用</text>
+                            </view>
+                            <view class="d-f-c data-v-4d544580" wx:if="{{supplier_item.E}}">
+                                <view class="data-v-4d544580">商户{{supplier_item.F}}</view>
+                                <view class="theme-price f24 data-v-4d544580">-￥{{supplier_item.G}}</view>
+                            </view>
+                            <view class="d-f-c data-v-4d544580" wx:if="{{supplier_item.H}}">
+                                <view class="data-v-4d544580">尾款抵扣:</view>
+                                <view class="theme-price f24 data-v-4d544580">-￥{{supplier_item.I}}</view>
+                            </view>
+                            <view class="data-v-4d544580" wx:if="{{supplier_item.J}}">
+                                <view class="d-f-c data-v-4d544580">
+                                    <view class="data-v-4d544580">{{supplier_item.K}}抵扣金额</view>
+                                    <view class="theme-price f24 data-v-4d544580">-￥{{supplier_item.L}}</view>
+                                </view>
+                            </view>
+                            <view class="d-f-c border-b data-v-4d544580" style="padding-bottom:30rpx">
+                                <view class="ww100 d-b-c data-v-4d544580">
+                                    <view class="mr20 data-v-4d544580">备注</view>
+                                    <input bindinput="{{supplier_item.N}}" class="flex-1 tr f24 data-v-4d544580" placeholder="选填,请先和商家协商一致" type="text" value="{{supplier_item.M}}"></input>
+                                </view>
+                            </view>
+                            <view class="total-box vthl data-v-4d544580">
+                                <view class="data-v-4d544580">
+                                    <text class="f26 gray3 data-v-4d544580">共{{supplier_item.O}}件商品,总价:</text>
+                                    <text class="f20 gray3 data-v-4d544580">￥</text>
+                                    <text class="f26 gray3 data-v-4d544580">{{supplier_item.P}}</text>
+                                </view>
+                                <view class="d-f data-v-4d544580">
+                                    <view class="f26 data-v-4d544580" wx:if="{{supplier_item.Q}}">实付款：<text class="theme-price f20 data-v-4d544580">￥</text>
+                                        <text class="price theme-price data-v-4d544580" style="font-size:32rpx">{{supplier_item.R}}</text>
+                                    </view>
+                                </view>
+                            </view>
+                        </block>
+                    </view>
+                </view>
+            </view>
+            <view class="buy-checkout data-v-4d544580" wx:if="{{l}}">
+                <view class="item data-v-4d544580">
+                    <text class="key f26 data-v-4d544580">订单总金额：</text>
+                    <view class="data-v-4d544580">
+                        <text class="theme-price f24 data-v-4d544580">￥{{m}}</text>
+                    </view>
+                </view>
+                <view class="item f26 data-v-4d544580" wx:if="{{n}}">
+                    <text class="key data-v-4d544580">平台优惠券：</text>
+                    <block wx:if="{{o}}">
+                        <text bindtap="{{r}}" class="f24 theme-price data-v-4d544580" wx:if="{{p}}">-￥{{q}}</text>
+                        <text bindtap="{{t}}" class="f24 theme-price data-v-4d544580" wx:else>有{{s}}张优惠券可用</text>
+                    </block>
+                    <text class="f24 gray9 data-v-4d544580" wx:else>无优惠券可用</text>
+                </view>
+                <view class="item data-v-4d544580" wx:if="{{v}}">
+                    <text class="key data-v-4d544580">商品立减：</text>
+                    <view class="data-v-4d544580">
+                        <text class="theme-price f24 data-v-4d544580">-￥{{w}}</text>
+                    </view>
+                </view>
+                <view class="item data-v-4d544580" wx:if="{{x}}">
+                    <text class="key data-v-4d544580">尾款抵扣：</text>
+                    <view class="data-v-4d544580">
+                        <text class="theme-price f24 data-v-4d544580">-￥{{y}}</text>
+                    </view>
+                </view>
+                <view class="item data-v-4d544580" wx:if="{{z}}">
+                    <text class="key data-v-4d544580">可用{{A}}抵扣：</text>
+                    <view class=" data-v-4d544580">
+                        <text class="theme-price f24 data-v-4d544580">-￥{{B}}</text>
+                        <switch bindchange="{{C}}" checked="true" class="data-v-4d544580" style="transform:scale(0.7);margin-right:-10rpx"></switch>
+                    </view>
+                </view>
+            </view>
+            <view class="buy-checkout data-v-4d544580" wx:if="{{D}}">
+                <view class="item data-v-4d544580" wx:for="{{E}}" wx:key="J">
+                    <view class="data-v-4d544580" style="white-space:nowrap">
+                        <label class="data-v-4d544580" style="color:red" wx:if="{{item.a}}">*</label>
+                        <label class="data-v-4d544580" style="margin-left:18rpx" wx:else></label>
+                        <label class="data-v-4d544580">{{item.b}}</label>
+                    </view>
+                    <view class="confirm data-v-4d544580" wx:if="{{item.c}}">
+                        <input bindinput="{{item.f}}" class="tr f24 gray3 data-v-4d544580" placeholder="{{item.d}}" placeholderClass="f24 gray3" type="text" value="{{item.e}}"></input>
+                    </view>
+                    <view class="confirm data-v-4d544580" wx:if="{{item.g}}">
+                        <input bindinput="{{item.j}}" class="tr f24 gray3 data-v-4d544580" placeholder="{{item.h}}" placeholderClass="f24 gray3" type="number" value="{{item.i}}"></input>
+                    </view>
+                    <view class="confirm data-v-4d544580" wx:if="{{item.k}}">
+                        <input bindinput="{{item.n}}" class="tr f24 gray3 data-v-4d544580" placeholder="{{item.l}}" placeholderClass="f24 gray3" type="text" value="{{item.m}}"></input>
+                    </view>
+                    <view class="uni-list data-v-4d544580" wx:if="{{item.o}}">
+                        <view class="uni-list-cell data-v-4d544580">
+                            <view class="uni-list-cell-db data-v-4d544580">
+                                <picker bindchange="{{item.t}}" class="data-v-4d544580" mode="date" value="{{item.s}}">
+                                    <view class="fontC f24 data-v-4d544580" wx:if="{{item.p}}">{{item.q}}<text class="iconfont icon-jiantou1 data-v-4d544580"></text>
+                                    </view>
+                                    <view class="uni-input f24 data-v-4d544580" wx:else>{{item.r}}</view>
+                                </picker>
+                            </view>
+                        </view>
+                    </view>
+                    <view class="data-v-4d544580" wx:if="{{item.v}}">
+                        <view class="data-v-4d544580">
+                            <view class="data-v-4d544580">
+                                <picker bindchange="{{item.A}}" class="data-v-4d544580" end="23:59" mode="time" start="00:00" value="{{item.z}}">
+                                    <view class="fontC data-v-4d544580" wx:if="{{item.w}}">{{item.x}}<text class="iconfont icon-jiantou1 data-v-4d544580"></text>
+                                    </view>
+                                    <view class="data-v-4d544580">{{item.y}}</view>
+                                </picker>
+                            </view>
+                        </view>
+                    </view>
+                    <view class="confirm data-v-4d544580" wx:if="{{item.B}}">
+                        <input bindinput="{{item.E}}" class="tr f24 gray3 data-v-4d544580" placeholder="{{item.C}}" placeholderClass="f24 gray3" type="idcard" value="{{item.D}}"></input>
+                    </view>
+                    <view class="confirm data-v-4d544580" wx:if="{{item.F}}">
+                        <input bindinput="{{item.I}}" class="tr f24 gray3 data-v-4d544580" placeholder="{{item.G}}" placeholderClass="f24 gray3" type="tel" value="{{item.H}}"></input>
+                    </view>
+                </view>
+            </view>
+            <view class="buy-checkout data-v-4d544580" wx:if="{{F}}">
+                <view class="item data-v-4d544580">
+                    <text class="red data-v-4d544580">*</text>
+                    <text class="key data-v-4d544580">收货人姓名</text>
+                    <input bindinput="{{H}}" class="tr f24 gray3 flex-1 data-v-4d544580" placeholder="{{'请填写'}}" placeholderClass="f24 gray9 " type="text" value="{{G}}"></input>
+                </view>
+                <view class="item data-v-4d544580">
+                    <text class="red data-v-4d544580">*</text>
+                    <text class="key data-v-4d544580">收货人电话</text>
+                    <input bindinput="{{J}}" class="tr f24 gray3 flex-1 data-v-4d544580" placeholder="{{'请填写'}}" placeholderClass="f24 gray9" type="tel" value="{{I}}"></input>
+                </view>
+            </view>
+            <view class="foot-pay-btns data-v-4d544580">
+                <view class="data-v-4d544580" wx:if="{{K}}">应付<text class="fb theme-price data-v-4d544580">¥</text>
+                    <text class="num theme-price fb f38 data-v-4d544580">{{L}}</text>
+                </view>
+                <block wx:else>
+                    <view class="price data-v-4d544580" wx:if="{{M}}">¥<text class="num data-v-4d544580">{{N}}</text>
+                    </view>
+                    <view class="price data-v-4d544580" wx:if="{{O}}">
+                        <text class="gray9 data-v-4d544580">所需{{P}}</text>
+                        <text class="num theme-price fb data-v-4d544580">{{Q}}</text>
+                    </view>
+                </block>
+                <button bindtap="{{R}}" class="data-v-4d544580">提交订单</button>
+            </view>
+            <coupon bind:__l="__l" bindclose="{{S}}" class="data-v-4d544580" uI="4d544580-5,4d544580-0" uP="{{T}}" wx:if="{{T}}"></coupon>
+            <dist bind:__l="__l" bindclose="{{U}}" class="data-v-4d544580" uI="4d544580-6,4d544580-0" uP="{{V}}" wx:if="{{V}}"></dist>
+            <upload bind:__l="__l" bindgetImgs="{{X}}" class="data-v-4d544580" uI="4d544580-7,4d544580-0" uP="{{Y}}" wx:if="{{W}}"></upload>
+            <input-modal bind:__l="__l" bindcancel="{{aa}}" bindconfirm="{{Z}}" bindupdateVisible="{{ab}}" class="data-v-4d544580" uI="4d544580-8,4d544580-0" uP="{{ac}}" wx:if="{{ac}}"></input-modal>
+            <address-add bind:__l="__l" bindpopupClose="{{af}}" class="r data-v-4d544580" uI="4d544580-9,4d544580-0" uR="addressAddPop" wx:if="{{ad}}"></address-add>
+            <address-list bind:__l="__l" bindaddNewAddress="{{ak}}" bindpopupClose="{{ai}}" bindrefreshData="{{aj}}" class="r data-v-4d544580" uI="4d544580-10,4d544580-0" uR="addressListPop" wx:if="{{ag}}"></address-list>
+        </view>
+    </uni-popup>
+    <uni-popup bind:__l="__l" class="r data-v-4d544580" uI="4d544580-11" uP="{{aw}}" uR="pai" uS="{{['d']}}" wx:if="{{aw}}">
+        <view class="data-v-4d544580" style="position:relative;max-height:70vh;width:70vw">
+            <uni-icons bind:__l="__l" bindclick="{{ar}}" class="close-icon data-v-4d544580" uI="4d544580-12,4d544580-11" uP="{{as}}" wx:if="{{as}}"></uni-icons>
+            <image class="paimg data-v-4d544580" mode="widthFix" showMenuByLongpress="{{true}}" src="{{at}}"></image>
+        </view>
+    </uni-popup>
+    <cashier bind:__l="__l" bindsubmit="{{ay}}" class="r data-v-4d544580" uI="4d544580-13" uP="{{az}}" uR="cashierDialog" wx:if="{{az}}"></cashier>
+</view>

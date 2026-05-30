@@ -1,0 +1,42 @@
+<view class="{{['index',x]}}" data-theme="{{w}}">
+    <view class="head">
+        <view class="h1">当前申请状态</view>
+        <view class="h1 orange" wx:if="{{a}}">审核中</view>
+        <view class="h1 green" wx:if="{{b}}">审核通过</view>
+        <view class="h1 red" wx:if="{{c}}">审核失败</view>
+    </view>
+    <view class="body">
+        <view class="body_hint h3">客服会尽快进行审核</view>
+        <view class="progress_bar">
+            <progress activeColor="#24DB5A" backgroundColor="#A2A2A2" percent="50" strokeWidth="6" wx:if="{{d}}"></progress>
+            <progress activeColor="#24DB5A" backgroundColor="#A2A2A2" percent="100" strokeWidth="6" wx:if="{{e}}"></progress>
+            <progress activeColor="#24DB5A" backgroundColor="#A2A2A2" percent="100" strokeWidth="6" wx:if="{{f}}"></progress>
+        </view>
+        <view class="progress_bar_image">
+            <view class="progress_bar_image_items">
+                <view class="icon iconfont icon-edit progress_bar_image_item bg_green"></view>
+                <view class="h3">已提交</view>
+            </view>
+            <view class="progress_bar_image_items">
+                <view class="icon iconfont icon-gengduo progress_bar_image_item bg_green"></view>
+                <view class="h3 orange" wx:if="{{g}}">审核中</view>
+                <view class="h3" wx:if="{{h}}">审核中</view>
+                <view class="h3" wx:if="{{i}}">审核中</view>
+            </view>
+            <view class="progress_bar_image_items">
+                <view class="icon iconfont icon-ic_check progress_bar_image_item bg_gray" wx:if="{{j}}"></view>
+                <view class="icon iconfont icon-ic_check progress_bar_image_item bg_green" wx:if="{{k}}"></view>
+                <view class="icon iconfont icon-guanbi progress_bar_image_item bg_red" wx:if="{{l}}"></view>
+                <view class="h3" wx:if="{{m}}">审核通过</view>
+                <view class="h3 green" wx:if="{{n}}">审核通过</view>
+                <view class="h3 red" wx:if="{{o}}">审核失败</view>
+            </view>
+        </view>
+        <view class="return">
+            <view class="h1" wx:if="{{p}}">恭喜，您的入驻审核已通过！</view>
+            <view class="h1" wx:if="{{q}}">抱歉，您的入驻审核未通过！</view>
+            <view class="h3" wx:if="{{r}}">未通过原因：{{s}}</view>
+        </view>
+        <button bindtap="{{v}}" class="bottom-btn" wx:if="{{t}}">重新申请</button>
+    </view>
+</view>

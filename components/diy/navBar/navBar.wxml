@@ -1,0 +1,18 @@
+<view>
+    <view class="diy-navbar" style="{{'background:'+e+';'+'padding:'+f}}">
+        <view class="diy-navBar" style="{{'background:'+c+';'+'border-radius:'+d}}">
+            <view bindtap="{{item.e}}" class="item" style="{{b}}" wx:for="{{a}}" wx:key="d">
+                <image lazyLoad mode="widthFix" src="{{item.a}}"></image>
+                <text class="gray3" style="{{'color:'+item.c}}">{{item.b}}</text>
+            </view>
+        </view>
+    </view>
+    <view class="qrCode">
+        <uni-popup bind:__l="__l" class="r" uI="5b3f16bd-0" uP="{{j}}" uR="qrCodeRef" uS="{{['d']}}" wx:if="{{j}}">
+            <view class="qrpop">
+                <image mode="aspectFill" src="{{g}}"></image>
+                <view class="qr-pop-tip">{{h}}</view>
+            </view>
+        </uni-popup>
+    </view>
+</view>

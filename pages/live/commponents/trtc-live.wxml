@@ -1,0 +1,27 @@
+<view class="live-video-box">
+    <view class="live-box" wx:for="{{a}}" wx:key="y">
+        <view class="tip-box">
+            <live-player autoPauseIfNavigate="{{item.q}}" autoPauseIfOpenNative="{{item.r}}" autoplay="{{item.g}}" backgroundMute="{{item.l}}" bindaudiovolumenotify="{{item.x}}" bindfullscreenchange="{{item.v}}" bindnetstatus="{{item.w}}" bindstatechange="{{item.t}}" class="player-box" data-streamid="{{item.c}}" data-streamtype="{{item.d}}" data-userid="{{item.b}}" debug="{{item.s}}" enableRecvMessage="{{item.p}}" id="{{item.a}}" maxCache="{{item.n}}" minCache="{{item.m}}" mode="{{item.f}}" muteAudio="{{item.h}}" muteVideo="{{item.i}}" objectFit="{{item.k}}" orientation="{{item.j}}" soundMode="{{item.o}}" src="{{item.e}}"></live-player>
+            <view class="tips-label">主播</view>
+        </view>
+    </view>
+    <view class="live-box tip-box">
+        <live-pusher autopush="{{c}}" beauty="{{g}}" bindaudiovolumenotify="{{n}}" bindbgmcomplete="{{m}}" bindbgmprogress="{{l}}" bindbgmstart="{{k}}" binderror="{{j}}" bindnetstatus="{{i}}" bindstatechange="{{h}}" class="player-box" enableCamera="{{f}}" enableMic="{{e}}" mode="{{b}}" url="{{d}}"></live-pusher>
+        <view class="avatarUrl-box" wx:if="{{o}}">
+            <image class="avatarUrl" src="{{p}}"></image>
+        </view>
+        <view class="tips-label">自己</view>
+    </view>
+    <view class="cz-option">
+        <view bindtap="{{s}}" class="img-box m-zy">
+            <image class="{{['option-img',q]}}" src="{{r}}"></image>
+        </view>
+        <view bindtap="{{w}}" class="img-box m-zy">
+            <image class="{{['option-img',t]}}" src="{{v}}"></image>
+        </view>
+        <view bindtap="{{y}}" class="img-box-text m-zy">
+            <text class="close-lm">退出连麦</text>
+            <image class="option-img tone-painting-pic" src="{{x}}"></image>
+        </view>
+    </view>
+</view>

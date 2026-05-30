@@ -1,0 +1,22 @@
+{
+  "component": true,
+  "usingComponents": {
+    "barrage-list": "./commponents/barrage-list",
+    "barrage-list-horizontal": "./commponents/barrage-list-horizontal",
+    "bottom-option": "./commponents/bottom-option",
+    "check-in": "./commponents/check-in",
+    "coupon-claim": "./commponents/coupon-claim",
+    "dz-full-screen": "./commponents/dz-full-screen",
+    "end-topicon": "./commponents/end-topicon",
+    "full-screen-loading": "./commponents/full-screen-loading",
+    "live-title": "./commponents/live-title",
+    "manager-permission": "./commponents/manager-permission",
+    "people-number": "./commponents/people-number",
+    "shop-list": "./commponents/shop-list",
+    "sign-in": "./commponents/sign-in",
+    "trtc-live": "./commponents/trtc-live",
+    "uni-notice-bar": "../../uni_modules/uni-notice-bar/components/uni-notice-bar/uni-notice-bar",
+    "wait-countdown": "./commponents/wait-countdown",
+    "watch-type-verify": "./commponents/watch-type-verify"
+  }
+}

@@ -1,0 +1,57 @@
+.diy-special {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+    overflow: hidden;
+    padding: 0 20rpx 0 24rpx
+}
+
+.diy-special .special-left {
+    height: 33rpx;
+    width: 136rpx
+}
+
+.diy-special .special-left wx-image {
+    height: 100%;
+    width: 100%
+}
+
+.diy-special .special-more .icon-you {
+    font-size: 24rpx
+}
+
+.diy-special .special-content {
+    -webkit-flex: 1;
+    flex: 1;
+    margin: 0 20rpx;
+    overflow: hidden
+}
+
+.diy-special .special-content-list {
+    transition: -webkit-transform .4s;
+    transition: transform .4s;
+    transition: transform .4s,-webkit-transform .4s
+}
+
+.diy-special .content-item {
+    height: 30rpx;
+    line-height: 30rpx
+}
+
+.diy-special .special-content.display_1 {
+    height: 30rpx
+}
+
+.diy-special .special-content.display_2 {
+    height: 60rpx
+}
+
+.right-shadow {
+    background: linear-gradient(90deg,#e4e4e4,hsla(0,0%,100%,0));
+    height: 90rpx;
+    margin-left: 30rpx;
+    width: 15rpx
+}

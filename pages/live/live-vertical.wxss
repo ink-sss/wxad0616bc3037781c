@@ -1,0 +1,158 @@
+@import "nvue.wxss";
+
+.live-video.data-v-6f071e31 {
+    height: 100vh;
+    position: relative;
+    width: 100vw
+}
+
+.live-wait.data-v-6f071e31 {
+    background: linear-gradient(135deg,#355df6,#7574f6,#7eade9);
+    left: 0;
+    position: absolute;
+    top: 0
+}
+
+.live-wait .wait-countdown.data-v-6f071e31 {
+    height: 200rpx;
+    margin: 450rpx 100rpx 0
+}
+
+.live-wait .bottom-option.data-v-6f071e31 {
+    bottom: 0;
+    left: 0;
+    position: absolute
+}
+
+.live-content.data-v-6f071e31 {
+    display: inline-block;
+    height: 100vh;
+    left: 0;
+    position: fixed;
+    top: 0;
+    width: 100vw
+}
+
+.live-content-view.data-v-6f071e31 {
+    display: inline-block
+}
+
+.dz-screen.data-v-6f071e31 {
+    height: 100vh;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100vw
+}
+
+.complaint-face.data-v-6f071e31 {
+    height: 65rpx;
+    position: absolute;
+    right: 10rpx;
+    top: 30vh;
+    width: 65rpx
+}
+
+.customer-service.data-v-6f071e31 {
+    height: 60rpx;
+    position: absolute;
+    right: 10rpx;
+    top: 40vh;
+    width: 60rpx
+}
+
+.bottom-option.data-v-6f071e31 {
+    bottom: 0;
+    left: 0;
+    position: absolute
+}
+
+.live-end.data-v-6f071e31 {
+    background-color: #222;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    height: 100vh;
+    -webkit-justify-content: center;
+    justify-content: center;
+    width: 100%
+}
+
+.live-end .live-title.data-v-6f071e31 {
+    left: 0;
+    position: absolute;
+    top: 0
+}
+
+.live-end .bottom-option.data-v-6f071e31 {
+    bottom: 0;
+    left: 0;
+    position: absolute
+}
+
+.live-end-img.data-v-6f071e31 {
+    height: 120rpx;
+    margin: 0 auto;
+    width: 120rpx
+}
+
+.live-end-text.data-v-6f071e31 {
+    color: #fffbee;
+    font-size: 40rpx;
+    font-weight: 400;
+    margin-top: 40rpx;
+    text-align: center
+}
+
+.comment-notice-view.data-v-6f071e31 {
+    padding-top: 4rpx;
+    width: 100vw
+}
+
+.show-content-btn.data-v-6f071e31 {
+    background: rgba(0,0,0,.7);
+    border-radius: 10rpx;
+    bottom: 40rpx;
+    color: #fff;
+    padding: 20rpx 40rpx;
+    position: fixed;
+    right: 20rpx;
+    z-index: 100
+}
+
+.cover-img-view.data-v-6f071e31 {
+    bottom: 0;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    height: 100%;
+    -webkit-justify-content: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    width: 100%
+}
+
+.cover-img.data-v-6f071e31 {
+    height: 100%;
+    max-height: 100vh;
+    width: 100%
+}
+
+.sb-view.data-v-6f071e31 {
+    left: 20rpx;
+    position: absolute;
+    top: 110rpx
+}
+
+.onScreenRecord.data-v-6f071e31 {
+    background: #000;
+    height: 100vh;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100vw;
+    z-index: 999
+}

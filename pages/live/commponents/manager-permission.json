@@ -1,0 +1,11 @@
+{
+  "component": true,
+  "usingComponents": {
+    "vest-list": "vest-list",
+    "viewer-list": "viewer-list",
+    "header-bar": "/components/header",
+    "request-loading": "/components/liveloading",
+    "tab-bar": "/components/tabbar/footTabbar",
+    "wechat-login": "plugin://wx43134e071b752953/wechat-login"
+  }
+}

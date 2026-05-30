@@ -1,0 +1,28 @@
+<view class="{{['data-v-64c0bff6',m]}}">
+    <view bindtap="{{a}}" class="popup-bg data-v-64c0bff6"></view>
+    <view catchtap="{{l}}" class="main data-v-64c0bff6">
+        <view class="distr-tit data-v-64c0bff6">配送方式</view>
+        <radio-group bindchange="{{j}}" class="data-v-64c0bff6">
+            <view class="distr-list border-b data-v-64c0bff6" wx:if="{{b}}">
+                <view class="f28 gray3 data-v-64c0bff6">普通配送</view>
+                <view class="radio data-v-64c0bff6">
+                    <radio checked="{{d}}" class="data-v-64c0bff6" color="{{c}}" style="transform:scale(0.7)" value="{{'10'}}"></radio>
+                    <text class="data-v-64c0bff6"></text>
+                </view>
+            </view>
+            <view class="data-v-64c0bff6" wx:if="{{e}}">
+                <view class="distr-list border-b data-v-64c0bff6">
+                    <view class="f28 gray3 data-v-64c0bff6">门店自提：</view>
+                    <view class="radio data-v-64c0bff6">
+                        <radio checked="{{g}}" class="data-v-64c0bff6" color="{{f}}" style="transform:scale(0.7)" value="{{'20'}}"></radio>
+                        <text class="data-v-64c0bff6"></text>
+                    </view>
+                </view>
+                <storeinfo bind:__l="__l" class="r data-v-64c0bff6" style="flex:1" uI="64c0bff6-0" uP="{{i}}" uR="getShopinfoData" wx:if="{{i}}"></storeinfo>
+            </view>
+        </radio-group>
+        <view class="distr_btn data-v-64c0bff6">
+            <button bindtap="{{k}}" class="theme-btn data-v-64c0bff6">完成</button>
+        </view>
+    </view>
+</view>

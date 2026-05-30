@@ -1,0 +1,20 @@
+.store-address-page.data-v-2eed7d14 { min-height: 100vh; background: #f7f7f7; padding: 20rpx; box-sizing: border-box;
+}
+.location-bar.data-v-2eed7d14 { display: flex; align-items: center; gap: 20rpx; padding: 20rpx; margin-bottom: 20rpx; border-radius: 12rpx; background: #fff;
+}
+.location-text.data-v-2eed7d14 { flex: 1; min-width: 0; color: #666; font-size: 24rpx;
+}
+.location-btn.data-v-2eed7d14 { width: 180rpx; height: 60rpx; border-radius: 30rpx; font-size: 24rpx; line-height: 60rpx;
+}
+.store-card.data-v-2eed7d14 { display: flex; align-items: center; gap: 20rpx; padding: 26rpx; margin-bottom: 18rpx; border-radius: 12rpx; background: #fff;
+}
+.store-info.data-v-2eed7d14 { flex: 1; min-width: 0;
+}
+.store-name.data-v-2eed7d14 { color: #222; font-size: 30rpx; font-weight: 700;
+}
+.store-phone.data-v-2eed7d14, .store-address.data-v-2eed7d14, .store-distance.data-v-2eed7d14 { margin-top: 10rpx; color: #777; font-size: 24rpx; line-height: 1.4;
+}
+.selected.data-v-2eed7d14 { color: #f03b2f; font-size: 26rpx;
+}
+.empty.data-v-2eed7d14 { padding: 120rpx 0; text-align: center; color: #999; font-size: 26rpx;
+}

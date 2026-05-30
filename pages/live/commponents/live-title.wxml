@@ -1,0 +1,23 @@
+<view>
+    <view class="nav-box" style="{{l}}">
+        <view class="live_detail" style="{{i}}" wx:if="{{a}}">
+            <view class="live_title">
+                <view bindtap="{{f}}" class="live_title_box">
+                    <image class="live_head" src="{{c}}" style="{{b}}"></image>
+                    <view class="live_title_text">
+                        <view class="title_text">{{d}}</view>
+                        <view class="live_like">{{e}}点赞</view>
+                    </view>
+                </view>
+            </view>
+            <view bindtap="{{h}}" class="item-icon">
+                <image mode="aspectFill" src="{{g}}"></image>
+                <view class="icon-tit">举报</view>
+            </view>
+        </view>
+        <view class="live-detail-horizontal" wx:else>
+            <view class="title-name" style="{{k}}">{{j}}</view>
+        </view>
+    </view>
+    <complaint-face bind:__l="__l" class="r" uI="3d2a2986-0" uP="{{o}}" uR="complaintRef" wx:if="{{m}}"></complaint-face>
+</view>

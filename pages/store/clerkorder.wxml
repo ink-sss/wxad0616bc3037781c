@@ -1,0 +1,79 @@
+<view class="order-datail data-v-17c11fac">
+    <view class="order-state d-s-c data-v-17c11fac">
+        <view class="icon-box data-v-17c11fac">
+            <text class="icon iconfont icon-gantanhao data-v-17c11fac"></text>
+        </view>
+        <view class="state-cont flex-1 data-v-17c11fac">
+            <view class="state-txt d-b-c data-v-17c11fac">
+                <text class="desc f34 data-v-17c11fac">{{a}}</text>
+            </view>
+        </view>
+        <view class="dot-bg data-v-17c11fac"></view>
+    </view>
+    <view class="order-express p30 d-s-c data-v-17c11fac" wx:if="{{b}}">
+        <view class="flow-delivery__title m-top20 data-v-17c11fac">
+            <text class="icon iconfont icon-dizhi1 data-v-17c11fac">自提门店</text>
+        </view>
+        <view class="cont-text ml20 data-v-17c11fac">
+            <view class="express-text data-v-17c11fac">{{c}} {{d}}<view class="f24 gray9 pt10 data-v-17c11fac">{{e}} {{f}} {{g}} {{h}}</view>
+            </view>
+        </view>
+    </view>
+    <view class="shops group bg-white data-v-17c11fac">
+        <view class="group-hd border-b-e data-v-17c11fac">
+            <view class="left data-v-17c11fac">
+                <text class="min-name data-v-17c11fac">商品</text>
+            </view>
+        </view>
+        <view class="list data-v-17c11fac">
+            <view class="one-product p-20-0 data-v-17c11fac" wx:for="{{i}}" wx:key="e">
+                <view class="d-s-c data-v-17c11fac">
+                    <view class="cover data-v-17c11fac">
+                        <image lazyLoad class="data-v-17c11fac" mode="aspectFit" src="{{item.a}}"></image>
+                    </view>
+                    <view class="flex-1 data-v-17c11fac">
+                        <view class="pro-info data-v-17c11fac">{{item.b}}</view>
+                        <view class="pt10 p-0-30 d-b-c data-v-17c11fac">
+                            <view class="price f22 data-v-17c11fac">¥<text class="f40 data-v-17c11fac">{{item.c}}</text>
+                            </view>
+                            <view class="f24 gray9 data-v-17c11fac">x{{item.d}}</view>
+                        </view>
+                    </view>
+                </view>
+            </view>
+        </view>
+    </view>
+    <view class="group bg-white f28 data-v-17c11fac">
+        <view class="p-20-0 data-v-17c11fac">
+            <text class="gray9 data-v-17c11fac">订单编号：</text>
+            <text class="data-v-17c11fac">{{j}}</text>
+        </view>
+        <view class="p-20-0 data-v-17c11fac">
+            <text class="gray9 data-v-17c11fac">下单时间：</text>
+            <text class="data-v-17c11fac">{{k}}</text>
+        </view>
+        <view class="p-20-0 data-v-17c11fac">
+            <text class="gray9 data-v-17c11fac">支付方式：</text>
+            <text class="data-v-17c11fac">{{l}}</text>
+        </view>
+        <view class="p-20-0 data-v-17c11fac">
+            <text class="gray9 data-v-17c11fac">配送方式：</text>
+            <text class="data-v-17c11fac">{{m}}</text>
+        </view>
+        <view class="p-20-0 d-b-c data-v-17c11fac">
+            <text class="gray9 data-v-17c11fac">商品金额</text>
+            <text class="data-v-17c11fac">¥ {{n}}</text>
+        </view>
+        <view class="p-20-0 d-b-c data-v-17c11fac">
+            <text class="gray9 data-v-17c11fac">运费</text>
+            <text class="data-v-17c11fac">+ ¥ {{o}}</text>
+        </view>
+        <view class="p-20-0 d-e-c fb f34 data-v-17c11fac">应付金额：<text class="red data-v-17c11fac">¥ {{p}}</text>
+        </view>
+    </view>
+    <view class="flow-fixed-footer b-f data-v-17c11fac" wx:if="{{q}}">
+        <view class="data-v-17c11fac" wx:if="{{r}}">
+            <button bindtap="{{s}}" class="btn-red data-v-17c11fac">确认核销</button>
+        </view>
+    </view>
+</view>

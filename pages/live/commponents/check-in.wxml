@@ -1,0 +1,8 @@
+<uni-popup bind:__l="__l" class="r data-v-76b20e36" uI="76b20e36-0" uP="{{j}}" uR="popupRef" uS="{{['d']}}" wx:if="{{j}}">
+    <view class="red-packet-modal data-v-76b20e36">
+        <view class="modal-title data-v-76b20e36">{{a}}</view>
+        <view class="condition-box data-v-76b20e36" wx:if="{{b}}">倒计时：<label class="countdown-text data-v-76b20e36">{{c}}</label>后自动关闭</view>
+        <button bindtap="{{e}}" class="get-btn data-v-76b20e36" disabled="{{f}}">{{d}}</button>
+        <view class="tips data-v-76b20e36" wx:if="{{g}}">{{h}}</view>
+    </view>
+</uni-popup>

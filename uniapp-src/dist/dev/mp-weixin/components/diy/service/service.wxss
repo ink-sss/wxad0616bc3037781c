@@ -1,0 +1,8 @@
+.diy-service.data-v-45c39c8a { bottom: 0; position: fixed; right: 0; z-index: 90;
+}
+.diy-service.data-v-45c39c8a,.diy-service .service-icon.data-v-45c39c8a { height: 120rpx; width: 120rpx;
+}
+.diy-service button.service-icon.data-v-45c39c8a { background: none; border: 0; line-height: 1; padding: 0;
+}
+.diy-service .service-icon image.data-v-45c39c8a { height: 100%; width: 100%;
+}

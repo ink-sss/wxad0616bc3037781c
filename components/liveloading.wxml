@@ -1,0 +1,5 @@
+<view class="request-loading-view data-v-437f31b2" wx:if="{{a}}">
+    <view class="loading-view data-v-437f31b2">
+        <image lazyLoad class="loading-img data-v-437f31b2" mode="" src="{{b}}"></image>
+    </view>
+</view>

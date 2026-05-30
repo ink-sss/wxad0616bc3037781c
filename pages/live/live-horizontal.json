@@ -1,0 +1,25 @@
+{
+  "enablePullDownRefresh": false,
+  "navigationBarTextStyle": "black",
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "uni-notice-bar": "../../uni_modules/uni-notice-bar/components/uni-notice-bar/uni-notice-bar",
+    "live-title": "commponents/live-title",
+    "people-number": "commponents/people-number",
+    "bottom-option": "commponents/bottom-option",
+    "barrage-list-horizontal": "commponents/barrage-list-horizontal",
+    "uni-icon": "../../components/uni-icon/uni-icon",
+    "wait-countdown": "commponents/wait-countdown",
+    "user-login": "../login/login-pop",
+    "sign-in": "commponents/sign-in",
+    "check-in": "commponents/check-in",
+    "coupon-claim": "commponents/coupon-claim",
+    "watch-type-verify": "commponents/watch-type-verify",
+    "manager-permission": "commponents/manager-permission",
+    "subscribe": "commponents/subscribe",
+    "header-bar": "/components/header",
+    "request-loading": "/components/liveloading",
+    "tab-bar": "/components/tabbar/footTabbar",
+    "wechat-login": "plugin://wx43134e071b752953/wechat-login"
+  }
+}

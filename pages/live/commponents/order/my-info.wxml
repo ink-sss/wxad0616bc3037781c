@@ -1,0 +1,26 @@
+<view class="my-info data-v-bbc0fd51">
+    <view bindtap="{{b}}" class="add-address d-s-c data-v-bbc0fd51" wx:if="{{a}}">
+        <view class="icon-box mr10 data-v-bbc0fd51">
+            <text class="icon iconfont icon-dizhi1 data-v-bbc0fd51"></text>
+        </view>
+        <text class="data-v-bbc0fd51">请添加收货地址</text>
+    </view>
+    <view bindtap="{{i}}" class="address-defalut-wrap data-v-bbc0fd51" wx:else>
+        <view class="d-b-c data-v-bbc0fd51">
+            <view class="add-addr flex-1 data-v-bbc0fd51">
+                <view class="icon-box mr10 f-s-0 data-v-bbc0fd51">
+                    <text class="icon iconfont icon-dizhi1 data-v-bbc0fd51"></text>
+                </view>
+                <view class="flex-1 data-v-bbc0fd51">
+                    <view class="gray3 f30 mb10 data-v-bbc0fd51">
+                        <text class="data-v-bbc0fd51">{{c}} {{d}}</text>
+                    </view>
+                    <view class="info data-v-bbc0fd51">
+                        <text class="f28 gray9 text-ellipsis-2 data-v-bbc0fd51">{{e}}{{f}} {{g}}{{h}}</text>
+                    </view>
+                </view>
+            </view>
+            <view class="icon iconfont icon-jiantou ml80 f-s-0 data-v-bbc0fd51"></view>
+        </view>
+    </view>
+</view>

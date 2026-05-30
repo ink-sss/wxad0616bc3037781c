@@ -1,0 +1,33 @@
+<view class="data-v-afe0db23">
+    <uni-popup bind:__l="__l" class="r data-v-afe0db23" uI="afe0db23-0" uP="{{i}}" uR="complaintFace" uS="{{['d']}}" wx:if="{{i}}">
+        <view class="complaint-list data-v-afe0db23">
+            <view class="title data-v-afe0db23">投诉举报</view>
+            <view class="complaint-item data-v-afe0db23">
+                <view class="report-content top-go data-v-afe0db23">
+                    <view class="sub-title data-v-afe0db23">*请描述您的问题</view>
+                </view>
+                <view class="problem-box data-v-afe0db23">
+                    <textarea bindinput="{{b}}" class="problem-ms data-v-afe0db23" placeholder="请描述你遇到的问题" value="{{a}}" wx:if="{{r0}}"></textarea>
+                </view>
+            </view>
+            <view class="complaint-item data-v-afe0db23">
+                <view class="report-content top-go data-v-afe0db23">
+                    <view class="sub-title data-v-afe0db23">*请上传交易凭据截图或违规截图</view>
+                </view>
+                <view class="pic-p-box data-v-afe0db23">
+                    <block wx:if="{{c}}">
+                        <view class="pic-list-show data-v-afe0db23" wx:for="{{d}}" wx:key="c">
+                            <image bindtap="{{item.a}}" class="pic-del data-v-afe0db23" src="{{e}}"></image>
+                            <image class="pic-box data-v-afe0db23" src="{{item.b}}"></image>
+                        </view>
+                    </block>
+                    <view bindtap="{{f}}" class="upload-box data-v-afe0db23"></view>
+                </view>
+            </view>
+            <view class="data-v-afe0db23">
+                <button bindtap="{{g}}" class="sub-button data-v-afe0db23" type="warn">提交</button>
+            </view>
+        </view>
+    </uni-popup>
+    <upload bind:__l="__l" bindgetImgs="{{k}}" class="data-v-afe0db23" uI="afe0db23-1" uP="{{l}}" wx:if="{{j}}"></upload>
+</view>

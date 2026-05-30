@@ -1,0 +1,10 @@
+{
+  "navigationBarTitleText": "登录",
+  "usingComponents": {
+    "tab-bar": "/components/tabbar/footTabbar",
+    "user-set-pop": "user-set-pop",
+    "header-bar": "/components/header",
+    "request-loading": "/components/liveloading",
+    "wechat-login": "plugin://wx43134e071b752953/wechat-login"
+  }
+}

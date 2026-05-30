@@ -1,0 +1,6 @@
+<view class="countdown" style="{{h}}">
+    <block wx:if="{{a}}">活动已结束</block>
+    <block wx:else>{{b}}<text class="mr10">{{c}}</text>
+        <text class="f28" style="{{g}}">{{d}}:{{e}}:{{f}}</text>
+    </block>
+</view>

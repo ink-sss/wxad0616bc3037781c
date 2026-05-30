@@ -1,0 +1,69 @@
+<view class="{{['apply-cash','data-v-37dec2df',F]}}" data-theme="{{E}}">
+    <form bindsubmit="{{D}}" class="data-v-37dec2df">
+        <view class="top_bg data-v-37dec2df" style="{{e}}">
+            <view class="ww100 data-v-37dec2df" style="{{a}}"></view>
+            <view class="tc head_top data-v-37dec2df" style="{{c}}">
+                <view bindtap="{{b}}" class="reg180 data-v-37dec2df">
+                    <text class="icon iconfont icon-jiantou data-v-37dec2df"></text>
+                </view>
+                <view class="fb data-v-37dec2df">提现</view>
+            </view>
+            <view class="card-top d-c-c d-c data-v-37dec2df">
+                <view class="top-money f68 fb data-v-37dec2df">{{d}}</view>
+                <view class="f24 data-v-37dec2df">可提现</view>
+            </view>
+        </view>
+        <view class="card-form data-v-37dec2df">
+            <view class="{{['cart-nav','data-v-37dec2df',h]}}" wx:if="{{f}}">
+                <view bindtap="{{item.i}}" class="{{['cart-nav-item','data-v-37dec2df',item.j&&'active']}}" wx:for="{{g}}" wx:key="k">
+                    <view class="navactive-bg data-v-37dec2df">
+                        <image class="navactive-bg-left data-v-37dec2df" mode="" src="{{item.b}}" wx:if="{{item.a}}"></image>
+                        <image class="navactive-bg-right data-v-37dec2df" mode="" src="{{item.d}}" wx:if="{{item.c}}"></image>
+                    </view>
+                    <view class="name data-v-37dec2df" wx:if="{{item.e}}">微信</view>
+                    <view class="name data-v-37dec2df" wx:if="{{item.f}}">支付宝</view>
+                    <view class="name data-v-37dec2df" wx:if="{{item.g}}">银行卡</view>
+                    <view class="name data-v-37dec2df" wx:if="{{item.h}}">余额</view>
+                </view>
+            </view>
+            <view class="cash-wrap cash-bottom data-v-37dec2df">
+                <view class="d-b-c border-b data-v-37dec2df">
+                    <view class="cash-label data-v-37dec2df">提现金额</view>
+                    <input bindinput="{{k}}" class="cash-form-item data-v-37dec2df" name="money" placeholder="{{i}}" placeholderClass="grary" type="digit" value="{{j}}"></input>
+                    <text bindtap="{{l}}" class="data-v-37dec2df" style="color:#333">全部提现</text>
+                </view>
+                <block wx:if="{{m}}">
+                    <view class="d-b-c border-b data-v-37dec2df">
+                        <view class="cash-label data-v-37dec2df">支付宝姓名</view>
+                        <input bindinput="{{o}}" class="cash-form-item data-v-37dec2df" name="alipay_name" placeholder="请输入支付宝姓名" placeholderClass="grary" type="text" value="{{n}}"></input>
+                    </view>
+                    <view class="d-b-c border-b data-v-37dec2df">
+                        <view class="cash-label data-v-37dec2df">支付宝账号</view>
+                        <input bindinput="{{q}}" class="cash-form-item data-v-37dec2df" name="alipay_account" placeholder="请输入支付宝账号" placeholderClass="grary" type="text" value="{{p}}"></input>
+                    </view>
+                </block>
+                <block wx:if="{{r}}">
+                    <view class="d-b-c border-b data-v-37dec2df">
+                        <view class="cash-label data-v-37dec2df">开户名</view>
+                        <input bindinput="{{t}}" class="cash-form-item data-v-37dec2df" name="bank_account" placeholder="请输入开户名" placeholderClass="grary" type="text" value="{{s}}"></input>
+                    </view>
+                    <view class="d-b-c border-b data-v-37dec2df">
+                        <view class="cash-label data-v-37dec2df">银行卡号</view>
+                        <input bindinput="{{w}}" class="cash-form-item data-v-37dec2df" name="bank_card" placeholder="请输入银行卡号" placeholderClass="grary" type="text" value="{{v}}"></input>
+                    </view>
+                    <view class="d-b-c border-b data-v-37dec2df">
+                        <view class="cash-label data-v-37dec2df">开户行名称</view>
+                        <input bindinput="{{y}}" class="cash-form-item data-v-37dec2df" name="bank_name" placeholder="请输入开户行名称" placeholderClass="grary" type="text" value="{{x}}"></input>
+                    </view>
+                </block>
+                <view class="form-bottom-words data-v-37dec2df">当前可提现<text class="f28 data-v-37dec2df" style="color:#333">￥{{z}}</text>
+                </view>
+                <view class="form-bottom-words data-v-37dec2df">提现比例<text class="f28 data-v-37dec2df" style="color:#333">{{A}}%</text>,实际到账<text class="data-v-37dec2df" style="color:#333">￥{{B}}</text>
+                </view>
+            </view>
+        </view>
+        <view class="d-c-c mt26 data-v-37dec2df">
+            <button bindtap="{{C}}" class="btn-sub theme-btn data-v-37dec2df">提交申请</button>
+        </view>
+    </form>
+</view>

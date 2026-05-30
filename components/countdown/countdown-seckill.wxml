@@ -1,0 +1,13 @@
+<view class="countdown data-v-8fb67228">
+    <view class="f30 fb data-v-8fb67228" wx:if="{{a}}">活动已结束</view>
+    <view class="f30 fb data-v-8fb67228" wx:if="{{b}}">活动未开始</view>
+    <block wx:if="{{c}}">
+        <view class="mr6 data-v-8fb67228">还剩</view>
+        <view class="box data-v-8fb67228">{{d}}</view>
+        <view class="p-0-6 data-v-8fb67228" style="{{e}}">:</view>
+        <view class="box data-v-8fb67228">{{f}}</view>
+        <view class="p-0-6 data-v-8fb67228" style="{{g}}">:</view>
+        <view class="box data-v-8fb67228">{{h}}</view>
+        <view class="p-0-6 data-v-8fb67228" style="{{i}}"></view>
+    </block>
+</view>

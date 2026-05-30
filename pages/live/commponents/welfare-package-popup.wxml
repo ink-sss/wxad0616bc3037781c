@@ -1,0 +1,34 @@
+<uni-popup bind:__l="__l" class="r data-v-99e1cad7" uI="99e1cad7-0" uP="{{j}}" uR="welfarePopup" uS="{{['d']}}" wx:if="{{j}}">
+    <view class="welfare-popup data-v-99e1cad7">
+        <view class="popup-handle data-v-99e1cad7"></view>
+        <view class="popup-title data-v-99e1cad7">福利券包</view>
+        <view class="popup-total data-v-99e1cad7">共<text class="popup-total-num data-v-99e1cad7">{{a}}</text>张可用福利券</view>
+        <view class="popup-content data-v-99e1cad7">
+            <view class="popup-empty data-v-99e1cad7" wx:if="{{b}}">加载中...</view>
+            <scroll-view bindscrolltolower="{{g}}" class="coupon-list data-v-99e1cad7" lowerThreshold="{{40}}" scrollY="{{true}}" wx:elif="{{c}}">
+                <view class="coupon-grid data-v-99e1cad7">
+                    <view class="coupon-item data-v-99e1cad7" wx:for="{{d}}" wx:key="g">
+                        <view class="coupon-top data-v-99e1cad7">
+                            <view class="coupon-left data-v-99e1cad7">
+                                <text class="coupon-type data-v-99e1cad7">{{item.a}}</text>
+                                <view class="coupon-info data-v-99e1cad7">
+                                    <text class="coupon-name data-v-99e1cad7">{{item.b}}</text>
+                                    <text class="coupon-remark data-v-99e1cad7" wx:if="{{item.c}}">{{item.d}}</text>
+                                </view>
+                            </view>
+                            <text class="coupon-count data-v-99e1cad7">x{{item.e}}</text>
+                        </view>
+                        <view class="coupon-divider data-v-99e1cad7"></view>
+                        <view class="coupon-bottom data-v-99e1cad7">
+                            <text class="coupon-time data-v-99e1cad7">{{item.f}}</text>
+                        </view>
+                    </view>
+                    <view class="coupon-list-status data-v-99e1cad7" wx:if="{{e}}">加载更多中...</view>
+                    <view class="coupon-list-status data-v-99e1cad7" wx:elif="{{f}}">没有更多了</view>
+                </view>
+            </scroll-view>
+            <view class="popup-empty data-v-99e1cad7" wx:else>暂无福利券</view>
+        </view>
+        <view bindtap="{{h}}" class="popup-btn data-v-99e1cad7">关闭</view>
+    </view>
+</uni-popup>

@@ -1,0 +1,67 @@
+<view class="item data-v-ac2ec6de">
+    <view class="mm manager1 data-v-ac2ec6de" wx:if="{{a}}">管理员</view>
+    <view class="mm manager2 data-v-ac2ec6de" wx:if="{{b}}">小助理</view>
+    <view class="item-top data-v-ac2ec6de">
+        <view class="avator-view data-v-ac2ec6de">
+            <image class="avatar data-v-ac2ec6de" src="{{c}}"></image>
+        </view>
+        <view class="center-view data-v-ac2ec6de">
+            <view class="nickname data-v-ac2ec6de">
+                <text class="data-v-ac2ec6de">{{d}}</text>
+                <view class="grade_name data-v-ac2ec6de" wx:if="{{e}}">{{f}}</view>
+            </view>
+            <view class="tag-box data-v-ac2ec6de" wx:if="{{g}}">
+                <view class="user-tag data-v-ac2ec6de" wx:for="{{h}}" wx:for-item="val" wx:key="b">{{val.a}}</view>
+            </view>
+            <view class="time data-v-ac2ec6de">地理位置：{{i}} {{j}} {{k}}</view>
+            <view class="time data-v-ac2ec6de">IP：{{l}}</view>
+            <view class="time data-v-ac2ec6de">最后访问：{{m}}</view>
+            <view class="time data-v-ac2ec6de">加入时间：{{n}}</view>
+        </view>
+        <view class="right-view data-v-ac2ec6de">
+            <view class="{{['data-v-ac2ec6de',p]}}">{{o}}</view>
+            <view bindtap="{{r}}" class="onblock data-v-ac2ec6de">{{q}}</view>
+            <view bindtap="{{t}}" class="defirend data-v-ac2ec6de">{{s}}</view>
+            <view bindtap="{{v}}" class="manager data-v-ac2ec6de">设置标签</view>
+        </view>
+    </view>
+    <view class="item-bottom data-v-ac2ec6de">
+        <view class="data-v-ac2ec6de">最近观看：{{w}}</view>
+        <view class="data-v-ac2ec6de">总观看：{{x}}</view>
+    </view>
+    <uni-popup bind:__l="__l" class="r data-v-ac2ec6de" uI="ac2ec6de-0" uP="{{D}}" uR="prohibition" uS="{{['d']}}" wx:if="{{D}}">
+        <view class="pop-box data-v-ac2ec6de">
+            <view class="pop-title data-v-ac2ec6de">设置禁言</view>
+            <checkbox-group class="data-v-ac2ec6de">
+                <label catchtap="{{z}}" class="pgl data-v-ac2ec6de">
+                    <checkbox checked="{{y}}" class="pcc data-v-ac2ec6de"></checkbox>
+                    <view class="plt data-v-ac2ec6de">禁言</view>
+                </label>
+                <view class="tip data-v-ac2ec6de">用户被禁言后不能发言</view>
+                <label catchtap="{{B}}" class="pgl data-v-ac2ec6de">
+                    <checkbox checked="{{A}}" class="pcc data-v-ac2ec6de"></checkbox>
+                    <view class="plt data-v-ac2ec6de">伪禁言</view>
+                </label>
+                <view class="tip data-v-ac2ec6de">用户被伪禁言后，能发言，但是只有自己能看见</view>
+            </checkbox-group>
+            <view class="tip red data-v-ac2ec6de">注：禁言和伪禁言同时勾选时，伪禁言生效</view>
+        </view>
+    </uni-popup>
+    <uni-popup bind:__l="__l" class="r data-v-ac2ec6de" uI="ac2ec6de-1" uP="{{K}}" uR="block" uS="{{['d']}}" wx:if="{{K}}">
+        <view class="pop-box data-v-ac2ec6de">
+            <view class="pop-title data-v-ac2ec6de">设置拉黑</view>
+            <checkbox-group class="data-v-ac2ec6de">
+                <label catchtap="{{F}}" class="pgl data-v-ac2ec6de">
+                    <checkbox checked="{{E}}" class="pcc data-v-ac2ec6de"></checkbox>
+                    <view class="plt data-v-ac2ec6de">拉黑用户</view>
+                </label>
+                <view class="tip data-v-ac2ec6de">用户被拉黑后将退出直播间</view>
+                <label catchtap="{{I}}" class="pgl data-v-ac2ec6de">
+                    <checkbox checked="{{G}}" class="pcc data-v-ac2ec6de"></checkbox>
+                    <view class="plt data-v-ac2ec6de">拉黑IP: {{H}}</view>
+                </label>
+                <view class="tip data-v-ac2ec6de">同IP的用户将都被拉黑</view>
+            </checkbox-group>
+        </view>
+    </uni-popup>
+</view>

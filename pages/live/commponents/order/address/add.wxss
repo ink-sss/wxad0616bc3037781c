@@ -1,0 +1,122 @@
+.address-form.data-v-f6dbf855 {
+    background-color: #fff;
+    border-radius: 10px 10px 0 0;
+    height: 78vh;
+    overflow-y: scroll
+}
+
+.address-form .key-name.data-v-f6dbf855 {
+    font-size: 28rpx;
+    width: 240rpx
+}
+
+.add-btn.data-v-f6dbf855 {
+    -webkit-align-items: center;
+    align-items: center;
+    border-radius: 88rpx;
+    bottom: calc(env(safe-area-inset-bottom) + 20rpx);
+    box-sizing: border-box;
+    display: -webkit-flex;
+    display: flex;
+    font-family: PingFang SC;
+    font-size: 30rpx;
+    font-weight: 800;
+    height: 88rpx;
+    -webkit-justify-content: center;
+    justify-content: center;
+    left: 24rpx;
+    line-height: 88rpx;
+    margin: 20rpx auto;
+    position: fixed;
+    text-align: center;
+    width: 692rpx
+}
+
+.d-s-s.data-v-f6dbf855 {
+    -webkit-justify-content: flex-start;
+    justify-content: flex-start
+}
+
+.d-b-s.data-v-f6dbf855,.d-s-s.data-v-f6dbf855 {
+    -webkit-align-items: flex-start;
+    align-items: flex-start;
+    display: -webkit-flex;
+    display: flex
+}
+
+.d-b-s.data-v-f6dbf855 {
+    -webkit-justify-content: space-between;
+    justify-content: space-between
+}
+
+.d-b-c.data-v-f6dbf855,.d-s-c.data-v-f6dbf855 {
+    -webkit-flex-direction: row;
+    flex-direction: row
+}
+
+.i-p.data-v-f6dbf855 {
+    box-sizing: unset;
+    position: unset
+}
+
+.close-icon.data-v-f6dbf855 {
+    padding: 10rpx 14rpx 0;
+    text-align: right
+}
+
+.choose-address.data-v-f6dbf855 {
+    margin-top: 30rpx
+}
+
+.zt-icon.data-v-f6dbf855 {
+    margin-left: 10rpx
+}
+
+.zt-box.data-v-f6dbf855 {
+    font-size: 24rpx;
+    height: 60rpx
+}
+
+.zt-textarea.data-v-f6dbf855 {
+    background-color: #f0f0f0;
+    border-radius: 20rpx;
+    font-size: 26rpx;
+    height: 190rpx;
+    margin-top: 20rpx;
+    padding: 20rpx;
+    width: calc(100% - 40rpx)
+}
+
+.clipboard.data-v-f6dbf855 {
+    padding-bottom: 70rpx;
+    position: relative
+}
+
+.clipboard-botton.data-v-f6dbf855 {
+    -webkit-align-items: center;
+    align-items: center;
+    bottom: 10rpx;
+    color: #cbcbcb;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-flow: row;
+    flex-flow: row;
+    font-size: 22rpx;
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+    position: absolute;
+    right: 10rpx;
+    width: 150rpx
+}
+
+.clipboard-sub.data-v-f6dbf855 {
+    background-color: #fc0;
+    border-radius: 16rpx;
+    color: #fff;
+    padding: 10rpx 20rpx
+}
+
+.d-c-c.data-v-f6dbf855 {
+    -webkit-flex-flow: row;
+    flex-flow: row
+}

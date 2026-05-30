@@ -1,0 +1,30 @@
+.address-list.data-v-dc771c92 {
+    border-radius: 20rpx
+}
+
+.address-form .key-name.data-v-dc771c92 {
+    font-size: 28rpx;
+    width: 240rpx
+}
+
+.add-btn.data-v-dc771c92 {
+    -webkit-align-items: center;
+    align-items: center;
+    border-radius: 88rpx;
+    bottom: calc(env(safe-area-inset-bottom) + 20rpx);
+    box-sizing: border-box;
+    display: -webkit-flex;
+    display: flex;
+    font-family: PingFang SC;
+    font-size: 30rpx;
+    font-weight: 800;
+    height: 88rpx;
+    -webkit-justify-content: center;
+    justify-content: center;
+    left: 24rpx;
+    line-height: 88rpx;
+    margin: 20rpx auto;
+    position: fixed;
+    text-align: center;
+    width: 692rpx
+}

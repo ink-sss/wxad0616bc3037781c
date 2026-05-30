@@ -1,0 +1,27 @@
+<view class="drag optional" style="{{'background:'+C+';'+'padding-left:'+D+';'+'padding-right:'+E+';'+'padding-top:'+F+';'+'padding-bottom:'+G}}" wx:if="{{a}}">
+    <view class="diy-sharpproduct" style="{{'background:'+x+';'+'border-top-left-radius:'+y+';'+'border-top-right-radius:'+z+';'+'border-bottom-left-radius:'+A+';'+'border-bottom-right-radius:'+B}}">
+        <view class="sharpproduct-head d-b-c" style="{{'background-image:'+k}}">
+            <view class="left d-s-c">
+                <view class="name" wx:if="{{b}}">{{c}}</view>
+                <image lazyLoad class="titleImg" mode="heightFix" src="{{e}}" wx:if="{{d}}"></image>
+            </view>
+            <view bindtap="{{h}}" class="right white d-c-c" style="{{'line-height:1'+';'+'color:'+i+';'+'font-size:'+j}}">{{f}}<text class="icon iconfont icon-you" style="{{'color:'+g+';'+'font-size:'+'22rpx'}}"></text>
+            </view>
+        </view>
+        <view class="product-list column__3">
+            <view bindtap="{{item.l}}" class="product-item" style="{{'background:'+r+';'+'border-top-left-radius:'+s+';'+'border-top-right-radius:'+t+';'+'border-bottom-left-radius:'+v+';'+'border-bottom-right-radius:'+w}}" wx:for="{{l}}" wx:key="k">
+                <view class="product-cover">
+                    <image lazyLoad mode="aspectFit" src="{{item.a}}" style="{{'border-radius:'+m}}"></image>
+                    <view class="product-sales" style="{{'color:'+item.c+';'+'background:'+item.d}}" wx:if="{{n}}">已砍{{item.b}}人</view>
+                </view>
+                <view class="product-info p-0-20">
+                    <view class="price ww100 f24 tc">
+                        <view class="f24 tc text-ellipsis" style="{{'color:'+item.f}}" wx:if="{{o}}">{{item.e}}</view>
+                        <view class="f28 tc" style="{{'color:'+item.h}}" wx:if="{{p}}">¥{{item.g}}</view>
+                        <view class="f24 text-d-line" style="{{'color:'+item.j}}" wx:if="{{q}}">¥{{item.i}}</view>
+                    </view>
+                </view>
+            </view>
+        </view>
+    </view>
+</view>

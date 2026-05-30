@@ -1,0 +1,6 @@
+<scroll-view scrollX class="{{['ss-scroll-navbar',d]}}" scrollLeft="{{e}}" scrollWithAnimation="true">
+    <view class="list">
+        <view bindtap="{{item.e}}" class="{{['item','nav-item',item.g&&'current',item.h&&'active']}}" id="{{item.f}}" style="{{'margin-right:'+c+';'+'background-image:'+item.j+';'+'color:'+item.k}}" wx:for="{{a}}" wx:key="i">
+            <view class="{{['after',item.a&&'op3']}}" style="{{'border-image-source:'+item.b+';'+'border-image-slice:'+1+';'+'border-color:'+item.c}}" wx:if="{{b}}"></view>{{item.d}}</view>
+    </view>
+</scroll-view>

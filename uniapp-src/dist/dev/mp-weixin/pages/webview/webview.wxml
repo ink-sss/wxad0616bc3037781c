@@ -1,0 +1,1 @@
+<view class="webview-page data-v-44708cf1"><web-view wx:if="{{a}}" class="data-v-44708cf1" src="{{b}}" progressbar-color="{{c}}"/><view wx:else class="empty data-v-44708cf1">缺少链接地址</view></view>

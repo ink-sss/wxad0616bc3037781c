@@ -1,0 +1,1 @@
+"use strict";const r=require("./runtime.js");function e(e={}){return r.promisifyApi("scanCode",e,{preferUni:!0})}exports.scanCode=e,exports.scanQrCode=function(r={}){return e({onlyFromCamera:!0,scanType:["qrCode"],...r})};

@@ -1,0 +1,47 @@
+<view class="drag optional pr data-v-8d20f96c">
+    <view class="{{['fixed-top','data-v-8d20f96c',n&&'close']}}">
+        <view class="top_head pr data-v-8d20f96c">
+            <view class="head_top data-v-8d20f96c" style="{{a}}"></view>
+        </view>
+        <view class="bg-topMerge data-v-8d20f96c" style="{{c}}">
+            <image class="{{[item.a&&'active','bgimg','data-v-8d20f96c']}}" src="{{item.c}}" wx:for="{{b}}" wx:key="b"></image>
+        </view>
+        <view class="{{['navigation','d-s-c','data-v-8d20f96c',i&&'mb20']}}">
+            <image class="logo-img data-v-8d20f96c" mode="aspectFill" src="{{d}}"></image>
+            <view catchtap="{{h}}" class="phone-top-search-box d-s-c data-v-8d20f96c" style="{{g}}">
+                <text class="icon iconfont icon-sousuo1 data-v-8d20f96c" style="{{'color:'+e}}"></text>{{f}}</view>
+        </view>
+        <view class="d-b-c data-v-8d20f96c" wx:if="{{j}}">
+            <view class="flex-1 o-h data-v-8d20f96c">
+                <nav-bar bind:__l="__l" bindcurrentIndex="{{k}}" class="ww100 data-v-8d20f96c" uI="8d20f96c-0" uP="{{l}}" wx:if="{{l}}"></nav-bar>
+            </view>
+            <text bindtap="{{m}}" class="icon iconfont icon-caidan data-v-8d20f96c"></text>
+        </view>
+    </view>
+    <view class="bg-topMerge data-v-8d20f96c">
+        <image class="{{[item.a&&'active','bgimg','data-v-8d20f96c']}}" src="{{item.c}}" wx:for="{{o}}" wx:key="b"></image>
+    </view>
+    <view class="bg-topMerge-color data-v-8d20f96c" style="{{'background-image:'+p}}"></view>
+    <view class="diy-TopMerge data-v-8d20f96c">
+        <view class="data-v-8d20f96c" style="{{r}}" wx:if="{{q}}"></view>
+        <swiper autoplay bindchange="{{x}}" class="swiper data-v-8d20f96c" duration="{{500}}" interval="{{5000}}" nextMargin="{{w}}" previousMargin="{{v}}">
+            <swiper-item bindtap="{{item.d}}" class="o-h data-v-8d20f96c" wx:for="{{s}}" wx:key="c">
+                <image lazyLoad class="{{['image','data-v-8d20f96c',item.a]}}" mode="aspectFill" src="{{item.b}}" style="{{'border-radius:'+t}}"></image>
+            </swiper-item>
+        </swiper>
+    </view>
+    <view class="{{['dots','center','d-c-c','data-v-8d20f96c',z&&'d-s-c',A&&'d-c-c',B&&'d-e-c']}}">
+        <view class="{{['data-v-8d20f96c',banner.b]}}" style="{{banner.c}}" wx:for="{{y}}" wx:for-item="banner" wx:key="a"></view>
+    </view>
+    <view bindtap="{{G}}" class="pop-bg data-v-8d20f96c" wx:if="{{C}}">
+        <view catchtap="{{F}}" class="categotyPopBox data-v-8d20f96c">
+            <view class="top_head pr data-v-8d20f96c">
+                <view class="head_top data-v-8d20f96c" style="{{D}}"></view>
+            </view>
+            <view class="f32 gray3 tiltles data-v-8d20f96c">精选类目</view>
+            <view class="categotyPop-list data-v-8d20f96c">
+                <view bindtap="{{item.d}}" class="{{['categotyPop-item','text-ellipsis','data-v-8d20f96c',item.b&&'active']}}" wx:for="{{E}}" wx:key="c">{{item.a}}</view>
+            </view>
+        </view>
+    </view>
+</view>

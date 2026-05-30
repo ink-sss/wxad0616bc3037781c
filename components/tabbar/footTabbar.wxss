@@ -1,0 +1,47 @@
+.foot-bottom {
+    width: 100%
+}
+
+.foot-bottom,.foot-tavbar-container {
+    height: 50px;
+    padding-bottom: env(safe-area-inset-bottom)
+}
+
+.foot-tavbar-container {
+    background: #fff;
+    bottom: 0;
+    box-shadow: 0 0 6rpx rgba(0,0,0,.3);
+    left: 0;
+    position: fixed;
+    right: 0;
+    z-index: 90
+}
+
+.foot-tavbar-container .item {
+    -webkit-flex: 1;
+    flex: 1;
+    height: 50px
+}
+
+.foot-tavbar-container .item.add-btn .inner {
+    background: #e2231a;
+    border-radius: 50%;
+    box-shadow: 0 0 10rpx rgba(232,38,100,.6);
+    height: 50px;
+    margin-bottom: 70rpx;
+    width: 100rpx
+}
+
+.foot-tavbar-container wx-image {
+    height: 50rpx;
+    width: 50rpx
+}
+
+.foot-tavbar-container .text-name {
+    color: #666;
+    font-size: 24rpx
+}
+
+.foot-tavbar-container .item.active .text-name {
+    color: #f8c341
+}

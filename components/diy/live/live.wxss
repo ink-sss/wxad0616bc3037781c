@@ -1,0 +1,125 @@
+.diy-live.data-v-f63641a4 {
+    background: #fff;
+    border-radius: 20rpx;
+    margin: 20rpx;
+    overflow: hidden
+}
+
+.diy-live .diy-head.data-v-f63641a4 {
+    -webkit-align-items: center;
+    align-items: center;
+    background-size: 100% 100%;
+    height: 90rpx
+}
+
+.diy-live .diy-head .name.data-v-f63641a4 {
+    font-size: 36rpx;
+    font-weight: 700;
+    width: 200rpx
+}
+
+.diy-live .list.data-v-f63641a4 {
+    padding: 20rpx
+}
+
+.diy-live .list .item.data-v-f63641a4 {
+    background-color: #f6f6f6;
+    border-radius: 12rpx;
+    height: 330rpx;
+    margin-right: 20rpx;
+    overflow: hidden;
+    width: 246rpx
+}
+
+.diy-live .list .item.data-v-f63641a4:nth-child(2n) {
+    margin-right: 0
+}
+
+.diy-live .list .item .pic.data-v-f63641a4 {
+    height: 246rpx;
+    width: 246rpx
+}
+
+.diy-live .list .item .pic .state.data-v-f63641a4 {
+    background: red;
+    border-radius: 8rpx;
+    color: #fff;
+    left: 20rpx;
+    padding: 4rpx 8rpx;
+    position: absolute;
+    top: 20rpx;
+    z-index: 90
+}
+
+.diy-live .list .item .pic .state.bg101.data-v-f63641a4 {
+    background: red
+}
+
+.diy-live .list .item .pic .state.bg102.data-v-f63641a4 {
+    background: #ffb100
+}
+
+.diy-live .list .item .pic .state.bg103.data-v-f63641a4 {
+    background: #333
+}
+
+.diy-live .list .item wx-image.data-v-f63641a4 {
+    border-radius: 16rpx;
+    height: 246rpx;
+    width: 246rpx
+}
+
+.diy-live .anchor.data-v-f63641a4 {
+    bottom: 12rpx;
+    font-size: 24rpx;
+    left: 18rpx;
+    line-height: 24rpx;
+    position: absolute
+}
+
+.item.data-v-f63641a4 {
+    margin: 0 8rpx 20rpx;
+    position: relative
+}
+
+.img.data-v-f63641a4 {
+    border-radius: 16rpx;
+    max-height: 260rpx;
+    overflow: hidden
+}
+
+.state.data-v-f63641a4 {
+    background: red;
+    border-radius: 8rpx;
+    color: #fff;
+    left: 10rpx;
+    padding: 4rpx 8rpx;
+    position: absolute;
+    top: 10rpx;
+    z-index: 90
+}
+
+.bg101.data-v-f63641a4 {
+    background: red
+}
+
+.bg102.data-v-f63641a4 {
+    background: #ffb100
+}
+
+.bg103.data-v-f63641a4 {
+    background: #333
+}
+
+.anchor.data-v-f63641a4 {
+    font-size: 24rpx;
+    left: 10rpx;
+    line-height: 24rpx;
+    position: absolute;
+    top: 220rpx
+}
+
+.live_name.data-v-f63641a4 {
+    padding: 20rpx;
+    text-align: center
+}

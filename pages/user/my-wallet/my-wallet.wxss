@@ -1,0 +1,221 @@
+.font-color-ccc {
+    color: #ccc
+}
+
+.font-24,.icon-jiantou:before {
+    font-size: 24rpx
+}
+
+.font-28 {
+    font-size: 28rpx
+}
+
+.font-32 {
+    font-size: 32rpx
+}
+
+.font-72 {
+    font-size: 72rpx
+}
+
+.width-150 {
+    text-align: center;
+    width: 150rpx
+}
+
+.index {
+    width: 750rpx
+}
+
+.wallet-content {
+    margin-top: -93rpx
+}
+
+.index-head {
+    background: #fff;
+    border-radius: 10rpx;
+    box-shadow: 0 3rpx 7rpx rgba(0,0,0,.08);
+    height: 160rpx;
+    margin: 0 auto 25rpx;
+    width: 710rpx
+}
+
+.bg-image {
+    background-size: 100% 100%;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    height: 340rpx;
+    margin: 50rpx auto 0;
+    width: 660rpx
+}
+
+.card-top {
+    box-sizing: border-box;
+    height: 256rpx;
+    padding-left: 47rpx;
+    padding-right: 22rpx;
+    width: 750rpx
+}
+
+.card-bottom {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    height: 160rpx;
+    -webkit-justify-content: space-around;
+    justify-content: space-around
+}
+
+.index-page {
+    background: #fff;
+    border-radius: 15rpx;
+    box-shadow: 0 3rpx 7rpx rgba(0,0,0,.08);
+    box-sizing: border-box;
+    margin: 0 auto;
+    overflow: hidden;
+    width: 706rpx
+}
+
+.body-head {
+    -webkit-align-items: center;
+    align-items: center;
+    background: rgba(255,81,70,.05);
+    border-bottom: 1px solid #f2f2f2;
+    display: -webkit-flex;
+    display: flex;
+    height: 110rpx;
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+    padding: 0 27rpx
+}
+
+.body-head .name {
+    color: rgba(255,81,70,.98);
+    font-size: 30rpx;
+    font-weight: 700
+}
+
+.body-item {
+    border-bottom: 1rpx solid #f2f2f2;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    height: 126rpx;
+    -webkit-justify-content: center;
+    justify-content: center
+}
+
+.body-item-top {
+    color: #333;
+    margin-bottom: 10rpx
+}
+
+.body-item-bottom,.body-item-top {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: space-between;
+    justify-content: space-between
+}
+
+.reg180 {
+    bottom: 0;
+    padding-right: 20rpx;
+    position: absolute;
+    text-align: right;
+    -webkit-transform: rotateY(180deg);
+    transform: rotateY(180deg)
+}
+
+.icon-jiantou {
+    color: #fff;
+    font-size: 30rpx
+}
+
+.head_top {
+    color: #fff;
+    font-size: 32rpx;
+    height: 30px;
+    line-height: 30px;
+    position: relative
+}
+
+.bg_topimg {
+    height: 400rpx;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: -1
+}
+
+.top_bg {
+    background: linear-gradient(180deg,#ff774d,#ff422e);
+    height: 368rpx;
+    width: 750rpx
+}
+
+.wallet_img {
+    height: 72rpx;
+    margin: 0 auto;
+    width: 72rpx
+}
+
+.index-head .card-bottom .pr .icon-jiantou {
+    color: #999;
+    font-size: 26rpx;
+    position: absolute;
+    right: 95rpx;
+    top: 24rpx
+}
+
+.none_line {
+    background-color: #d9d9d9;
+    height: 80rpx;
+    width: 1rpx
+}
+
+.body-item-top-right {
+    color: #ff5649;
+    margin-bottom: -30rpx
+}
+
+.underline {
+    border-bottom: 1px solid #fff;
+    display: inline-block;
+    line-height: 2
+}
+
+.text-btn {
+    border-radius: 30rpx;
+    box-shadow: 0 3rpx 7rpx rgba(0,0,0,.15);
+    color: #ff5649;
+    font-size: 28rpx;
+    font-weight: 700;
+    height: 62rpx;
+    text-align: center;
+    width: 189rpx
+}
+
+.more-btn,.text-btn {
+    -webkit-align-items: center;
+    align-items: center;
+    background: #fff;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: center;
+    justify-content: center
+}
+
+.more-btn {
+    border-radius: 26rpx;
+    color: #666;
+    font-size: 24rpx;
+    height: 52rpx;
+    opacity: .98;
+    width: 142rpx
+}

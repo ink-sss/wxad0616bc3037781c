@@ -1,0 +1,306 @@
+.product-popup .popup-bg {
+    background: rgba(0,0,0,.6);
+    bottom: 0;
+    left: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+    z-index: 99
+}
+
+.product-popup .main {
+    background-color: #fff;
+    border-radius: 25rpx 25rpx 0 0;
+    bottom: 0;
+    box-sizing: border-box;
+    padding-bottom: env(safe-area-inset-bottom);
+    position: fixed;
+    -webkit-transform: translate3d(0,980rpx,0);
+    transform: translate3d(0,980rpx,0);
+    transition: -webkit-transform .2s cubic-bezier(0,0,.25,1);
+    transition: transform .2s cubic-bezier(0,0,.25,1);
+    transition: transform .2s cubic-bezier(0,0,.25,1),-webkit-transform .2s cubic-bezier(0,0,.25,1);
+    width: 100%;
+    z-index: 999
+}
+
+.product-popup.open .main {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    z-index: 999
+}
+
+.product-popup.close .popup-bg {
+    display: none
+}
+
+.product-popup.close .main {
+    display: none;
+    z-index: -1
+}
+
+.product-popup .header {
+    border-bottom: 1px solid #eee;
+    height: 200rpx;
+    padding: 40rpx 0 10rpx 250rpx;
+    position: relative
+}
+
+.product-popup .header .avt {
+    background: #fff;
+    border: 2px solid #fff;
+    border-radius: 12rpx;
+    height: 180rpx;
+    left: 30rpx;
+    position: absolute;
+    top: 40rpx;
+    width: 180rpx
+}
+
+.product-popup .header .stock {
+    color: #999;
+    font-size: 26rpx
+}
+
+.product-popup .close-btn {
+    height: 40rpx;
+    position: absolute;
+    right: 30rpx;
+    top: 40rpx;
+    width: 40rpx
+}
+
+.product-popup .price {
+    font-size: 24rpx
+}
+
+[data-theme=theme0] .product-popup .price {
+    color: #ff4c01!important
+}
+
+[data-theme=theme1] .product-popup .price {
+    color: #e31c28!important
+}
+
+[data-theme=theme2] .product-popup .price {
+    color: #f55234!important
+}
+
+[data-theme=theme3] .product-popup .price {
+    color: #ff4645!important
+}
+
+[data-theme=theme4] .product-popup .price {
+    color: #ff4d4d!important
+}
+
+[data-theme=theme5] .product-popup .price {
+    color: #e7032c!important
+}
+
+[data-theme=theme6] .product-popup .price {
+    color: #e31c28!important
+}
+
+.product-popup .price .num {
+    font-size: 40rpx;
+    padding: 0 4rpx
+}
+
+.product-popup .old-price {
+    color: #999;
+    font-size: 26rpx;
+    margin-left: 10rpx;
+    text-decoration: line-through
+}
+
+.product-popup .page {
+    overflow-y: auto;
+    padding: 20rpx 30rpx 39rpx
+}
+
+.product-popup .level-box {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: space-between;
+    justify-content: space-between
+}
+
+.product-popup .level-box .key {
+    color: #999;
+    font-size: 24rpx
+}
+
+.product-popup .level-box .icon-box {
+    height: 40rpx;
+    width: 48rpx
+}
+
+.product-popup .num-wrap .iconfont {
+    color: #666
+}
+
+.product-popup .num-wrap.no-stock .iconfont {
+    color: #ccc
+}
+
+.product-popup .level-box .text-wrap {
+    -webkit-align-items: center;
+    align-items: center;
+    background: #f2f2f2;
+    border: none;
+    border-radius: 10rpx;
+    display: -webkit-flex;
+    display: flex;
+    font-size: 28rpx;
+    height: 42rpx;
+    -webkit-justify-content: center;
+    justify-content: center;
+    margin: 0 4rpx;
+    width: 66rpx
+}
+
+.product-popup .level-box .text-wrap wx-input {
+    font-size: 28rpx;
+    height: 42rpx;
+    line-height: 42rpx;
+    text-align: center;
+    width: 66rpx
+}
+
+.specs .specs-list {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+    -webkit-justify-content: flex-start;
+    justify-content: flex-start
+}
+
+.specs .specs-list wx-button {
+    font-size: 24rpx;
+    margin-bottom: 10rpx;
+    margin-left: 0;
+    margin-right: 10rpx
+}
+
+.product-popup .btns wx-button,.product-popup .btns wx-button:after,.specs .specs-list wx-button:after {
+    border: 0;
+    border-radius: 0;
+    height: 88rpx;
+    line-height: 88rpx;
+    margin-bottom: 55rpx
+}
+
+.product-popup .btns .confirm-btn {
+    border-radius: 40rpx;
+    color: #fff;
+    font-size: 32rpx;
+    height: 80rpx;
+    line-height: 80rpx;
+    margin: 0 auto 55rpx;
+    width: 710rpx
+}
+
+[data-theme=theme0] .product-popup .btns .confirm-btn {
+    background-color: #ff5704!important
+}
+
+[data-theme=theme1] .product-popup .btns .confirm-btn {
+    background-color: #19ad57!important
+}
+
+[data-theme=theme2] .product-popup .btns .confirm-btn {
+    background-color: #fc0!important
+}
+
+[data-theme=theme3] .product-popup .btns .confirm-btn {
+    background-color: #33a7ff!important
+}
+
+[data-theme=theme4] .product-popup .btns .confirm-btn {
+    background-color: #e4e4e4!important
+}
+
+[data-theme=theme5] .product-popup .btns .confirm-btn {
+    background-color: #c8ba97!important
+}
+
+[data-theme=theme6] .product-popup .btns .confirm-btn {
+    background-color: #623ceb!important
+}
+
+.btn-checked {
+    background-color: #fff;
+    border: 1px solid #f6220c;
+    border-radius: 200rpx;
+    font-size: 26rpx
+}
+
+[data-theme=theme0] .btn-checked {
+    border-color: #ff5704!important
+}
+
+[data-theme=theme1] .btn-checked {
+    border-color: #19ad57!important
+}
+
+[data-theme=theme2] .btn-checked {
+    border-color: #fc0!important
+}
+
+[data-theme=theme3] .btn-checked {
+    border-color: #33a7ff!important
+}
+
+[data-theme=theme4] .btn-checked {
+    border-color: #e4e4e4!important
+}
+
+[data-theme=theme5] .btn-checked {
+    border-color: #c8ba97!important
+}
+
+[data-theme=theme6] .btn-checked {
+    border-color: #623ceb!important
+}
+
+[data-theme=theme0] .btn-checked {
+    color: #ff5704!important
+}
+
+[data-theme=theme1] .btn-checked {
+    color: #19ad57!important
+}
+
+[data-theme=theme2] .btn-checked {
+    color: #fc0!important
+}
+
+[data-theme=theme3] .btn-checked {
+    color: #33a7ff!important
+}
+
+[data-theme=theme4] .btn-checked {
+    color: #e4e4e4!important
+}
+
+[data-theme=theme5] .btn-checked {
+    color: #c8ba97!important
+}
+
+[data-theme=theme6] .btn-checked {
+    color: #623ceb!important
+}
+
+.btn-checke {
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 200rpx;
+    color: #333;
+    font-size: 26rpx
+}

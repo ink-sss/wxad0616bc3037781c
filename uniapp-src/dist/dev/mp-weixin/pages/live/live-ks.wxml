@@ -1,0 +1,1 @@
+<view class="live-ks data-v-d65e5c9c"><uni-notice-bar wx:if="{{a}}" class="data-v-d65e5c9c" u-i="d65e5c9c-0" bind:__l="__l" u-p="{{b}}"/><view class="gap data-v-d65e5c9c"/><notice-bar-nvue wx:if="{{c}}" class="data-v-d65e5c9c" u-i="d65e5c9c-1" bind:__l="__l" u-p="{{c}}"/></view>

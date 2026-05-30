@@ -1,0 +1,18 @@
+<view style="{{'background:'+l+';'+'padding-left:'+m+';'+'padding-right:'+n+';'+'padding-top:'+o+';'+'padding-bottom:'+p}}" wx:if="{{a}}">
+    <view class="diy-special" style="{{'background:'+g+';'+'border-top-left-radius:'+h+';'+'border-top-right-radius:'+i+';'+'border-bottom-left-radius:'+j+';'+'border-bottom-right-radius:'+k}}">
+        <view class="special-left">
+            <image lazyLoad mode="aspectFill" src="{{b}}"></image>
+        </view>
+        <view class="right-shadow"></view>
+        <view class="{{['special-content',e]}}">
+            <view class="special-content-list" style="{{d}}">
+                <view bindtap="{{item.c}}" class="content-item text-ellipsis" wx:for="{{c}}" wx:key="b">
+                    <text>{{item.a}}</text>
+                </view>
+            </view>
+        </view>
+        <view bindtap="{{f}}" class="special-more">
+            <text class="iconfont icon-you"></text>
+        </view>
+    </view>
+</view>

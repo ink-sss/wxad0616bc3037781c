@@ -1,0 +1,28 @@
+<view>
+    <uni-popup bind:__l="__l" class="r" uI="a2db9550-0" uP="{{n}}" uR="trtcApply" uS="{{['d']}}" wx:if="{{n}}">
+        <view class="apply-box">
+            <view class="apply-title">
+                <text wx:if="{{a}}">申请连麦中</text>
+                <text wx:elif="{{b}}">申请连麦</text>
+                <text wx:elif="{{c}}">已拒绝</text>
+            </view>
+            <view class="avatar-connect">
+                <image class="avatar" src="{{d}}"></image>
+                <view class="connect">
+                    <view class="dian"></view>
+                    <view class="dian"></view>
+                    <view class="dian"></view>
+                </view>
+                <image class="avatar" src="{{e}}"></image>
+            </view>
+            <view class="bottom-apply" wx:if="{{f}}">
+                <view bindtap="{{h}}" class="apply-go" wx:if="{{g}}">申请连麦</view>
+                <view bindtap="{{j}}" class="apply-cancel" wx:elif="{{i}}">取消申请</view>
+                <view wx:elif="{{k}}">主播已拒绝连麦</view>
+            </view>
+            <view class="bottom-apply" wx:else>
+                <view bindtap="{{l}}" class="apply-go">退出连麦</view>
+            </view>
+        </view>
+    </uni-popup>
+</view>

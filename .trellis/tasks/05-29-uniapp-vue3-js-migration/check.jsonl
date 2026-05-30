@@ -1,0 +1,9 @@
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend migration quality review."}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Quality gate expectations."}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Component review expectations."}
+{"file": ".trellis/spec/frontend/state-management.md", "reason": "State migration review."}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "Review cross-layer config/runtime/page consistency."}
+{"file": ".trellis/tasks/05-29-uniapp-vue3-js-migration/research/page-inventory.md", "reason": "Verify route coverage and placeholder boundaries."}
+{"file": ".trellis/tasks/05-29-uniapp-vue3-js-migration/research/runtime-dependencies.md", "reason": "Verify dependency and runtime reconstruction."}
+{"file": ".trellis/tasks/05-29-uniapp-vue3-js-migration/research/component-inventory.md", "reason": "Verify component coverage and replacements."}
+{"file": ".trellis/tasks/05-29-uniapp-vue3-js-migration/research/weixin-risk.md", "reason": "Verify mp-weixin risk isolation."}

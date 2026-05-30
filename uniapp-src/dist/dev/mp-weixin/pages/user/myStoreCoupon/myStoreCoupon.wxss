@@ -1,0 +1,30 @@
+.store-coupon.data-v-ade6d88a { min-height: 100vh; padding: 112rpx 24rpx 24rpx; background: #f5f5f5; box-sizing: border-box;
+}
+.tabs.data-v-ade6d88a { position: fixed; top: 0; left: 0; right: 0; z-index: 2; display: grid; grid-template-columns: repeat(3, 1fr); height: 96rpx; background: #fff;
+}
+.tabs view.data-v-ade6d88a { line-height: 96rpx; text-align: center; color: #777; font-size: 28rpx;
+}
+.tabs .active.data-v-ade6d88a { color: #19ad57; font-weight: 600; border-bottom: 4rpx solid #19ad57;
+}
+.coupon.data-v-ade6d88a { position: relative; display: flex; min-height: 172rpx; margin-bottom: 18rpx; padding: 24rpx; background: #fff; border-radius: 8rpx; box-sizing: border-box;
+}
+.left.data-v-ade6d88a { flex: 1; min-width: 0;
+}
+.type.data-v-ade6d88a { color: #19ad57; font-size: 24rpx;
+}
+.name.data-v-ade6d88a { margin-top: 10rpx; color: #222; font-size: 30rpx; font-weight: 600;
+}
+.remark.data-v-ade6d88a, .bottom.data-v-ade6d88a { color: #777; font-size: 24rpx;
+}
+.right.data-v-ade6d88a { width: 150rpx; text-align: right; color: #333; font-size: 26rpx;
+}
+.right button.data-v-ade6d88a { margin-top: 20rpx; height: 56rpx; line-height: 56rpx; color: #fff; background: #19ad57; border-radius: 28rpx; font-size: 24rpx;
+}
+.bottom.data-v-ade6d88a { position: absolute; left: 24rpx; bottom: 18rpx;
+}
+.empty.data-v-ade6d88a { padding: 160rpx 0; color: #999; text-align: center; font-size: 28rpx;
+}
+.qrcode.data-v-ade6d88a { position: fixed; left: 80rpx; right: 80rpx; top: 35vh; padding: 36rpx; text-align: center; background: #fff; border-radius: 8rpx; box-shadow: 0 8rpx 40rpx rgba(0,0,0,.12);
+}
+.qrcode text.data-v-ade6d88a { display: block; margin: 24rpx 0; word-break: break-all; color: #333; font-size: 28rpx;
+}

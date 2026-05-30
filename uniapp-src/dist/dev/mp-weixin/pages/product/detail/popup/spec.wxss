@@ -1,0 +1,48 @@
+.product-popup.data-v-b02e36fd { position: fixed; inset: 0; z-index: 90; pointer-events: none; opacity: 0; transition: opacity .2s;
+}
+.product-popup.open.data-v-b02e36fd { pointer-events: auto; opacity: 1;
+}
+.popup-bg.data-v-b02e36fd { position: absolute; inset: 0; background: rgba(0,0,0,.45);
+}
+.main.data-v-b02e36fd { position: absolute; left: 0; right: 0; bottom: 0; border-radius: 28rpx 28rpx 0 0; background: #fff; overflow: hidden;
+}
+.header.data-v-b02e36fd { position: relative; min-height: 180rpx; padding: 30rpx 84rpx 20rpx 190rpx; border-bottom: 1rpx solid #f2f2f2; box-sizing: border-box;
+}
+.avt.data-v-b02e36fd { position: absolute; left: 30rpx; top: -40rpx; width: 140rpx; height: 140rpx; border-radius: 16rpx; background: #f5f5f5;
+}
+.price.data-v-b02e36fd { color: #e2231a; font-size: 28rpx; font-weight: 700;
+}
+.price .num.data-v-b02e36fd { font-size: 42rpx;
+}
+.old-price.data-v-b02e36fd { margin-left: 16rpx; color: #999; font-size: 24rpx; text-decoration: line-through;
+}
+.stock.data-v-b02e36fd, .select_spec.data-v-b02e36fd { margin-top: 8rpx; color: #666; font-size: 24rpx;
+}
+.close-btn.data-v-b02e36fd { position: absolute; right: 30rpx; top: 30rpx; color: #999;
+}
+.body.data-v-b02e36fd { padding: 0 30rpx 24rpx;
+}
+.specs-hd.data-v-b02e36fd { color: #333;
+}
+.specs-list.data-v-b02e36fd { display: flex; flex-wrap: wrap; gap: 20rpx;
+}
+.specs-list button.data-v-b02e36fd { margin: 0; padding: 0 28rpx; min-width: 120rpx; height: 56rpx; border-radius: 28rpx; font-size: 24rpx; line-height: 56rpx;
+}
+.btn-checke.data-v-b02e36fd { background: #f5f5f5; color: #333;
+}
+.btn-checked.data-v-b02e36fd { background: #ff5704; color: #fff;
+}
+.level-box.data-v-b02e36fd { display: flex; align-items: center; justify-content: space-between; padding-top: 30rpx;
+}
+.key.data-v-b02e36fd { margin-right: 12rpx; color: #333; font-size: 28rpx;
+}
+.icon-box.data-v-b02e36fd { width: 52rpx; height: 52rpx; border-radius: 50%; background: #f5f5f5;
+}
+.icon-box.num-wrap.data-v-b02e36fd { opacity: .45;
+}
+.text-wrap input.data-v-b02e36fd, .text-wrap.data-v-b02e36fd { width: 84rpx; height: 52rpx; line-height: 52rpx; text-align: center; background: #f7f7f7; font-size: 26rpx;
+}
+.btns.data-v-b02e36fd { padding: 20rpx 30rpx calc(20rpx + env(safe-area-inset-bottom));
+}
+.confirm-btn.data-v-b02e36fd { height: 82rpx; border-radius: 41rpx; background: #ff5704; color: #fff; line-height: 82rpx; font-size: 30rpx;
+}

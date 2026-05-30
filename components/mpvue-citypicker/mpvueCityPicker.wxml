@@ -1,0 +1,20 @@
+<view class="mpvue-picker">
+    <view bindtap="{{b}}" catchtouchmove="true" class="{{[a&&'pickerMask']}}"></view>
+    <view class="{{['mpvue-picker-content',k&&'mpvue-picker-view-show']}}">
+        <view catchtouchmove="true" class="mpvue-picker__hd">
+            <view bindtap="{{c}}" class="mpvue-picker__action">取消</view>
+            <view bindtap="{{e}}" class="mpvue-picker__action" style="{{'color:'+d}}">确定</view>
+        </view>
+        <picker-view bindchange="{{j}}" class="mpvue-picker-view" indicatorStyle="height: 40px;" value="{{i}}" wx:if="{{r0}}">
+            <picker-view-column>
+                <view class="picker-item" wx:for="{{f}}" wx:key="b">{{item.a}}</view>
+            </picker-view-column>
+            <picker-view-column>
+                <view class="picker-item" wx:for="{{g}}" wx:key="b">{{item.a}}</view>
+            </picker-view-column>
+            <picker-view-column>
+                <view class="picker-item" wx:for="{{h}}" wx:key="b">{{item.a}}</view>
+            </picker-view-column>
+        </picker-view>
+    </view>
+</view>

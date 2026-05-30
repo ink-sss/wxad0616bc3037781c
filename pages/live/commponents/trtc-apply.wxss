@@ -1,0 +1,79 @@
+.apply-box {
+    -webkit-align-items: center;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 30rpx;
+    display: -webkit-flex;
+    display: flex;
+    font-size: 26rpx;
+    height: 400rpx;
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+    padding: 30rpx
+}
+
+.apply-title {
+    font-size: 32rpx;
+    text-align: center
+}
+
+.avatar {
+    height: 80rpx;
+    width: 80rpx
+}
+
+.avatar,.dian {
+    border-radius: 50%
+}
+
+.dian {
+    background-color: #fd184f;
+    height: 7rpx;
+    width: 7rpx
+}
+
+.connect {
+    -webkit-justify-content: space-evenly;
+    justify-content: space-evenly;
+    width: 80rpx
+}
+
+.avatar-connect,.connect {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-flow: row;
+    flex-flow: row
+}
+
+.avatar-connect {
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+    -webkit-justify-content: space-evenly;
+    justify-content: space-evenly;
+    margin: 0 auto;
+    width: 300rpx
+}
+
+.apply-go {
+    background-color: #fe3666;
+    color: #fff
+}
+
+.apply-cancel,.apply-go {
+    border-radius: 50rpx;
+    height: 80rpx;
+    line-height: 80rpx;
+    text-align: center;
+    width: 380rpx
+}
+
+.apply-cancel {
+    background-color: #f8f8f8;
+    color: #000
+}
+
+.bottom-apply {
+    margin-bottom: 10rpx
+}

@@ -1,0 +1,3 @@
+<view wx:if="{{a}}">
+    <application bind:__l="__l" uI="296aeae6-0" wx:if="{{b}}"></application>
+</view>

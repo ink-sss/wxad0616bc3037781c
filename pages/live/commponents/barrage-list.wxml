@@ -1,0 +1,85 @@
+<view class="data-v-e2d115a4">
+    <view class="gobuy data-v-e2d115a4" wx:if="{{a}}">
+        <view class="buy-box data-v-e2d115a4" wx:if="{{b}}">
+            <label class="buy-head-box data-v-e2d115a4" wx:if="{{c}}">
+                <image azyLoad="{{true}}" class="buy-head data-v-e2d115a4" src="{{d}}"></image>
+            </label>
+            <label class="data-v-e2d115a4">{{e}}正在去下单</label>
+        </view>
+    </view>
+    <view class="top-ba data-v-e2d115a4" wx:if="{{f}}">
+        <view class="top-text data-v-e2d115a4">置顶</view>
+        <view class="top-content-box data-v-e2d115a4">
+            <view class="top-ba-content data-v-e2d115a4">
+                <label class="top-head data-v-e2d115a4">
+                    <image class="data-v-e2d115a4" mode="aspectFill" src="{{g}}"></image>
+                </label>
+                <text class="top-ba-text data-v-e2d115a4">
+                    <text class="top-ba-name data-v-e2d115a4">{{h}}：</text> {{i}}</text>
+            </view>
+        </view>
+    </view>
+    <view class="box-content data-v-e2d115a4">
+        <view class="ba-list-box data-v-e2d115a4">
+            <view class="notice-box data-v-e2d115a4" wx:if="{{j}}">
+                <text class="notice-text data-v-e2d115a4">{{k}}</text>
+            </view>
+            <scroll-view bindscroll="{{n}}" bindscrolltolower="{{o}}" class="ba-list data-v-e2d115a4" enablePassive="{{true}}" id="scroll-v" scrollIntoView="{{m}}" scrollWithAnimation="{{true}}" scrollY="{{true}}" showScrollbar="{{false}}">
+                <view class="ba-content-fa data-v-e2d115a4" id="{{val.x}}" wx:for="{{l}}" wx:for-item="val" wx:key="w">
+                    <view class="ba-content data-v-e2d115a4" wx:if="{{val.a}}">
+                        <label class="ba-head-box data-v-e2d115a4">
+                            <view class="ba-grade data-v-e2d115a4" wx:if="{{val.b}}">
+                                <text class="ba-grade-text data-v-e2d115a4" style="{{val.d}}">{{val.c}}</text>
+                            </view>
+                            <image azyLoad="{{true}}" class="ba-head data-v-e2d115a4" src="{{val.f}}" wx:if="{{val.e}}"></image>
+                        </label>
+                        <text class="ba-text data-v-e2d115a4" wx:if="{{val.g}}">
+                            <text class="vm data-v-e2d115a4" wx:if="{{val.h}}">虚拟会员</text>
+                            <text class="a1 data-v-e2d115a4" wx:if="{{val.i}}">管理员</text>
+                            <text class="a2 data-v-e2d115a4" wx:if="{{val.j}}">小助理</text>
+                            <text class="data-v-e2d115a4" wx:if="{{val.k}}">
+                                <block wx:if="{{val.l}}">
+                                    <text class="ba-tag data-v-e2d115a4" wx:for="{{val.m}}" wx:for-item="i" wx:key="b">{{i.a}}</text>
+                                </block>
+                                <text class="ba-name data-v-e2d115a4">{{val.n}}：</text> {{val.o}}</text>
+                            <text bindtap="{{val.r}}" class="place-text data-v-e2d115a4" wx:else>
+                                <text class="place-name data-v-e2d115a4">{{val.p}}</text> {{val.q}}</text>
+                        </text>
+                        <view class="data-v-e2d115a4" wx:else>
+                            <text class="ba-text data-v-e2d115a4">
+                                <text class="ba-name data-v-e2d115a4">{{val.s}}：</text>
+                            </text>
+                            <image bindtap="{{val.t}}" class="ba-img-speak-con data-v-e2d115a4" mode="widthFix" src="{{val.v}}"></image>
+                        </view>
+                    </view>
+                </view>
+            </scroll-view>
+        </view>
+        <view class="data-v-e2d115a4" wx:if="{{p}}">
+            <view class="{{['data-v-e2d115a4',B]}}" wx:if="{{q}}">
+                <image class="hotGoods-image data-v-e2d115a4" mode="aspectFill" src="{{r}}"></image>
+                <view class="hot_text data-v-e2d115a4" wx:if="{{s}}">已售 x<view class="hot_sale data-v-e2d115a4">{{t}}</view>
+                </view>
+                <view class="hot_text data-v-e2d115a4" wx:if="{{v}}">库存仅剩 x<view class="hot_sale data-v-e2d115a4" wx:if="{{w}}">{{x}}<text class="hot-sale-text data-v-e2d115a4">亿+</text>
+                    </view>
+                    <view class="hot_sale data-v-e2d115a4" wx:elif="{{y}}">{{z}}<text class="hot-sale-text data-v-e2d115a4">万+</text>
+                    </view>
+                    <view class="hot_sale data-v-e2d115a4" wx:else>{{A}}</view>
+                </view>
+            </view>
+            <view bindtap="{{H}}" class="explain-little data-v-e2d115a4">
+                <image class="explain-pic data-v-e2d115a4" src="{{C}}"></image>
+                <text class="explain-name data-v-e2d115a4">{{D}}</text>
+                <view class="explain-go-shop data-v-e2d115a4">
+                    <text class="shop_money data-v-e2d115a4">￥{{E}}</text>
+                    <text class="shop_go data-v-e2d115a4">抢</text>
+                </view>
+                <view class="explain-title data-v-e2d115a4">
+                    <image class="data-v-e2d115a4" mode="aspectFit" src="{{F}}"></image>
+                    <text class="data-v-e2d115a4">正在讲解</text>
+                </view>
+                <icon catchtap="{{G}}" class="explain-close data-v-e2d115a4" color="#ffffff" size="35rpx" type="cancel"></icon>
+            </view>
+        </view>
+    </view>
+</view>

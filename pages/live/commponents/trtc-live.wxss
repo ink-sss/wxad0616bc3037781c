@@ -1,0 +1,123 @@
+.live-video-box {
+    background-color: #1a1c3c;
+    height: 100vh;
+    position: relative
+}
+
+.live-video-box,.vieo-box {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-flow: row;
+    flex-flow: row;
+    width: 100vw
+}
+
+.live-box {
+    height: 600rpx;
+    margin-top: 300rpx;
+    width: 50%
+}
+
+.player-box {
+    height: 600rpx;
+    width: 100%
+}
+
+.tip-box {
+    position: relative
+}
+
+.tips-label {
+    background-color: rgba(0,0,0,.3);
+    border-radius: 30rpx;
+    bottom: 10rpx;
+    color: #fff;
+    font-size: 24rpx;
+    padding: 8rpx 14rpx;
+    position: absolute;
+    right: 10rpx
+}
+
+.operation-option {
+    color: #fff
+}
+
+.cz-option {
+    color: #fff;
+    -webkit-flex-flow: row;
+    flex-flow: row;
+    position: absolute;
+    right: 20rpx;
+    top: 920rpx
+}
+
+.cz-option,.img-box {
+    display: -webkit-flex;
+    display: flex
+}
+
+.img-box {
+    border-radius: 50%;
+    margin-right: 14rpx;
+    width: 70rpx
+}
+
+.img-box,.img-box-text {
+    -webkit-align-items: center;
+    align-items: center;
+    background-color: rgba(0,0,0,.4);
+    height: 70rpx;
+    -webkit-justify-content: center;
+    justify-content: center
+}
+
+.img-box-text {
+    border-radius: 20rpx;
+    color: #fff;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-flow: row;
+    flex-flow: row;
+    padding: 0rpx 10rpx;
+    width: auto
+}
+
+.close-lm {
+    margin-right: 6rpx
+}
+
+.option-img {
+    height: 44rpx;
+    width: 44rpx
+}
+
+.tone-painting-pic-sel {
+    color: #ff0026;
+    -webkit-filter: sepia(100%) hue-rotate(300deg) saturate(2000%) brightness(110%);
+    filter: sepia(100%) hue-rotate(300deg) saturate(2000%) brightness(110%)
+}
+
+.tone-painting-pic {
+    color: #fff;
+    -webkit-filter: sepia(100%) saturate(10%) brightness(200%) contrast(120%);
+    filter: sepia(100%) saturate(10%) brightness(200%) contrast(120%)
+}
+
+.avatarUrl-box {
+    -webkit-align-items: center;
+    align-items: center;
+    background-color: #000;
+    display: -webkit-flex;
+    display: flex;
+    height: 100%;
+    -webkit-justify-content: center;
+    justify-content: center;
+    position: absolute;
+    width: 100%
+}
+
+.avatarUrl {
+    border-radius: 50%;
+    height: 200rpx;
+    width: 200rpx
+}

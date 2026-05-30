@@ -1,0 +1,102 @@
+<view class="data-v-73e3e6f4">
+    <uni-popup bind:__l="__l" class="r data-v-73e3e6f4" uI="73e3e6f4-0" uP="{{L}}" uR="domainOption" uS="{{['d']}}" wx:if="{{L}}">
+        <view class="domain-par data-v-73e3e6f4">
+            <view class="dimain-box data-v-73e3e6f4">
+                <view bindtap="{{b}}" class="domain-option data-v-73e3e6f4">
+                    <view class="option-pic-box data-v-73e3e6f4">
+                        <image class="option-pic data-v-73e3e6f4" mode="widthFix" src="{{a}}"></image>
+                    </view>
+                    <text class="tt data-v-73e3e6f4">积分商城</text>
+                </view>
+                <view bindtap="{{d}}" class="domain-option data-v-73e3e6f4">
+                    <view class="option-pic-box data-v-73e3e6f4">
+                        <image class="option-pic data-v-73e3e6f4" mode="widthFix" src="{{c}}"></image>
+                    </view>
+                    <text class="tt data-v-73e3e6f4">领劵中心</text>
+                </view>
+                <view bindtap="{{f}}" class="domain-option data-v-73e3e6f4">
+                    <view class="option-pic-box data-v-73e3e6f4">
+                        <image class="option-pic data-v-73e3e6f4" mode="widthFix" src="{{e}}"></image>
+                    </view>
+                    <text class="tt data-v-73e3e6f4">天天签到</text>
+                </view>
+                <view bindtap="{{j}}" class="domain-option data-v-73e3e6f4">
+                    <view class="option-pic-box data-v-73e3e6f4">
+                        <image class="{{['data-v-73e3e6f4','option-pic',g]}}" mode="widthFix" src="{{h}}"></image>
+                    </view>
+                    <text class="{{['data-v-73e3e6f4',i]}}">清理公屏</text>
+                </view>
+                <view bindtap="{{m}}" class="domain-option data-v-73e3e6f4" wx:if="{{k}}">
+                    <view class="option-pic-box data-v-73e3e6f4">
+                        <image class="option-pic data-v-73e3e6f4" mode="widthFix" src="{{l}}"></image>
+                    </view>
+                    <text class="tt data-v-73e3e6f4">订单列表</text>
+                </view>
+                <view bindtap="{{o}}" class="domain-option data-v-73e3e6f4">
+                    <view class="option-pic-box data-v-73e3e6f4">
+                        <image class="option-pic data-v-73e3e6f4" mode="widthFix" src="{{n}}"></image>
+                    </view>
+                    <text class="tt data-v-73e3e6f4">邀请记录</text>
+                </view>
+                <view bindtap="{{q}}" class="domain-option data-v-73e3e6f4">
+                    <view class="option-pic-box data-v-73e3e6f4">
+                        <image class="option-pic data-v-73e3e6f4" mode="widthFix" src="{{p}}" style="width:2.2rem"></image>
+                    </view>
+                    <view class="data-v-73e3e6f4">余额提现</view>
+                </view>
+                <block wx:if="{{r}}">
+                    <button bindcontact="{{v}}" class="domain-option1 data-v-73e3e6f4" openType="contact" wx:if="{{s}}">
+                        <view class="option-pic-box1 data-v-73e3e6f4" style="margin-bottom:14rpx">
+                            <image class="option-pic1 data-v-73e3e6f4" mode="widthFix" src="{{t}}"></image>
+                        </view>
+                        <view class="data-v-73e3e6f4" style="line-height:28rpx">在线客服</view>
+                    </button>
+                    <view bindtap="{{y}}" class="domain-option data-v-73e3e6f4" wx:if="{{w}}">
+                        <view class="option-pic-box1 data-v-73e3e6f4">
+                            <image class="option-pic1 data-v-73e3e6f4" mode="widthFix" src="{{x}}"></image>
+                        </view>
+                        <view class="data-v-73e3e6f4">在线客服</view>
+                    </view>
+                    <view bindtap="{{B}}" class="domain-option data-v-73e3e6f4" wx:if="{{z}}">
+                        <view class="option-pic-box1 data-v-73e3e6f4">
+                            <image class="option-pic1 data-v-73e3e6f4" mode="widthFix" src="{{A}}"></image>
+                        </view>
+                        <view class="data-v-73e3e6f4">在线客服</view>
+                    </view>
+                    <view bindtap="{{E}}" class="domain-option data-v-73e3e6f4" wx:if="{{C}}">
+                        <view class="option-pic-box1 data-v-73e3e6f4">
+                            <image class="option-pic1 data-v-73e3e6f4" mode="widthFix" src="{{D}}"></image>
+                        </view>
+                        <text class="tt data-v-73e3e6f4">在线客服</text>
+                    </view>
+                </block>
+                <view bindtap="{{G}}" class="domain-option data-v-73e3e6f4">
+                    <view class="option-pic-box data-v-73e3e6f4">
+                        <image class="option-pic data-v-73e3e6f4" mode="widthFix" src="{{F}}"></image>
+                    </view>
+                    <text class="tt data-v-73e3e6f4">个人中心</text>
+                </view>
+                <view bindtap="{{I}}" class="domain-option data-v-73e3e6f4">
+                    <view class="option-pic-box data-v-73e3e6f4">
+                        <image class="option-pic data-v-73e3e6f4" mode="widthFix" src="{{H}}"></image>
+                    </view>
+                    <text class="tt data-v-73e3e6f4">福利券包</text>
+                </view>
+            </view>
+            <text bindtap="{{J}}" class="ITSupport data-v-73e3e6f4"> 观客云提供技术支持 </text>
+        </view>
+    </uni-popup>
+    <uni-popup bind:__l="__l" class="r data-v-73e3e6f4" uI="73e3e6f4-1" uP="{{O}}" uR="ITSupport" uS="{{['d']}}" wx:if="{{O}}">
+        <view class="IT-box data-v-73e3e6f4">
+            <image class="ITCode data-v-73e3e6f4" src="{{M}}"></image>
+        </view>
+    </uni-popup>
+    <uni-popup bind:__l="__l" class="r data-v-73e3e6f4" uI="73e3e6f4-2" uP="{{S}}" uR="kefuPop" uS="{{['d']}}" wx:if="{{P}}">
+        <view class="kf-pop-view data-v-73e3e6f4">
+            <text class="kf-pop-title data-v-73e3e6f4">客服二维码</text>
+            <image class="data-v-73e3e6f4" mode="widthFix" showMenuByLongpress="{{true}}" src="{{Q}}" style="width:75vw"></image>
+            <view class="kf-pop-tip data-v-73e3e6f4">长按识别图中二维码</view>
+            <text class="kf-pop-tip data-v-73e3e6f4"> 点击空白处关闭 </text>
+        </view>
+    </uni-popup>
+</view>

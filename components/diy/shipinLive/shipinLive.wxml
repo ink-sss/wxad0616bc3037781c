@@ -1,0 +1,6 @@
+<view class="shipin-live drag optional drag__nomove data-v-e494dc70" style="{{'right:'+e+';'+'bottom:'+f+';'+'opacity:'+g}}" wx:if="{{a}}">
+    <view bindtap="{{d}}" class="shipin-wrap data-v-e494dc70">
+        <image lazyLoad class="img data-v-e494dc70" src="{{b}}"></image>
+        <view class="txt data-v-e494dc70">{{c}}</view>
+    </view>
+</view>

@@ -1,0 +1,10 @@
+<view style="{{'background:'+k+';'+'padding-left:'+l+';'+'padding-right:'+m+';'+'padding-top:'+n+';'+'padding-bottom:'+o}}">
+    <view bindtap="{{j}}" class="diy-notice" style="{{'background:'+d+';'+'border-top-left-radius:'+e+';'+'border-top-right-radius:'+f+';'+'border-bottom-left-radius:'+g+';'+'border-bottom-right-radius:'+h+';'+'padding:'+i}}">
+        <view class="notice-icon">
+            <image lazyLoad mode="aspectFill" src="{{a}}"></image>
+        </view>
+        <view class="notice-text flex-1 text-ellipsisss">
+            <view class="transtext" style="{{c}}">{{b}}</view>
+        </view>
+    </view>
+</view>

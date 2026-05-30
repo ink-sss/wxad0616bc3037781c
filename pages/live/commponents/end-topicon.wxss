@@ -1,0 +1,57 @@
+.people-num.data-v-644740ee {
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+    padding: 10rpx 20rpx;
+    width: 100vw
+}
+
+.people-num.data-v-644740ee,.sectionIcon.data-v-644740ee {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-flow: row;
+    flex-flow: row
+}
+
+.sectionIcon .item-icon.data-v-644740ee {
+    background-color: rgba(0,0,0,.2);
+    border-radius: 10rpx;
+    height: 70rpx;
+    margin-right: 10rpx;
+    padding: 5rpx;
+    position: relative;
+    width: 70rpx
+}
+
+.sectionIcon .item-icon wx-image.data-v-644740ee {
+    height: 60rpx;
+    width: 60rpx
+}
+
+.sectionIcon .item-icon .icon-tit.data-v-644740ee {
+    background-color: rgba(0,0,0,.5);
+    border-radius: 0 0 10rpx 10rpx;
+    bottom: 0;
+    color: #fff;
+    font-size: 17rpx;
+    left: 0;
+    position: absolute;
+    text-align: center;
+    width: 100%
+}
+
+.kf-pop-view.data-v-644740ee {
+    padding: 30rpx 30rpx 50rpx
+}
+
+.kf-pop-title.data-v-644740ee {
+    font-size: 32rpx;
+    padding: 30rpx;
+    text-align: center
+}
+
+.kf-pop-tip.data-v-644740ee {
+    color: #999;
+    font-size: 24rpx;
+    padding-top: 30rpx;
+    text-align: center
+}

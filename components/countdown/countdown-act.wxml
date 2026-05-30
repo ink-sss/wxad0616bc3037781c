@@ -1,0 +1,32 @@
+<view class="{{['countdown',Q]}}" style="{{P}}">
+    <block wx:if="{{a}}">{{b}}<text class="daybox" style="{{d}}">{{c}}天</text>
+        <text class="numbox">{{e}}:{{f}}:{{g}}</text>
+    </block>
+    <block wx:if="{{h}}">倒计时<text class="dominant">{{i}}</text>
+        <text>天</text>
+        <text class="dominant">{{j}}</text>
+        <text>时</text>
+        <text class="dominant">{{k}}</text>
+        <text>分</text>
+        <text class="dominant">{{l}}</text>
+        <text>秒</text>
+    </block>
+    <block wx:if="{{m}}">
+        <text class="mr10" style="white-space:nowrap">{{n}}</text>
+        <text class="box" style="{{p}}">{{o}}</text>
+        <text class="p-0-10" style="{{q}}">:</text>
+        <text class="box" style="{{s}}">{{r}}</text>
+        <text class="p-0-10" style="{{t}}">:</text>
+        <text class="box" style="{{w}}">{{v}}</text>
+        <text class="p-0-10" style="{{x}}"></text>
+    </block>
+    <block wx:if="{{y}}">{{z}}:{{A}}:{{B}}</block>
+    <block wx:if="{{C}}">{{D}}<text class="daybox" style="{{F}}">{{E}}天</text>
+        <text class="box" style="{{H}}">{{G}}</text>
+        <text class="p-0-10" style="{{I}}">:</text>
+        <text class="box" style="{{K}}">{{J}}</text>
+        <text class="p-0-10" style="{{L}}">:</text>
+        <text class="box" style="{{N}}">{{M}}</text>
+        <text class="p-0-10" style="{{O}}"></text>
+    </block>
+</view>

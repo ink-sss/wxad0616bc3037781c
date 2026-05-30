@@ -1,0 +1,116 @@
+.product-list-mask {
+    background: rgba(0,0,0,.4);
+    height: 100%;
+    left: 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1
+}
+
+.product-list-mask .product-list-content {
+    background: #fff;
+    border-radius: 25rpx 25rpx 0 0;
+    bottom: calc(env(safe-area-inset-bottom) + 50px);
+    box-sizing: border-box;
+    padding: 34rpx 24rpx 96rpx;
+    position: absolute;
+    width: 100%
+}
+
+.product-list-mask .product-list-content.customTabBar {
+    bottom: 194rpx
+}
+
+.product-list-mask .product-list-content.H5 {
+    bottom: 100rpx
+}
+
+.product-list-mask .funList {
+    padding-bottom: 36rpx
+}
+
+.product-list-mask .funList .funList-l {
+    color: #333;
+    font-size: 32rpx;
+    font-weight: 700
+}
+
+.product-list-mask .funList .funList-r {
+    color: #999;
+    font-size: 30rpx
+}
+
+.product-list-mask .product-item {
+    height: 164rpx;
+    padding-bottom: 23rpx
+}
+
+.product-list-mask .product-item .mask-product-img {
+    height: 100%;
+    margin-right: 20rpx;
+    width: 164rpx
+}
+
+.product-list-mask .product-item .mask-t {
+    color: #999;
+    font-size: 22rpx;
+    width: 100%
+}
+
+.product-list-mask .product-item .mask-t .mask-product-title {
+    color: #333;
+    font-size: 30rpx;
+    margin-bottom: 12rpx
+}
+
+.product-list-mask .product-item .mask-t .mask-product-title .iconfont {
+    font-size: 48rpx
+}
+
+.product-list-mask .product-item .mask-b {
+    width: 100%
+}
+
+.product-list-mask .product-item .img {
+    height: 100%;
+    width: 100%
+}
+
+.product-list-mask .product-item .mask-price {
+    color: #e22319;
+    font-size: 28rpx;
+    font-weight: 700
+}
+
+.product-list-mask .product-item .mask-action {
+    height: 42rpx;
+    line-height: 42rpx;
+    width: 168rpx
+}
+
+.product-list-mask .product-item .mask-action wx-view {
+    -webkit-flex: 1;
+    flex: 1;
+    height: 100%;
+    text-align: center
+}
+
+.product-list-mask .product-item .mask-action .mask-num {
+    -webkit-align-items: center;
+    align-items: center;
+    background: #f2f2f2;
+    border-radius: 10rpx;
+    display: -webkit-flex;
+    display: flex;
+    font-size: 28rpx;
+    height: 42rpx;
+    -webkit-justify-content: center;
+    justify-content: center;
+    width: 66rpx
+}
+
+.product-list-mask .product-item .mask-action .mask-add .iconfont,.product-list-mask .product-item .mask-action .mask-minus .iconfont {
+    color: #666;
+    font-size: 24rpx
+}

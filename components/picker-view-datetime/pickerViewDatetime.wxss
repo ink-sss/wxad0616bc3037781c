@@ -1,0 +1,12 @@
+.border-box.data-v-2606cf05 {
+    border: 1rpx solid #cacaca
+}
+
+wx-picker-view.data-v-2606cf05 {
+    box-sizing: border-box;
+    height: 216rpx;
+    line-height: 70rpx;
+    padding: 0;
+    text-align: center;
+    width: 100%
+}

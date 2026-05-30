@@ -1,0 +1,7 @@
+<view bindtap="{{c}}" class="{{['bottom-panel',b]}}">
+    <view class="popup-bg">
+        <view class="wechat-box">
+            <image lazyLoad mode="widthFix" src="{{a}}"></image>
+        </view>
+    </view>
+</view>

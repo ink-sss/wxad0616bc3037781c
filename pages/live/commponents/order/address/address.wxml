@@ -1,0 +1,42 @@
+<view class="data-v-2ef240b3">
+    <uni-popup bind:__l="__l" bindmaskClick="{{q}}" class="r data-v-2ef240b3" uI="2ef240b3-0" uP="{{r}}" uR="address_list" uS="{{['d']}}" wx:if="{{r}}">
+        <view class="{{[l,'address-box','data-v-2ef240b3']}}" data-theme="{{k}}" wx:if="{{a}}">
+            <uni-icon bind:__l="__l" bindclick="{{b}}" class="close-icon data-v-2ef240b3" uI="2ef240b3-1,2ef240b3-0" uP="{{c}}" wx:if="{{c}}"></uni-icon>
+            <view class="pbenv data-v-2ef240b3" wx:if="{{d}}">
+                <view class="address-list data-v-2ef240b3">
+                    <view class="address-item data-v-2ef240b3" wx:for="{{e}}" wx:key="m">
+                        <view class="info flex-1 mb10 data-v-2ef240b3">
+                            <view class="user f30 d-b-c data-v-2ef240b3">
+                                <text class="data-v-2ef240b3">{{item.a}}</text>
+                                <text class="ml20 gray3 f28 data-v-2ef240b3">{{item.b}}</text>
+                            </view>
+                            <view bindtap="{{item.g}}" class="pt20 f26 gray3 data-v-2ef240b3">{{item.c}}{{item.d}}{{item.e}}{{item.f}}</view>
+                        </view>
+                        <view class="d-b-c data-v-2ef240b3">
+                            <view class="radio d-s-c data-v-2ef240b3">
+                                <radio bindtap="{{item.j}}" checked="{{item.i}}" class="data-v-2ef240b3" color="{{f}}" style="transform:scale(0.6)" value="{{item.h}}"></radio>
+                                <text class=" data-v-2ef240b3">默认地址</text>
+                            </view>
+                            <view class="d-s-c data-v-2ef240b3">
+                                <view bindtap="{{item.k}}" class="icon-box plus d-c-c ml30 data-v-2ef240b3">
+                                    <image lazyLoad class="add-icon data-v-2ef240b3" mode="aspectFill" src="{{g}}"></image>
+                                    <text class="gray9 ml10 data-v-2ef240b3">编辑</text>
+                                </view>
+                                <view bindtap="{{item.l}}" class="icon-box plus d-c-c ml30 data-v-2ef240b3">
+                                    <image lazyLoad class="add-icon data-v-2ef240b3" mode="aspectFill" src="{{h}}"></image>
+                                    <text class="gray9 ml10 data-v-2ef240b3">删除</text>
+                                </view>
+                            </view>
+                        </view>
+                    </view>
+                </view>
+            </view>
+            <view class="d-c-c d-c p30 data-v-2ef240b3" wx:else>
+                <image lazyLoad class="list-null-image data-v-2ef240b3" mode="" src="{{i}}"></image>
+                <text class="cont f32 gray9 data-v-2ef240b3">暂无地址信息</text>
+            </view>
+            <view bindtap="{{j}}" class="add-btn theme-btn data-v-2ef240b3">新增收货地址</view>
+        </view>
+        <address-edit bind:__l="__l" bindpopupClose="{{n}}" class="r data-v-2ef240b3" uI="2ef240b3-2,2ef240b3-0" uP="{{o}}" uR="addressEditPop" wx:if="{{o}}"></address-edit>
+    </uni-popup>
+</view>

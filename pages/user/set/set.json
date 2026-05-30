@@ -1,0 +1,10 @@
+{
+  "navigationBarTitleText": "设置",
+  "usingComponents": {
+    "upload": "../../../components/upload/upload",
+    "header-bar": "/components/header",
+    "request-loading": "/components/liveloading",
+    "tab-bar": "/components/tabbar/footTabbar",
+    "wechat-login": "plugin://wx43134e071b752953/wechat-login"
+  }
+}

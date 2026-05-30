@@ -1,0 +1,11 @@
+{
+  "navigationBarTitleText": "个人中心",
+  "navigationStyle": "custom",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "diy": "../../../components/diy/diy",
+    "request-loading": "../../../components/liveloading",
+    "live-tab": "../../../components/liveTab",
+    "tab-bar": "../../../components/tabbar/footTabbar"
+  }
+}

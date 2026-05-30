@@ -1,0 +1,55 @@
+<uni-popup bind:__l="__l" class="r data-v-16592cb4" uI="16592cb4-0" uP="{{G}}" uR="withdrawPop" uS="{{['d']}}" wx:if="{{G}}">
+    <view class="withdraw-pop data-v-16592cb4">
+        <view class="withdraw-head data-v-16592cb4">
+            <view class="withdraw-title data-v-16592cb4">余额提现</view>
+            <view bindtap="{{a}}" class="withdraw-close data-v-16592cb4">关闭</view>
+        </view>
+        <view class="withdraw-balance data-v-16592cb4">{{b}}</view>
+        <view class="withdraw-subtitle data-v-16592cb4">可提现余额</view>
+        <view class="withdraw-notice data-v-16592cb4" wx:if="{{c}}">
+            <view class="withdraw-notice-main data-v-16592cb4">
+                <text class="withdraw-notice-icon data-v-16592cb4">!</text>
+                <text class="withdraw-notice-text data-v-16592cb4">到账会有延迟，请刷新获取最新余额数量</text>
+            </view>
+            <view bindtap="{{e}}" class="withdraw-notice-refresh data-v-16592cb4">{{d}}</view>
+        </view>
+        <view class="withdraw-card data-v-16592cb4">
+            <view class="withdraw-type-list data-v-16592cb4" wx:if="{{f}}">
+                <view bindtap="{{item.g}}" class="{{['withdraw-type-item','data-v-16592cb4',item.e&&'active']}}" wx:for="{{g}}" wx:key="f">
+                    <block wx:if="{{item.a}}">微信</block>
+                    <block wx:if="{{item.b}}">支付宝</block>
+                    <block wx:if="{{item.c}}">银行卡</block>
+                    <block wx:if="{{item.d}}">余额</block>
+                </view>
+            </view>
+            <view class="withdraw-row data-v-16592cb4">
+                <view class="withdraw-label data-v-16592cb4">提现金额</view>
+                <input bindinput="{{j}}" class="withdraw-input data-v-16592cb4" placeholder="{{h}}" type="digit" value="{{i}}"></input>
+                <view bindtap="{{k}}" class="withdraw-all data-v-16592cb4">全部提现</view>
+            </view>
+            <view class="withdraw-row data-v-16592cb4" wx:if="{{l}}">
+                <view class="withdraw-label data-v-16592cb4">账号</view>
+                <input bindinput="{{n}}" class="withdraw-input data-v-16592cb4" placeholder="请输入支付宝账号" type="text" value="{{m}}"></input>
+            </view>
+            <view class="withdraw-row data-v-16592cb4" wx:if="{{o}}">
+                <view class="withdraw-label data-v-16592cb4">姓名</view>
+                <input bindinput="{{q}}" class="withdraw-input data-v-16592cb4" placeholder="请输入支付宝姓名" type="text" value="{{p}}"></input>
+            </view>
+            <view class="withdraw-row data-v-16592cb4" wx:if="{{r}}">
+                <view class="withdraw-label data-v-16592cb4">开户行</view>
+                <input bindinput="{{t}}" class="withdraw-input data-v-16592cb4" placeholder="请输入银行开户行" type="text" value="{{s}}"></input>
+            </view>
+            <view class="withdraw-row data-v-16592cb4" wx:if="{{v}}">
+                <view class="withdraw-label data-v-16592cb4">账号</view>
+                <input bindinput="{{x}}" class="withdraw-input data-v-16592cb4" placeholder="请输入银行卡账号" type="text" value="{{w}}"></input>
+            </view>
+            <view class="withdraw-row data-v-16592cb4" wx:if="{{y}}">
+                <view class="withdraw-label data-v-16592cb4">持卡人</view>
+                <input bindinput="{{A}}" class="withdraw-input data-v-16592cb4" placeholder="请输入持卡人姓名" type="text" value="{{z}}"></input>
+            </view>
+            <view class="withdraw-desc data-v-16592cb4">当前可提现￥{{B}}</view>
+            <view class="withdraw-desc data-v-16592cb4">提现比例{{C}}%，实际到账￥{{D}}</view>
+        </view>
+        <button bindtap="{{E}}" class="withdraw-submit data-v-16592cb4">提交申请</button>
+    </view>
+</uni-popup>

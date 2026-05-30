@@ -1,0 +1,16 @@
+<view bindtap="{{x}}" class="modal-mask data-v-66aabf2a" wx:if="{{a}}">
+    <view catchtap="{{w}}" class="modal-container data-v-66aabf2a">
+        <view class="modal-title data-v-66aabf2a">{{b}}</view>
+        <view class="modal-content data-v-66aabf2a">
+            <view class="modal-text data-v-66aabf2a" wx:if="{{c}}">{{d}}</view>
+            <input focus bindinput="{{j}}" class="modal-input data-v-66aabf2a" placeholder="{{g}}" type="{{f}}" value="{{i}}" wx:if="{{e}}"></input>
+            <block wx:else>
+                <textarea focus autoHeight="{{m}}" bindinput="{{o}}" class="modal-textarea data-v-66aabf2a" placeholder="{{k}}" value="{{n}}" wx:if="{{r0}}"></textarea>
+            </block>
+        </view>
+        <view class="modal-footer data-v-66aabf2a">
+            <button bindtap="{{r}}" class="modal-button cancel data-v-66aabf2a" wx:if="{{p}}">{{q}}</button>
+            <button bindtap="{{t}}" class="modal-button confirm data-v-66aabf2a" style="{{'color:'+v}}">{{s}}</button>
+        </view>
+    </view>
+</view>

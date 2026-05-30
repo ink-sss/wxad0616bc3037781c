@@ -1,0 +1,12 @@
+<view>
+    <view class="box-ly-pm" style="{{g}}">
+        <view class="{{['dot',item.a]}}" wx:for="{{a}}" wx:key="b"></view>
+        <view class="box-in" style="{{f}}">
+            <view class="{{['ct-out','d-c','d-c-c',item.d,item.e]}}" style="{{item.g+';'+c}}" wx:for="{{b}}" wx:key="f">
+                <image lazyLoad bindtap="{{item.a}}" class="award-image" src="{{item.b}}"></image>
+                <view class="text-ellipsis" style="color:#E37012">{{item.c}}</view>
+            </view>
+            <view bindtap="{{e}}" class="{{['btn-start',d]}}">开始</view>
+        </view>
+    </view>
+</view>

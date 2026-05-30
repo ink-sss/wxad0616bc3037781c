@@ -1,0 +1,45 @@
+<view class="{{p}}" data-theme="{{o}}">
+    <view class="top-tabbar">
+        <view bindtap="{{b}}" class="{{a}}">进行中</view>
+        <view bindtap="{{d}}" class="{{c}}">砍价成功</view>
+        <view bindtap="{{f}}" class="{{e}}">砍价失败</view>
+    </view>
+    <scroll-view bindscrolltolower="{{m}}" class="scroll-Y" lowerThreshold="50" scrollY="true" style="{{l}}">
+        <view class="my-bargaing-list">
+            <view bindtap="{{item.j}}" class="item" wx:for="{{g}}" wx:key="k">
+                <view class="datetime d-b-c">
+                    <text class="f28 gray9">{{item.a}}</text>
+                    <view class="surplus-time" wx:if="{{h}}">
+                        <countdown bind:__l="__l" uI="{{item.b}}" uP="{{item.c}}" wx:if="{{item.c}}"></countdown>
+                    </view>
+                </view>
+                <view class="product d-s-s mt30">
+                    <image lazyLoad class="cover" mode="aspectFill" src="{{item.d}}"></image>
+                    <view class="info flex-1">
+                        <text class="f28 gray3 text-ellipsis-2">{{item.e}}</text>
+                        <view class="mt20">
+                            <text class="theme-price f24">砍到底价:</text>
+                            <text class="theme-price f24">￥</text>
+                            <text class="theme-price f32 fb">{{item.f}}</text>
+                            <text class="ml10 gray9 text-l-t f24">￥{{item.g}}</text>
+                        </view>
+                        <view class="d-b-c mt10 f24">
+                            <view class="progress-box">
+                                <view class="progress-box-active" style="{{item.h}}"></view>
+                            </view>
+                            <view class="gray9 w-s-n">完成度:{{item.i}}%</view>
+                        </view>
+                    </view>
+                </view>
+            </view>
+            <view class="d-c-c d-c p30" wx:if="{{i}}">
+                <image lazyLoad class="list-null-image" mode="" src="{{j}}"></image>
+                <text class="cont f32 gray9">暂无相关订单</text>
+            </view>
+            <uni-load-more bind:__l="__l" uI="18e044f8-1" uP="{{k||''}}" wx:else></uni-load-more>
+        </view>
+    </scroll-view>
+    <view class="more-bargaining">
+        <button bindtap="{{n}}" class="theme-btn">更多活动</button>
+    </view>
+</view>

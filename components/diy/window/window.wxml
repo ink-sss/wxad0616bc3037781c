@@ -1,0 +1,35 @@
+<view class="diy-window" style="{{'background:'+p+';'+'padding:'+q}}">
+    <view class="{{['data-list',c]}}" wx:if="{{a}}">
+        <view bindtap="{{item.c}}" class="item" wx:for="{{b}}" wx:key="b">
+            <view class="item-image">
+                <image lazyLoad mode="aspectFill" src="{{item.a}}"></image>
+            </view>
+        </view>
+    </view>
+    <view class="display" style="{{'padding:'+o}}" wx:else>
+        <view class="img-box-wrap-1">
+            <view bindtap="{{e}}" class="img-box">
+                <image lazyLoad mode="aspectFill" src="{{d}}"></image>
+            </view>
+        </view>
+        <view class="percent-w50 d-s-c d-c">
+            <view class="img-box-wrap-2" wx:if="{{f}}">
+                <view bindtap="{{h}}" class="img-box">
+                    <image lazyLoad mode="aspectFill" src="{{g}}"></image>
+                </view>
+            </view>
+            <view class="d-s-c img-box-wrap-3">
+                <view class="img-box-wrap-4" wx:if="{{i}}">
+                    <view bindtap="{{k}}" class="img-box">
+                        <image lazyLoad mode="aspectFill" src="{{j}}"></image>
+                    </view>
+                </view>
+                <view class="img-box-wrap-4" wx:if="{{l}}">
+                    <view bindtap="{{n}}" class="img-box">
+                        <image lazyLoad mode="aspectFill" src="{{m}}"></image>
+                    </view>
+                </view>
+            </view>
+        </view>
+    </view>
+</view>

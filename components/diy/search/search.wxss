@@ -1,0 +1,36 @@
+.diy-search.data-v-697b2b80 {
+    padding: 0 24rpx 18rpx
+}
+
+.diy-search .logo-img.data-v-697b2b80 {
+    display: block;
+    height: 64rpx;
+    width: 78rpx
+}
+
+.diy-search .phone-top-search-box.data-v-697b2b80 {
+    border-radius: 60rpx;
+    color: #999;
+    -webkit-flex: 1;
+    flex: 1;
+    font-size: 26rpx;
+    height: 60rpx;
+    line-height: 60rpx;
+    margin-left: 30rpx;
+    padding: 0 20rpx
+}
+
+.diy-search .icon.icon-sousuo1.data-v-697b2b80 {
+    font-size: 26rpx;
+    margin-right: 20rpx
+}
+
+.diy-search-box.data-v-697b2b80 {
+    box-sizing: border-box;
+    left: 0;
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    width: 100%;
+    z-index: 100
+}

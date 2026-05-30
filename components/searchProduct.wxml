@@ -1,0 +1,27 @@
+<view catchtouchmove="{{l}}" wx:if="{{a}}">
+    <view class="search-wrap">
+        <view class="head_top" style="{{b}}"></view>
+        <view class="index-search-box d-b-c" id="searchBox" style="{{i}}">
+            <view class="reg180" style="{{d}}">
+                <text bindtap="{{c}}" class="icon iconfont icon-jiantou"></text>
+            </view>
+            <view class="index-search t-c flex-1" style="{{h}}">
+                <text class="icon iconfont icon-sousuo"></text>
+                <input bindconfirm="{{e}}" bindinput="{{g}}" class="flex-1 ml10 f30 gray3" confirmType="search" placeholder="输入你要的商品" placeholderClass="f24 gray6" type="text" value="{{f}}"></input>
+            </view>
+        </view>
+        <view class="p-0-20 bg-white">
+            <view class="group-hd">
+                <view class="left">
+                    <text class="min-name">最近搜索</text>
+                </view>
+                <view class="right">
+                    <text bindtap="{{j}}" class="icon iconfont icon-lajitong"></text>
+                </view>
+            </view>
+            <view class="before-search">
+                <text bindtap="{{item.c}}" class="item" wx:for="{{k}}" wx:key="b">{{item.a}}</text>
+            </view>
+        </view>
+    </view>
+</view>

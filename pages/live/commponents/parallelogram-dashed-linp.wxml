@@ -1,0 +1,5 @@
+<view class="dashed-line-container data-v-86d9edd6">
+    <view class="dashed-line data-v-86d9edd6">
+        <view class="{{['parallelogram','data-v-86d9edd6',item.b]}}" wx:for="{{a}}" wx:key="a"></view>
+    </view>
+</view>

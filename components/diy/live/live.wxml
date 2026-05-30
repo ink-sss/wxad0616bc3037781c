@@ -1,0 +1,12 @@
+<view class="diy-live data-v-f63641a4" style="{{'background:'+e}}" wx:if="{{a}}">
+    <view class="diy-head d-e-c data-v-f63641a4" style="{{b}}"></view>
+    <view class="list d-s-c f-w data-v-f63641a4">
+        <view bindtap="{{item.m}}" class="item data-v-f63641a4" style="{{'width:'+d}}" wx:for="{{c}}" wx:key="l">
+            <text class="{{['state','data-v-f63641a4',item.c&&'bg101',item.d&&'bg102',item.e&&'bg103']}}" wx:if="{{item.a}}">{{item.b}}</text>
+            <image class="img data-v-f63641a4" mode="aspectFill" src="{{item.h}}" style="{{'width:'+item.g}}" wx:if="{{item.f}}"></image>
+            <image class="img data-v-f63641a4" mode="aspectFill" src="https://d08c36fc1f.guankeyun.net/subaccoun/static/png/default-img-3df04de2.png" style="{{'width:'+item.i}}" wx:else></image>
+            <view class="anchor data-v-f63641a4">{{item.j}}</view>
+            <view class="live_name data-v-f63641a4">{{item.k}}</view>
+        </view>
+    </view>
+</view>

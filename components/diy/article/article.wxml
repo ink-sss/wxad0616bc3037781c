@@ -1,0 +1,27 @@
+<view style="{{'background:'+j+';'+'padding-left:'+k+';'+'padding-right:'+l+';'+'padding-top:'+m+';'+'padding-bottom:'+n}}">
+    <view class="diy-article" style="{{'background:'+e+';'+'border-top-left-radius:'+f+';'+'border-top-right-radius:'+g+';'+'border-bottom-left-radius:'+h+';'+'border-bottom-right-radius:'+i}}">
+        <view bindtap="{{item.j}}" class="{{['article-item',d]}}" wx:for="{{a}}" wx:key="i">
+            <block wx:if="{{b}}">
+                <view class="picture mr20" wx:if="{{item.a}}">
+                    <image lazyLoad mode="aspectFill" src="{{item.b}}"></image>
+                </view>
+                <view class="d-b-c d-stretch d-c flex-1">
+                    <view class="text-ellipsis-2 f24">{{item.c}}</view>
+                    <view class="d-b-c gray9 f18">
+                        <view>浏览量:<text class="">{{item.d}}次</text>
+                        </view>
+                        <view>日期: {{item.e}}</view>
+                    </view>
+                </view>
+            </block>
+            <view class="d-b-c d-stretch d-c flex-1" style="height:140rpx" wx:if="{{c}}">
+                <view class="text-ellipsis-2 f24">{{item.f}}</view>
+                <view class="d-b-c gray9 f18">
+                    <view>浏览量:<text class="">{{item.g}}次</text>
+                    </view>
+                    <view class="show-type__10" style="display:flex;align-items:center">日期: {{item.h}}</view>
+                </view>
+            </view>
+        </view>
+    </view>
+</view>

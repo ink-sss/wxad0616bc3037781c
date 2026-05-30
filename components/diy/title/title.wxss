@@ -1,0 +1,182 @@
+.diy-title-1,.diy-title-2,.diy-title-3,.diy-title-4,.diy-title-5,.diy-title-7 {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: center;
+    justify-content: center
+}
+
+.diy-title-4,.diy-title-5,.diy-title-7 {
+    -webkit-flex-direction: column;
+    flex-direction: column
+}
+
+.diy-title-8 {
+    -webkit-justify-content: space-between;
+    justify-content: space-between
+}
+
+.diy-title-8,.optional .diy-title {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex
+}
+
+.optional .diy-title {
+    -webkit-justify-content: center;
+    justify-content: center;
+    padding: 10px;
+    position: relative
+}
+
+.optional .diy-title .title-icon {
+    height: 32px;
+    padding: 5px;
+    width: 32px;
+    z-index: 1
+}
+
+.diy-title .title-text {
+    font-size: 12px;
+    font-weight: 800;
+    overflow: hidden;
+    padding: 0 5px;
+    white-space: nowrap;
+    z-index: 1
+}
+
+.diy-title .title-text.noBg {
+    background: none!important
+}
+
+.text-type1 {
+    -webkit-align-items: flex-end;
+    align-items: flex-end
+}
+
+.text-type1,.text-type4 {
+    display: -webkit-flex;
+    display: flex
+}
+
+.text-type4 {
+    -webkit-align-items: center;
+    align-items: center;
+    -webkit-justify-content: center;
+    justify-content: center
+}
+
+.text-type6 {
+    font-weight: 700;
+    left: 0;
+    margin: auto;
+    position: absolute;
+    right: 0;
+    text-align: center;
+    top: 0;
+    z-index: 0
+}
+
+.text-type4 .line {
+    background-color: #eee;
+    height: 1px;
+    width: 40px
+}
+
+.text-type4 .dot {
+    border: 2px solid #eee;
+    border-radius: 50%;
+    height: 8px;
+    width: 8px
+}
+
+.diy-title .text-type1 .line {
+    border-left: 4px solid;
+    border-radius: 20px;
+    display: block;
+    height: 16px;
+    margin-right: 6px;
+    -webkit-transform: rotate(25deg);
+    transform: rotate(25deg)
+}
+
+.diy-title .text-type1 .line:nth-of-type(2) {
+    height: 16px;
+    margin-right: 5px;
+    position: relative
+}
+
+.op3 {
+    opacity: .3
+}
+
+.diy-title .text-type1 .trd {
+    line-height: 0;
+    position: relative;
+    top: 2px;
+    -webkit-transform: rotate(40deg);
+    transform: rotate(40deg)
+}
+
+.title-line {
+    border-radius: 1px;
+    bottom: 0;
+    top: 0;
+    z-index: 0
+}
+
+.title-line,.title-line3 {
+    background-color: #eee;
+    height: 1px;
+    left: 0;
+    margin: auto;
+    position: absolute;
+    right: 0;
+    width: 245px
+}
+
+.title-line3 {
+    bottom: 6px;
+    z-index: 4
+}
+
+.title-line3 .block3 {
+    bottom: 1px;
+    width: 40px
+}
+
+.block5,.block6,.title-line3 .block3 {
+    background: #000;
+    display: inline-block;
+    height: 3px;
+    left: 0;
+    margin: auto;
+    position: absolute;
+    right: 0;
+    z-index: 1
+}
+
+.block5,.block6 {
+    bottom: 4px;
+    width: 30px
+}
+
+.type7-subbox {
+    padding: 6px 16px
+}
+
+.type7-subbox,.type8-subbox {
+    border-radius: 200px;
+    line-height: 1
+}
+
+.type8-subbox {
+    padding: 6px 14px
+}
+
+.type8-before {
+    margin-right: 6px;
+    width: 4px
+}

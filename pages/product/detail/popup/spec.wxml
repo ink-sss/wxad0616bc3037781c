@@ -1,0 +1,53 @@
+<view bindtap="{{B}}" catchtouchmove="{{A}}" class="{{z}}">
+    <view class="popup-bg"></view>
+    <view catchtap="{{y}}" class="main">
+        <view class="header">
+            <image lazyLoad bindtap="{{a}}" class="avt" mode="aspectFill" src="{{b}}"></image>
+            <view class="price">¥<text class="num">{{c}}</text>
+                <text class="old-price" wx:if="{{d}}">¥{{e}}</text>
+            </view>
+            <view class="stock">库存：{{f}}</view>
+            <view class="select_spec">{{g}}</view>
+            <view class="stock" wx:if="{{h}}">重量: {{i}}kg</view>
+            <view bindtap="{{j}}" class="close-btn">
+                <text class="icon iconfont icon-guanbi"></text>
+            </view>
+        </view>
+        <view class="body">
+            <view>
+                <scroll-view class="specs mt20" scrollY="true" style="max-height:600rpx" wx:if="{{k}}">
+                    <view class="specs mt20" wx:for="{{l}}" wx:for-item="item_attr" wx:key="c">
+                        <view class="specs-hd p-20-0">
+                            <text class="f26 gray3">{{item_attr.a}}</text>
+                        </view>
+                        <view class="specs-list">
+                            <button bindtap="{{item.d}}" class="{{item.b}}" wx:for="{{item_attr.b}}" wx:key="c">{{item.a}}</button>
+                        </view>
+                    </view>
+                </scroll-view>
+            </view>
+            <view class="level-box count_choose">
+                <view class="d-s-c">
+                    <text class="key">数量</text>
+                    <text class="theme-price" wx:if="{{m}}">({{n}})</text>
+                </view>
+                <view class="d-s-c">
+                    <view bindtap="{{o}}" class="{{['icon-box','minus','d-c-c',p&&'num-wrap']}}">
+                        <text class="icon iconfont icon-jian_sekuai" style="font-size:20rpx;color:#333333"></text>
+                    </view>
+                    <view class="text-wrap">
+                        <input bindinput="{{r}}" type="text" value="{{q}}"></input>
+                    </view>
+                    <view bindtap="{{t}}" class="{{['icon-box','plus','d-c-c',s&&'num-wrap']}}">
+                        <text class="icon iconfont icon-zengjia" style="font-size:20rpx;color:#333333"></text>
+                    </view>
+                </view>
+            </view>
+        </view>
+        <view class="btns">
+            <button class="confirm-btn" wx:if="{{v}}">暂未开始售卖</button>
+            <button bindtap="{{x}}" class="confirm-btn" wx:elif="{{w}}">确认</button>
+            <button class="confirm-btn" wx:else>暂无库存</button>
+        </view>
+    </view>
+</view>

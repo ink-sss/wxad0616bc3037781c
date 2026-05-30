@@ -1,0 +1,19 @@
+<view class="border-box data-v-2606cf05">
+    <picker-view bindchange="{{h}}" class="p5 data-v-2606cf05" value="{{g}}" wx:if="{{a}}">
+        <picker-view-column class="data-v-2606cf05">
+            <view class="item data-v-2606cf05" wx:for="{{b}}" wx:key="b">{{item.a}}年</view>
+        </picker-view-column>
+        <picker-view-column class="data-v-2606cf05">
+            <view class="item data-v-2606cf05" wx:for="{{c}}" wx:key="b">{{item.a}}月</view>
+        </picker-view-column>
+        <picker-view-column class="data-v-2606cf05">
+            <view class="item data-v-2606cf05" wx:for="{{d}}" wx:key="b">{{item.a}}日</view>
+        </picker-view-column>
+        <picker-view-column class="data-v-2606cf05">
+            <view class="item data-v-2606cf05" wx:for="{{e}}" wx:key="b">{{item.a}}时</view>
+        </picker-view-column>
+        <picker-view-column class="data-v-2606cf05">
+            <view class="item data-v-2606cf05" wx:for="{{f}}" wx:key="b">{{item.a}}分</view>
+        </picker-view-column>
+    </picker-view>
+</view>

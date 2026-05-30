@@ -1,0 +1,89 @@
+<view class="{{['data-v-1a9d9bbf',z]}}" data-theme="{{y}}">
+    <view class="top-box data-v-1a9d9bbf">
+        <view class="index-search-box index-search-box_re d-b-c data-v-1a9d9bbf" id="searchBox">
+            <view class="index-search index-search_re t-c flex-1 data-v-1a9d9bbf">
+                <input bindconfirm="{{a}}" bindinput="{{c}}" class="flex-1 ml10 f26 gray3 data-v-1a9d9bbf" confirmType="search" placeholder="搜索商品" placeholderClass="f26 gray9" type="text" value="{{b}}"></input>
+            </view>
+        </view>
+        <view class="inner-tab data-v-1a9d9bbf">
+            <view bindtap="{{e}}" class="{{['data-v-1a9d9bbf',d]}}">
+                <view class="box data-v-1a9d9bbf">综合</view>
+            </view>
+            <view bindtap="{{g}}" class="{{['data-v-1a9d9bbf',f]}}">
+                <view class="box data-v-1a9d9bbf">销量</view>
+            </view>
+            <view bindtap="{{k}}" class="{{['data-v-1a9d9bbf',j]}}">
+                <view class="box data-v-1a9d9bbf">
+                    <text class="data-v-1a9d9bbf">价格</text>
+                    <view class="arrows data-v-1a9d9bbf">
+                        <view class="{{['data-v-1a9d9bbf',h]}}">
+                            <text class="icon iconfont icon-sanjiao2 data-v-1a9d9bbf"></text>
+                        </view>
+                        <view class="{{['data-v-1a9d9bbf',i]}}">
+                            <text class="icon iconfont icon-sanjiao1 data-v-1a9d9bbf"></text>
+                        </view>
+                    </view>
+                </view>
+            </view>
+            <view bindtap="{{m}}" class="item data-v-1a9d9bbf">
+                <view class="box data-v-1a9d9bbf" style="height:100%">
+                    <image lazyLoad class="data-v-1a9d9bbf" src="{{l}}" style="width:36rpx;height:36rpx"></image>
+                </view>
+            </view>
+        </view>
+    </view>
+    <view class="prodcut-list-wrap data-v-1a9d9bbf">
+        <scroll-view bindscrolltolower="{{x}}" class="scroll-Y data-v-1a9d9bbf" lowerThreshold="50" scrollY="true" style="{{w}}">
+            <view class="{{['data-v-1a9d9bbf',o]}}">
+                <view class="circle data-v-1a9d9bbf" wx:for="{{n}}" wx:for-item="circle" wx:key="a"></view>
+            </view>
+            <view class="shop_body data-v-1a9d9bbf" wx:if="{{p}}">
+                <view bindtap="{{item.h}}" class="{{['shop_body_l_item','data-v-1a9d9bbf',item.f]}}" wx:for="{{q}}" wx:key="g">
+                    <view class="image-boxs data-v-1a9d9bbf">
+                        <view class="sallsell-out data-v-1a9d9bbf" wx:if="{{item.a}}">
+                            <view class="sallsell-out-btn data-v-1a9d9bbf">当前售罄</view>
+                        </view>
+                        <image lazyLoad class="product-image-2 data-v-1a9d9bbf" mode="" src="{{item.b}}"></image>
+                    </view>
+                    <view class="shop_body_l_item_info data-v-1a9d9bbf">
+                        <view class="shop_body_l_item_info_title gray3 f32 data-v-1a9d9bbf">{{item.c}}</view>
+                        <view class="d-b-c pb10 data-v-1a9d9bbf">
+                            <view class="shop_body_l_item_info_price data-v-1a9d9bbf">
+                                <view class="f24 shop_red data-v-1a9d9bbf">¥<text class="f32 fb data-v-1a9d9bbf">{{item.d}}</text>
+                                </view>
+                            </view>
+                            <view class="shop_body_l_item_info_others f22 data-v-1a9d9bbf">
+                                <view class="shop_body_l_item_info_others_sales data-v-1a9d9bbf">累计成交：{{item.e}}笔</view>
+                            </view>
+                        </view>
+                    </view>
+                </view>
+            </view>
+            <view class="shop_body2 data-v-1a9d9bbf" wx:if="{{r}}">
+                <view bindtap="{{item.h}}" class="{{['shop_body_t_item','data-v-1a9d9bbf',item.f]}}" wx:for="{{s}}" wx:key="g">
+                    <view class="image-boxs data-v-1a9d9bbf">
+                        <view class="sallsell-out data-v-1a9d9bbf" wx:if="{{item.a}}">
+                            <view class="sallsell-out-btn data-v-1a9d9bbf">当前售罄</view>
+                        </view>
+                        <image lazyLoad class="product-image-2 data-v-1a9d9bbf" mode="" src="{{item.b}}"></image>
+                    </view>
+                    <view class="shop_body_t_item_info data-v-1a9d9bbf">
+                        <view class="shop_body_t_item_info_title f26 data-v-1a9d9bbf">{{item.c}}</view>
+                        <view class="shop_body_t_item_info_others f24 gray9 mt data-v-1a9d9bbf">
+                            <view class="shop_body_t_item_info_others_sales data-v-1a9d9bbf">累计成交：{{item.d}}笔</view>
+                        </view>
+                        <view class="shop_body_t_item_info_price data-v-1a9d9bbf">
+                            <view class="f20 theme-price data-v-1a9d9bbf">¥<text class="f32 data-v-1a9d9bbf">{{item.e}}</text>
+                            </view>
+                        </view>
+                    </view>
+                </view>
+            </view>
+            <view class="d-c-c p30 data-v-1a9d9bbf" wx:if="{{t}}">
+                <text class="iconfont icon-wushuju data-v-1a9d9bbf"></text>
+                <text class="cont data-v-1a9d9bbf">亲，暂无相关记录哦</text>
+            </view>
+            <uni-load-more bind:__l="__l" class="data-v-1a9d9bbf" uI="1a9d9bbf-0" uP="{{v||''}}" wx:else></uni-load-more>
+        </scroll-view>
+    </view>
+</view>

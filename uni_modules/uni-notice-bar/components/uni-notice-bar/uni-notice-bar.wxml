@@ -1,0 +1,20 @@
+<view bindtap="{{J}}" class="uni-noticebar data-v-7ba25369" style="{{'background-color:'+I}}" wx:if="{{a}}">
+    <block wx:if="{{b}}">
+        <slot name="noticebarIcon" wx:if="{{$slots.noticebarIcon}}"></slot>
+        <block wx:else>
+            <uni-icons bind:__l="__l" class="uni-noticebar-icon data-v-7ba25369" uI="7ba25369-0" uP="{{c}}" wx:if="{{c}}"></uni-icons>
+        </block>
+    </block>
+    <view class="{{['uni-noticebar__content-wrapper','data-v-7ba25369',v&&'uni-noticebar__content-wrapper--scrollable',w&&'uni-noticebar__content-wrapper--single']}}" ref="textBox" style="{{'height:'+x}}">
+        <view class="{{['uni-noticebar__content','data-v-7ba25369',s&&'uni-noticebar__content--scrollable',t&&'uni-noticebar__content--single']}}" id="{{r}}">
+            <text class="{{['uni-noticebar__content-text','data-v-7ba25369',f&&'uni-noticebar__content-text--scrollable',g&&'uni-noticebar__content-text--single']}}" id="{{e}}" ref="animationEle" style="{{'color:'+h+';'+'font-size:'+i+';'+'line-height:'+j+';'+'width:'+k+';'+'animation-duration:'+l+';'+'-webkit-animation-duration:'+m+';'+'animation-play-state:'+n+';'+'-webkit-animation-play-state:'+o+';'+'animation-delay:'+p+';'+'-webkit-animation-delay:'+q}}">{{d}}</text>
+        </view>
+    </view>
+    <view bindtap="{{E}}" class="uni-noticebar__more uni-cursor-point data-v-7ba25369" wx:if="{{y}}">
+        <text class="data-v-7ba25369" style="{{'color:'+B+';'+'font-size:'+C}}" wx:if="{{z}}">{{A}}</text>
+        <uni-icons bind:__l="__l" class="data-v-7ba25369" uI="7ba25369-1" uP="{{D||''}}" wx:else></uni-icons>
+    </view>
+    <view class="uni-noticebar-close uni-cursor-point data-v-7ba25369" wx:if="{{F}}">
+        <uni-icons bind:__l="__l" bindclick="{{G}}" class="data-v-7ba25369" uI="7ba25369-2" uP="{{H}}" wx:if="{{H}}"></uni-icons>
+    </view>
+</view>

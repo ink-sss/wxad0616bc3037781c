@@ -1,0 +1,25 @@
+<view class="data-v-23ac4143">
+    <view bindtap="{{d}}" class="item-icon data-v-23ac4143" wx:if="{{a}}">
+        <image class="img-icon data-v-23ac4143" mode="aspectFill" src="{{b}}"></image>
+        <view class="icon-tit data-v-23ac4143">{{c}}</view>
+    </view>
+    <uni-popup bind:__l="__l" class="r data-v-23ac4143" uI="23ac4143-0" uP="{{l}}" uR="couponPopup" uS="{{['d']}}" wx:if="{{l}}">
+        <view class="coupon-pop data-v-23ac4143">
+            <view class="coupon-pop-header data-v-23ac4143">
+                <view class="coupon-pop-title data-v-23ac4143">福利兑换券</view>
+            </view>
+            <view class="coupon-pop-card data-v-23ac4143">
+                <view class="amount data-v-23ac4143">
+                    <text class="num data-v-23ac4143">{{e}} <text class="push_num data-v-23ac4143">× {{f}}张</text>
+                    </text>
+                </view>
+                <view class="desc data-v-23ac4143">说明: {{g}}</view>
+            </view>
+            <view bindtap="{{h}}" class="coupon-pop-btn data-v-23ac4143">立即领取</view>
+            <view bindtap="{{j}}" class="coupon-pop-close data-v-23ac4143">
+                <uni-icon bind:__l="__l" class="data-v-23ac4143" uI="23ac4143-1,23ac4143-0" uP="{{i}}" wx:if="{{i}}"></uni-icon>
+            </view>
+            <view class="coupon-pop-shadow data-v-23ac4143"></view>
+        </view>
+    </uni-popup>
+</view>

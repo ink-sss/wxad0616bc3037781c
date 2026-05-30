@@ -1,0 +1,34 @@
+<view class="{{['address-form','p24','data-v-dc771c92',t]}}" data-theme="{{s}}">
+    <form bindreset="{{n}}" bindsubmit="{{m}}" class="data-v-dc771c92">
+        <view class="bg-white p-0-30 f30 address-list data-v-dc771c92">
+            <view class="d-s-c border-b data-v-dc771c92">
+                <text class="key-name data-v-dc771c92">收货人</text>
+                <input bindinput="{{b}}" class="ml20 f32 flex-1 p-30-0 data-v-dc771c92" name="name" placeholder="请输入收货人姓名" placeholderClass="grary9" type="text" value="{{a}}"></input>
+            </view>
+            <view class="d-s-c border-b data-v-dc771c92">
+                <text class="key-name data-v-dc771c92">联系方式</text>
+                <input bindinput="{{d}}" class="ml20 f32 flex-1 p-30-0 data-v-dc771c92" maxlength="11" name="phone" placeholder="请输入收货人手机号" placeholderClass="grary9" type="number" value="{{c}}"></input>
+            </view>
+            <view bindtap="{{g}}" class="d-s-c border-b data-v-dc771c92">
+                <text class="key-name data-v-dc771c92">所在地区</text>
+                <view class="input-box flex-1 data-v-dc771c92">
+                    <input bindinput="{{f}}" class="ml20 f32 flex-1 p-30-0 data-v-dc771c92" disabled="true" placeholder="" placeholderClass="grary9" style="pointer-events:none" type="text" value="{{e}}"></input>
+                </view>
+            </view>
+            <view class="d-s-c border-b data-v-dc771c92">
+                <text class="key-name data-v-dc771c92">详细地址</text>
+                <textarea autoHeight="{{true}}" bindinput="{{i}}" class="ml20 flex-1 p-30-0 lh150 data-v-dc771c92" name="detail" placeholder="请输入街道小区楼牌号等" placeholderClass="grary9" value="{{h}}" wx:if="{{r0}}"></textarea>
+            </view>
+            <view class="d-b-c data-v-dc771c92">
+                <text class="key-name data-v-dc771c92">设为默认地址</text>
+                <view class="radio d-s-c p-30-0 data-v-dc771c92">
+                    <radio bindtap="{{l}}" checked="{{k}}" class="data-v-dc771c92" color="{{j}}" style="transform:scale(0.7)"></radio>
+                </view>
+            </view>
+        </view>
+        <view class="mt24 data-v-dc771c92">
+            <button class="theme-btn add-btn data-v-dc771c92" formType="submit">保存</button>
+        </view>
+    </form>
+    <mpvue-city-picker bind:__l="__l" bindonConfirm="{{q}}" class="r data-v-dc771c92" uI="dc771c92-0" uP="{{r}}" uR="mpvueCityPicker" wx:if="{{o}}"></mpvue-city-picker>
+</view>

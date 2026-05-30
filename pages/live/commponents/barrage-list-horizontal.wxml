@@ -1,0 +1,163 @@
+<view class="box-content data-v-9781d869">
+    <view class="ba-list-box data-v-9781d869" id="box" ref="box">
+        <view class="swiper-option data-v-9781d869">
+            <view bindtap="{{b}}" class="{{['data-v-9781d869',c]}}" wx:if="{{a}}">答题</view>
+            <view bindtap="{{d}}" class="{{['data-v-9781d869',e]}}">讨论</view>
+            <view bindtap="{{f}}" class="{{['data-v-9781d869',g]}}">问答</view>
+            <view bindtap="{{h}}" class="{{['data-v-9781d869',i]}}">资料</view>
+            <view class="people-head-num data-v-9781d869" wx:if="{{j}}">
+                <view class="live_member_box data-v-9781d869">
+                    <view class="live_member_num data-v-9781d869">
+                        <image class="people-img data-v-9781d869" mode="aspectFill" src="{{k}}"></image>
+                        <text class="p-n data-v-9781d869">{{l}}</text>
+                    </view>
+                </view>
+            </view>
+            <view bindtap="{{n}}" class="item-icon data-v-9781d869">
+                <image class="item-icon-img data-v-9781d869" mode="aspectFill" src="{{m}}"></image>
+                <view class="icon-tit data-v-9781d869">
+                    <text class="icon-tit-text data-v-9781d869">刷新</text>
+                </view>
+            </view>
+        </view>
+        <view bindtap="{{s}}" class="marquee-tips data-v-9781d869" wx:if="{{o}}">
+            <view class="data-v-9781d869">
+                <text class="tips-title data-v-9781d869">公告 ： </text>
+            </view>
+            <view class="marquee-container data-v-9781d869">
+                <uni-notice-bar bind:__l="__l" bindclose="{{q}}" class="marquee-text data-v-9781d869" uI="9781d869-0" uP="{{r}}" wx:if="{{p}}"></uni-notice-bar>
+            </view>
+        </view>
+        <swiper bindchange="{{P}}" class="swiper-box data-v-9781d869" current="{{N}}" style="{{'height:'+O}}">
+            <swiper-item class="sw-it data-v-9781d869">
+                <view class="marquee-tips1 data-v-9781d869" style="{{'top:'+y}}" wx:if="{{t}}">
+                    <view class="zdpl-view data-v-9781d869">
+                        <view class="zdpl-tn data-v-9781d869">
+                            <image class="zdpl-img data-v-9781d869" mode="aspectFill" src="{{v}}"></image>
+                            <view class="data-v-9781d869">{{w}}：</view>
+                        </view>
+                    </view>
+                    <view class="marquee-container data-v-9781d869">
+                        <uni-notice-bar bind:__l="__l" class="marquee-text data-v-9781d869" uI="9781d869-1" uP="{{x}}" wx:if="{{x}}"></uni-notice-bar>
+                    </view>
+                </view>
+                <scroll-view enableFlex scrollWithAnimation bindscroll="{{D}}" bindscrolltolower="{{E}}" class="ba-list data-v-9781d869" enablePassive="{{true}}" id="scroll-v" scrollIntoView="{{C}}" scrollY="{{true}}" showScrollbar="{{false}}" style="{{'height:'+A+';'+'margin-top:'+B}}">
+                    <view class="{{['data-v-9781d869',val.K]}}" id="{{val.J}}" wx:for="{{z}}" wx:for-item="val" wx:key="I">
+                        <view class="ba-content-v data-v-9781d869" wx:if="{{val.a}}">
+                            <view class="ba-content-my data-v-9781d869" wx:if="{{val.b}}">
+                                <label class="ba-head-box data-v-9781d869" wx:if="{{val.c}}">
+                                    <image azyLoad="{{true}}" class="ba-head data-v-9781d869" src="{{val.d}}" style="{{val.e}}"></image>
+                                </label>
+                                <view class="ba-text ba-text-three data-v-9781d869" wx:if="{{val.f}}">
+                                    <view class="ba-name data-v-9781d869">
+                                        <text class="vm data-v-9781d869" wx:if="{{val.g}}">虚拟会员</text>
+                                        <text class="a1 data-v-9781d869" wx:if="{{val.h}}">管理员</text>
+                                        <text class="a2 data-v-9781d869" wx:if="{{val.i}}">小助理</text>
+                                        <block wx:if="{{val.j}}">
+                                            <text class="ba-tag data-v-9781d869" wx:for="{{val.k}}" wx:for-item="i" wx:key="b">{{i.a}}</text>
+                                        </block>
+                                        <text class="ba-grade ba-grade-left name11 data-v-9781d869" style="{{val.n}}" wx:if="{{val.l}}">{{val.m}}</text>{{val.o}}</view>
+                                    <view class="ba-speak-con-box data-v-9781d869">
+                                        <text class="ba-speak-con data-v-9781d869" wx:if="{{val.p}}">{{val.q}}</text>
+                                        <image bindtap="{{val.r}}" class="ba-img-speak-con data-v-9781d869" mode="widthFix" src="{{val.s}}" wx:else></image>
+                                    </view>
+                                </view>
+                                <view bindtap="{{val.x}}" class="ba-place data-v-9781d869" wx:else>
+                                    <text class="place-name data-v-9781d869">{{val.t}}</text>
+                                    <view class="ba-speak-con-box data-v-9781d869">
+                                        <text class="ba-place-speak data-v-9781d869" wx:if="{{val.v}}">{{val.w}}</text>
+                                    </view>
+                                </view>
+                            </view>
+                            <view class="ba-content-my data-v-9781d869" wx:else>
+                                <view class="ba-text ba-text-two data-v-9781d869">
+                                    <view class="ba-name-my data-v-9781d869">
+                                        <text class="name11 data-v-9781d869">{{val.y}}</text>
+                                        <text class="ba-grade ba-grade-right data-v-9781d869" style="{{val.B}}" wx:if="{{val.z}}">{{val.A}}</text>
+                                    </view>
+                                    <view class="ba-speak-con-box data-v-9781d869">
+                                        <text class="ba-speak-con data-v-9781d869" wx:if="{{val.C}}">{{val.D}}</text>
+                                        <image bindtap="{{val.E}}" class="ba-img-speak-con data-v-9781d869" mode="widthFix" src="{{val.F}}" wx:else></image>
+                                    </view>
+                                </view>
+                                <label class="ba-head-box-my data-v-9781d869">
+                                    <image azyLoad="{{true}}" class="ba-head data-v-9781d869" src="{{val.G}}" style="{{val.H}}"></image>
+                                </label>
+                            </view>
+                        </view>
+                    </view>
+                </scroll-view>
+            </swiper-item>
+            <swiper-item class="sw-it data-v-9781d869">
+                <scroll-view enableFlex scrollWithAnimation bindscroll="{{J}}" bindscrolltolower="{{K}}" class="ba-list data-v-9781d869" enablePassive="{{true}}" id="scroll-v" scrollIntoView="{{G}}" scrollY="{{true}}" showScrollbar="{{false}}" style="{{'height:'+H+';'+'margin-top:'+I}}">
+                    <view class="{{['data-v-9781d869',val.A]}}" id="{{val.z}}" wx:for="{{F}}" wx:for-item="val" wx:key="y">
+                        <view class="ba-content-v data-v-9781d869">
+                            <view class="ba-content-my data-v-9781d869" wx:if="{{val.a}}">
+                                <label class="ba-head-box data-v-9781d869" wx:if="{{val.b}}">
+                                    <image azyLoad="{{true}}" class="ba-head data-v-9781d869" src="{{val.c}}" style="{{val.d}}"></image>
+                                </label>
+                                <view class="ba-text ba-text-three data-v-9781d869">
+                                    <view class="ba-name data-v-9781d869">
+                                        <text class="ba-grade ba-grade-left name11 data-v-9781d869" style="{{val.g}}" wx:if="{{val.e}}">{{val.f}}</text>{{val.h}}</view>
+                                    <view class="ba-speak-con-box data-v-9781d869">
+                                        <text class="ba-speak-con data-v-9781d869" wx:if="{{val.i}}">{{val.j}}</text>
+                                        <image bindtap="{{val.k}}" class="ba-img-speak-con data-v-9781d869" mode="widthFix" src="{{val.l}}" wx:else></image>
+                                    </view>
+                                </view>
+                            </view>
+                            <view class="ba-content-my data-v-9781d869" wx:else>
+                                <view class="ba-text ba-text-two data-v-9781d869">
+                                    <view class="ba-name-my data-v-9781d869">
+                                        <text class="name11 data-v-9781d869">{{val.m}}</text>
+                                        <text class="ba-grade ba-grade-right data-v-9781d869" style="{{val.p}}" wx:if="{{val.n}}">{{val.o}}</text>
+                                    </view>
+                                    <view class="ba-speak-con-box data-v-9781d869">
+                                        <text class="ba-speak-con data-v-9781d869" wx:if="{{val.q}}">{{val.r}}</text>
+                                        <image bindtap="{{val.s}}" class="ba-img-speak-con data-v-9781d869" mode="widthFix" src="{{val.t}}" wx:else></image>
+                                    </view>
+                                </view>
+                                <label class="ba-head-box-my data-v-9781d869" wx:if="{{val.v}}">
+                                    <image azyLoad="{{true}}" class="ba-head data-v-9781d869" src="{{val.w}}" style="{{val.x}}"></image>
+                                </label>
+                            </view>
+                        </view>
+                    </view>
+                </scroll-view>
+            </swiper-item>
+            <swiper-item class="sw-it data-v-9781d869"></swiper-item>
+            <swiper-item class="sw-it data-v-9781d869" wx:if="{{L}}">
+                <question bind:__l="__l" class="data-v-9781d869" style="height:100%" uI="9781d869-2" uP="{{M}}" wx:if="{{M}}"></question>
+            </swiper-item>
+        </swiper>
+    </view>
+    <view class="notice-box data-v-9781d869" wx:if="{{Q}}">
+        <text class="notice-text data-v-9781d869">{{R}}</text>
+    </view>
+    <view class="explain-box data-v-9781d869" wx:if="{{S}}">
+        <view class="{{['data-v-9781d869',ad]}}" wx:if="{{T}}">
+            <image class="hotGoods-image data-v-9781d869" mode="aspectFill" src="{{U}}"></image>
+            <view class="hot_text data-v-9781d869" wx:if="{{V}}">已售 x<view class="hot_sale data-v-9781d869">{{W}}</view>
+            </view>
+            <view class="hot_text data-v-9781d869" wx:if="{{X}}">库存仅剩 x<view class="hot_sale data-v-9781d869" wx:if="{{Y}}">{{Z}}<text class="hot-sale-text data-v-9781d869">亿+</text>
+                </view>
+                <view class="hot_sale data-v-9781d869" wx:elif="{{aa}}">{{ab}}<text class="hot-sale-text data-v-9781d869">万+</text>
+                </view>
+                <view class="hot_sale data-v-9781d869" wx:else>{{ac}}</view>
+            </view>
+        </view>
+        <view bindtap="{{aj}}" class="explain-little data-v-9781d869">
+            <image class="explain-pic data-v-9781d869" src="{{ae}}"></image>
+            <text class="explain-name data-v-9781d869">{{af}}</text>
+            <view class="explain-go-shop data-v-9781d869">
+                <text class="shop_money data-v-9781d869">￥{{ag}}</text>
+                <text class="shop_go data-v-9781d869">抢</text>
+            </view>
+            <view class="explain-title data-v-9781d869">
+                <image class="explain-title-image data-v-9781d869" src="{{ah}}"></image>
+                <text class="data-v-9781d869">正在讲解</text>
+            </view>
+            <icon catchtap="{{ai}}" class="explain-close data-v-9781d869" color="#ffffff" size="35rpx" type="cancel"></icon>
+        </view>
+    </view>
+    <add-teaching bind:__l="__l" class="r data-v-9781d869" uI="9781d869-3" uR="teachingRef" wx:if="{{ak}}"></add-teaching>
+</view>

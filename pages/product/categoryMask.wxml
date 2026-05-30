@@ -1,0 +1,38 @@
+<view bindtap="{{d}}" class="product-list-mask" wx:if="{{a}}">
+    <view class="product-list-content">
+        <view class="funList d-b-c">
+            <view class="funList-l">已选商品</view>
+            <view catchtap="{{b}}" class="funList-r">
+                <view>清空购物车</view>
+            </view>
+        </view>
+        <scroll-view scrollY="true" style="height:360rpx">
+            <view class="product-item d-s-c" wx:for="{{c}}" wx:for-item="v" wx:key="j">
+                <view class="mask-product-img">
+                    <image lazyLoad class="img" mode="aspectFit" src="{{v.a}}"></image>
+                </view>
+                <view class="d-b-c d-c percent-w100 flex-1" style="height:100%">
+                    <view class="mask-t">
+                        <view class="mask-product-title d-b-c">
+                            <view class="text-ellipsis">{{v.b}}</view>
+                            <view catchtap="{{v.c}}" class="iconfont icon-shanchu1"></view>
+                        </view>
+                        <view wx:if="{{v.d}}">已选【{{v.e}}】</view>
+                    </view>
+                    <view class="mask-b d-b-c">
+                        <view class="mask-price theme-price">￥{{v.f}}</view>
+                        <view class="mask-action d-s-c">
+                            <view catchtap="{{v.g}}" class="mask-minus">
+                                <view class="iconfont icon-jian"></view>
+                            </view>
+                            <view class="mask-num">{{v.h}}</view>
+                            <view catchtap="{{v.i}}" class="mask-add">
+                                <view class="iconfont icon-jia"></view>
+                            </view>
+                        </view>
+                    </view>
+                </view>
+            </view>
+        </scroll-view>
+    </view>
+</view>

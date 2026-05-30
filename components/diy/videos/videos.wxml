@@ -1,0 +1,3 @@
+<view class="diy-video" style="{{'background:'+i+';'+'padding-left:'+j+';'+'padding-right:'+k+';'+'padding-top:'+l+';'+'padding-bottom:'+m}}">
+    <video controls autoplay="{{h}}" objectFit="contain" poster="{{g}}" src="{{f}}" style="{{'height:'+a+';'+'border-top-left-radius:'+b+';'+'border-top-right-radius:'+c+';'+'border-bottom-left-radius:'+d+';'+'border-bottom-right-radius:'+e}}"></video>
+</view>
