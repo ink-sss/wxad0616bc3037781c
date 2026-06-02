@@ -36,6 +36,8 @@ components should import these wrappers instead of calling `wx.*` directly.
   `requestLiveFullScreen`, `exitLiveFullScreen`, `startPush`, `stopPush`,
   `pausePush`, `resumePush`, `switchCamera`, `callTrtc`.
 - IM helper: `createImHelper`.
+- File/address helpers: `chooseAddress`, `chooseImage`, `uploadFile`,
+  `readFileArrayBuffer`, `putFileToPresignedUrl`.
 
 ## Integration notes
 
@@ -43,6 +45,10 @@ components should import these wrappers instead of calling `wx.*` directly.
   `WEIXIN_API_UNSUPPORTED` where a Promise API cannot be called.
 - `createImHelper` accepts `TencentCloudChat` and `TIMUploadPlugin` by
   injection so this platform layer does not force dependency loading in pages.
+- Presigned image uploads avoid browser `fetch`, `XMLHttpRequest`, and Blob APIs.
+  The preferred mini-program path reads the file as `ArrayBuffer` and uses
+  `uni.request` with `PUT`; `uni.uploadFile` is retained as a platform-native
+  fallback for environments where raw file reads are unavailable.
 - `normalizePhoneNumberEvent` validates the `getPhoneNumber` event before
   backend exchange. The backend still owns decrypted phone binding.
 - `customerServiceButtonProps`, `officialAccountComponentProps`, and

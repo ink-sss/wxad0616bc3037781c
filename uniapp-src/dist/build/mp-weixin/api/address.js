@@ -1,0 +1,1 @@
+"use strict";const e=require("./h5.js");exports.createAddress=function(t={}){return e.h5Post("/h5/address/create",t)},exports.deleteAddress=function(t){return e.h5Delete("/h5/address/delete",{id:Number(t||0)})},exports.getAddressList=function(){return e.h5Get("/h5/address/list")},exports.updateAddress=function(t={}){return e.h5Put("/h5/address/update",t)};

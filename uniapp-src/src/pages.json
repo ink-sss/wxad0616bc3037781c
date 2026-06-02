@@ -67,6 +67,106 @@
       }
     },
     {
+      "path": "pages/broadcast/entry",
+      "style": {
+        "navigationBarTitleText": "直播间",
+        "navigationStyle": "custom",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/broadcast/replay",
+      "style": {
+        "navigationBarTitleText": "录播",
+        "navigationStyle": "custom",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/prize-record/index",
+      "style": {
+        "navigationBarTitleText": "中奖记录",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/invitation-record/index",
+      "style": {
+        "navigationBarTitleText": "邀请记录",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/report/report-home",
+      "style": {
+        "navigationBarTitleText": "投诉",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/report/report-type",
+      "style": {
+        "navigationBarTitleText": "投诉",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/report/report-form",
+      "style": {
+        "navigationBarTitleText": "投诉",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/report/report-success",
+      "style": {
+        "navigationBarTitleText": "投诉结果",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/report/report-list",
+      "style": {
+        "navigationBarTitleText": "投诉记录",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/report/report-detail",
+      "style": {
+        "navigationBarTitleText": "投诉详情",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/address/index",
+      "style": {
+        "navigationBarTitleText": "地址管理",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/address/edit",
+      "style": {
+        "navigationBarTitleText": "编辑地址",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/address/wxPick",
+      "style": {
+        "navigationBarTitleText": "微信地址",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/center/index",
+      "style": {
+        "navigationBarTitleText": "个人中心",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
       "path": "pages/user/my-wallet/my-wallet",
       "style": {
         "navigationBarTitleText": "我的钱包",
@@ -697,6 +797,42 @@
       "root": "pages/order/",
       "pages": [
         {
+          "path": "confirm",
+          "style": {
+            "navigationBarTitleText": "确认订单"
+          }
+        },
+        {
+          "path": "pay",
+          "style": {
+            "navigationBarTitleText": "支付"
+          }
+        },
+        {
+          "path": "receipt",
+          "style": {
+            "navigationBarTitleText": "支付结果"
+          }
+        },
+        {
+          "path": "refund",
+          "style": {
+            "navigationBarTitleText": "申请退款"
+          }
+        },
+        {
+          "path": "refund-list",
+          "style": {
+            "navigationBarTitleText": "退款/售后"
+          }
+        },
+        {
+          "path": "refund-detail",
+          "style": {
+            "navigationBarTitleText": "售后详情"
+          }
+        },
+        {
           "path": "confirm-order",
           "style": {}
         },
@@ -751,6 +887,18 @@
         {
           "path": "express/lottery",
           "style": {}
+        },
+        {
+          "path": "list",
+          "style": {
+            "navigationBarTitleText": "订单"
+          }
+        },
+        {
+          "path": "detail",
+          "style": {
+            "navigationBarTitleText": "订单详情"
+          }
         },
         {
           "path": "myorder",

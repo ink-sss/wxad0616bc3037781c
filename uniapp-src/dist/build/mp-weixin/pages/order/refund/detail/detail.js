@@ -1,1 +1,1 @@
-"use strict";const e={};const r=require("../../../../common/vendor.js")._export_sfc(e,[["render",function(e,r,t,c,n,o){return{}}],["__scopeId","data-v-d526eb2e"]]);wx.createPage(r);
+"use strict";const e=require("../../../../common/vendor.js"),d={onLoad(d={}){const r=d.id||d.refundId||d.refund_id||"";e.index.redirectTo({url:`/pages/order/refund-detail?id=${encodeURIComponent(r)}`})}};const r=e._export_sfc(d,[["render",function(e,d,r,n,o,t){return{}}],["__scopeId","data-v-c2344dea"]]);wx.createPage(r);

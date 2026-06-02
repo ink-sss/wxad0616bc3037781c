@@ -10,5 +10,4 @@ function scanQrCode(options = {}) {
     ...options
   });
 }
-exports.scanCode = scanCode;
 exports.scanQrCode = scanQrCode;

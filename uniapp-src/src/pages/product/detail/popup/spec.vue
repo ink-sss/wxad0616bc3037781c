@@ -264,15 +264,15 @@ export default {
       const specSkuId = this.form.show_sku.spec_sku_id
       let room = ''
       if (this.room_id !== 0 && this.room_id !== '') room = '&room_id=' + this.room_id
-      let url = `/pages/order/confirm-order?product_id=${productId}&product_num=${totalNum}&product_sku_id=${specSkuId}&order_type=buy${room}`
+      let url = `/pages/order/confirm?product_id=${productId}&product_num=${totalNum}&product_sku_id=${specSkuId}&order_type=buy${room}`
       if (this.form.type === 'deposit') {
         if (this.form.plus_name === 'advance') {
           const advanceSku = this.form.detail.advance.sku.find((item) => item.productSku.spec_sku_id === specSkuId)
-          url = `/pages/order/confirm-order?product_id=${productId}&product_num=${totalNum}&product_sku_id=${specSkuId}&advance_product_sku_id=${advanceSku.advance_product_sku_id}&advance_product_id=${advanceSku.advance_product_id}&order_type=deposit`
+          url = `/pages/order/confirm?product_id=${productId}&product_num=${totalNum}&product_sku_id=${specSkuId}&advance_product_sku_id=${advanceSku.advance_product_sku_id}&advance_product_id=${advanceSku.advance_product_id}&order_type=deposit`
         }
         if (this.form.plus_name === 'seckill') {
           const seckillSku = this.form.plus_sku.find((item) => item.productSku.spec_sku_id === specSkuId)
-          url = `/pages/order/confirm-order?seckill_product_id=${seckillSku.seckill_product_id}&product_num=${totalNum}&time_id=${this.form.time_id}&product_sku_id=${seckillSku.productSku.spec_sku_id}&seckill_product_sku_id=${seckillSku.seckill_product_sku_id}&order_type=seckill`
+          url = `/pages/order/confirm?seckill_product_id=${seckillSku.seckill_product_id}&product_num=${totalNum}&time_id=${this.form.time_id}&product_sku_id=${seckillSku.productSku.spec_sku_id}&seckill_product_sku_id=${seckillSku.seckill_product_sku_id}&order_type=seckill`
         }
       }
       this.gotoPage(url)

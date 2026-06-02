@@ -1,13 +1,20 @@
 <template>
-  <live-room-shell orientation="vertical" />
+  <view class="redirect-page">
+    <text>正在进入直播间...</text>
+  </view>
 </template>
 
 <script>
-import LiveRoomShell from './LiveRoomShell.vue'
+import { buildBroadcastEntryUrl, normalizeLiveRouteOptions } from '../../utils/live-route.js'
 
 export default {
-  components: {
-    LiveRoomShell,
+  onLoad(query = {}) {
+    const options = normalizeLiveRouteOptions(query)
+    uni.redirectTo({ url: buildBroadcastEntryUrl({ ...options, orientation: 'vertical' }) })
   },
 }
 </script>
+
+<style scoped>
+.redirect-page { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0b0b0f; color: #fff; font-size: 28rpx; }
+</style>

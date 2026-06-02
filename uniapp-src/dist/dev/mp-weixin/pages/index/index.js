@@ -168,7 +168,7 @@ const _sfc_main = {
         common_vendor.index.navigateTo({ url });
     },
     goLive(type) {
-      const urls = ["/pages/live-push/live-list", "/pages/live-push/live-push-new", "/pages/live/live-vertical-new?scene=live_id:7171&app_id=10001"];
+      const urls = ["/pages/live-push/live-list", "/pages/live-push/live-push", "/pages/broadcast/entry?liveId=7171"];
       common_vendor.index.navigateTo({ url: urls[type] || urls[0] });
     }
   }

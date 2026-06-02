@@ -10,6 +10,7 @@ export * from './update'
 export * from './capture'
 export * from './live'
 export * from './im'
+export * from './file'
 
 import * as runtime from './runtime'
 import * as auth from './auth'
@@ -23,6 +24,7 @@ import * as update from './update'
 import * as capture from './capture'
 import * as live from './live'
 import * as im from './im'
+import * as file from './file'
 
 export const weixin = {
   runtime,
@@ -37,5 +39,5 @@ export const weixin = {
   capture,
   live,
   im,
+  file,
 }
-

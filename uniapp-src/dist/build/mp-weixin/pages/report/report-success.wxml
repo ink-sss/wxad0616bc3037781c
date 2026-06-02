@@ -1,0 +1,1 @@
+<view class="success-page"><view class="nav-bar"><text class="nav-back" bindtap="{{a}}">‹</text><text class="nav-title">提交成功</text></view><view class="content"><view class="icon-wrap"><text class="success-check">✓</text></view><text class="title">提交成功</text><text class="desc">您的投诉已提交，系统正在核实中</text><view class="theme-primary-btn" bindtap="{{b}}"> 返回直播 </view></view></view>

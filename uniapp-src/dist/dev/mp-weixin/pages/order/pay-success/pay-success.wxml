@@ -1,1 +1,1 @@
-<view class="empty-shell-page data-v-b7cb463c"><text class="data-v-b7cb463c">pages/order/pay-success/pay-success.wxml</text></view>
+<view class="redirect-page data-v-b7cb463c"><text class="data-v-b7cb463c">正在打开支付结果...</text></view>

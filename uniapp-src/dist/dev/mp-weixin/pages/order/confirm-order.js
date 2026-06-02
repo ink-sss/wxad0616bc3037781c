@@ -1,6 +1,11 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
-const _sfc_main = {};
+const _sfc_main = {
+  onLoad(query = {}) {
+    const qs = Object.keys(query).map((key) => `${key}=${encodeURIComponent(query[key])}`).join("&");
+    common_vendor.index.redirectTo({ url: `/pages/order/confirm${qs ? `?${qs}` : ""}` });
+  }
+};
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return {};
 }

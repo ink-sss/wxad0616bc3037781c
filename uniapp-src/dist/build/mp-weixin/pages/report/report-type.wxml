@@ -1,0 +1,1 @@
+<view class="report-type data-v-53a6cbd1"><view class="title data-v-53a6cbd1">选择举报类型</view><view class="type-card data-v-53a6cbd1"><view wx:for="{{a}}" wx:for-item="item" wx:key="b" class="type-row data-v-53a6cbd1" bindtap="{{item.c}}"><text class="type-label data-v-53a6cbd1">{{item.a}}</text><text class="type-arrow data-v-53a6cbd1">›</text></view></view></view>

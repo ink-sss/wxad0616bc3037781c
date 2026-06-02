@@ -1,0 +1,1 @@
+"use strict";const e=require("./h5.js");exports.wechatSilentLogin=function(t={}){return e.h5Post("/h5/auth/wechatSilentLogin",function(e={}){return{...e,source:e.source||"mp-weixin",sourceClient:e.sourceClient||"mp-weixin",platform:e.platform||"miniProgram",authType:e.authType||"miniProgramCode"}}(t),{authRedirect:!1})};

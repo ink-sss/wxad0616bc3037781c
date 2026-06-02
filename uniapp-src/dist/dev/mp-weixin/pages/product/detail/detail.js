@@ -546,7 +546,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     V: common_vendor.t($data.detail[$data.activeName][$data.skuName][0][$data.activePrice])
   } : {}, {
     W: common_vendor.t($data.activeText),
-    X: common_assets._imports_0$1,
+    X: common_assets._imports_0$4,
     Y: common_vendor.sr("countdown", "489b8bc3-1"),
     Z: common_vendor.o($options.returnValFunc, "e0"),
     aa: common_vendor.p({
@@ -604,10 +604,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   }, $data.detail.spec_type === 20 && $data.detail.product_sku.product_price !== $data.detail.product_max_price ? {
     aw: common_vendor.t($data.detail.product_max_price)
   } : {}, {
-    ax: common_assets._imports_1$1,
+    ax: common_assets._imports_1$3,
     ay: common_vendor.o((...args) => $options.showShare && $options.showShare(...args), "ea"),
     az: !$data.is_fav ? 1 : "",
-    aA: common_assets._imports_2$1,
+    aA: common_assets._imports_2$2,
     aB: common_vendor.o((...args) => $options.favorite && $options.favorite(...args), "5f"),
     aC: $data.detail.product_sku && $data.detail.product_sku.line_price > 0
   }, $data.detail.product_sku && $data.detail.product_sku.line_price > 0 ? {

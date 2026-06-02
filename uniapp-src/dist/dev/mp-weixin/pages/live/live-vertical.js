@@ -1,21 +1,14 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
-const LiveRoomShell = () => "./LiveRoomShell.js";
+const utils_liveRoute = require("../../utils/live-route.js");
 const _sfc_main = {
-  components: {
-    LiveRoomShell
+  onLoad(query = {}) {
+    const options = utils_liveRoute.normalizeLiveRouteOptions(query);
+    common_vendor.index.redirectTo({ url: utils_liveRoute.buildBroadcastEntryUrl({ ...options, orientation: "vertical" }) });
   }
 };
-if (!Array) {
-  const _component_live_room_shell = common_vendor.resolveComponent("live-room-shell");
-  _component_live_room_shell();
-}
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
-  return {
-    a: common_vendor.p({
-      orientation: "vertical"
-    })
-  };
+  return {};
 }
-const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["render", _sfc_render]]);
+const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-46b19f02"]]);
 wx.createPage(MiniProgramPage);

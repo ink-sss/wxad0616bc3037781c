@@ -1,7 +1,6 @@
 <template>
-  <view class="empty-shell-page">
-    <!-- TODO:migration: compiled placeholder had no recoverable business logic -->
-    <text>pages/order/express/lottery.wxml</text>
+  <view class="legacy-unavailable-page">
+    <text class="legacy-title">该订单功能暂未开放</text>
   </view>
 </template>
 
@@ -10,5 +9,16 @@ export default {}
 </script>
 
 <style scoped>
-.empty-shell-page { min-height: 100vh; }
+.legacy-unavailable-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f7f8fa;
+}
+
+.legacy-title {
+  color: #666;
+  font-size: 30rpx;
+}
 </style>

@@ -1,1 +1,0 @@
-"use strict";const e=require("../../../common/vendor.js"),r={props:{liveId:{type:[Number,String],default:""}}};const t=e._export_sfc(r,[["render",function(e,r,t,n,o,c){return{}}],["__scopeId","data-v-8c754142"]]);wx.createComponent(t);

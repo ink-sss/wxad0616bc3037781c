@@ -1,14 +1,18 @@
 <template>
-  <view class="empty-shell-page">
-    <!-- TODO:migration: compiled placeholder had no recoverable business logic -->
-    <text>pages/order/refund/detail/detail.wxml</text>
+  <view class="redirect-page">
+    <text>正在打开售后详情...</text>
   </view>
 </template>
 
 <script>
-export default {}
+export default {
+  onLoad(query = {}) {
+    const id = query.id || query.refundId || query.refund_id || ''
+    uni.redirectTo({ url: `/pages/order/refund-detail?id=${encodeURIComponent(id)}` })
+  },
+}
 </script>
 
 <style scoped>
-.empty-shell-page { min-height: 100vh; }
+.redirect-page { display: flex; min-height: 100vh; align-items: center; justify-content: center; color: #777; font-size: 28rpx; }
 </style>

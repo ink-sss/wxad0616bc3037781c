@@ -1,4 +1,13 @@
 import { login as weixinLogin, normalizePhoneNumberEvent } from '../../platform/weixin/index.js'
+import { loginAndRedirectWithMiniProgramWechat } from '../../services/h5-auth.js'
+import {
+  buildH5AuthContext,
+  getCurrentPageUrl,
+  hasH5Token,
+  redirectAfterH5Login,
+  saveH5AuthContext,
+  syncH5AuthSession,
+} from '../../services/h5-auth-context.js'
 
 export function toast(title) {
   uni.showToast({ title, icon: 'none' })
@@ -29,6 +38,27 @@ export function saveLoginSession(data = {}) {
   }
 
   if (app && typeof app.imLogin === 'function') app.imLogin()
+}
+
+export function buildLoginContext(query = {}, fallback = '/pages/center/index') {
+  const redirect = query.redirect || getCurrentRedirect(fallback) || getCurrentPageUrl(fallback)
+  return saveH5AuthContext(buildH5AuthContext({ ...query, redirect }))
+}
+
+export function alreadyH5LoggedIn() {
+  return hasH5Token()
+}
+
+export function redirectAfterExistingH5Login(context = {}) {
+  redirectAfterH5Login(context)
+}
+
+export function saveH5LoginSession(data = {}) {
+  return syncH5AuthSession(data)
+}
+
+export function h5MiniWechatLogin(context = {}) {
+  return loginAndRedirectWithMiniProgramWechat(context)
 }
 
 export function loginCode() {

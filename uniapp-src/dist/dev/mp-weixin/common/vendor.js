@@ -8245,18 +8245,46 @@ Store.prototype._withCommit = function _withCommit(fn) {
   this._committing = committing;
 };
 Object.defineProperties(Store.prototype, prototypeAccessors);
+const createLifeCycleHook = (lifecycle, flag = 0) => (hook, target = getCurrentInstance()) => {
+  !isInSSRComponentSetup && injectHook(lifecycle, hook, target);
+};
+const onShow = /* @__PURE__ */ createLifeCycleHook(
+  ON_SHOW,
+  1 | 2
+  /* HookFlags.PAGE */
+);
+const onLoad = /* @__PURE__ */ createLifeCycleHook(
+  ON_LOAD,
+  2
+  /* HookFlags.PAGE */
+);
+const onUnload = /* @__PURE__ */ createLifeCycleHook(
+  ON_UNLOAD,
+  2
+  /* HookFlags.PAGE */
+);
 exports._export_sfc = _export_sfc;
+exports.computed = computed;
 exports.createPinia = createPinia;
 exports.createSSRApp = createSSRApp;
 exports.createStore = createStore;
 exports.e = e;
 exports.f = f;
+exports.getCurrentInstance = getCurrentInstance;
 exports.index = index;
 exports.n = n;
+exports.nextTick$1 = nextTick$1;
 exports.o = o;
+exports.onBeforeUnmount = onBeforeUnmount;
+exports.onLoad = onLoad;
+exports.onShow = onShow;
+exports.onUnload = onUnload;
 exports.p = p;
+exports.reactive = reactive;
+exports.ref = ref;
 exports.resolveComponent = resolveComponent;
 exports.s = s;
 exports.sr = sr;
 exports.t = t;
+exports.watch = watch;
 exports.wx$1 = wx$1;

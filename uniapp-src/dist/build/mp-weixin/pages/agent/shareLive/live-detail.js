@@ -1,1 +1,1 @@
-"use strict";const e={};const r=require("../../../common/vendor.js")._export_sfc(e,[["render",function(e,r,t,c,n,o){return{}}],["__scopeId","data-v-b2b4977f"]]);wx.createPage(r);
+"use strict";const e=require("../../../common/vendor.js"),r=require("../../../utils/live-route.js"),o={onLoad(o={}){e.index.redirectTo({url:r.buildBroadcastEntryUrl(r.normalizeLiveRouteOptions(o))})}};const t=e._export_sfc(o,[["render",function(e,r,o,t,n,i){return{}}],["__scopeId","data-v-015883b7"]]);wx.createPage(t);

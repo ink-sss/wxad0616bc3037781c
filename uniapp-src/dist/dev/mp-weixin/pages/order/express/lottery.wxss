@@ -1,2 +1,11 @@
-.empty-shell-page.data-v-b156ca3b { min-height: 100vh;
+.legacy-unavailable-page.data-v-b156ca3b {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f7f8fa;
+}
+.legacy-title.data-v-b156ca3b {
+  color: #666;
+  font-size: 30rpx;
 }

@@ -1,6 +1,11 @@
 "use strict";
 const common_vendor = require("../../../common/vendor.js");
-const _sfc_main = {};
+const utils_liveRoute = require("../../../utils/live-route.js");
+const _sfc_main = {
+  onLoad(query = {}) {
+    common_vendor.index.redirectTo({ url: utils_liveRoute.buildBroadcastEntryUrl(utils_liveRoute.normalizeLiveRouteOptions(query)) });
+  }
+};
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return {};
 }

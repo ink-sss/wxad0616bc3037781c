@@ -75,39 +75,8 @@ function promisifyApi(apiName, params = {}, options = {}) {
     }
   });
 }
-function callContext(context, methodName, params = {}) {
-  if (!context || typeof context[methodName] !== "function") {
-    return Promise.reject(unsupportedError(methodName));
-  }
-  return new Promise((resolve, reject) => {
-    try {
-      context[methodName]({
-        ...params,
-        success(result) {
-          if (typeof params.success === "function") {
-            params.success(result);
-          }
-          resolve(result);
-        },
-        fail(error) {
-          if (typeof params.fail === "function") {
-            params.fail(error);
-          }
-          reject(error);
-        },
-        complete(result) {
-          if (typeof params.complete === "function") {
-            params.complete(result);
-          }
-        }
-      });
-    } catch (error) {
-      reject(error);
-    }
-  });
-}
-exports.callContext = callContext;
 exports.canIUse = canIUse;
+exports.getGlobalUni = getGlobalUni;
 exports.getWeixinApi = getWeixinApi;
 exports.hasWeixinApi = hasWeixinApi;
 exports.promisifyApi = promisifyApi;

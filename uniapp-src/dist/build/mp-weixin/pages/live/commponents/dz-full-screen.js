@@ -1,1 +1,0 @@
-"use strict";const e=require("../../../common/vendor.js"),t={emits:["clikeLike"]};const o=e._export_sfc(t,[["render",function(t,o,c,n,r,i){return{a:e.o(e=>t.$emit("clikeLike"),"34")}}],["__scopeId","data-v-33158248"]]);wx.createComponent(o);

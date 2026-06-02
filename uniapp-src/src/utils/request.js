@@ -1,3 +1,5 @@
+import { redirectToH5Login } from '../services/h5-auth-context.js';
+
 function isObject(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
@@ -164,6 +166,7 @@ export function requestFun(app) {
 
   app.config.globalProperties.doLogin = function doLogin() {
     const pages = getCurrentPages();
+    let redirect = '/pages/center/index';
     if (pages.length) {
       const currentPage = pages[pages.length - 1];
       if (
@@ -173,6 +176,12 @@ export function requestFun(app) {
       ) {
         uni.setStorageSync('currentPage', currentPage.route);
         uni.setStorageSync('currentPageOptions', currentPage.$page && currentPage.$page.options);
+        const options = (currentPage.$page && currentPage.$page.options) || currentPage.options || {};
+        const query = Object.keys(options)
+          .filter((key) => options[key] !== undefined && options[key] !== null && options[key] !== '')
+          .map((key) => `${key}=${encodeURIComponent(options[key])}`)
+          .join('&');
+        redirect = `/${currentPage.route}${query ? `?${query}` : ''}`;
       }
     }
 
@@ -180,7 +189,7 @@ export function requestFun(app) {
     if (uni.getStorageSync('me')) {
       this.gotoPage('/pages/login/anchorlogin');
     } else {
-      this.gotoPage('/pages/login/login');
+      redirectToH5Login({ redirect });
     }
   };
 }

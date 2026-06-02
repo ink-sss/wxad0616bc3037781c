@@ -28,11 +28,11 @@ export default {
   data() {
     return {
       orderItem: [
-        { name: '待付款', url: '/pages/order/myorder?dataType=payment', pop: 'payment' },
-        { name: '待发货', url: '/pages/order/myorder?dataType=delivery', pop: 'delivery' },
-        { name: '待收货', url: '/pages/order/myorder?dataType=received', pop: 'received' },
-        { name: '待评价', url: '/pages/order/myorder?dataType=comment', pop: 'comment' },
-        { name: '退款/售后', url: '/pages/order/refund/index/index', pop: 'refund' },
+        { name: '待付款', url: '/pages/order/list?status=unpay', pop: 'payment' },
+        { name: '待发货', url: '/pages/order/list?status=unsend', pop: 'delivery' },
+        { name: '待收货', url: '/pages/order/list?status=unreceive', pop: 'received' },
+        { name: '已完成', url: '/pages/order/list?status=finished', pop: 'comment' },
+        { name: '退款/售后', url: '/pages/order/refund-list', pop: 'refund' },
       ],
     }
   },

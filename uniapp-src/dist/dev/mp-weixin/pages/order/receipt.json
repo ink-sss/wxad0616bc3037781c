@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "支付结果",
+  "usingComponents": {
+    "live-mini-window": "../../components/live-mini-window"
+  }
+}

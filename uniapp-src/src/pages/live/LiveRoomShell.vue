@@ -277,7 +277,7 @@
 <script>
 import { createLivePlayerContext, playLive } from '../../platform/weixin/live.js'
 import { onScreenRecordingStateChanged, offScreenRecordingStateChanged } from '../../platform/weixin/capture.js'
-import { getLiveStream, isEndedStatus, isWaitingStatus, normalizeLiveOptions, requestWithVm, toast } from './page-tools.js'
+import { getLiveStream, isEndedStatus, isWaitingStatus, normalizeLiveOptions, requestWithVm, shouldUseLivePlayerForStream, toast } from './page-tools.js'
 import BarrageList from './commponents/barrage-list.vue'
 import BarrageListHorizontal from './commponents/barrage-list-horizontal.vue'
 import BottomOption from './commponents/bottom-option.vue'
@@ -383,7 +383,7 @@ export default {
       return this.showPlayer && this.showBarrage
     },
     useLivePlayer() {
-      return Number(this.liveDetail.source || 0) !== 3
+      return shouldUseLivePlayerForStream(this.liveDetail, this.streamUrl)
     },
     showTrtc() {
       return Number(this.liveDetail.is_trtc || 0) === 1 && this.trtcReady
@@ -496,7 +496,6 @@ export default {
         .catch((error) => {
           const data = error && error.data ? error.data : {}
           this.noPermissionText = data.msg || error?.msg || ''
-          console.warn('[live] refreshRoom failed', error)
           // TODO:migration Confirm live.index/index error response shape against production API.
         })
         .finally(() => {

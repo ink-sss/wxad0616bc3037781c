@@ -1,2 +1,2 @@
-.empty-shell-page.data-v-e5d3d6f7 { min-height: 100vh;
+.redirect-page.data-v-e5d3d6f7 { display: flex; align-items: center; justify-content: center; min-height: 100vh; color: #666; font-size: 28rpx;
 }

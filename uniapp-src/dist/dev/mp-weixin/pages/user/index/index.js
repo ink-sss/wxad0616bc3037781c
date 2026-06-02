@@ -1,53 +1,155 @@
 "use strict";
 const common_vendor = require("../../../common/vendor.js");
 const pages_user_pageTools = require("../page-tools.js");
-const platform_weixin_scan = require("../../../platform/weixin/scan.js");
-const Diy = () => "../../../components/diy/diy.js";
+const api_order = require("../../../api/order.js");
+const api_refund = require("../../../api/refund.js");
+const api_user = require("../../../api/user.js");
+const services_h5AuthContext = require("../../../services/h5-auth-context.js");
+const utils_liveRoute = require("../../../utils/live-route.js");
+const utils_liveRoomContext = require("../../../utils/live-room-context.js");
 const RequestLoading = () => "../../../components/liveloading.js";
 const LiveTab = () => "../../../components/liveTab.js";
 const TabBar = () => "../../../components/tabbar/footTabbar.js";
+function defaultDetail() {
+  return { balance: 0, points: 0, grade: { name: "" } };
+}
+function toNumber(value) {
+  const number = Number(value || 0);
+  return Number.isFinite(number) ? number : 0;
+}
+function hasToken() {
+  try {
+    return !!(common_vendor.index.getStorageSync("h5_token") || common_vendor.index.getStorageSync("token"));
+  } catch (error) {
+    return false;
+  }
+}
+function readStorageObject(key) {
+  try {
+    const value = common_vendor.index.getStorageSync(key);
+    if (!value)
+      return null;
+    if (typeof value === "string")
+      return JSON.parse(value);
+    return typeof value === "object" ? value : null;
+  } catch (error) {
+    return null;
+  }
+}
+function readCachedCustomer() {
+  const keys = ["h5_user_info", "h5Customer", "customer", "userInfo", "user_info", "user"];
+  for (const key of keys) {
+    const value = readStorageObject(key);
+    if (value)
+      return value.customer || value.userInfo || value;
+  }
+  return null;
+}
+function normalizeCustomer(customer = {}) {
+  const base = defaultDetail();
+  if (!customer || typeof customer !== "object")
+    return base;
+  const name = customer.nickName || customer.nickname || customer.userName || customer.username || customer.name || customer.mobile || "";
+  const avatar = customer.avatarUrl || customer.avatar || customer.headimgurl || customer.headImg || customer.head || "";
+  const userId = customer.user_id || customer.userId || customer.customerId || customer.customer_id || customer.id || "";
+  return {
+    ...base,
+    ...customer,
+    nickName: name,
+    nickname: customer.nickname || name,
+    userName: customer.userName || customer.username || name,
+    avatarUrl: avatar,
+    avatar,
+    user_id: userId,
+    userId,
+    mobile: customer.mobile || customer.phone || "",
+    grade: customer.grade || { name: customer.gradeName || "" },
+    balance: customer.balance || 0,
+    points: customer.points || 0
+  };
+}
+function normalizeOrderCount(orderStats = {}, refundStats = {}) {
+  const payment = toNumber(orderStats.payment ?? orderStats.unpay ?? orderStats.waitPay ?? orderStats.pendingPay);
+  const delivery = toNumber(orderStats.delivery ?? orderStats.unsend ?? orderStats.waitShip ?? orderStats.waitDelivery);
+  const received = toNumber(orderStats.received ?? orderStats.unreceive ?? orderStats.waitReceive);
+  const finished = toNumber(orderStats.finished ?? orderStats.complete ?? orderStats.waitReview ?? orderStats.comment);
+  const refund = toNumber(refundStats.refund ?? refundStats.refunding ?? refundStats.processing ?? refundStats.unread ?? refundStats.total ?? orderStats.refund);
+  return {
+    payment,
+    unpay: payment,
+    delivery,
+    unsend: delivery,
+    received,
+    unreceive: received,
+    finished,
+    complete: finished,
+    comment: finished,
+    refund
+  };
+}
 const _sfc_main = {
   components: {
-    Diy,
     RequestLoading,
     LiveTab,
     TabBar
   },
   data() {
     return {
-      items: [],
       isloadding: true,
-      loadding: true,
-      detail: { balance: 0, points: 0, grade: { name: "" } },
-      storeInfo: {},
+      detail: defaultDetail(),
       orderCount: {},
-      coupon: 0,
-      storeCouponCount: 0,
-      user_type: "",
-      msgcount: 0,
       sessionKey: "",
       wxBinding: false,
       getPhone: false,
-      urls: "",
-      jweixin: null,
-      bgColor: "",
-      liveData: null,
-      version: ""
+      isLoggedIn: false,
+      bgColor: "#ff5704",
+      liveRoomContext: {}
     };
   },
   computed: {
     themeClass() {
       return typeof this.theme === "function" ? this.theme() : "";
     },
-    userInfo() {
-      return {
-        detail: this.detail,
-        coupon: this.coupon,
-        storeCouponCount: this.storeCouponCount,
-        orderCount: this.orderCount,
-        msgcount: this.msgcount,
-        getPhone: this.getPhone
-      };
+    h5OrderItems() {
+      var _a, _b, _c, _d, _e;
+      return [
+        { type: "unpay", text: "待付款", count: ((_a = this.orderCount) == null ? void 0 : _a.unpay) || 0, icon: "/static/icon/pay.png" },
+        { type: "unsend", text: "待发货", count: ((_b = this.orderCount) == null ? void 0 : _b.unsend) || 0, icon: "/static/icon/daifahuo.png" },
+        { type: "unreceive", text: "待收货", count: ((_c = this.orderCount) == null ? void 0 : _c.unreceive) || 0, icon: "/static/icon/daishouhuo.png" },
+        { type: "finished", text: "已完成", count: ((_d = this.orderCount) == null ? void 0 : _d.finished) || 0, icon: "/static/order/1-3.png" },
+        { type: "refund", text: "退款/售后", count: ((_e = this.orderCount) == null ? void 0 : _e.refund) || 0, icon: "/static/icon/icon-tuikuan.png" }
+      ];
+    },
+    h5ServiceItems() {
+      return [
+        { type: "prizeRecord", text: "中奖记录", icon: "/static/icon/lottery-points.png" },
+        { type: "invitationRecord", text: "邀请记录", icon: "/static/icon/icon-tuandui.png" },
+        { type: "complaint", text: "投诉", icon: "/static/icon/chat.png" },
+        { type: "address", text: "收货地址", icon: "/static/icon/address_icon.png" }
+      ];
+    },
+    hasProfile() {
+      return !!(this.detail && (this.detail.nickName || this.detail.nickname || this.detail.userName || this.detail.user_id || this.detail.userId));
+    },
+    profileAvatar() {
+      var _a, _b;
+      return ((_a = this.detail) == null ? void 0 : _a.avatarUrl) || ((_b = this.detail) == null ? void 0 : _b.avatar) || "/static/login-default.png";
+    },
+    profileName() {
+      if (this.hasProfile) {
+        return this.detail.nickName || this.detail.nickname || this.detail.userName || this.detail.mobile || "用户";
+      }
+      return this.isLoggedIn ? "用户" : "点击登录";
+    },
+    profileSubtitle() {
+      var _a, _b;
+      if (!this.isLoggedIn)
+        return "未登录，点击登录";
+      const id = ((_a = this.detail) == null ? void 0 : _a.user_id) || ((_b = this.detail) == null ? void 0 : _b.userId);
+      return id ? `ID：${id}` : "已登录";
+    },
+    profileActionText() {
+      return this.isLoggedIn ? "设置" : "登录";
     }
   },
   onReady() {
@@ -57,10 +159,24 @@ const _sfc_main = {
     this.wxBinding = common_vendor.index.getStorageSync("wxBinding");
     if (query && query.referee_id)
       common_vendor.index.setStorageSync("referee_id", query.referee_id);
+    if ((query == null ? void 0 : query.roomCode) || (query == null ? void 0 : query.roomId) || (query == null ? void 0 : query.liveId))
+      utils_liveRoomContext.saveLiveRoomContext(utils_liveRoute.normalizeLiveRouteOptions(query));
+    if (!services_h5AuthContext.ensureH5PageAuth(query, "/pages/center/index")) {
+      this.isloadding = false;
+      return;
+    }
+    this.syncAuthFromStorage();
+    this.applyCachedProfile();
+    this.syncLiveContext();
     this.getSession();
     common_vendor.index.setNavigationBarColor({ frontColor: "#ffffff", backgroundColor: "#ffffff" });
   },
   onShow() {
+    if (!services_h5AuthContext.ensureH5PageAuth({}, "/pages/center/index")) {
+      this.isloadding = false;
+      return;
+    }
+    this.syncLiveContext();
     this.getData();
   },
   onPullDownRefresh() {
@@ -68,56 +184,85 @@ const _sfc_main = {
   },
   methods: {
     getSession() {
+      if (!this.isLoggedIn)
+        return;
       pages_user_pageTools.loginCode().then((code) => {
         this._post("user.user/getSession", { code }, (res) => {
           this.sessionKey = res.data.session_key;
         });
       });
     },
-    scanQrcode() {
-      platform_weixin_scan.scanCode({ onlyFromCamera: true }).then((res) => {
-        if (res.errMsg === "scanCode:ok")
-          this.gotoPage("/pages/store/clerkorder?order_no=" + res.result);
-        else
-          pages_user_pageTools.toast("扫码失败，请重试");
-      }).catch(() => pages_user_pageTools.toast("扫码失败，请重试"));
-    },
-    getData() {
+    async getData() {
       this.isloadding = true;
       common_vendor.index.showLoading({ title: "加载中" });
-      this._get(
-        "user.index/center",
-        { url: this.urls, source: this.getPlatform() },
-        (res) => {
-          const data = res.data || {};
-          const page = data.page || {};
-          this.detail = data.userInfo;
-          this.storeInfo = data.storeInfo || {};
-          this.coupon = data.coupon || 0;
-          this.storeCouponCount = data.storeCouponCount || 0;
-          this.orderCount = data.orderCount || {};
-          this.msgcount = data.msgcount || 0;
-          this.getPhone = data.getPhone;
-          this.loadding = false;
-          this.items = page.items || [];
-          this.setPage(page.page || {});
-          this.loadding = false;
-          common_vendor.index.stopPullDownRefresh();
-          common_vendor.index.hideLoading();
-          this.isloadding = false;
-        },
-        false,
-        () => {
-          common_vendor.index.stopPullDownRefresh();
-          common_vendor.index.hideLoading();
-          this.isloadding = false;
-        }
-      );
-    },
-    setPage(page = {}) {
-      if (page.params && page.params.name) {
-        common_vendor.index.setNavigationBarTitle({ title: page.params.name });
+      this.syncAuthFromStorage();
+      this.applyCachedProfile();
+      try {
+        await this.loadH5CenterData();
+      } catch (error) {
+        common_vendor.index.showToast({ title: (error == null ? void 0 : error.msg) || (error == null ? void 0 : error.message) || "个人中心加载失败", icon: "none" });
+      } finally {
+        common_vendor.index.stopPullDownRefresh();
+        common_vendor.index.hideLoading();
+        this.isloadding = false;
       }
+    },
+    async loadH5CenterData() {
+      const [centerResult, orderResult, refundResult] = await Promise.allSettled([
+        api_user.getCenter(),
+        api_order.getOrderUnreadStats(),
+        api_refund.getRefundUnreadStats()
+      ]);
+      let loaded = false;
+      let centerData = {};
+      if (centerResult.status === "fulfilled") {
+        centerData = centerResult.value || {};
+        const customer = centerData.customer || centerData.customerInfo || centerData.userInfo || centerData.user || centerData.profile;
+        if (customer)
+          this.applyProfile(customer, { cache: true, h5: true });
+        this.getPhone = !!(centerData.getPhone || centerData.needBindPhone || centerData.needBindMobile || (customer == null ? void 0 : customer.needBindPhone));
+        loaded = true;
+      }
+      if (orderResult.status === "fulfilled" || refundResult.status === "fulfilled") {
+        this.orderCount = normalizeOrderCount(
+          orderResult.status === "fulfilled" ? orderResult.value : {},
+          refundResult.status === "fulfilled" ? refundResult.value : {}
+        );
+        loaded = true;
+      } else if (centerResult.status === "fulfilled") {
+        this.orderCount = normalizeOrderCount(centerData.orderStats || centerData.orderCount || {}, centerData.refundStats || {});
+      }
+      if (!loaded)
+        throw centerResult.reason || orderResult.reason || refundResult.reason || new Error("H5个人中心加载失败");
+    },
+    applyProfile(customer = {}, options = {}) {
+      const normalized = normalizeCustomer(customer);
+      this.detail = {
+        ...defaultDetail(),
+        ...this.detail,
+        ...normalized,
+        grade: normalized.grade || this.detail.grade || { name: "" }
+      };
+      if (options.h5)
+        this.isLoggedIn = true;
+      if (options.cache && (normalized.user_id || normalized.nickName || normalized.avatarUrl)) {
+        common_vendor.index.setStorageSync("h5_user_info", normalized);
+      }
+    },
+    applyCachedProfile() {
+      const cached = readCachedCustomer();
+      if (cached)
+        this.applyProfile(cached, { cache: false, h5: false });
+    },
+    syncAuthFromStorage() {
+      this.isLoggedIn = hasToken();
+    },
+    openProfileOrLogin() {
+      if (!this.isLoggedIn) {
+        services_h5AuthContext.ensureH5PageAuth({}, "/pages/center/index");
+        return;
+      }
+      this.gotoPage("/pages/user/set/set");
     },
     bindMobile() {
       this.gotoPage("/pages/user/modify-phone/modify-phone");
@@ -148,51 +293,104 @@ const _sfc_main = {
         () => common_vendor.index.hideLoading()
       );
     },
-    bg(value) {
-      this.bgColor = value;
+    syncLiveContext() {
+      this.liveRoomContext = utils_liveRoomContext.loadLiveRoomContext();
+    },
+    liveQuery() {
+      const context = this.liveRoomContext || {};
+      const params = [];
+      if (context.roomCode)
+        params.push(`roomCode=${encodeURIComponent(context.roomCode)}`);
+      if (context.roomId || context.liveId)
+        params.push(`roomId=${encodeURIComponent(context.roomId || context.liveId)}`);
+      return params.length ? `?${params.join("&")}` : "";
+    },
+    gotoH5CenterModule(type) {
+      var _a, _b;
+      const query = this.liveQuery();
+      const roomId = ((_a = this.liveRoomContext) == null ? void 0 : _a.roomId) || ((_b = this.liveRoomContext) == null ? void 0 : _b.liveId) || "";
+      const withLiveQuery = (url2) => {
+        if (!query)
+          return url2;
+        return `${url2}${url2.includes("?") ? "&" : "?"}${query.slice(1)}`;
+      };
+      const routes = {
+        orders: withLiveQuery("/pages/order/list?status=all"),
+        unpay: withLiveQuery("/pages/order/list?status=unpay"),
+        unsend: withLiveQuery("/pages/order/list?status=unsend"),
+        unreceive: withLiveQuery("/pages/order/list?status=unreceive"),
+        refund: withLiveQuery("/pages/order/refund-list"),
+        prizeRecord: `/pages/prize-record/index${query}`,
+        invitationRecord: withLiveQuery(`/pages/invitation-record/index?roomId=${encodeURIComponent(roomId)}`),
+        complaint: withLiveQuery("/pages/report/report-type?fromPath=%2Fpages%2Fcenter%2Findex"),
+        address: withLiveQuery("/pages/address/index")
+      };
+      if (type === "returnLive") {
+        common_vendor.index.navigateTo({ url: utils_liveRoute.buildBroadcastEntryUrl(this.liveRoomContext || {}) });
+        return;
+      }
+      const url = routes[type];
+      if (url)
+        common_vendor.index.navigateTo({ url });
     }
   }
 };
 if (!Array) {
-  const _easycom_diy2 = common_vendor.resolveComponent("diy");
   const _component_request_loading = common_vendor.resolveComponent("request-loading");
   const _component_live_tab = common_vendor.resolveComponent("live-tab");
   const _component_tab_bar = common_vendor.resolveComponent("tab-bar");
-  (_easycom_diy2 + _component_request_loading + _component_live_tab + _component_tab_bar)();
-}
-const _easycom_diy = () => "../../../components/diy/diy.js";
-if (!Math) {
-  _easycom_diy();
+  (_component_request_loading + _component_live_tab + _component_tab_bar)();
 }
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return common_vendor.e({
     a: common_vendor.s(`background:${$data.bgColor};`),
-    b: $data.items
-  }, $data.items ? common_vendor.e({
-    c: $data.getPhone
+    b: $options.profileAvatar,
+    c: common_vendor.t($options.profileName),
+    d: common_vendor.t($options.profileSubtitle),
+    e: common_vendor.t($options.profileActionText),
+    f: common_vendor.o((...args) => $options.openProfileOrLogin && $options.openProfileOrLogin(...args), "78"),
+    g: $data.getPhone
   }, $data.getPhone ? common_vendor.e({
-    d: $data.wxBinding
+    h: $data.wxBinding
   }, $data.wxBinding ? {
-    e: common_vendor.o((...args) => $options.getPhoneNumber && $options.getPhoneNumber(...args), "12")
+    i: common_vendor.o((...args) => $options.getPhoneNumber && $options.getPhoneNumber(...args), "dc")
   } : {
-    f: common_vendor.o((...args) => $options.bindMobile && $options.bindMobile(...args), "c6")
+    j: common_vendor.o((...args) => $options.bindMobile && $options.bindMobile(...args), "6b")
   }) : {}, {
-    g: common_vendor.o($options.scanQrcode, "9b"),
-    h: common_vendor.o($options.bg, "fa"),
-    i: common_vendor.p({
-      ["diy-items"]: $data.items,
-      ["store-info"]: $data.storeInfo,
-      ["user-info"]: $options.userInfo
-    })
-  }) : {}, {
-    j: $data.isloadding
+    k: $data.liveRoomContext.roomCode || $data.liveRoomContext.roomId
+  }, $data.liveRoomContext.roomCode || $data.liveRoomContext.roomId ? {
+    l: common_vendor.t($data.liveRoomContext.liveName || "返回最近直播间"),
+    m: common_vendor.o(($event) => $options.gotoH5CenterModule("returnLive"), "0e")
+  } : {}, {
+    n: common_vendor.o(($event) => $options.gotoH5CenterModule("orders"), "40"),
+    o: common_vendor.f($options.h5OrderItems, (item, k0, i0) => {
+      return common_vendor.e({
+        a: item.icon,
+        b: common_vendor.t(item.text),
+        c: item.count
+      }, item.count ? {
+        d: common_vendor.t(item.count)
+      } : {}, {
+        e: item.type,
+        f: common_vendor.o(($event) => $options.gotoH5CenterModule(item.type), item.type)
+      });
+    }),
+    p: common_vendor.f($options.h5ServiceItems, (item, k0, i0) => {
+      return {
+        a: item.icon,
+        b: common_vendor.t(item.text),
+        c: item.type,
+        d: common_vendor.o(($event) => $options.gotoH5CenterModule(item.type), item.type)
+      };
+    }),
+    q: $data.isloadding
   }, $data.isloadding ? {
-    k: common_vendor.p({
+    r: common_vendor.p({
       loadding: $data.isloadding
     })
   } : {}, {
-    l: common_vendor.n($options.themeClass),
-    m: $options.themeClass
+    s: common_vendor.n($options.themeClass),
+    t: $options.themeClass
   });
 }
 const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-e43f9ca3"]]);

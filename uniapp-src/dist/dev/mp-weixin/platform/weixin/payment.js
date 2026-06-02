@@ -1,5 +1,8 @@
 "use strict";
 const platform_weixin_runtime = require("./runtime.js");
+function requestPayment(params = {}) {
+  return platform_weixin_runtime.promisifyApi("requestPayment", params, { preferUni: true });
+}
 function canRequestMerchantTransfer() {
   return platform_weixin_runtime.canIUse("requestMerchantTransfer");
 }
@@ -10,3 +13,4 @@ function requestMerchantTransfer(params = {}) {
   return platform_weixin_runtime.promisifyApi("requestMerchantTransfer", params);
 }
 exports.requestMerchantTransfer = requestMerchantTransfer;
+exports.requestPayment = requestPayment;

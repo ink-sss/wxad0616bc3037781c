@@ -18,15 +18,17 @@ const _sfc_main = {
         wx_get_nickname: true,
         wx_phone: false,
         wx_phone_compulsory: false
-      }
+      },
+      loginContext: {}
     };
   },
   onLoad(query = {}) {
     if (query.referee_id)
       common_vendor.index.setStorageSync("referee_id", query.referee_id);
     this.invitation_id = common_vendor.index.getStorageSync("invitation_id") || 0;
+    this.loginContext = pages_login_pageTools.buildLoginContext(query, "/pages/center/index");
     this.getCodeType();
-    this.preLogin();
+    this.redirectWhenAlreadyLoggedIn();
   },
   methods: {
     ensureRead() {
@@ -40,92 +42,35 @@ const _sfc_main = {
         this.setting = Object.assign(this.setting, res.data.setting || {});
       });
     },
-    preLogin() {
-      pages_login_pageTools.loginCode().then((code) => {
-        this._post(
-          "user.user/login",
-          {
-            code,
-            source: "wx",
-            invitation_id: this.invitation_id,
-            referee_id: common_vendor.index.getStorageSync("referee_id")
-          },
-          (res) => {
-            this.user_id = res.data.user_id || "";
-            this.mobile = res.data.mobile;
-            this.is_login = res.data.is_login;
-          },
-          false,
-          () => {
-            this.loading = false;
-          }
-        );
-      }).catch(() => {
-        this.loading = false;
-      });
+    redirectWhenAlreadyLoggedIn() {
+      if (!pages_login_pageTools.alreadyH5LoggedIn())
+        return;
+      pages_login_pageTools.redirectAfterExistingH5Login(this.loginContext);
     },
     afterLogin(data) {
-      pages_login_pageTools.saveLoginSession(data);
       if (this.setting.wx_phone && !this.mobile) {
         common_vendor.index.setStorageSync("get_phone", true);
         common_vendor.index.setStorageSync("wx_phone_compulsory", this.setting.wx_phone_compulsory);
       }
-      common_vendor.index.redirectTo({ url: pages_login_pageTools.getCurrentRedirect("/pages/user/index/index") });
+      pages_login_pageTools.redirectAfterExistingH5Login(this.loginContext);
     },
-    userLogin() {
+    async userLogin() {
       if (!this.ensureRead() || this.submitting)
         return;
       this.submitting = true;
       common_vendor.index.showLoading({ title: "正在处理", mask: true });
-      pages_login_pageTools.loginCode().then((code) => {
-        this._post(
-          "user.user/userLogin",
-          {
-            code,
-            shop_supplier_id: getApp().globalData && getApp().globalData.shop_supplier_id
-          },
-          (res) => this.afterLogin(res.data),
-          false,
-          () => {
-            this.submitting = false;
-            common_vendor.index.hideLoading();
-          }
-        );
-      }).catch(() => {
+      try {
+        await pages_login_pageTools.h5MiniWechatLogin(this.loginContext);
+      } catch (error) {
+        const message = (error == null ? void 0 : error.message) || (error == null ? void 0 : error.msg) || "授权失败，请重新登录";
+        pages_login_pageTools.toast(message);
+      } finally {
         this.submitting = false;
         common_vendor.index.hideLoading();
-        pages_login_pageTools.toast("授权失败，请重新登录");
-      });
+      }
     },
     getPhoneNumber(event) {
-      if (!this.ensureRead() || this.submitting)
-        return;
-      let detail;
-      try {
-        detail = pages_login_pageTools.phonePayload(event);
-      } catch (error) {
-        pages_login_pageTools.toast("授权失败，请重新登录");
-        return;
-      }
-      this.submitting = true;
-      common_vendor.index.showLoading({ title: "正在处理", mask: true });
-      pages_login_pageTools.loginCode().then((code) => {
-        this._post(
-          "user.user/bindMobile",
-          {
-            code,
-            user_id: this.user_id,
-            encrypted_data: detail.encrypted_data,
-            iv: detail.iv
-          },
-          (res) => this.afterLogin(res.data),
-          false,
-          () => {
-            this.submitting = false;
-            common_vendor.index.hideLoading();
-          }
-        );
-      });
+      this.userLogin(event);
     },
     xieyi(type) {
       this.gotoPage("/pages/webview/ue?type=" + type);
@@ -143,19 +88,14 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   }, $data.setting.login_desc ? {
     d: common_vendor.t($data.setting.login_desc)
   } : {}, {
-    e: $data.setting.wx_phone && !$data.mobile
-  }, $data.setting.wx_phone && !$data.mobile ? {
-    f: common_vendor.o((...args) => $options.getPhoneNumber && $options.getPhoneNumber(...args), "ea")
-  } : {
-    g: $data.submitting,
-    h: common_vendor.o((...args) => $options.userLogin && $options.userLogin(...args), "ab")
-  }, {
-    i: common_vendor.o((...args) => $options.onNotLogin && $options.onNotLogin(...args), "eb"),
-    j: $data.isRead ? 1 : "",
-    k: common_vendor.o(($event) => $options.xieyi("service"), "04"),
-    l: common_vendor.o(($event) => $options.xieyi("privacy"), "96"),
-    m: common_vendor.o(($event) => $data.isRead = !$data.isRead, "0a"),
-    n: _ctx.theme && _ctx.theme()
+    e: $data.submitting,
+    f: common_vendor.o((...args) => $options.userLogin && $options.userLogin(...args), "55"),
+    g: common_vendor.o((...args) => $options.onNotLogin && $options.onNotLogin(...args), "3c"),
+    h: $data.isRead ? 1 : "",
+    i: common_vendor.o(($event) => $options.xieyi("service"), "80"),
+    j: common_vendor.o(($event) => $options.xieyi("privacy"), "8e"),
+    k: common_vendor.o(($event) => $data.isRead = !$data.isRead, "8d"),
+    l: _ctx.theme && _ctx.theme()
   });
 }
 const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-cdfe2409"]]);

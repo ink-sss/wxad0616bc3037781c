@@ -1,1 +1,1 @@
-<live-room-shell wx:if="{{a}}" u-i="73305790-0" bind:__l="__l" u-p="{{a}}"/>
+<view class="redirect-page data-v-46b19f02"><text class="data-v-46b19f02">正在进入直播间...</text></view>

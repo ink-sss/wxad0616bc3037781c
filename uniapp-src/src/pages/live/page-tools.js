@@ -1,3 +1,5 @@
+import { isLivePlayerSource } from '../../utils/live-route.js'
+
 export function toast(title, icon = 'none') {
   if (!title) return
   uni.showToast({ title, icon })
@@ -43,15 +45,28 @@ export function requestWithVm(vm, method, endpoint, data = {}) {
 
 export function getLiveStream(detail = {}) {
   return (
+    detail.pullRtmpUrl ||
+    detail.pull_rtmp_url ||
+    detail.rtmpUrl ||
+    detail.rtmp_url ||
+    detail.rtmp ||
+    detail.pullFlvUrl ||
+    detail.pull_flv_url ||
+    detail.flvUrl ||
+    detail.flv_url ||
+    detail.flv ||
     detail.live_url ||
-    detail.push_url ||
     detail.pull_url ||
     detail.play_url ||
+    detail.push_url ||
     detail.url ||
-    detail.rtmp_url ||
     detail.m3u8_url ||
     ''
   )
+}
+
+export function shouldUseLivePlayerForStream(detail = {}, url = '') {
+  return Number(detail.source || 0) !== 3 && isLivePlayerSource(url)
 }
 
 export function isEndedStatus(status) {

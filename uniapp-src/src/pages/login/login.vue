@@ -7,10 +7,7 @@
     </view>
 
     <view class="actions">
-      <button v-if="setting.wx_phone && !mobile" class="primary" open-type="getPhoneNumber" @getphonenumber="getPhoneNumber">
-        微信手机号一键登录
-      </button>
-      <button v-else class="primary" :loading="submitting" @tap="userLogin">微信一键登录</button>
+      <button class="primary" :loading="submitting" @tap="userLogin">微信一键登录</button>
       <button class="ghost" @tap="onNotLogin">暂不登录</button>
     </view>
 
@@ -25,7 +22,13 @@
 </template>
 
 <script>
-import { getCurrentRedirect, loginCode, phonePayload, saveLoginSession, toast } from './page-tools.js'
+import {
+  alreadyH5LoggedIn,
+  buildLoginContext,
+  h5MiniWechatLogin,
+  redirectAfterExistingH5Login,
+  toast,
+} from './page-tools.js'
 
 export default {
   data() {
@@ -43,15 +46,17 @@ export default {
         name: '',
         wx_get_nickname: true,
         wx_phone: false,
-        wx_phone_compulsory: false,
+      wx_phone_compulsory: false,
       },
+      loginContext: {},
     }
   },
   onLoad(query = {}) {
     if (query.referee_id) uni.setStorageSync('referee_id', query.referee_id)
     this.invitation_id = uni.getStorageSync('invitation_id') || 0
+    this.loginContext = buildLoginContext(query, '/pages/center/index')
     this.getCodeType()
-    this.preLogin()
+    this.redirectWhenAlreadyLoggedIn()
   },
   methods: {
     ensureRead() {
@@ -64,95 +69,33 @@ export default {
         this.setting = Object.assign(this.setting, res.data.setting || {})
       })
     },
-    preLogin() {
-      loginCode()
-        .then((code) => {
-          this._post(
-            'user.user/login',
-            {
-              code,
-              source: 'wx',
-              invitation_id: this.invitation_id,
-              referee_id: uni.getStorageSync('referee_id'),
-            },
-            (res) => {
-              this.user_id = res.data.user_id || ''
-              this.mobile = res.data.mobile
-              this.is_login = res.data.is_login
-            },
-            false,
-            () => {
-              this.loading = false
-            },
-          )
-        })
-        .catch(() => {
-          this.loading = false
-        })
+    redirectWhenAlreadyLoggedIn() {
+      if (!alreadyH5LoggedIn()) return
+      redirectAfterExistingH5Login(this.loginContext)
     },
     afterLogin(data) {
-      saveLoginSession(data)
       if (this.setting.wx_phone && !this.mobile) {
         uni.setStorageSync('get_phone', true)
         uni.setStorageSync('wx_phone_compulsory', this.setting.wx_phone_compulsory)
       }
-      uni.redirectTo({ url: getCurrentRedirect('/pages/user/index/index') })
+      redirectAfterExistingH5Login(this.loginContext)
     },
-    userLogin() {
+    async userLogin() {
       if (!this.ensureRead() || this.submitting) return
       this.submitting = true
       uni.showLoading({ title: '正在处理', mask: true })
-      loginCode()
-        .then((code) => {
-          this._post(
-            'user.user/userLogin',
-            {
-              code,
-              shop_supplier_id: getApp().globalData && getApp().globalData.shop_supplier_id,
-            },
-            (res) => this.afterLogin(res.data),
-            false,
-            () => {
-              this.submitting = false
-              uni.hideLoading()
-            },
-          )
-        })
-        .catch(() => {
-          this.submitting = false
-          uni.hideLoading()
-          toast('授权失败，请重新登录')
-        })
+      try {
+        await h5MiniWechatLogin(this.loginContext)
+      } catch (error) {
+        const message = error?.message || error?.msg || '授权失败，请重新登录'
+        toast(message)
+      } finally {
+        this.submitting = false
+        uni.hideLoading()
+      }
     },
     getPhoneNumber(event) {
-      if (!this.ensureRead() || this.submitting) return
-      let detail
-      try {
-        detail = phonePayload(event)
-      } catch (error) {
-        toast('授权失败，请重新登录')
-        return
-      }
-
-      this.submitting = true
-      uni.showLoading({ title: '正在处理', mask: true })
-      loginCode().then((code) => {
-        this._post(
-          'user.user/bindMobile',
-          {
-            code,
-            user_id: this.user_id,
-            encrypted_data: detail.encrypted_data,
-            iv: detail.iv,
-          },
-          (res) => this.afterLogin(res.data),
-          false,
-          () => {
-            this.submitting = false
-            uni.hideLoading()
-          },
-        )
-      })
+      this.userLogin(event)
     },
     xieyi(type) {
       this.gotoPage('/pages/webview/ue?type=' + type)

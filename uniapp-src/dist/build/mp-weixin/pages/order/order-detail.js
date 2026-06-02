@@ -1,1 +1,1 @@
-"use strict";const e={};const r=require("../../common/vendor.js")._export_sfc(e,[["render",function(e,r,t,c,n,o){return{}}],["__scopeId","data-v-4f93117d"]]);wx.createPage(r);
+"use strict";const e=require("../../common/vendor.js"),r={onLoad(r={}){const o=r.id||r.orderId||r.order_id||"";e.index.redirectTo({url:`/pages/order/detail?id=${encodeURIComponent(o)}`})}};const o=e._export_sfc(r,[["render",function(e,r,o,d,n,t){return{}}],["__scopeId","data-v-4080e5f6"]]);wx.createPage(o);

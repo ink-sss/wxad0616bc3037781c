@@ -3,7 +3,7 @@ o = require("./production.js").pro_url.url, console.log("开发环境", "product
 var l = {
   app_url: o,
   app_id: 393016,
-  appid: "wxad0616bc3037781c",
+  appid: "wx3bf933f8a2018d8d",
   token: "d1eb418107ca0674b7654ede4d3162fc",
   h5_addr: "/h5",
   im_log_level: 1,

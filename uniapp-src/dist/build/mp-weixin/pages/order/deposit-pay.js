@@ -1,1 +1,1 @@
-"use strict";const e={};const r=require("../../common/vendor.js")._export_sfc(e,[["render",function(e,r,c,t,n,o){return{}}],["__scopeId","data-v-c13070ba"]]);wx.createPage(r);
+"use strict";const e=require("../../common/vendor.js"),o={onLoad(o={}){const r=o.orderNo||o.order_no||"",d=o.id||o.orderId||o.order_id||"";e.index.redirectTo({url:`/pages/order/pay?orderNo=${encodeURIComponent(r)}&id=${encodeURIComponent(d)}`})}};const r=e._export_sfc(o,[["render",function(e,o,r,d,n,t){return{}}],["__scopeId","data-v-856e7189"]]);wx.createPage(r);
