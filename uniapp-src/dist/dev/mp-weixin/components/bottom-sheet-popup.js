@@ -1,6 +1,16 @@
 "use strict";
 const common_vendor = require("../common/vendor.js");
 const common_assets = require("../common/assets.js");
+if (!Array) {
+  const _easycom_wd_overlay2 = common_vendor.resolveComponent("wd-overlay");
+  const _easycom_wd_transition2 = common_vendor.resolveComponent("wd-transition");
+  (_easycom_wd_overlay2 + _easycom_wd_transition2)();
+}
+const _easycom_wd_overlay = () => "../node-modules/wot-design-uni/components/wd-overlay/wd-overlay.js";
+const _easycom_wd_transition = () => "../node-modules/wot-design-uni/components/wd-transition/wd-transition.js";
+if (!Math) {
+  (_easycom_wd_overlay + _easycom_wd_transition)();
+}
 const _sfc_main = {
   __name: "bottom-sheet-popup",
   props: {
@@ -29,13 +39,6 @@ const _sfc_main = {
         overflow: props.allowOverflow ? "visible" : void 0
       };
     });
-    const overlayStyle = common_vendor.computed(() => ({
-      zIndex: props.zIndex,
-      background: props.maskColor
-    }));
-    const rootStyle = common_vendor.computed(() => ({
-      zIndex: props.zIndex + 1
-    }));
     common_vendor.watch(
       () => [props.visible, props.withMask, props.duration],
       ([visible, withMask, duration]) => {
@@ -63,24 +66,32 @@ const _sfc_main = {
     });
     return (_ctx, _cache) => {
       return common_vendor.e({
-        a: overlayVisible.value
-      }, overlayVisible.value ? {
-        b: common_vendor.s(overlayStyle.value),
-        c: common_vendor.o(($event) => emit("close"), "b0")
-      } : {}, {
-        d: __props.visible
-      }, __props.visible ? common_vendor.e({
-        e: __props.showClose
+        a: common_vendor.o(($event) => emit("close"), "9c"),
+        b: common_vendor.p({
+          show: overlayVisible.value,
+          ["custom-style"]: "z-index:" + __props.zIndex + ";background:" + __props.maskColor + ";"
+        }),
+        c: __props.showClose
       }, __props.showClose ? {
-        f: common_assets._imports_0$9,
-        g: common_vendor.o(($event) => emit("close"), "86")
+        d: common_assets._imports_0$8,
+        e: common_vendor.o(($event) => emit("close"), "d5")
       } : {}, {
-        h: common_vendor.s(panelStyle.value),
-        i: common_vendor.o(() => {
-        }, "9b"),
-        j: common_vendor.o(($event) => emit("close"), "53"),
-        k: common_vendor.s(rootStyle.value)
-      }) : {});
+        f: common_vendor.s(panelStyle.value),
+        g: common_vendor.o(() => {
+        }, "ac"),
+        h: common_vendor.o(($event) => emit("close"), "eb"),
+        i: common_vendor.p({
+          show: __props.visible,
+          duration: __props.duration,
+          ["enter-class"]: "sheet-popup-enter",
+          ["enter-active-class"]: "sheet-popup-enter-active",
+          ["enter-to-class"]: "sheet-popup-enter-to",
+          ["leave-class"]: "sheet-popup-leave",
+          ["leave-active-class"]: "sheet-popup-leave-active",
+          ["leave-to-class"]: "sheet-popup-leave-to",
+          ["custom-style"]: "position:fixed;left:0;top:0;right:0;bottom:0;z-index:" + (__props.zIndex + 1) + ";"
+        })
+      });
     };
   }
 };

@@ -1,6 +1,7 @@
 {
   "component": true,
   "usingComponents": {
+    "wd-picker": "../node-modules/wot-design-uni/components/wd-picker/wd-picker",
     "bottom-sheet-popup": "./bottom-sheet-popup"
   }
 }

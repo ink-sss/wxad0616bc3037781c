@@ -87,6 +87,7 @@ const _sfc_main = {
     const total = common_vendor.ref(0);
     const loadingMore = common_vendor.ref(false);
     const liveRoomCode = common_vendor.ref("");
+    const queryOrderNo = common_vendor.ref("");
     function onTabPress(name) {
       activeTab.value = name;
       scrollTabToCenter(name);
@@ -259,9 +260,11 @@ const _sfc_main = {
         const data = await api_order.getOrderList({
           page: page.value,
           pageSize: 10,
-          orderStatus: (tab == null ? void 0 : tab.status) ?? 0
+          orderStatus: (tab == null ? void 0 : tab.status) ?? 0,
+          orderNo: queryOrderNo.value
         });
-        const list = ((data == null ? void 0 : data.list) || []).map(mapOrder);
+        const mappedList = ((data == null ? void 0 : data.list) || []).map(mapOrder);
+        const list = queryOrderNo.value ? mappedList.filter((item) => String(item.orderNo || "").trim() === queryOrderNo.value) : mappedList;
         if (!liveRoomCode.value) {
           const matchedOrder = list.find((item) => item.roomCode);
           if (matchedOrder == null ? void 0 : matchedOrder.roomCode) {
@@ -287,6 +290,7 @@ const _sfc_main = {
       if (!services_h5AuthContext.ensureH5PageAuth(options))
         return;
       liveRoomCode.value = utils_liveRoomContext.resolveLiveRoomCode(options == null ? void 0 : options.roomCode);
+      queryOrderNo.value = String((options == null ? void 0 : options.orderNo) || (options == null ? void 0 : options.order_no) || (options == null ? void 0 : options.outTradeNo) || (options == null ? void 0 : options.out_trade_no) || "").trim();
       if (options == null ? void 0 : options.status) {
         const target = tabs.find((item) => item.key === options.status);
         if (target)
@@ -513,7 +517,7 @@ const _sfc_main = {
           });
         })
       } : {
-        h: common_vendor.t(activeTab.value === "refund" ? "暂无退款/售后记录" : "暂无订单")
+        h: common_vendor.t(activeTab.value === "refund" ? "暂无退款/售后记录" : queryOrderNo.value ? "未找到关联订单" : "暂无订单")
       }, {
         f: filteredOrders.value.length,
         i: common_vendor.p({
@@ -521,8 +525,8 @@ const _sfc_main = {
         }),
         j: logisticsVisible.value
       }, logisticsVisible.value ? {
-        k: common_vendor.o(($event) => logisticsVisible.value = false, "2a"),
-        l: common_vendor.o(copyTrackingNo, "83"),
+        k: common_vendor.o(($event) => logisticsVisible.value = false, "36"),
+        l: common_vendor.o(copyTrackingNo, "df"),
         m: common_vendor.p({
           ["logistics-data"]: logisticsData.value,
           ["logistics-status-label"]: logisticsStatusLabel.value,

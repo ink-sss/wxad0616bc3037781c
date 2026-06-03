@@ -1,4 +1,6 @@
 {
   "navigationBarTitleText": "登录",
-  "usingComponents": {}
+  "usingComponents": {
+    "wechat-login": "plugin://wx43134e071b752953/wechat-login"
+  }
 }

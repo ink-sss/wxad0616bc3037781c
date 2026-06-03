@@ -1,0 +1,16 @@
+{
+  "component": true,
+  "usingComponents": {
+    "comment-lottery-password-modal": "../../../components/live-lottery/CommentLotteryPasswordModal",
+    "comment-slot-lottery-modals": "../../../components/live-lottery/CommentSlotLotteryModals",
+    "comment-lottery-result-modals": "../../../components/live-lottery/CommentLotteryResultModals",
+    "slot-lottery-modals": "../../../components/live-lottery/SlotLotteryModals",
+    "wechat-lottery-modals": "../../../components/live-lottery/WechatLotteryModals",
+    "wechat-lottery-awards-user-modal": "../../../components/live-lottery/wechat-lottery/WechatLotteryAwardsUserModal",
+    "wechat-lottery-result-modals": "../../../components/live-lottery/WechatLotteryResultModals",
+    "watch-duration-reward-modal": "../../../components/live-lottery/WatchDurationRewardModal",
+    "coupon-receive-modals": "../../../components/live-lottery/CouponReceiveModals",
+    "comment-prize-confirm-modal": "../../../components/live-lottery/comment-lottery/CommentPrizeConfirmModal",
+    "comment-prize-rule-modal": "../../../components/comment-prize-rule-modal"
+  }
+}

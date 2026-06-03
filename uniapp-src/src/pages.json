@@ -1,4 +1,10 @@
 {
+  "easycom": {
+    "autoscan": true,
+    "custom": {
+      "^wd-(.*)": "wot-design-uni/components/wd-$1/wd-$1.vue"
+    }
+  },
   "entryPagePath": "pages/index/index",
   "pages": [
     {
@@ -19,7 +25,10 @@
     {
       "path": "pages/login/login",
       "style": {
-        "navigationBarTitleText": "登录"
+        "navigationBarTitleText": "登录",
+        "usingComponents": {
+          "wechat-login": "plugin://wx43134e071b752953/wechat-login"
+        }
       }
     },
     {
@@ -97,6 +106,21 @@
       }
     },
     {
+      "path": "pages/invitation/index",
+      "style": {
+        "navigationBarTitleText": "邀请函",
+        "navigationStyle": "custom",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/report/index",
+      "style": {
+        "navigationBarTitleText": "投诉",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
       "path": "pages/report/report-home",
       "style": {
         "navigationBarTitleText": "投诉",
@@ -146,6 +170,13 @@
       }
     },
     {
+      "path": "pages/address/list",
+      "style": {
+        "navigationBarTitleText": "地址管理",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
       "path": "pages/address/edit",
       "style": {
         "navigationBarTitleText": "编辑地址",
@@ -163,6 +194,169 @@
       "path": "pages/center/index",
       "style": {
         "navigationBarTitleText": "个人中心",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/live/live-vertical",
+      "style": {
+        "navigationBarTitleText": "直播间",
+        "navigationStyle": "custom",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/live/live-horizontal",
+      "style": {
+        "navigationBarTitleText": "直播间",
+        "navigationStyle": "custom",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/agent/shareLive/shareLive",
+      "style": {
+        "navigationBarTitleText": "直播分享",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/agent/shareLive/live-detail",
+      "style": {
+        "navigationBarTitleText": "直播详情",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/order/confirm",
+      "style": {
+        "navigationBarTitleText": "确认订单",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/order/list",
+      "style": {
+        "navigationBarTitleText": "我的订单",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/order/detail",
+      "style": {
+        "navigationBarTitleText": "订单详情",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/order/pay",
+      "style": {
+        "navigationBarTitleText": "订单支付",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/order/receipt",
+      "style": {
+        "navigationBarTitleText": "支付结果",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/order/refund",
+      "style": {
+        "navigationBarTitleText": "申请售后",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/order/refund-list",
+      "style": {
+        "navigationBarTitleText": "退款/售后",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/order/refund-detail",
+      "style": {
+        "navigationBarTitleText": "售后详情",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/order/refund/index/index",
+      "style": {
+        "navigationBarTitleText": "退款/售后",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/order/refund/apply/apply",
+      "style": {
+        "navigationBarTitleText": "申请售后",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/order/refund/detail/detail",
+      "style": {
+        "navigationBarTitleText": "售后详情",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/order/confirm-order",
+      "style": {
+        "navigationBarTitleText": "确认订单",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/order/order-detail",
+      "style": {
+        "navigationBarTitleText": "订单详情",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/order/myorder",
+      "style": {
+        "navigationBarTitleText": "我的订单",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/order/cashier",
+      "style": {
+        "navigationBarTitleText": "收银台",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/order/pay-success/pay-success",
+      "style": {
+        "navigationBarTitleText": "支付结果",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/order/pay-h5/pay-h5",
+      "style": {
+        "navigationBarTitleText": "订单支付",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/order/alipay-h5/alipay-h5",
+      "style": {
+        "navigationBarTitleText": "订单支付",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/order/deposit-pay",
+      "style": {
+        "navigationBarTitleText": "定金支付",
         "enablePullDownRefresh": false
       }
     },
@@ -427,7 +621,12 @@
       "desc": "你的位置信息将用于小程序位置接口的效果展示"
     }
   },
-  "plugins": {},
+	"plugins": {
+		"wx43134e071b752953": {
+			"version": "1.0.0",
+			"provider": "wx43134e071b752953"
+		}
+	},
   "tabBar": {
     "color": "#ffffff",
     "selectedColor": "#ffffff",

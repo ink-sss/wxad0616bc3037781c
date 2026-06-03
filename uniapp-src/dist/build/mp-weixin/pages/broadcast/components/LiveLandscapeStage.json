@@ -1,0 +1,21 @@
+{
+  "component": true,
+  "usingComponents": {
+    "wd-tab": "../../../node-modules/wot-design-uni/components/wd-tab/wd-tab",
+    "wd-tabs": "../../../node-modules/wot-design-uni/components/wd-tabs/wd-tabs",
+    "share-popup": "../../../components/share-popup",
+    "center-popup": "../../../components/center-popup",
+    "product-buy-popup": "../../../components/product-buy-popup",
+    "bottom-sheet-popup": "../../../components/bottom-sheet-popup",
+    "address-list-panel": "../../../components/address-list-panel",
+    "address-form-popup": "../../../components/address-form-popup",
+    "live-sign-in": "../../../components/live-sign-in",
+    "live-report-popup": "../../../components/live-report-popup",
+    "live-chat-bar": "./LiveChatBar",
+    "live-ended-overlay": "./LiveEndedOverlay",
+    "live-entry-overlay": "./LiveEntryOverlay",
+    "live-external-lottery-tools": "./LiveExternalLotteryTools",
+    "live-marquee-ad": "./LiveMarqueeAd",
+    "live-product-shelf": "./LiveProductShelf"
+  }
+}

@@ -32,23 +32,23 @@ const remove = (arr, el) => {
 };
 const hasOwnProperty$1 = Object.prototype.hasOwnProperty;
 const hasOwn = (val, key) => hasOwnProperty$1.call(val, key);
-const isArray = Array.isArray;
+const isArray$1 = Array.isArray;
 const isMap = (val) => toTypeString(val) === "[object Map]";
 const isSet = (val) => toTypeString(val) === "[object Set]";
-const isFunction = (val) => typeof val === "function";
-const isString = (val) => typeof val === "string";
+const isFunction$1 = (val) => typeof val === "function";
+const isString$1 = (val) => typeof val === "string";
 const isSymbol = (val) => typeof val === "symbol";
 const isObject$1 = (val) => val !== null && typeof val === "object";
-const isPromise$1 = (val) => {
-  return (isObject$1(val) || isFunction(val)) && isFunction(val.then) && isFunction(val.catch);
+const isPromise$2 = (val) => {
+  return (isObject$1(val) || isFunction$1(val)) && isFunction$1(val.then) && isFunction$1(val.catch);
 };
 const objectToString = Object.prototype.toString;
 const toTypeString = (value) => objectToString.call(value);
 const toRawType = (value) => {
   return toTypeString(value).slice(8, -1);
 };
-const isPlainObject = (val) => toTypeString(val) === "[object Object]";
-const isIntegerKey = (key) => isString(key) && key !== "NaN" && key[0] !== "-" && "" + parseInt(key, 10) === key;
+const isPlainObject$1 = (val) => toTypeString(val) === "[object Object]";
+const isIntegerKey = (key) => isString$1(key) && key !== "NaN" && key[0] !== "-" && "" + parseInt(key, 10) === key;
 const isReservedProp = /* @__PURE__ */ makeMap(
   // the leading comma is intentional so empty string "" is also included
   ",key,ref,ref_for,ref_key,onVnodeBeforeMount,onVnodeMounted,onVnodeBeforeUpdate,onVnodeUpdated,onVnodeBeforeUnmount,onVnodeUnmounted"
@@ -96,11 +96,11 @@ const looseToNumber = (val) => {
   return isNaN(n2) ? val : n2;
 };
 function normalizeStyle(value) {
-  if (isArray(value)) {
+  if (isArray$1(value)) {
     const res = {};
     for (let i = 0; i < value.length; i++) {
       const item = value[i];
-      const normalized = isString(item) ? parseStringStyle(item) : normalizeStyle(item);
+      const normalized = isString$1(item) ? parseStringStyle(item) : normalizeStyle(item);
       if (normalized) {
         for (const key in normalized) {
           res[key] = normalized[key];
@@ -108,7 +108,7 @@ function normalizeStyle(value) {
       }
     }
     return res;
-  } else if (isString(value) || isObject$1(value)) {
+  } else if (isString$1(value) || isObject$1(value)) {
     return value;
   }
 }
@@ -127,9 +127,9 @@ function parseStringStyle(cssText) {
 }
 function normalizeClass(value) {
   let res = "";
-  if (isString(value)) {
+  if (isString$1(value)) {
     res = value;
-  } else if (isArray(value)) {
+  } else if (isArray$1(value)) {
     for (let i = 0; i < value.length; i++) {
       const normalized = normalizeClass(value[i]);
       if (normalized) {
@@ -146,7 +146,7 @@ function normalizeClass(value) {
   return res.trim();
 }
 const toDisplayString = (val) => {
-  return isString(val) ? val : val == null ? "" : isArray(val) || isObject$1(val) && (val.toString === objectToString || !isFunction(val.toString)) ? JSON.stringify(val, replacer, 2) : String(val);
+  return isString$1(val) ? val : val == null ? "" : isArray$1(val) || isObject$1(val) && (val.toString === objectToString || !isFunction$1(val.toString)) ? JSON.stringify(val, replacer, 2) : String(val);
 };
 const replacer = (_key, val) => {
   if (val && val.__v_isRef) {
@@ -167,7 +167,7 @@ const replacer = (_key, val) => {
     };
   } else if (isSymbol(val)) {
     return stringifySymbol(val);
-  } else if (isObject$1(val) && !isArray(val) && !isPlainObject(val)) {
+  } else if (isObject$1(val) && !isArray$1(val) && !isPlainObject$1(val)) {
     return String(val);
   }
   return val;
@@ -242,7 +242,7 @@ function once(fn, ctx = null) {
   };
 }
 function getValueByDataPath(obj, path) {
-  if (!isString(path)) {
+  if (!isString$1(path)) {
     return;
   }
   path = path.replace(/\[(\d+)\]/g, ".$1");
@@ -256,13 +256,13 @@ function getValueByDataPath(obj, path) {
   }
   return getValueByDataPath(obj[key], parts.slice(1).join("."));
 }
-const encode = encodeURIComponent;
-function stringifyQuery(obj, encodeStr = encode) {
+const encode$1 = encodeURIComponent;
+function stringifyQuery(obj, encodeStr = encode$1) {
   const res = obj ? Object.keys(obj).map((key) => {
     let val = obj[key];
     if (typeof val === void 0 || val === null) {
       val = "";
-    } else if (isPlainObject(val)) {
+    } else if (isPlainObject$1(val)) {
       val = JSON.stringify(val);
     }
     return encodeStr(key) + "=" + encodeStr(val);
@@ -347,7 +347,7 @@ const MINI_PROGRAM_PAGE_RUNTIME_HOOKS = /* @__PURE__ */ (() => {
   };
 })();
 function isUniLifecycleHook(name, value, checkType = true) {
-  if (checkType && !isFunction(value)) {
+  if (checkType && !isFunction$1(value)) {
     return false;
   }
   if (UniLifecycleHooks.indexOf(name) > -1) {
@@ -433,7 +433,7 @@ function include(str, parts) {
 function startsWith(str, parts) {
   return parts.find((part) => str.indexOf(part) === 0);
 }
-function normalizeLocale(locale, messages) {
+function normalizeLocale(locale, messages2) {
   if (!locale) {
     return;
   }
@@ -455,9 +455,9 @@ function normalizeLocale(locale, messages) {
     return LOCALE_ZH_HANS;
   }
   let locales = [LOCALE_EN, LOCALE_FR, LOCALE_ES];
-  const lang = startsWith(locale, locales);
-  if (lang) {
-    return lang;
+  const lang2 = startsWith(locale, locales);
+  if (lang2) {
+    return lang2;
   }
 }
 function getLocaleLanguage$1() {
@@ -479,7 +479,7 @@ function validateProtocol(name, data, protocol, onFail) {
   }
   for (const key in protocol) {
     const errMsg = validateProp$1(key, data[key], protocol[key], !hasOwn(data, key));
-    if (isString(errMsg)) {
+    if (isString$1(errMsg)) {
       onFail(name, errMsg);
     }
   }
@@ -488,7 +488,7 @@ function validateProtocols(name, args, protocol, onFail) {
   if (!protocol) {
     return;
   }
-  if (!isArray(protocol)) {
+  if (!isArray$1(protocol)) {
     return validateProtocol(name, args[0] || /* @__PURE__ */ Object.create(null), protocol, onFail);
   }
   const len = protocol.length;
@@ -503,7 +503,7 @@ function validateProtocols(name, args, protocol, onFail) {
   }
 }
 function validateProp$1(name, value, prop, isAbsent) {
-  if (!isPlainObject(prop)) {
+  if (!isPlainObject$1(prop)) {
     prop = { type: prop };
   }
   const { type, required, validator } = prop;
@@ -514,15 +514,15 @@ function validateProp$1(name, value, prop, isAbsent) {
     return;
   }
   if (type != null) {
-    let isValid = false;
-    const types = isArray(type) ? type : [type];
+    let isValid2 = false;
+    const types = isArray$1(type) ? type : [type];
     const expectedTypes = [];
-    for (let i = 0; i < types.length && !isValid; i++) {
+    for (let i = 0; i < types.length && !isValid2; i++) {
       const { valid, expectedType } = assertType$1(value, types[i]);
       expectedTypes.push(expectedType || "");
-      isValid = valid;
+      isValid2 = valid;
     }
-    if (!isValid) {
+    if (!isValid2) {
       return getInvalidTypeMessage$1(name, value, expectedTypes);
     }
   }
@@ -533,7 +533,7 @@ function validateProp$1(name, value, prop, isAbsent) {
 const isSimpleType$1 = /* @__PURE__ */ makeMap("String,Number,Boolean,Function,Symbol");
 function assertType$1(value, type) {
   let valid;
-  const expectedType = getType$1(type);
+  const expectedType = getType$2(type);
   if (isSimpleType$1(expectedType)) {
     const t2 = typeof value;
     valid = t2 === expectedType.toLowerCase();
@@ -543,7 +543,7 @@ function assertType$1(value, type) {
   } else if (expectedType === "Object") {
     valid = isObject$1(value);
   } else if (expectedType === "Array") {
-    valid = isArray(value);
+    valid = isArray$1(value);
   } else {
     {
       valid = value instanceof type;
@@ -569,7 +569,7 @@ function getInvalidTypeMessage$1(name, value, expectedTypes) {
   }
   return message;
 }
-function getType$1(ctor) {
+function getType$2(ctor) {
   const match = ctor && ctor.toString().match(/^\s*function (\w+)/);
   return match ? match[1] : "";
 }
@@ -627,7 +627,7 @@ function getApiCallbacks(args) {
   const apiCallbacks = {};
   for (const name in args) {
     const fn = args[name];
-    if (isFunction(fn)) {
+    if (isFunction$1(fn)) {
       apiCallbacks[name] = tryCatch(fn);
       delete args[name];
     }
@@ -641,20 +641,20 @@ function normalizeErrMsg(errMsg, name) {
   return name + errMsg.substring(errMsg.indexOf(":fail"));
 }
 function createAsyncApiCallback(name, args = {}, { beforeAll, beforeSuccess } = {}) {
-  if (!isPlainObject(args)) {
+  if (!isPlainObject$1(args)) {
     args = {};
   }
   const { success, fail, complete } = getApiCallbacks(args);
-  const hasSuccess = isFunction(success);
-  const hasFail = isFunction(fail);
-  const hasComplete = isFunction(complete);
+  const hasSuccess = isFunction$1(success);
+  const hasFail = isFunction$1(fail);
+  const hasComplete = isFunction$1(complete);
   const callbackId = invokeCallbackId++;
   addInvokeCallback(callbackId, name, (res) => {
     res = res || {};
     res.errMsg = normalizeErrMsg(res.errMsg, name);
-    isFunction(beforeAll) && beforeAll(res);
+    isFunction$1(beforeAll) && beforeAll(res);
     if (res.errMsg === name + ":ok") {
-      isFunction(beforeSuccess) && beforeSuccess(res, args);
+      isFunction$1(beforeSuccess) && beforeSuccess(res, args);
       hasSuccess && success(res);
     } else {
       hasFail && fail(res);
@@ -681,7 +681,7 @@ function queue$1(hooks, data, params) {
       promise = Promise.resolve(wrapperHook(hook, params));
     } else {
       const res = hook(data, params);
-      if (isPromise$1(res)) {
+      if (isPromise$2(res)) {
         promise = Promise.resolve(res);
       }
       if (res === false) {
@@ -705,13 +705,13 @@ function queue$1(hooks, data, params) {
 function wrapperOptions(interceptors2, options = {}) {
   [HOOK_SUCCESS, HOOK_FAIL, HOOK_COMPLETE].forEach((name) => {
     const hooks = interceptors2[name];
-    if (!isArray(hooks)) {
+    if (!isArray$1(hooks)) {
       return;
     }
     const oldCallback = options[name];
     options[name] = function callbackInterceptor(res) {
       queue$1(hooks, res, options).then((res2) => {
-        return isFunction(oldCallback) && oldCallback(res2) || res2;
+        return isFunction$1(oldCallback) && oldCallback(res2) || res2;
       });
     };
   });
@@ -719,11 +719,11 @@ function wrapperOptions(interceptors2, options = {}) {
 }
 function wrapperReturnValue(method, returnValue) {
   const returnValueHooks = [];
-  if (isArray(globalInterceptors.returnValue)) {
+  if (isArray$1(globalInterceptors.returnValue)) {
     returnValueHooks.push(...globalInterceptors.returnValue);
   }
   const interceptor = scopedInterceptors[method];
-  if (interceptor && isArray(interceptor.returnValue)) {
+  if (interceptor && isArray$1(interceptor.returnValue)) {
     returnValueHooks.push(...interceptor.returnValue);
   }
   returnValueHooks.forEach((hook) => {
@@ -751,7 +751,7 @@ function getApiInterceptorHooks(method) {
 function invokeApi(method, api, options, params) {
   const interceptor = getApiInterceptorHooks(method);
   if (interceptor && Object.keys(interceptor).length) {
-    if (isArray(interceptor.invoke)) {
+    if (isArray$1(interceptor.invoke)) {
       const res = queue$1(interceptor.invoke, options);
       return res.then((options2) => {
         return api(wrapperOptions(getApiInterceptorHooks(method), options2), ...params);
@@ -763,7 +763,7 @@ function invokeApi(method, api, options, params) {
   return api(options, ...params);
 }
 function hasCallback(args) {
-  if (isPlainObject(args) && [API_SUCCESS, API_FAIL, API_COMPLETE].find((cb) => isFunction(args[cb]))) {
+  if (isPlainObject$1(args) && [API_SUCCESS, API_FAIL, API_COMPLETE].find((cb) => isFunction$1(args[cb]))) {
     return true;
   }
   return false;
@@ -819,7 +819,7 @@ function beforeInvokeApi(name, args, protocol, options) {
   }
 }
 function parseErrMsg(errMsg) {
-  if (!errMsg || isString(errMsg)) {
+  if (!errMsg || isString$1(errMsg)) {
     return errMsg;
   }
   if (errMsg.stack) {
@@ -929,7 +929,7 @@ const AddInterceptorProtocol = [
 const RemoveInterceptorProtocol = AddInterceptorProtocol;
 function mergeInterceptorHook(interceptors2, interceptor) {
   Object.keys(interceptor).forEach((hook) => {
-    if (isFunction(interceptor[hook])) {
+    if (isFunction$1(interceptor[hook])) {
       interceptors2[hook] = mergeHook(interceptors2[hook], interceptor[hook]);
     }
   });
@@ -941,13 +941,13 @@ function removeInterceptorHook(interceptors2, interceptor) {
   Object.keys(interceptor).forEach((name) => {
     const hooks = interceptors2[name];
     const hook = interceptor[name];
-    if (isArray(hooks) && isFunction(hook)) {
+    if (isArray$1(hooks) && isFunction$1(hook)) {
       remove(hooks, hook);
     }
   });
 }
 function mergeHook(parentVal, childVal) {
-  const res = childVal ? parentVal ? parentVal.concat(childVal) : isArray(childVal) ? childVal : [childVal] : parentVal;
+  const res = childVal ? parentVal ? parentVal.concat(childVal) : isArray$1(childVal) ? childVal : [childVal] : parentVal;
   return res ? dedupeHooks(res) : res;
 }
 function dedupeHooks(hooks) {
@@ -960,20 +960,20 @@ function dedupeHooks(hooks) {
   return res;
 }
 const addInterceptor = defineSyncApi(API_ADD_INTERCEPTOR, (method, interceptor) => {
-  if (isString(method) && isPlainObject(interceptor)) {
+  if (isString$1(method) && isPlainObject$1(interceptor)) {
     mergeInterceptorHook(scopedInterceptors[method] || (scopedInterceptors[method] = {}), interceptor);
-  } else if (isPlainObject(method)) {
+  } else if (isPlainObject$1(method)) {
     mergeInterceptorHook(globalInterceptors, method);
   }
 }, AddInterceptorProtocol);
 const removeInterceptor = defineSyncApi(API_REMOVE_INTERCEPTOR, (method, interceptor) => {
-  if (isString(method)) {
-    if (isPlainObject(interceptor)) {
+  if (isString$1(method)) {
+    if (isPlainObject$1(interceptor)) {
       removeInterceptorHook(scopedInterceptors[method], interceptor);
     } else {
       delete scopedInterceptors[method];
     }
-  } else if (isPlainObject(method)) {
+  } else if (isPlainObject$1(method)) {
     removeInterceptorHook(globalInterceptors, method);
   }
 }, RemoveInterceptorProtocol);
@@ -1043,7 +1043,7 @@ const $once = defineSyncApi(API_ONCE, (name, callback) => {
   return () => eventBus.off(name, callback);
 }, OnceProtocol);
 const $off = defineSyncApi(API_OFF, (name, callback) => {
-  if (!isArray(name))
+  if (!isArray$1(name))
     name = name ? [name] : [];
   name.forEach((n2) => {
     eventBus.off(n2, callback);
@@ -1169,11 +1169,11 @@ function promisify(name, api) {
   if (!shouldPromise(name)) {
     return api;
   }
-  if (!isFunction(api)) {
+  if (!isFunction$1(api)) {
     return api;
   }
   return function promiseApi(options = {}, ...rest) {
-    if (isFunction(options.success) || isFunction(options.fail) || isFunction(options.complete)) {
+    if (isFunction$1(options.success) || isFunction$1(options.fail) || isFunction$1(options.complete)) {
       return wrapperReturnValue(name, invokeApi(name, api, extend({}, options), rest));
     }
     return wrapperReturnValue(name, handlePromise(new Promise((resolve2, reject) => {
@@ -1192,27 +1192,27 @@ function initWrapper(protocols2) {
     };
   }
   function processArgs(methodName, fromArgs, argsOption = {}, returnValue = {}, keepFromArgs = false) {
-    if (isPlainObject(fromArgs)) {
+    if (isPlainObject$1(fromArgs)) {
       const toArgs = keepFromArgs === true ? fromArgs : {};
-      if (isFunction(argsOption)) {
+      if (isFunction$1(argsOption)) {
         argsOption = argsOption(fromArgs, toArgs) || {};
       }
       for (const key in fromArgs) {
         if (hasOwn(argsOption, key)) {
           let keyOption = argsOption[key];
-          if (isFunction(keyOption)) {
+          if (isFunction$1(keyOption)) {
             keyOption = keyOption(fromArgs[key], fromArgs, toArgs);
           }
           if (!keyOption) {
             console.warn(`微信小程序 ${methodName} 暂不支持 ${key}`);
-          } else if (isString(keyOption)) {
+          } else if (isString$1(keyOption)) {
             toArgs[keyOption] = fromArgs[key];
-          } else if (isPlainObject(keyOption)) {
+          } else if (isPlainObject$1(keyOption)) {
             toArgs[keyOption.name ? keyOption.name : key] = keyOption.value;
           }
         } else if (CALLBACKS.indexOf(key) !== -1) {
           const callback = fromArgs[key];
-          if (isFunction(callback)) {
+          if (isFunction$1(callback)) {
             toArgs[key] = processCallback(methodName, callback, returnValue);
           }
         } else {
@@ -1222,8 +1222,8 @@ function initWrapper(protocols2) {
         }
       }
       return toArgs;
-    } else if (isFunction(fromArgs)) {
-      if (isFunction(argsOption)) {
+    } else if (isFunction$1(fromArgs)) {
+      if (isFunction$1(argsOption)) {
         argsOption(fromArgs, {});
       }
       fromArgs = processCallback(methodName, fromArgs, returnValue);
@@ -1231,19 +1231,19 @@ function initWrapper(protocols2) {
     return fromArgs;
   }
   function processReturnValue(methodName, res, returnValue, keepReturnValue = false) {
-    if (isFunction(protocols2.returnValue)) {
+    if (isFunction$1(protocols2.returnValue)) {
       res = protocols2.returnValue(methodName, res);
     }
     const realKeepReturnValue = keepReturnValue || false;
     return processArgs(methodName, res, returnValue, {}, realKeepReturnValue);
   }
-  return function wrapper(methodName, method) {
+  return function wrapper3(methodName, method) {
     const hasProtocol = hasOwn(protocols2, methodName);
     if (!hasProtocol && typeof wx[methodName] !== "function") {
       return method;
     }
-    const needWrapper = hasProtocol || isFunction(protocols2.returnValue) || isContextApi(methodName) || isTaskApi(methodName);
-    const hasMethod = hasProtocol || isFunction(method);
+    const needWrapper = hasProtocol || isFunction$1(protocols2.returnValue) || isContextApi(methodName) || isTaskApi(methodName);
+    const hasMethod = hasProtocol || isFunction$1(method);
     if (!hasProtocol && !method) {
       return function() {
         console.error(`微信小程序 暂不支持${methodName}`);
@@ -1255,7 +1255,7 @@ function initWrapper(protocols2) {
     const protocol = protocols2[methodName];
     return function(arg1, arg2) {
       let options = protocol || {};
-      if (isFunction(protocol)) {
+      if (isFunction$1(protocol)) {
         options = protocol(arg1);
       }
       arg1 = processArgs(methodName, arg1, options.args, options.returnValue);
@@ -1277,14 +1277,14 @@ function initWrapper(protocols2) {
   };
 }
 const getLocale = () => {
-  const app = isFunction(getApp) && getApp({ allowDefault: true });
+  const app = isFunction$1(getApp) && getApp({ allowDefault: true });
   if (app && app.$vm) {
     return app.$vm.$locale;
   }
   return getLocaleLanguage$1();
 };
 const setLocale = (locale) => {
-  const app = isFunction(getApp) && getApp();
+  const app = isFunction$1(getApp) && getApp();
   if (!app) {
     return false;
   }
@@ -1477,14 +1477,14 @@ function getHostName(fromRes) {
   }
   return _hostName;
 }
-const getSystemInfo = {
+const getSystemInfo$1 = {
   returnValue: (fromRes, toRes) => {
     addSafeAreaInsets(fromRes, toRes);
     useDeviceId()(fromRes, toRes);
     populateParameters(fromRes, toRes);
   }
 };
-const getSystemInfoSync = getSystemInfo;
+const getSystemInfoSync = getSystemInfo$1;
 const redirectTo = {};
 const previewImage = {
   args(fromArgs, toArgs) {
@@ -1493,7 +1493,7 @@ const previewImage = {
       return;
     }
     const urls = fromArgs.urls;
-    if (!isArray(urls)) {
+    if (!isArray$1(urls)) {
       return;
     }
     const len = urls.length;
@@ -1653,7 +1653,7 @@ const baseApis = {
   __f__
 };
 function initUni(api, protocols2, platform = wx) {
-  const wrapper = initWrapper(protocols2);
+  const wrapper3 = initWrapper(protocols2);
   const UniProxyHandlers = {
     get(target, key) {
       if (hasOwn(target, key)) {
@@ -1665,7 +1665,7 @@ function initUni(api, protocols2, platform = wx) {
       if (hasOwn(baseApis, key)) {
         return promisify(key, baseApis[key]);
       }
-      return promisify(key, wrapper(key, platform[key]));
+      return promisify(key, wrapper3(key, platform[key]));
     }
   };
   return new Proxy({}, UniProxyHandlers);
@@ -1679,14 +1679,14 @@ function initGetProvider(providers) {
         service,
         provider: providers[service]
       };
-      isFunction(success) && success(res);
+      isFunction$1(success) && success(res);
     } else {
       res = {
         errMsg: "getProvider:fail:服务[" + service + "]不存在"
       };
-      isFunction(fail) && fail(res);
+      isFunction$1(fail) && fail(res);
     }
-    isFunction(complete) && complete(res);
+    isFunction$1(complete) && complete(res);
   };
 }
 const objectKeys = [
@@ -1784,7 +1784,7 @@ var protocols = /* @__PURE__ */ Object.freeze({
   getAppAuthorizeSetting,
   getAppBaseInfo,
   getDeviceInfo,
-  getSystemInfo,
+  getSystemInfo: getSystemInfo$1,
   getSystemInfoSync,
   getWindowInfo,
   offError,
@@ -1885,6 +1885,15 @@ function recordEffectScope(effect2, scope = activeEffectScope) {
 }
 function getCurrentScope() {
   return activeEffectScope;
+}
+function onScopeDispose(fn) {
+  if (activeEffectScope) {
+    activeEffectScope.cleanups.push(fn);
+  } else {
+    warn$2(
+      `onScopeDispose() is called when there is no active effect scope to be associated with.`
+    );
+  }
 }
 let activeEffect;
 class ReactiveEffect {
@@ -2079,7 +2088,7 @@ function trigger(target, type, key, newValue, oldValue, oldTarget) {
   let deps = [];
   if (type === "clear") {
     deps = [...depsMap.values()];
-  } else if (key === "length" && isArray(target)) {
+  } else if (key === "length" && isArray$1(target)) {
     const newLength = Number(newValue);
     depsMap.forEach((dep, key2) => {
       if (key2 === "length" || !isSymbol(key2) && key2 >= newLength) {
@@ -2092,7 +2101,7 @@ function trigger(target, type, key, newValue, oldValue, oldTarget) {
     }
     switch (type) {
       case "add":
-        if (!isArray(target)) {
+        if (!isArray$1(target)) {
           deps.push(depsMap.get(ITERATE_KEY));
           if (isMap(target)) {
             deps.push(depsMap.get(MAP_KEY_ITERATE_KEY));
@@ -2102,7 +2111,7 @@ function trigger(target, type, key, newValue, oldValue, oldTarget) {
         }
         break;
       case "delete":
-        if (!isArray(target)) {
+        if (!isArray$1(target)) {
           deps.push(depsMap.get(ITERATE_KEY));
           if (isMap(target)) {
             deps.push(depsMap.get(MAP_KEY_ITERATE_KEY));
@@ -2134,6 +2143,10 @@ function trigger(target, type, key, newValue, oldValue, oldTarget) {
     }
   }
   resetScheduling();
+}
+function getDepFromReactive(object, key) {
+  var _a;
+  return (_a = targetMap.get(object)) == null ? void 0 : _a.get(key);
 }
 const isNonTrackableKeys = /* @__PURE__ */ makeMap(`__proto__,__v_isRef,__isVue`);
 const builtInSymbols = new Set(
@@ -2194,7 +2207,7 @@ class BaseReactiveHandler {
       }
       return;
     }
-    const targetIsArray = isArray(target);
+    const targetIsArray = isArray$1(target);
     if (!isReadonly2) {
       if (targetIsArray && hasOwn(arrayInstrumentations, key)) {
         return Reflect.get(arrayInstrumentations, key, receiver);
@@ -2234,7 +2247,7 @@ class MutableReactiveHandler extends BaseReactiveHandler {
         oldValue = toRaw(oldValue);
         value = toRaw(value);
       }
-      if (!isArray(target) && isRef(oldValue) && !isRef(value)) {
+      if (!isArray$1(target) && isRef(oldValue) && !isRef(value)) {
         if (isOldValueReadonly) {
           return false;
         } else {
@@ -2243,7 +2256,7 @@ class MutableReactiveHandler extends BaseReactiveHandler {
         }
       }
     }
-    const hadKey = isArray(target) && isIntegerKey(key) ? Number(key) < target.length : hasOwn(target, key);
+    const hadKey = isArray$1(target) && isIntegerKey(key) ? Number(key) < target.length : hasOwn(target, key);
     const result = Reflect.set(target, key, value, receiver);
     if (target === toRaw(receiver)) {
       if (!hadKey) {
@@ -2274,7 +2287,7 @@ class MutableReactiveHandler extends BaseReactiveHandler {
     track(
       target,
       "iterate",
-      isArray(target) ? "length" : ITERATE_KEY
+      isArray$1(target) ? "length" : ITERATE_KEY
     );
     return Reflect.ownKeys(target);
   }
@@ -2350,8 +2363,8 @@ function size(target, isReadonly2 = false) {
 function add(value) {
   value = toRaw(value);
   const target = toRaw(this);
-  const proto = getProto(target);
-  const hadKey = proto.has.call(target, value);
+  const proto2 = getProto(target);
+  const hadKey = proto2.has.call(target, value);
   if (!hadKey) {
     target.add(value);
     trigger(target, "add", value, value);
@@ -2749,7 +2762,7 @@ getter: `, this.getter);
 function computed$1(getterOrOptions, debugOptions, isSSR = false) {
   let getter;
   let setter;
-  const onlyGetter = isFunction(getterOrOptions);
+  const onlyGetter = isFunction$1(getterOrOptions);
   if (onlyGetter) {
     getter = getterOrOptions;
     setter = () => {
@@ -2848,6 +2861,59 @@ const shallowUnwrapHandlers = {
 function proxyRefs(objectWithRefs) {
   return isReactive(objectWithRefs) ? objectWithRefs : new Proxy(objectWithRefs, shallowUnwrapHandlers);
 }
+function toRefs(object) {
+  if (!isProxy(object)) {
+    warn$2(`toRefs() expects a reactive object but received a plain one.`);
+  }
+  const ret = isArray$1(object) ? new Array(object.length) : {};
+  for (const key in object) {
+    ret[key] = propertyToRef(object, key);
+  }
+  return ret;
+}
+class ObjectRefImpl {
+  constructor(_object, _key, _defaultValue) {
+    this._object = _object;
+    this._key = _key;
+    this._defaultValue = _defaultValue;
+    this.__v_isRef = true;
+  }
+  get value() {
+    const val = this._object[this._key];
+    return val === void 0 ? this._defaultValue : val;
+  }
+  set value(newVal) {
+    this._object[this._key] = newVal;
+  }
+  get dep() {
+    return getDepFromReactive(toRaw(this._object), this._key);
+  }
+}
+class GetterRefImpl {
+  constructor(_getter) {
+    this._getter = _getter;
+    this.__v_isRef = true;
+    this.__v_isReadonly = true;
+  }
+  get value() {
+    return this._getter();
+  }
+}
+function toRef(source, key, defaultValue) {
+  if (isRef(source)) {
+    return source;
+  } else if (isFunction$1(source)) {
+    return new GetterRefImpl(source);
+  } else if (isObject$1(source) && arguments.length > 1) {
+    return propertyToRef(source, key, defaultValue);
+  } else {
+    return ref(source);
+  }
+}
+function propertyToRef(source, key, defaultValue) {
+  const val = source[key];
+  return isRef(val) ? val : new ObjectRefImpl(source, key, defaultValue);
+}
 const stack = [];
 function pushWarningContext(vnode) {
   stack.push(vnode);
@@ -2940,7 +3006,7 @@ function formatProps(props) {
   return res;
 }
 function formatProp(key, value, raw) {
-  if (isString(value)) {
+  if (isString$1(value)) {
     value = JSON.stringify(value);
     return raw ? value : [`${key}=${value}`];
   } else if (typeof value === "number" || typeof value === "boolean" || value == null) {
@@ -2948,7 +3014,7 @@ function formatProp(key, value, raw) {
   } else if (isRef(value)) {
     value = formatProp(key, toRaw(value.value), true);
     return raw ? value : [`${key}=Ref<`, value, `>`];
-  } else if (isFunction(value)) {
+  } else if (isFunction$1(value)) {
     return [`${key}=fn${value.name ? `<${value.name}>` : ``}`];
   } else {
     value = toRaw(value);
@@ -2994,9 +3060,9 @@ function callWithErrorHandling(fn, instance, type, args) {
   }
 }
 function callWithAsyncErrorHandling(fn, instance, type, args) {
-  if (isFunction(fn)) {
+  if (isFunction$1(fn)) {
     const res = callWithErrorHandling(fn, instance, type, args);
-    if (res && isPromise$1(res)) {
+    if (res && isPromise$2(res)) {
       res.catch((err) => {
         handleError(err, instance, type);
       });
@@ -3114,7 +3180,7 @@ function invalidateJob(job) {
   }
 }
 function queuePostFlushCb(cb) {
-  if (!isArray(cb)) {
+  if (!isArray$1(cb)) {
     if (!activePostFlushCbs || !activePostFlushCbs.includes(
       cb,
       cb.allowRecurse ? postFlushIndex + 1 : postFlushIndex
@@ -3347,9 +3413,9 @@ function emit(instance, event, ...rawArgs) {
         }
       } else {
         const validator = emitsOptions[event];
-        if (isFunction(validator)) {
-          const isValid = validator(...rawArgs);
-          if (!isValid) {
+        if (isFunction$1(validator)) {
+          const isValid2 = validator(...rawArgs);
+          if (!isValid2) {
             warn$1(
               `Invalid event arguments: event validation failed for event "${event}".`
             );
@@ -3365,7 +3431,7 @@ function emit(instance, event, ...rawArgs) {
     const modifiersKey = `${modelArg === "modelValue" ? "model" : modelArg}Modifiers`;
     const { number, trim } = props[modifiersKey] || EMPTY_OBJ;
     if (trim) {
-      args = rawArgs.map((a) => isString(a) ? a.trim() : a);
+      args = rawArgs.map((a) => isString$1(a) ? a.trim() : a);
     }
     if (number) {
       args = rawArgs.map(looseToNumber);
@@ -3426,7 +3492,7 @@ function normalizeEmitsOptions(comp, appContext, asMixin = false) {
   const raw = comp.emits;
   let normalized = {};
   let hasExtends = false;
-  if (!isFunction(comp)) {
+  if (!isFunction$1(comp)) {
     const extendEmits = (raw2) => {
       const normalizedFromExtend = normalizeEmitsOptions(raw2, appContext, true);
       if (normalizedFromExtend) {
@@ -3450,7 +3516,7 @@ function normalizeEmitsOptions(comp, appContext, asMixin = false) {
     }
     return null;
   }
-  if (isArray(raw)) {
+  if (isArray$1(raw)) {
     raw.forEach((key) => normalized[key] = null);
   } else {
     extend(normalized, raw);
@@ -3517,7 +3583,7 @@ function resolve(registry, name) {
 }
 const INITIAL_WATCHER_VALUE = {};
 function watch(source, cb, options) {
-  if (!isFunction(cb)) {
+  if (!isFunction$1(cb)) {
     warn$1(
       `\`watch(fn, options?)\` signature has been moved to a separate API. Use \`watchEffect(fn, options?)\` instead. \`watch\` now only supports \`watch(source, cb, options?) signature.`
     );
@@ -3582,7 +3648,7 @@ function doWatch(source, cb, {
   } else if (isReactive(source)) {
     getter = () => reactiveGetter(source);
     forceTrigger = true;
-  } else if (isArray(source)) {
+  } else if (isArray$1(source)) {
     isMultiSource = true;
     forceTrigger = source.some((s2) => isReactive(s2) || isShallow(s2));
     getter = () => source.map((s2) => {
@@ -3590,13 +3656,13 @@ function doWatch(source, cb, {
         return s2.value;
       } else if (isReactive(s2)) {
         return reactiveGetter(s2);
-      } else if (isFunction(s2)) {
+      } else if (isFunction$1(s2)) {
         return callWithErrorHandling(s2, instance, 2);
       } else {
         warnInvalidSource(s2);
       }
     });
-  } else if (isFunction(source)) {
+  } else if (isFunction$1(source)) {
     if (cb) {
       getter = () => callWithErrorHandling(source, instance, 2);
     } else {
@@ -3692,9 +3758,9 @@ function doWatch(source, cb, {
 }
 function instanceWatch(source, value, options) {
   const publicThis = this.proxy;
-  const getter = isString(source) ? source.includes(".") ? createPathGetter(publicThis, source) : () => publicThis[source] : source.bind(publicThis, publicThis);
+  const getter = isString$1(source) ? source.includes(".") ? createPathGetter(publicThis, source) : () => publicThis[source] : source.bind(publicThis, publicThis);
   let cb;
-  if (isFunction(value)) {
+  if (isFunction$1(value)) {
     cb = value;
   } else {
     cb = value.handler;
@@ -3706,11 +3772,11 @@ function instanceWatch(source, value, options) {
   return res;
 }
 function createPathGetter(ctx, path) {
-  const segments = path.split(".");
+  const segments2 = path.split(".");
   return () => {
     let cur = ctx;
-    for (let i = 0; i < segments.length && cur; i++) {
-      cur = cur[segments[i]];
+    for (let i = 0; i < segments2.length && cur; i++) {
+      cur = cur[segments2[i]];
     }
     return cur;
   };
@@ -3732,7 +3798,7 @@ function traverse(value, depth, currentDepth = 0, seen) {
   seen.add(value);
   if (isRef(value)) {
     traverse(value.value, depth, currentDepth, seen);
-  } else if (isArray(value)) {
+  } else if (isArray$1(value)) {
     for (let i = 0; i < value.length; i++) {
       traverse(value[i], depth, currentDepth, seen);
     }
@@ -3740,7 +3806,7 @@ function traverse(value, depth, currentDepth = 0, seen) {
     value.forEach((v) => {
       traverse(v, depth, currentDepth, seen);
     });
-  } else if (isPlainObject(value)) {
+  } else if (isPlainObject$1(value)) {
     for (const key in value) {
       traverse(value[key], depth, currentDepth, seen);
     }
@@ -3774,27 +3840,27 @@ function createAppContext() {
   };
 }
 let uid$1 = 0;
-function createAppAPI(render, hydrate) {
+function createAppAPI(render2, hydrate) {
   return function createApp2(rootComponent, rootProps = null) {
-    if (!isFunction(rootComponent)) {
+    if (!isFunction$1(rootComponent)) {
       rootComponent = extend({}, rootComponent);
     }
     if (rootProps != null && !isObject$1(rootProps)) {
       warn$1(`root props passed to app.mount() must be an object.`);
       rootProps = null;
     }
-    const context = createAppContext();
+    const context2 = createAppContext();
     const installedPlugins = /* @__PURE__ */ new WeakSet();
-    const app = context.app = {
+    const app = context2.app = {
       _uid: uid$1++,
       _component: rootComponent,
       _props: rootProps,
       _container: null,
-      _context: context,
+      _context: context2,
       _instance: null,
-      version,
+      version: version$1,
       get config() {
-        return context.config;
+        return context2.config;
       },
       set config(v) {
         {
@@ -3806,10 +3872,10 @@ function createAppAPI(render, hydrate) {
       use(plugin2, ...options) {
         if (installedPlugins.has(plugin2)) {
           warn$1(`Plugin has already been applied to target app.`);
-        } else if (plugin2 && isFunction(plugin2.install)) {
+        } else if (plugin2 && isFunction$1(plugin2.install)) {
           installedPlugins.add(plugin2);
           plugin2.install(app, ...options);
-        } else if (isFunction(plugin2)) {
+        } else if (isFunction$1(plugin2)) {
           installedPlugins.add(plugin2);
           plugin2(app, ...options);
         } else {
@@ -3821,8 +3887,8 @@ function createAppAPI(render, hydrate) {
       },
       mixin(mixin) {
         {
-          if (!context.mixins.includes(mixin)) {
-            context.mixins.push(mixin);
+          if (!context2.mixins.includes(mixin)) {
+            context2.mixins.push(mixin);
           } else {
             warn$1(
               "Mixin has already been applied to target app" + (mixin.name ? `: ${mixin.name}` : "")
@@ -3833,15 +3899,15 @@ function createAppAPI(render, hydrate) {
       },
       component(name, component) {
         {
-          validateComponentName(name, context.config);
+          validateComponentName(name, context2.config);
         }
         if (!component) {
-          return context.components[name];
+          return context2.components[name];
         }
-        if (context.components[name]) {
+        if (context2.components[name]) {
           warn$1(`Component "${name}" has already been registered in target app.`);
         }
-        context.components[name] = component;
+        context2.components[name] = component;
         return app;
       },
       directive(name, directive) {
@@ -3849,12 +3915,12 @@ function createAppAPI(render, hydrate) {
           validateDirectiveName(name);
         }
         if (!directive) {
-          return context.directives[name];
+          return context2.directives[name];
         }
-        if (context.directives[name]) {
+        if (context2.directives[name]) {
           warn$1(`Directive "${name}" has already been registered in target app.`);
         }
-        context.directives[name] = directive;
+        context2.directives[name] = directive;
         return app;
       },
       // fixed by xxxxxx
@@ -3864,12 +3930,12 @@ function createAppAPI(render, hydrate) {
       unmount() {
       },
       provide(key, value) {
-        if (key in context.provides) {
+        if (key in context2.provides) {
           warn$1(
             `App already provides property with key "${String(key)}". It will be overwritten with the new value.`
           );
         }
-        context.provides[key] = value;
+        context2.provides[key] = value;
         return app;
       },
       runWithContext(fn) {
@@ -3910,13 +3976,25 @@ function inject(key, defaultValue, treatDefaultAsFactory = false) {
     if (provides && key in provides) {
       return provides[key];
     } else if (arguments.length > 1) {
-      return treatDefaultAsFactory && isFunction(defaultValue) ? defaultValue.call(instance && instance.proxy) : defaultValue;
+      return treatDefaultAsFactory && isFunction$1(defaultValue) ? defaultValue.call(instance && instance.proxy) : defaultValue;
     } else {
       warn$1(`injection "${String(key)}" not found.`);
     }
   } else {
     warn$1(`inject() can only be used inside setup() or functional components.`);
   }
+}
+function hasInjectionContext() {
+  return !!(currentInstance || currentRenderingInstance || currentApp);
+}
+/*! #__NO_SIDE_EFFECTS__ */
+// @__NO_SIDE_EFFECTS__
+function defineComponent(options, extraOptions) {
+  return isFunction$1(options) ? (
+    // #8326: extend call and options.name access are considered side-effects
+    // by Rollup, so we have to wrap it in a pure-annotated IIFE.
+    /* @__PURE__ */ (() => extend({ name: options.name }, extraOptions, { setup: options }))()
+  ) : options;
 }
 const isKeepAlive = (vnode) => vnode.type.__isKeepAlive;
 function onActivated(hook, target) {
@@ -4115,7 +4193,7 @@ const PublicInstanceProxyHandlers = {
       {
         return globalProperties[key];
       }
-    } else if (currentRenderingInstance && (!isString(key) || // #1091 avoid internal isRef/isVNode checks on component instance leading
+    } else if (currentRenderingInstance && (!isString$1(key) || // #1091 avoid internal isRef/isVNode checks on component instance leading
     // to infinite warning loop
     key.indexOf("__v") !== 0)) {
       if (data !== EMPTY_OBJ && isReservedPrefix(key[0]) && hasOwn(data, key)) {
@@ -4243,8 +4321,18 @@ function exposeSetupStateOnRenderContext(instance) {
     }
   });
 }
+function useSlots() {
+  return getContext().slots;
+}
+function getContext() {
+  const i = getCurrentInstance();
+  if (!i) {
+    warn$1(`useContext() called without active instance.`);
+  }
+  return i.setupContext || (i.setupContext = createSetupContext(i));
+}
 function normalizePropsOrEmits(props) {
-  return isArray(props) ? props.reduce(
+  return isArray$1(props) ? props.reduce(
     (normalized, p2) => (normalized[p2] = null, normalized),
     {}
   ) : props;
@@ -4288,7 +4376,7 @@ function applyOptions$1(instance) {
     beforeUnmount,
     destroyed,
     unmounted,
-    render,
+    render: render2,
     renderTracked,
     renderTriggered,
     errorCaptured,
@@ -4321,7 +4409,7 @@ function applyOptions$1(instance) {
   if (methods) {
     for (const key in methods) {
       const methodHandler = methods[key];
-      if (isFunction(methodHandler)) {
+      if (isFunction$1(methodHandler)) {
         {
           Object.defineProperty(ctx, key, {
             value: methodHandler.bind(publicThis),
@@ -4341,13 +4429,13 @@ function applyOptions$1(instance) {
     }
   }
   if (dataOptions) {
-    if (!isFunction(dataOptions)) {
+    if (!isFunction$1(dataOptions)) {
       warn$1(
         `The data option must be a function. Plain object usage is no longer supported.`
       );
     }
     const data = dataOptions.call(publicThis, publicThis);
-    if (isPromise$1(data)) {
+    if (isPromise$2(data)) {
       warn$1(
         `data() returned a Promise - note data() cannot be async; If you intend to perform data fetching before component renders, use async setup() + <Suspense>.`
       );
@@ -4375,11 +4463,11 @@ function applyOptions$1(instance) {
   if (computedOptions) {
     for (const key in computedOptions) {
       const opt = computedOptions[key];
-      const get22 = isFunction(opt) ? opt.bind(publicThis, publicThis) : isFunction(opt.get) ? opt.get.bind(publicThis, publicThis) : NOOP;
+      const get22 = isFunction$1(opt) ? opt.bind(publicThis, publicThis) : isFunction$1(opt.get) ? opt.get.bind(publicThis, publicThis) : NOOP;
       if (get22 === NOOP) {
         warn$1(`Computed property "${key}" has no getter.`);
       }
-      const set2 = !isFunction(opt) && isFunction(opt.set) ? opt.set.bind(publicThis) : () => {
+      const set2 = !isFunction$1(opt) && isFunction$1(opt.set) ? opt.set.bind(publicThis) : () => {
         warn$1(
           `Write operation failed: computed property "${key}" is readonly.`
         );
@@ -4406,7 +4494,7 @@ function applyOptions$1(instance) {
   }
   function initProvides() {
     if (provideOptions) {
-      const provides = isFunction(provideOptions) ? provideOptions.call(publicThis) : provideOptions;
+      const provides = isFunction$1(provideOptions) ? provideOptions.call(publicThis) : provideOptions;
       Reflect.ownKeys(provides).forEach((key) => {
         provide(key, provides[key]);
       });
@@ -4421,7 +4509,7 @@ function applyOptions$1(instance) {
     }
   }
   function registerLifecycleHook(register2, hook) {
-    if (isArray(hook)) {
+    if (isArray$1(hook)) {
       hook.forEach((_hook) => register2(_hook.bind(publicThis)));
     } else if (hook) {
       register2(hook.bind(publicThis));
@@ -4439,7 +4527,7 @@ function applyOptions$1(instance) {
   registerLifecycleHook(onBeforeUnmount, beforeUnmount);
   registerLifecycleHook(onUnmounted, unmounted);
   registerLifecycleHook(onServerPrefetch, serverPrefetch);
-  if (isArray(expose)) {
+  if (isArray$1(expose)) {
     if (expose.length) {
       const exposed = instance.exposed || (instance.exposed = {});
       expose.forEach((key) => {
@@ -4452,8 +4540,8 @@ function applyOptions$1(instance) {
       instance.exposed = {};
     }
   }
-  if (render && instance.render === NOOP) {
-    instance.render = render;
+  if (render2 && instance.render === NOOP) {
+    instance.render = render2;
   }
   if (inheritAttrs != null) {
     instance.inheritAttrs = inheritAttrs;
@@ -4467,7 +4555,7 @@ function applyOptions$1(instance) {
   }
 }
 function resolveInjections(injectOptions, ctx, checkDuplicateProperties = NOOP) {
-  if (isArray(injectOptions)) {
+  if (isArray$1(injectOptions)) {
     injectOptions = normalizeInject(injectOptions);
   }
   for (const key in injectOptions) {
@@ -4503,28 +4591,28 @@ function resolveInjections(injectOptions, ctx, checkDuplicateProperties = NOOP) 
 }
 function callHook$1(hook, instance, type) {
   callWithAsyncErrorHandling(
-    isArray(hook) ? hook.map((h2) => h2.bind(instance.proxy)) : hook.bind(instance.proxy),
+    isArray$1(hook) ? hook.map((h2) => h2.bind(instance.proxy)) : hook.bind(instance.proxy),
     instance,
     type
   );
 }
 function createWatcher(raw, ctx, publicThis, key) {
   const getter = key.includes(".") ? createPathGetter(publicThis, key) : () => publicThis[key];
-  if (isString(raw)) {
+  if (isString$1(raw)) {
     const handler = ctx[raw];
-    if (isFunction(handler)) {
+    if (isFunction$1(handler)) {
       watch(getter, handler);
     } else {
       warn$1(`Invalid watch handler specified by key "${raw}"`, handler);
     }
-  } else if (isFunction(raw)) {
+  } else if (isFunction$1(raw)) {
     watch(getter, raw.bind(publicThis));
   } else if (isObject$1(raw)) {
-    if (isArray(raw)) {
+    if (isArray$1(raw)) {
       raw.forEach((r2) => createWatcher(r2, ctx, publicThis, key));
     } else {
-      const handler = isFunction(raw.handler) ? raw.handler.bind(publicThis) : ctx[raw.handler];
-      if (isFunction(handler)) {
+      const handler = isFunction$1(raw.handler) ? raw.handler.bind(publicThis) : ctx[raw.handler];
+      if (isFunction$1(handler)) {
         watch(getter, handler, raw);
       } else {
         warn$1(`Invalid watch handler specified by key "${raw.handler}"`, handler);
@@ -4626,8 +4714,8 @@ function mergeDataFn(to, from) {
   }
   return function mergedDataFn() {
     return extend(
-      isFunction(to) ? to.call(this, this) : to,
-      isFunction(from) ? from.call(this, this) : from
+      isFunction$1(to) ? to.call(this, this) : to,
+      isFunction$1(from) ? from.call(this, this) : from
     );
   };
 }
@@ -4635,7 +4723,7 @@ function mergeInject(to, from) {
   return mergeObjectOptions(normalizeInject(to), normalizeInject(from));
 }
 function normalizeInject(raw) {
-  if (isArray(raw)) {
+  if (isArray$1(raw)) {
     const res = {};
     for (let i = 0; i < raw.length; i++) {
       res[raw[i]] = raw[i];
@@ -4652,7 +4740,7 @@ function mergeObjectOptions(to, from) {
 }
 function mergeEmitsOrPropsOptions(to, from) {
   if (to) {
-    if (isArray(to) && isArray(from)) {
+    if (isArray$1(to) && isArray$1(from)) {
       return [.../* @__PURE__ */ new Set([...to, ...from])];
     }
     return extend(
@@ -4857,7 +4945,7 @@ function _resolvePropValue(options, props, key, value, instance, isAbsent) {
     const hasDefault = hasOwn(opt, "default");
     if (hasDefault && value === void 0) {
       const defaultValue = opt.default;
-      if (opt.type !== Function && !opt.skipFactory && isFunction(defaultValue)) {
+      if (opt.type !== Function && !opt.skipFactory && isFunction$1(defaultValue)) {
         const { propsDefaults } = instance;
         if (key in propsDefaults) {
           value = propsDefaults[key];
@@ -4899,7 +4987,7 @@ function normalizePropsOptions(comp, appContext, asMixin = false) {
   const normalized = {};
   const needCastKeys = [];
   let hasExtends = false;
-  if (!isFunction(comp)) {
+  if (!isFunction$1(comp)) {
     const extendProps = (raw2) => {
       hasExtends = true;
       const [props, keys] = normalizePropsOptions(raw2, appContext, true);
@@ -4923,9 +5011,9 @@ function normalizePropsOptions(comp, appContext, asMixin = false) {
     }
     return EMPTY_ARR;
   }
-  if (isArray(raw)) {
+  if (isArray$1(raw)) {
     for (let i = 0; i < raw.length; i++) {
-      if (!isString(raw[i])) {
+      if (!isString$1(raw[i])) {
         warn$1(`props must be strings when using array syntax.`, raw[i]);
       }
       const normalizedKey = camelize(raw[i]);
@@ -4941,7 +5029,7 @@ function normalizePropsOptions(comp, appContext, asMixin = false) {
       const normalizedKey = camelize(key);
       if (validatePropName(normalizedKey)) {
         const opt = raw[key];
-        const prop = normalized[normalizedKey] = isArray(opt) || isFunction(opt) ? { type: opt } : extend({}, opt);
+        const prop = normalized[normalizedKey] = isArray$1(opt) || isFunction$1(opt) ? { type: opt } : extend({}, opt);
         if (prop) {
           const booleanIndex = getTypeIndex(Boolean, prop.type);
           const stringIndex = getTypeIndex(String, prop.type);
@@ -4974,7 +5062,7 @@ function validatePropName(key) {
   }
   return false;
 }
-function getType(ctor) {
+function getType$1(ctor) {
   if (ctor === null) {
     return "null";
   }
@@ -4987,12 +5075,12 @@ function getType(ctor) {
   return "";
 }
 function isSameType(a, b) {
-  return getType(a) === getType(b);
+  return getType$1(a) === getType$1(b);
 }
 function getTypeIndex(type, expectedTypes) {
-  if (isArray(expectedTypes)) {
+  if (isArray$1(expectedTypes)) {
     return expectedTypes.findIndex((t2) => isSameType(t2, type));
-  } else if (isFunction(expectedTypes)) {
+  } else if (isFunction$1(expectedTypes)) {
     return isSameType(expectedTypes, type) ? 0 : -1;
   }
   return -1;
@@ -5023,15 +5111,15 @@ function validateProp(name, value, prop, props, isAbsent) {
     return;
   }
   if (type != null && type !== true && !skipCheck) {
-    let isValid = false;
-    const types = isArray(type) ? type : [type];
+    let isValid2 = false;
+    const types = isArray$1(type) ? type : [type];
     const expectedTypes = [];
-    for (let i = 0; i < types.length && !isValid; i++) {
+    for (let i = 0; i < types.length && !isValid2; i++) {
       const { valid, expectedType } = assertType(value, types[i]);
       expectedTypes.push(expectedType || "");
-      isValid = valid;
+      isValid2 = valid;
     }
-    if (!isValid) {
+    if (!isValid2) {
       warn$1(getInvalidTypeMessage(name, value, expectedTypes));
       return;
     }
@@ -5045,7 +5133,7 @@ const isSimpleType = /* @__PURE__ */ makeMap(
 );
 function assertType(value, type) {
   let valid;
-  const expectedType = getType(type);
+  const expectedType = getType$1(type);
   if (isSimpleType(expectedType)) {
     const t2 = typeof value;
     valid = t2 === expectedType.toLowerCase();
@@ -5055,7 +5143,7 @@ function assertType(value, type) {
   } else if (expectedType === "Object") {
     valid = isObject$1(value);
   } else if (expectedType === "Array") {
-    valid = isArray(value);
+    valid = isArray$1(value);
   } else if (expectedType === "null") {
     valid = value === null;
   } else {
@@ -5144,7 +5232,7 @@ const Fragment = Symbol.for("v-fgt");
 const Text = Symbol.for("v-txt");
 const Comment = Symbol.for("v-cmt");
 const Static = Symbol.for("v-stc");
-function isVNode(value) {
+function isVNode$1(value) {
   return value ? value.__v_isVNode === true : false;
 }
 const InternalObjectKey = `__vInternal`;
@@ -5344,7 +5432,7 @@ function setupStatefulComponent(instance, isSSR) {
     );
     resetTracking();
     reset();
-    if (isPromise$1(setupResult)) {
+    if (isPromise$2(setupResult)) {
       setupResult.then(unsetCurrentInstance, unsetCurrentInstance);
       {
         warn$1(
@@ -5359,12 +5447,12 @@ function setupStatefulComponent(instance, isSSR) {
   }
 }
 function handleSetupResult(instance, setupResult, isSSR) {
-  if (isFunction(setupResult)) {
+  if (isFunction$1(setupResult)) {
     {
       instance.render = setupResult;
     }
   } else if (isObject$1(setupResult)) {
-    if (isVNode(setupResult)) {
+    if (isVNode$1(setupResult)) {
       warn$1(
         `setup() should not return VNodes directly - return a render function instead.`
       );
@@ -5445,7 +5533,7 @@ function createSetupContext(instance) {
       if (exposed != null) {
         let exposedType = typeof exposed;
         if (exposedType === "object") {
-          if (isArray(exposed)) {
+          if (isArray$1(exposed)) {
             exposedType = "array";
           } else if (isRef(exposed)) {
             exposedType = "ref";
@@ -5493,7 +5581,7 @@ function getExposeProxy(instance) {
 const classifyRE = /(?:^|[-_])(\w)/g;
 const classify = (str) => str.replace(classifyRE, (c2) => c2.toUpperCase()).replace(/[-_]/g, "");
 function getComponentName(Component2, includeInferred = true) {
-  return isFunction(Component2) ? Component2.displayName || Component2.name : Component2.name || includeInferred && Component2.__name;
+  return isFunction$1(Component2) ? Component2.displayName || Component2.name : Component2.name || includeInferred && Component2.__name;
 }
 function formatComponentName(instance, Component2, isRoot = false) {
   let name = getComponentName(Component2);
@@ -5527,7 +5615,7 @@ const computed = (getterOrOptions, debugOptions) => {
   }
   return c2;
 };
-const version = "3.4.21";
+const version$1 = "3.4.21";
 const warn = warn$1;
 function unwrapper(target) {
   return unref(target);
@@ -5696,7 +5784,7 @@ function clone(src, seen) {
     if (typeof copy !== "undefined") {
       return copy;
     }
-    if (isArray(src)) {
+    if (isArray$1(src)) {
       const len = src.length;
       copy = new Array(len);
       seen.set(src, copy);
@@ -5841,7 +5929,7 @@ function setRef$1(instance, isUnmount = false) {
   if ($templateUniElementRefs && $templateUniElementRefs.length) {
     nextTick(instance, () => {
       $templateUniElementRefs.forEach((templateRef) => {
-        if (isArray(templateRef.v)) {
+        if (isArray$1(templateRef.v)) {
           templateRef.v.forEach((v) => {
             setTemplateRef(templateRef, v, setupState);
           });
@@ -5872,17 +5960,17 @@ function findComponentPublicInstance(mpComponents, id) {
   return null;
 }
 function setTemplateRef({ r: r2, f: f2 }, refValue, setupState) {
-  if (isFunction(r2)) {
+  if (isFunction$1(r2)) {
     r2(refValue, {});
   } else {
-    const _isString = isString(r2);
+    const _isString = isString$1(r2);
     const _isRef = isRef(r2);
     if (_isString || _isRef) {
       if (f2) {
         if (!_isRef) {
           return;
         }
-        if (!isArray(r2.value)) {
+        if (!isArray$1(r2.value)) {
           r2.value = [];
         }
         const existing = r2.value;
@@ -5981,7 +6069,7 @@ function renderComponentRoot(instance) {
     slots,
     attrs,
     emit: emit2,
-    render,
+    render: render2,
     renderCache,
     data,
     setupState,
@@ -6013,7 +6101,7 @@ function renderComponentRoot(instance) {
     if (vnode.shapeFlag & 4) {
       fallthroughAttrs(inheritAttrs, props, propsOptions, attrs);
       const proxyToUse = withProxy || proxy;
-      result = render.call(
+      result = render2.call(
         proxyToUse,
         proxyToUse,
         renderCache,
@@ -6029,8 +6117,8 @@ function renderComponentRoot(instance) {
         propsOptions,
         Component2.props ? attrs : getFunctionalFallthrough(attrs)
       );
-      const render2 = Component2;
-      result = render2.length > 1 ? render2(props, { attrs, slots, emit: emit2 }) : render2(
+      const render22 = Component2;
+      result = render22.length > 1 ? render22(props, { attrs, slots, emit: emit2 }) : render22(
         props,
         null
         /* we know it doesn't need it */
@@ -6078,7 +6166,7 @@ function componentUpdateScopedSlotsFn() {
   const diffData = /* @__PURE__ */ Object.create(null);
   scopedSlotsData.forEach(({ path, index: index2, data }) => {
     const oldScopedSlotData = getValueByDataPath(oldData, path);
-    const diffPath = isString(index2) ? `${path}.${index2}` : `${path}[${index2}]`;
+    const diffPath = isString$1(index2) ? `${path}.${index2}` : `${path}[${index2}]`;
     if (typeof oldScopedSlotData === "undefined" || typeof oldScopedSlotData[index2] === "undefined") {
       diffData[diffPath] = data;
     } else {
@@ -6250,7 +6338,7 @@ function createVueApp(rootComponent, rootProps = null) {
     );
     app._instance = instance.$;
     {
-      devtoolsInitApp(app, version);
+      devtoolsInitApp(app, version$1);
     }
     instance.$app = app;
     instance.$createComponent = createComponent2;
@@ -6263,8 +6351,26 @@ function createVueApp(rootComponent, rootProps = null) {
   };
   return app;
 }
+function useCssVars(getter) {
+  const instance = getCurrentInstance();
+  if (!instance) {
+    warn(`useCssVars is called without current active component instance.`);
+    return;
+  }
+  initCssVarsRender(instance, getter);
+}
+function initCssVarsRender(instance, getter) {
+  instance.ctx.__cssVars = () => {
+    const vars = getter(instance.proxy);
+    const cssVars = {};
+    for (const key in vars) {
+      cssVars[`--${key}`] = vars[key];
+    }
+    return cssVars;
+  };
+}
 function injectLifecycleHook(name, hook, publicThis, instance) {
-  if (isFunction(hook)) {
+  if (isFunction$1(hook)) {
     injectHook(name, hook.bind(publicThis), instance);
   }
 }
@@ -6277,7 +6383,7 @@ function initHooks$1(options, instance, publicThis) {
   Object.keys(options).forEach((name) => {
     if (isUniLifecycleHook(name, options[name], false)) {
       const hooks = options[name];
-      if (isArray(hooks)) {
+      if (isArray$1(hooks)) {
         hooks.forEach((hook) => injectLifecycleHook(name, hook, publicThis, instance));
       } else {
         injectLifecycleHook(name, hooks, publicThis, instance);
@@ -6288,7 +6394,7 @@ function initHooks$1(options, instance, publicThis) {
 function applyOptions$2(options, instance, publicThis) {
   initHooks$1(options, instance, publicThis);
 }
-function set(target, key, val) {
+function set$2(target, key, val) {
   return target[key] = val;
 }
 function $callMethod(method, ...args) {
@@ -6400,7 +6506,7 @@ function initApp(app) {
     uniIdMixin(globalProperties);
   }
   {
-    globalProperties.$set = set;
+    globalProperties.$set = set$2;
     globalProperties.$applyOptions = applyOptions$2;
     globalProperties.$callMethod = $callMethod;
   }
@@ -6455,14 +6561,14 @@ function getCreateApp() {
   }
 }
 function stringifyStyle(value) {
-  if (isString(value)) {
+  if (isString$1(value)) {
     return value;
   }
   return stringify(normalizeStyle(value));
 }
 function stringify(styles) {
   let ret = "";
-  if (!styles || isString(styles)) {
+  if (!styles || isString$1(styles)) {
     return ret;
   }
   for (const key in styles) {
@@ -6473,7 +6579,7 @@ function stringify(styles) {
 function vOn(value, key) {
   const instance = getCurrentInstance();
   const ctx = instance.ctx;
-  const extraKey = typeof key !== "undefined" && (ctx.$mpPlatform === "mp-weixin" || ctx.$mpPlatform === "mp-qq" || ctx.$mpPlatform === "mp-xhs") && (isString(key) || typeof key === "number") ? "_" + key : "";
+  const extraKey = typeof key !== "undefined" && (ctx.$mpPlatform === "mp-weixin" || ctx.$mpPlatform === "mp-qq" || ctx.$mpPlatform === "mp-xhs") && (isString$1(key) || typeof key === "number") ? "_" + key : "";
   const name = "e" + instance.$ei++ + extraKey;
   const mpInstance = ctx.$scope;
   if (!value) {
@@ -6508,7 +6614,7 @@ function createInvoker(initialValue, instance) {
       setTimeout(invoke);
     } else {
       const res = invoke();
-      if (e2.type === "input" && (isArray(res) || isPromise$1(res))) {
+      if (e2.type === "input" && (isArray$1(res) || isPromise$2(res))) {
         return;
       }
       return res;
@@ -6544,16 +6650,16 @@ function patchMPEvent(event, instance) {
       event.detail = typeof event.detail === "object" ? event.detail : {};
       event.detail.markerId = event.markerId;
     }
-    if (isPlainObject(event.detail) && hasOwn(event.detail, "checked") && !hasOwn(event.detail, "value")) {
+    if (isPlainObject$1(event.detail) && hasOwn(event.detail, "checked") && !hasOwn(event.detail, "value")) {
       event.detail.value = event.detail.checked;
     }
-    if (isPlainObject(event.detail)) {
+    if (isPlainObject$1(event.detail)) {
       event.target = extend({}, event.target, event.detail);
     }
   }
 }
 function patchStopImmediatePropagation(e2, value) {
-  if (isArray(value)) {
+  if (isArray$1(value)) {
     const originalStop = e2.stopImmediatePropagation;
     e2.stopImmediatePropagation = () => {
       originalStop && originalStop.call(e2);
@@ -6566,7 +6672,7 @@ function patchStopImmediatePropagation(e2, value) {
 }
 function vFor(source, renderItem) {
   let ret;
-  if (isArray(source) || isString(source)) {
+  if (isArray$1(source) || isString$1(source)) {
     ret = new Array(source.length);
     for (let i = 0, l = source.length; i < l; i++) {
       ret[i] = renderItem(source[i], i, i);
@@ -6648,7 +6754,7 @@ function initWorkletMethods(mpMethods, vueMethods) {
   }
 }
 function initWxsCallMethods(methods, wxsCallMethods) {
-  if (!isArray(wxsCallMethods)) {
+  if (!isArray$1(wxsCallMethods)) {
     return;
   }
   wxsCallMethods.forEach((callMethod) => {
@@ -6750,7 +6856,7 @@ function initBaseInstance(instance, options) {
     ctx._self = {};
   }
   instance.slots = {};
-  if (isArray(options.slots) && options.slots.length) {
+  if (isArray$1(options.slots) && options.slots.length) {
     options.slots.forEach((name) => {
       instance.slots[name] = true;
     });
@@ -6864,10 +6970,10 @@ function initRuntimeHooks(mpOptions, runtimeHooks) {
 }
 const findMixinRuntimeHooks = /* @__PURE__ */ once(() => {
   const runtimeHooks = [];
-  const app = isFunction(getApp) && getApp({ allowDefault: true });
+  const app = isFunction$1(getApp) && getApp({ allowDefault: true });
   if (app && app.$vm && app.$vm.$) {
     const mixins = app.$vm.$.appContext.mixins;
-    if (isArray(mixins)) {
+    if (isArray$1(mixins)) {
       const hooks = Object.keys(MINI_PROGRAM_PAGE_RUNTIME_HOOKS);
       mixins.forEach((mixin) => {
         hooks.forEach((hook) => {
@@ -6937,7 +7043,7 @@ function initCreateApp(parseAppOptions) {
 function initCreateSubpackageApp(parseAppOptions) {
   return function createApp2(vm) {
     const appOptions = parseApp(vm);
-    const app = isFunction(getApp) && getApp({
+    const app = isFunction$1(getApp) && getApp({
       allowDefault: true
     });
     if (!app)
@@ -6960,16 +7066,16 @@ function initCreateSubpackageApp(parseAppOptions) {
   };
 }
 function initAppLifecycle(appOptions, vm) {
-  if (isFunction(appOptions.onLaunch)) {
+  if (isFunction$1(appOptions.onLaunch)) {
     const args = wx.getLaunchOptionsSync && wx.getLaunchOptionsSync();
     appOptions.onLaunch(args);
   }
-  if (isFunction(appOptions.onShow) && wx.onAppShow) {
+  if (isFunction$1(appOptions.onShow) && wx.onAppShow) {
     wx.onAppShow((args) => {
       vm.$callHook("onShow", args);
     });
   }
-  if (isFunction(appOptions.onHide) && wx.onAppHide) {
+  if (isFunction$1(appOptions.onHide) && wx.onAppHide) {
     wx.onAppHide((args) => {
       vm.$callHook("onHide", args);
     });
@@ -7079,7 +7185,7 @@ function initProps(mpComponentOptions) {
 }
 const PROP_TYPES = [String, Number, Boolean, Object, Array, null];
 function parsePropType(type, defaultValue) {
-  if (isArray(type) && type.length === 1) {
+  if (isArray$1(type) && type.length === 1) {
     return type[0];
   }
   return type;
@@ -7089,19 +7195,19 @@ function normalizePropType(type, defaultValue) {
   return PROP_TYPES.indexOf(res) !== -1 ? res : null;
 }
 function initPageProps({ properties }, rawProps) {
-  if (isArray(rawProps)) {
+  if (isArray$1(rawProps)) {
     rawProps.forEach((key) => {
       properties[key] = {
         type: String,
         value: ""
       };
     });
-  } else if (isPlainObject(rawProps)) {
+  } else if (isPlainObject$1(rawProps)) {
     Object.keys(rawProps).forEach((key) => {
       const opts = rawProps[key];
-      if (isPlainObject(opts)) {
+      if (isPlainObject$1(opts)) {
         let value = opts.default;
-        if (isFunction(value)) {
+        if (isFunction$1(value)) {
           value = value();
         }
         const type = opts.type;
@@ -7123,7 +7229,7 @@ function findPropsData(properties, isPage2) {
 }
 function findPagePropsData(properties) {
   const propsData = {};
-  if (isPlainObject(properties)) {
+  if (isPlainObject$1(properties)) {
     Object.keys(properties).forEach((name) => {
       if (builtInProps.indexOf(name) === -1) {
         propsData[name] = resolvePropValue(properties[name]);
@@ -7134,7 +7240,7 @@ function findPagePropsData(properties) {
 }
 function initFormField(vm) {
   const vueOptions = vm.$options;
-  if (isArray(vueOptions.behaviors) && vueOptions.behaviors.includes("uni://form-field")) {
+  if (isArray$1(vueOptions.behaviors) && vueOptions.behaviors.includes("uni://form-field")) {
     vm.$watch("modelValue", () => {
       vm.$scope && vm.$scope.setData({
         name: vm.name,
@@ -7211,11 +7317,11 @@ function initBehaviors(vueOptions) {
     vueOptions.props = vueProps = [];
   }
   const behaviors = [];
-  if (isArray(vueBehaviors)) {
+  if (isArray$1(vueBehaviors)) {
     vueBehaviors.forEach((behavior) => {
       behaviors.push(behavior.replace("uni://", "wx://"));
       if (behavior === "uni://form-field") {
-        if (isArray(vueProps)) {
+        if (isArray$1(vueProps)) {
           vueProps.push("name");
           vueProps.push("modelValue");
         } else {
@@ -7245,7 +7351,7 @@ function parseComponent(vueOptions, { parse, mocks: mocks2, isPage: isPage2, isP
     addGlobalClass: true,
     pureDataPattern: /^uP$/
   };
-  if (isArray(vueOptions.mixins)) {
+  if (isArray$1(vueOptions.mixins)) {
     vueOptions.mixins.forEach((item) => {
       if (isObject$1(item.options)) {
         extend(options, item.options);
@@ -7479,12 +7585,33 @@ const createSubpackageApp = initCreateSubpackageApp();
   wx.createPluginApp = global.createPluginApp = createPluginApp;
   wx.createSubpackageApp = global.createSubpackageApp = createSubpackageApp;
 }
+function set(target, key, val) {
+  if (Array.isArray(target)) {
+    target.length = Math.max(target.length, key);
+    target.splice(key, 1, val);
+    return val;
+  }
+  target[key] = val;
+  return val;
+}
+function del(target, key) {
+  if (Array.isArray(target)) {
+    target.splice(key, 1);
+    return;
+  }
+  delete target[key];
+}
 /*!
  * pinia v2.1.7
  * (c) 2023 Eduardo San Martin Morote
  * @license MIT
  */
+let activePinia;
+const setActivePinia = (pinia) => activePinia = pinia;
 const piniaSymbol = Symbol("pinia");
+function isPlainObject(o2) {
+  return o2 && typeof o2 === "object" && Object.prototype.toString.call(o2) === "[object Object]" && typeof o2.toJSON !== "function";
+}
 var MutationType;
 (function(MutationType2) {
   MutationType2["direct"] = "direct";
@@ -7544,6 +7671,7 @@ function createPinia() {
   let toBeInstalled = [];
   const pinia = markRaw({
     install(app) {
+      setActivePinia(pinia);
       {
         pinia._a = app;
         app.provide(piniaSymbol, pinia);
@@ -7573,6 +7701,483 @@ function createPinia() {
   }
   return pinia;
 }
+function patchObject(newState, oldState) {
+  for (const key in oldState) {
+    const subPatch = oldState[key];
+    if (!(key in newState)) {
+      continue;
+    }
+    const targetValue = newState[key];
+    if (isPlainObject(targetValue) && isPlainObject(subPatch) && !isRef(subPatch) && !isReactive(subPatch)) {
+      newState[key] = patchObject(targetValue, subPatch);
+    } else {
+      {
+        newState[key] = subPatch;
+      }
+    }
+  }
+  return newState;
+}
+const noop = () => {
+};
+function addSubscription(subscriptions, callback, detached, onCleanup = noop) {
+  subscriptions.push(callback);
+  const removeSubscription = () => {
+    const idx = subscriptions.indexOf(callback);
+    if (idx > -1) {
+      subscriptions.splice(idx, 1);
+      onCleanup();
+    }
+  };
+  if (!detached && getCurrentScope()) {
+    onScopeDispose(removeSubscription);
+  }
+  return removeSubscription;
+}
+function triggerSubscriptions(subscriptions, ...args) {
+  subscriptions.slice().forEach((callback) => {
+    callback(...args);
+  });
+}
+const fallbackRunWithContext = (fn) => fn();
+function mergeReactiveObjects(target, patchToApply) {
+  if (target instanceof Map && patchToApply instanceof Map) {
+    patchToApply.forEach((value, key) => target.set(key, value));
+  }
+  if (target instanceof Set && patchToApply instanceof Set) {
+    patchToApply.forEach(target.add, target);
+  }
+  for (const key in patchToApply) {
+    if (!patchToApply.hasOwnProperty(key))
+      continue;
+    const subPatch = patchToApply[key];
+    const targetValue = target[key];
+    if (isPlainObject(targetValue) && isPlainObject(subPatch) && target.hasOwnProperty(key) && !isRef(subPatch) && !isReactive(subPatch)) {
+      target[key] = mergeReactiveObjects(targetValue, subPatch);
+    } else {
+      target[key] = subPatch;
+    }
+  }
+  return target;
+}
+const skipHydrateSymbol = Symbol("pinia:skipHydration");
+function shouldHydrate(obj) {
+  return !isPlainObject(obj) || !obj.hasOwnProperty(skipHydrateSymbol);
+}
+const { assign } = Object;
+function isComputed(o2) {
+  return !!(isRef(o2) && o2.effect);
+}
+function createOptionsStore(id, options, pinia, hot) {
+  const { state, actions, getters } = options;
+  const initialState = pinia.state.value[id];
+  let store;
+  function setup() {
+    if (!initialState && !hot) {
+      {
+        pinia.state.value[id] = state ? state() : {};
+      }
+    }
+    const localState = hot ? (
+      // use ref() to unwrap refs inside state TODO: check if this is still necessary
+      toRefs(ref(state ? state() : {}).value)
+    ) : toRefs(pinia.state.value[id]);
+    return assign(localState, actions, Object.keys(getters || {}).reduce((computedGetters, name) => {
+      if (name in localState) {
+        console.warn(`[🍍]: A getter cannot have the same name as another state property. Rename one of them. Found with "${name}" in store "${id}".`);
+      }
+      computedGetters[name] = markRaw(computed(() => {
+        setActivePinia(pinia);
+        const store2 = pinia._s.get(id);
+        return getters[name].call(store2, store2);
+      }));
+      return computedGetters;
+    }, {}));
+  }
+  store = createSetupStore(id, setup, options, pinia, hot, true);
+  return store;
+}
+function createSetupStore($id, setup, options = {}, pinia, hot, isOptionsStore) {
+  let scope;
+  const optionsForPlugin = assign({ actions: {} }, options);
+  if (!pinia._e.active) {
+    throw new Error("Pinia destroyed");
+  }
+  const $subscribeOptions = {
+    deep: true
+    // flush: 'post',
+  };
+  {
+    $subscribeOptions.onTrigger = (event) => {
+      if (isListening) {
+        debuggerEvents = event;
+      } else if (isListening == false && !store._hotUpdating) {
+        if (Array.isArray(debuggerEvents)) {
+          debuggerEvents.push(event);
+        } else {
+          console.error("🍍 debuggerEvents should be an array. This is most likely an internal Pinia bug.");
+        }
+      }
+    };
+  }
+  let isListening;
+  let isSyncListening;
+  let subscriptions = [];
+  let actionSubscriptions = [];
+  let debuggerEvents;
+  const initialState = pinia.state.value[$id];
+  if (!isOptionsStore && !initialState && !hot) {
+    {
+      pinia.state.value[$id] = {};
+    }
+  }
+  const hotState = ref({});
+  let activeListener;
+  function $patch(partialStateOrMutator) {
+    let subscriptionMutation;
+    isListening = isSyncListening = false;
+    {
+      debuggerEvents = [];
+    }
+    if (typeof partialStateOrMutator === "function") {
+      partialStateOrMutator(pinia.state.value[$id]);
+      subscriptionMutation = {
+        type: MutationType.patchFunction,
+        storeId: $id,
+        events: debuggerEvents
+      };
+    } else {
+      mergeReactiveObjects(pinia.state.value[$id], partialStateOrMutator);
+      subscriptionMutation = {
+        type: MutationType.patchObject,
+        payload: partialStateOrMutator,
+        storeId: $id,
+        events: debuggerEvents
+      };
+    }
+    const myListenerId = activeListener = Symbol();
+    nextTick$1().then(() => {
+      if (activeListener === myListenerId) {
+        isListening = true;
+      }
+    });
+    isSyncListening = true;
+    triggerSubscriptions(subscriptions, subscriptionMutation, pinia.state.value[$id]);
+  }
+  const $reset = isOptionsStore ? function $reset2() {
+    const { state } = options;
+    const newState = state ? state() : {};
+    this.$patch(($state) => {
+      assign($state, newState);
+    });
+  } : (
+    /* istanbul ignore next */
+    () => {
+      throw new Error(`🍍: Store "${$id}" is built using the setup syntax and does not implement $reset().`);
+    }
+  );
+  function $dispose() {
+    scope.stop();
+    subscriptions = [];
+    actionSubscriptions = [];
+    pinia._s.delete($id);
+  }
+  function wrapAction(name, action) {
+    return function() {
+      setActivePinia(pinia);
+      const args = Array.from(arguments);
+      const afterCallbackList = [];
+      const onErrorCallbackList = [];
+      function after(callback) {
+        afterCallbackList.push(callback);
+      }
+      function onError2(callback) {
+        onErrorCallbackList.push(callback);
+      }
+      triggerSubscriptions(actionSubscriptions, {
+        args,
+        name,
+        store,
+        after,
+        onError: onError2
+      });
+      let ret;
+      try {
+        ret = action.apply(this && this.$id === $id ? this : store, args);
+      } catch (error) {
+        triggerSubscriptions(onErrorCallbackList, error);
+        throw error;
+      }
+      if (ret instanceof Promise) {
+        return ret.then((value) => {
+          triggerSubscriptions(afterCallbackList, value);
+          return value;
+        }).catch((error) => {
+          triggerSubscriptions(onErrorCallbackList, error);
+          return Promise.reject(error);
+        });
+      }
+      triggerSubscriptions(afterCallbackList, ret);
+      return ret;
+    };
+  }
+  const _hmrPayload = /* @__PURE__ */ markRaw({
+    actions: {},
+    getters: {},
+    state: [],
+    hotState
+  });
+  const partialStore = {
+    _p: pinia,
+    // _s: scope,
+    $id,
+    $onAction: addSubscription.bind(null, actionSubscriptions),
+    $patch,
+    $reset,
+    $subscribe(callback, options2 = {}) {
+      const removeSubscription = addSubscription(subscriptions, callback, options2.detached, () => stopWatcher());
+      const stopWatcher = scope.run(() => watch(() => pinia.state.value[$id], (state) => {
+        if (options2.flush === "sync" ? isSyncListening : isListening) {
+          callback({
+            storeId: $id,
+            type: MutationType.direct,
+            events: debuggerEvents
+          }, state);
+        }
+      }, assign({}, $subscribeOptions, options2)));
+      return removeSubscription;
+    },
+    $dispose
+  };
+  const store = reactive(assign(
+    {
+      _hmrPayload,
+      _customProperties: markRaw(/* @__PURE__ */ new Set())
+      // devtools custom properties
+    },
+    partialStore
+    // must be added later
+    // setupStore
+  ));
+  pinia._s.set($id, store);
+  const runWithContext = pinia._a && pinia._a.runWithContext || fallbackRunWithContext;
+  const setupStore = runWithContext(() => pinia._e.run(() => (scope = effectScope()).run(setup)));
+  for (const key in setupStore) {
+    const prop = setupStore[key];
+    if (isRef(prop) && !isComputed(prop) || isReactive(prop)) {
+      if (hot) {
+        set(hotState.value, key, toRef(setupStore, key));
+      } else if (!isOptionsStore) {
+        if (initialState && shouldHydrate(prop)) {
+          if (isRef(prop)) {
+            prop.value = initialState[key];
+          } else {
+            mergeReactiveObjects(prop, initialState[key]);
+          }
+        }
+        {
+          pinia.state.value[$id][key] = prop;
+        }
+      }
+      {
+        _hmrPayload.state.push(key);
+      }
+    } else if (typeof prop === "function") {
+      const actionValue = hot ? prop : wrapAction(key, prop);
+      {
+        setupStore[key] = actionValue;
+      }
+      {
+        _hmrPayload.actions[key] = prop;
+      }
+      optionsForPlugin.actions[key] = prop;
+    } else {
+      if (isComputed(prop)) {
+        _hmrPayload.getters[key] = isOptionsStore ? (
+          // @ts-expect-error
+          options.getters[key]
+        ) : prop;
+        if (IS_CLIENT) {
+          const getters = setupStore._getters || // @ts-expect-error: same
+          (setupStore._getters = markRaw([]));
+          getters.push(key);
+        }
+      }
+    }
+  }
+  {
+    assign(store, setupStore);
+    assign(toRaw(store), setupStore);
+  }
+  Object.defineProperty(store, "$state", {
+    get: () => hot ? hotState.value : pinia.state.value[$id],
+    set: (state) => {
+      if (hot) {
+        throw new Error("cannot set hotState");
+      }
+      $patch(($state) => {
+        assign($state, state);
+      });
+    }
+  });
+  {
+    store._hotUpdate = markRaw((newStore) => {
+      store._hotUpdating = true;
+      newStore._hmrPayload.state.forEach((stateKey) => {
+        if (stateKey in store.$state) {
+          const newStateTarget = newStore.$state[stateKey];
+          const oldStateSource = store.$state[stateKey];
+          if (typeof newStateTarget === "object" && isPlainObject(newStateTarget) && isPlainObject(oldStateSource)) {
+            patchObject(newStateTarget, oldStateSource);
+          } else {
+            newStore.$state[stateKey] = oldStateSource;
+          }
+        }
+        set(store, stateKey, toRef(newStore.$state, stateKey));
+      });
+      Object.keys(store.$state).forEach((stateKey) => {
+        if (!(stateKey in newStore.$state)) {
+          del(store, stateKey);
+        }
+      });
+      isListening = false;
+      isSyncListening = false;
+      pinia.state.value[$id] = toRef(newStore._hmrPayload, "hotState");
+      isSyncListening = true;
+      nextTick$1().then(() => {
+        isListening = true;
+      });
+      for (const actionName in newStore._hmrPayload.actions) {
+        const action = newStore[actionName];
+        set(store, actionName, wrapAction(actionName, action));
+      }
+      for (const getterName in newStore._hmrPayload.getters) {
+        const getter = newStore._hmrPayload.getters[getterName];
+        const getterValue = isOptionsStore ? (
+          // special handling of options api
+          computed(() => {
+            setActivePinia(pinia);
+            return getter.call(store, store);
+          })
+        ) : getter;
+        set(store, getterName, getterValue);
+      }
+      Object.keys(store._hmrPayload.getters).forEach((key) => {
+        if (!(key in newStore._hmrPayload.getters)) {
+          del(store, key);
+        }
+      });
+      Object.keys(store._hmrPayload.actions).forEach((key) => {
+        if (!(key in newStore._hmrPayload.actions)) {
+          del(store, key);
+        }
+      });
+      store._hmrPayload = newStore._hmrPayload;
+      store._getters = newStore._getters;
+      store._hotUpdating = false;
+    });
+  }
+  if (USE_DEVTOOLS) {
+    const nonEnumerable = {
+      writable: true,
+      configurable: true,
+      // avoid warning on devtools trying to display this property
+      enumerable: false
+    };
+    ["_p", "_hmrPayload", "_getters", "_customProperties"].forEach((p2) => {
+      Object.defineProperty(store, p2, assign({ value: store[p2] }, nonEnumerable));
+    });
+  }
+  pinia._p.forEach((extender) => {
+    if (USE_DEVTOOLS) {
+      const extensions = scope.run(() => extender({
+        store,
+        app: pinia._a,
+        pinia,
+        options: optionsForPlugin
+      }));
+      Object.keys(extensions || {}).forEach((key) => store._customProperties.add(key));
+      assign(store, extensions);
+    } else {
+      assign(store, scope.run(() => extender({
+        store,
+        app: pinia._a,
+        pinia,
+        options: optionsForPlugin
+      })));
+    }
+  });
+  if (store.$state && typeof store.$state === "object" && typeof store.$state.constructor === "function" && !store.$state.constructor.toString().includes("[native code]")) {
+    console.warn(`[🍍]: The "state" must be a plain object. It cannot be
+	state: () => new MyClass()
+Found in store "${store.$id}".`);
+  }
+  if (initialState && isOptionsStore && options.hydrate) {
+    options.hydrate(store.$state, initialState);
+  }
+  isListening = true;
+  isSyncListening = true;
+  return store;
+}
+function defineStore(idOrOptions, setup, setupOptions) {
+  let id;
+  let options;
+  const isSetupStore = typeof setup === "function";
+  if (typeof idOrOptions === "string") {
+    id = idOrOptions;
+    options = isSetupStore ? setupOptions : setup;
+  } else {
+    options = idOrOptions;
+    id = idOrOptions.id;
+    if (typeof id !== "string") {
+      throw new Error(`[🍍]: "defineStore()" must be passed a store id as its first argument.`);
+    }
+  }
+  function useStore(pinia, hot) {
+    const hasContext = hasInjectionContext();
+    pinia = // in test mode, ignore the argument provided as we can always retrieve a
+    // pinia instance with getActivePinia()
+    pinia || (hasContext ? inject(piniaSymbol, null) : null);
+    if (pinia)
+      setActivePinia(pinia);
+    if (!activePinia) {
+      throw new Error(`[🍍]: "getActivePinia()" was called but there was no active Pinia. Are you trying to use a store before calling "app.use(pinia)"?
+See https://pinia.vuejs.org/core-concepts/outside-component-usage.html for help.
+This will fail in production.`);
+    }
+    pinia = activePinia;
+    if (!pinia._s.has(id)) {
+      if (isSetupStore) {
+        createSetupStore(id, setup, options, pinia);
+      } else {
+        createOptionsStore(id, options, pinia);
+      }
+      {
+        useStore._pinia = pinia;
+      }
+    }
+    const store = pinia._s.get(id);
+    if (hot) {
+      const hotId = "__hot:" + id;
+      const newStore = isSetupStore ? createSetupStore(hotId, setup, options, pinia, true) : createOptionsStore(hotId, assign({}, options), pinia, true);
+      hot._hotUpdate(newStore);
+      delete pinia.state.value[hotId];
+      pinia._s.delete(hotId);
+    }
+    if (IS_CLIENT) {
+      const currentInstance2 = getCurrentInstance();
+      if (currentInstance2 && currentInstance2.proxy && // avoid adding stores that are just built for hot module replacement
+      !hot) {
+        const vm = currentInstance2.proxy;
+        const cache = "_pStores" in vm ? vm._pStores : vm._pStores = {};
+        cache[id] = store;
+      }
+    }
+    return store;
+  }
+  useStore.$id = id;
+  return useStore;
+}
 /*!
  * vuex v4.1.0
  * (c) 2022 Evan You
@@ -7587,7 +8192,7 @@ function forEachValue(obj, fn) {
 function isObject(obj) {
   return obj !== null && typeof obj === "object";
 }
-function isPromise(val) {
+function isPromise$1(val) {
   return val && typeof val.then === "function";
 }
 function assert(condition, msg) {
@@ -7788,7 +8393,7 @@ function registerAction(store, type, handler, local) {
       rootGetters: store.getters,
       rootState: store.state
     }, payload);
-    if (!isPromise(res)) {
+    if (!isPromise$1(res)) {
       res = Promise.resolve(res);
     }
     if (store._devtoolHook) {
@@ -8253,6 +8858,11 @@ const onShow = /* @__PURE__ */ createLifeCycleHook(
   1 | 2
   /* HookFlags.PAGE */
 );
+const onHide = /* @__PURE__ */ createLifeCycleHook(
+  ON_HIDE,
+  1 | 2
+  /* HookFlags.PAGE */
+);
 const onLoad = /* @__PURE__ */ createLifeCycleHook(
   ON_LOAD,
   2
@@ -8263,28 +8873,4621 @@ const onUnload = /* @__PURE__ */ createLifeCycleHook(
   2
   /* HookFlags.PAGE */
 );
+const onShareTimeline = /* @__PURE__ */ createLifeCycleHook(
+  ON_SHARE_TIMELINE,
+  2
+  /* HookFlags.PAGE */
+);
+const onShareAppMessage = /* @__PURE__ */ createLifeCycleHook(
+  ON_SHARE_APP_MESSAGE,
+  2
+  /* HookFlags.PAGE */
+);
+var browser = {};
+var canPromise$1 = function() {
+  return typeof Promise === "function" && Promise.prototype && Promise.prototype.then;
+};
+var qrcode = {};
+var utils$1 = {};
+let toSJISFunction;
+const CODEWORDS_COUNT = [
+  0,
+  // Not used
+  26,
+  44,
+  70,
+  100,
+  134,
+  172,
+  196,
+  242,
+  292,
+  346,
+  404,
+  466,
+  532,
+  581,
+  655,
+  733,
+  815,
+  901,
+  991,
+  1085,
+  1156,
+  1258,
+  1364,
+  1474,
+  1588,
+  1706,
+  1828,
+  1921,
+  2051,
+  2185,
+  2323,
+  2465,
+  2611,
+  2761,
+  2876,
+  3034,
+  3196,
+  3362,
+  3532,
+  3706
+];
+utils$1.getSymbolSize = function getSymbolSize(version2) {
+  if (!version2)
+    throw new Error('"version" cannot be null or undefined');
+  if (version2 < 1 || version2 > 40)
+    throw new Error('"version" should be in range from 1 to 40');
+  return version2 * 4 + 17;
+};
+utils$1.getSymbolTotalCodewords = function getSymbolTotalCodewords(version2) {
+  return CODEWORDS_COUNT[version2];
+};
+utils$1.getBCHDigit = function(data) {
+  let digit = 0;
+  while (data !== 0) {
+    digit++;
+    data >>>= 1;
+  }
+  return digit;
+};
+utils$1.setToSJISFunction = function setToSJISFunction(f2) {
+  if (typeof f2 !== "function") {
+    throw new Error('"toSJISFunc" is not a valid function.');
+  }
+  toSJISFunction = f2;
+};
+utils$1.isKanjiModeEnabled = function() {
+  return typeof toSJISFunction !== "undefined";
+};
+utils$1.toSJIS = function toSJIS(kanji2) {
+  return toSJISFunction(kanji2);
+};
+var errorCorrectionLevel = {};
+(function(exports2) {
+  exports2.L = { bit: 1 };
+  exports2.M = { bit: 0 };
+  exports2.Q = { bit: 3 };
+  exports2.H = { bit: 2 };
+  function fromString(string) {
+    if (typeof string !== "string") {
+      throw new Error("Param is not a string");
+    }
+    const lcStr = string.toLowerCase();
+    switch (lcStr) {
+      case "l":
+      case "low":
+        return exports2.L;
+      case "m":
+      case "medium":
+        return exports2.M;
+      case "q":
+      case "quartile":
+        return exports2.Q;
+      case "h":
+      case "high":
+        return exports2.H;
+      default:
+        throw new Error("Unknown EC Level: " + string);
+    }
+  }
+  exports2.isValid = function isValid2(level) {
+    return level && typeof level.bit !== "undefined" && level.bit >= 0 && level.bit < 4;
+  };
+  exports2.from = function from(value, defaultValue) {
+    if (exports2.isValid(value)) {
+      return value;
+    }
+    try {
+      return fromString(value);
+    } catch (e2) {
+      return defaultValue;
+    }
+  };
+})(errorCorrectionLevel);
+function BitBuffer$1() {
+  this.buffer = [];
+  this.length = 0;
+}
+BitBuffer$1.prototype = {
+  get: function(index2) {
+    const bufIndex = Math.floor(index2 / 8);
+    return (this.buffer[bufIndex] >>> 7 - index2 % 8 & 1) === 1;
+  },
+  put: function(num, length) {
+    for (let i = 0; i < length; i++) {
+      this.putBit((num >>> length - i - 1 & 1) === 1);
+    }
+  },
+  getLengthInBits: function() {
+    return this.length;
+  },
+  putBit: function(bit) {
+    const bufIndex = Math.floor(this.length / 8);
+    if (this.buffer.length <= bufIndex) {
+      this.buffer.push(0);
+    }
+    if (bit) {
+      this.buffer[bufIndex] |= 128 >>> this.length % 8;
+    }
+    this.length++;
+  }
+};
+var bitBuffer = BitBuffer$1;
+function BitMatrix$1(size2) {
+  if (!size2 || size2 < 1) {
+    throw new Error("BitMatrix size must be defined and greater than 0");
+  }
+  this.size = size2;
+  this.data = new Uint8Array(size2 * size2);
+  this.reservedBit = new Uint8Array(size2 * size2);
+}
+BitMatrix$1.prototype.set = function(row, col, value, reserved) {
+  const index2 = row * this.size + col;
+  this.data[index2] = value;
+  if (reserved)
+    this.reservedBit[index2] = true;
+};
+BitMatrix$1.prototype.get = function(row, col) {
+  return this.data[row * this.size + col];
+};
+BitMatrix$1.prototype.xor = function(row, col, value) {
+  this.data[row * this.size + col] ^= value;
+};
+BitMatrix$1.prototype.isReserved = function(row, col) {
+  return this.reservedBit[row * this.size + col];
+};
+var bitMatrix = BitMatrix$1;
+var alignmentPattern = {};
+(function(exports2) {
+  const getSymbolSize3 = utils$1.getSymbolSize;
+  exports2.getRowColCoords = function getRowColCoords(version2) {
+    if (version2 === 1)
+      return [];
+    const posCount = Math.floor(version2 / 7) + 2;
+    const size2 = getSymbolSize3(version2);
+    const intervals = size2 === 145 ? 26 : Math.ceil((size2 - 13) / (2 * posCount - 2)) * 2;
+    const positions = [size2 - 7];
+    for (let i = 1; i < posCount - 1; i++) {
+      positions[i] = positions[i - 1] - intervals;
+    }
+    positions.push(6);
+    return positions.reverse();
+  };
+  exports2.getPositions = function getPositions2(version2) {
+    const coords = [];
+    const pos = exports2.getRowColCoords(version2);
+    const posLength = pos.length;
+    for (let i = 0; i < posLength; i++) {
+      for (let j = 0; j < posLength; j++) {
+        if (i === 0 && j === 0 || // top-left
+        i === 0 && j === posLength - 1 || // bottom-left
+        i === posLength - 1 && j === 0) {
+          continue;
+        }
+        coords.push([pos[i], pos[j]]);
+      }
+    }
+    return coords;
+  };
+})(alignmentPattern);
+var finderPattern = {};
+const getSymbolSize2 = utils$1.getSymbolSize;
+const FINDER_PATTERN_SIZE = 7;
+finderPattern.getPositions = function getPositions(version2) {
+  const size2 = getSymbolSize2(version2);
+  return [
+    // top-left
+    [0, 0],
+    // top-right
+    [size2 - FINDER_PATTERN_SIZE, 0],
+    // bottom-left
+    [0, size2 - FINDER_PATTERN_SIZE]
+  ];
+};
+var maskPattern = {};
+(function(exports2) {
+  exports2.Patterns = {
+    PATTERN000: 0,
+    PATTERN001: 1,
+    PATTERN010: 2,
+    PATTERN011: 3,
+    PATTERN100: 4,
+    PATTERN101: 5,
+    PATTERN110: 6,
+    PATTERN111: 7
+  };
+  const PenaltyScores = {
+    N1: 3,
+    N2: 3,
+    N3: 40,
+    N4: 10
+  };
+  exports2.isValid = function isValid2(mask) {
+    return mask != null && mask !== "" && !isNaN(mask) && mask >= 0 && mask <= 7;
+  };
+  exports2.from = function from(value) {
+    return exports2.isValid(value) ? parseInt(value, 10) : void 0;
+  };
+  exports2.getPenaltyN1 = function getPenaltyN1(data) {
+    const size2 = data.size;
+    let points = 0;
+    let sameCountCol = 0;
+    let sameCountRow = 0;
+    let lastCol = null;
+    let lastRow = null;
+    for (let row = 0; row < size2; row++) {
+      sameCountCol = sameCountRow = 0;
+      lastCol = lastRow = null;
+      for (let col = 0; col < size2; col++) {
+        let module2 = data.get(row, col);
+        if (module2 === lastCol) {
+          sameCountCol++;
+        } else {
+          if (sameCountCol >= 5)
+            points += PenaltyScores.N1 + (sameCountCol - 5);
+          lastCol = module2;
+          sameCountCol = 1;
+        }
+        module2 = data.get(col, row);
+        if (module2 === lastRow) {
+          sameCountRow++;
+        } else {
+          if (sameCountRow >= 5)
+            points += PenaltyScores.N1 + (sameCountRow - 5);
+          lastRow = module2;
+          sameCountRow = 1;
+        }
+      }
+      if (sameCountCol >= 5)
+        points += PenaltyScores.N1 + (sameCountCol - 5);
+      if (sameCountRow >= 5)
+        points += PenaltyScores.N1 + (sameCountRow - 5);
+    }
+    return points;
+  };
+  exports2.getPenaltyN2 = function getPenaltyN2(data) {
+    const size2 = data.size;
+    let points = 0;
+    for (let row = 0; row < size2 - 1; row++) {
+      for (let col = 0; col < size2 - 1; col++) {
+        const last = data.get(row, col) + data.get(row, col + 1) + data.get(row + 1, col) + data.get(row + 1, col + 1);
+        if (last === 4 || last === 0)
+          points++;
+      }
+    }
+    return points * PenaltyScores.N2;
+  };
+  exports2.getPenaltyN3 = function getPenaltyN3(data) {
+    const size2 = data.size;
+    let points = 0;
+    let bitsCol = 0;
+    let bitsRow = 0;
+    for (let row = 0; row < size2; row++) {
+      bitsCol = bitsRow = 0;
+      for (let col = 0; col < size2; col++) {
+        bitsCol = bitsCol << 1 & 2047 | data.get(row, col);
+        if (col >= 10 && (bitsCol === 1488 || bitsCol === 93))
+          points++;
+        bitsRow = bitsRow << 1 & 2047 | data.get(col, row);
+        if (col >= 10 && (bitsRow === 1488 || bitsRow === 93))
+          points++;
+      }
+    }
+    return points * PenaltyScores.N3;
+  };
+  exports2.getPenaltyN4 = function getPenaltyN4(data) {
+    let darkCount = 0;
+    const modulesCount = data.data.length;
+    for (let i = 0; i < modulesCount; i++)
+      darkCount += data.data[i];
+    const k = Math.abs(Math.ceil(darkCount * 100 / modulesCount / 5) - 10);
+    return k * PenaltyScores.N4;
+  };
+  function getMaskAt(maskPattern2, i, j) {
+    switch (maskPattern2) {
+      case exports2.Patterns.PATTERN000:
+        return (i + j) % 2 === 0;
+      case exports2.Patterns.PATTERN001:
+        return i % 2 === 0;
+      case exports2.Patterns.PATTERN010:
+        return j % 3 === 0;
+      case exports2.Patterns.PATTERN011:
+        return (i + j) % 3 === 0;
+      case exports2.Patterns.PATTERN100:
+        return (Math.floor(i / 2) + Math.floor(j / 3)) % 2 === 0;
+      case exports2.Patterns.PATTERN101:
+        return i * j % 2 + i * j % 3 === 0;
+      case exports2.Patterns.PATTERN110:
+        return (i * j % 2 + i * j % 3) % 2 === 0;
+      case exports2.Patterns.PATTERN111:
+        return (i * j % 3 + (i + j) % 2) % 2 === 0;
+      default:
+        throw new Error("bad maskPattern:" + maskPattern2);
+    }
+  }
+  exports2.applyMask = function applyMask(pattern, data) {
+    const size2 = data.size;
+    for (let col = 0; col < size2; col++) {
+      for (let row = 0; row < size2; row++) {
+        if (data.isReserved(row, col))
+          continue;
+        data.xor(row, col, getMaskAt(pattern, row, col));
+      }
+    }
+  };
+  exports2.getBestMask = function getBestMask(data, setupFormatFunc) {
+    const numPatterns = Object.keys(exports2.Patterns).length;
+    let bestPattern = 0;
+    let lowerPenalty = Infinity;
+    for (let p2 = 0; p2 < numPatterns; p2++) {
+      setupFormatFunc(p2);
+      exports2.applyMask(p2, data);
+      const penalty = exports2.getPenaltyN1(data) + exports2.getPenaltyN2(data) + exports2.getPenaltyN3(data) + exports2.getPenaltyN4(data);
+      exports2.applyMask(p2, data);
+      if (penalty < lowerPenalty) {
+        lowerPenalty = penalty;
+        bestPattern = p2;
+      }
+    }
+    return bestPattern;
+  };
+})(maskPattern);
+var errorCorrectionCode = {};
+const ECLevel$1 = errorCorrectionLevel;
+const EC_BLOCKS_TABLE = [
+  // L  M  Q  H
+  1,
+  1,
+  1,
+  1,
+  1,
+  1,
+  1,
+  1,
+  1,
+  1,
+  2,
+  2,
+  1,
+  2,
+  2,
+  4,
+  1,
+  2,
+  4,
+  4,
+  2,
+  4,
+  4,
+  4,
+  2,
+  4,
+  6,
+  5,
+  2,
+  4,
+  6,
+  6,
+  2,
+  5,
+  8,
+  8,
+  4,
+  5,
+  8,
+  8,
+  4,
+  5,
+  8,
+  11,
+  4,
+  8,
+  10,
+  11,
+  4,
+  9,
+  12,
+  16,
+  4,
+  9,
+  16,
+  16,
+  6,
+  10,
+  12,
+  18,
+  6,
+  10,
+  17,
+  16,
+  6,
+  11,
+  16,
+  19,
+  6,
+  13,
+  18,
+  21,
+  7,
+  14,
+  21,
+  25,
+  8,
+  16,
+  20,
+  25,
+  8,
+  17,
+  23,
+  25,
+  9,
+  17,
+  23,
+  34,
+  9,
+  18,
+  25,
+  30,
+  10,
+  20,
+  27,
+  32,
+  12,
+  21,
+  29,
+  35,
+  12,
+  23,
+  34,
+  37,
+  12,
+  25,
+  34,
+  40,
+  13,
+  26,
+  35,
+  42,
+  14,
+  28,
+  38,
+  45,
+  15,
+  29,
+  40,
+  48,
+  16,
+  31,
+  43,
+  51,
+  17,
+  33,
+  45,
+  54,
+  18,
+  35,
+  48,
+  57,
+  19,
+  37,
+  51,
+  60,
+  19,
+  38,
+  53,
+  63,
+  20,
+  40,
+  56,
+  66,
+  21,
+  43,
+  59,
+  70,
+  22,
+  45,
+  62,
+  74,
+  24,
+  47,
+  65,
+  77,
+  25,
+  49,
+  68,
+  81
+];
+const EC_CODEWORDS_TABLE = [
+  // L  M  Q  H
+  7,
+  10,
+  13,
+  17,
+  10,
+  16,
+  22,
+  28,
+  15,
+  26,
+  36,
+  44,
+  20,
+  36,
+  52,
+  64,
+  26,
+  48,
+  72,
+  88,
+  36,
+  64,
+  96,
+  112,
+  40,
+  72,
+  108,
+  130,
+  48,
+  88,
+  132,
+  156,
+  60,
+  110,
+  160,
+  192,
+  72,
+  130,
+  192,
+  224,
+  80,
+  150,
+  224,
+  264,
+  96,
+  176,
+  260,
+  308,
+  104,
+  198,
+  288,
+  352,
+  120,
+  216,
+  320,
+  384,
+  132,
+  240,
+  360,
+  432,
+  144,
+  280,
+  408,
+  480,
+  168,
+  308,
+  448,
+  532,
+  180,
+  338,
+  504,
+  588,
+  196,
+  364,
+  546,
+  650,
+  224,
+  416,
+  600,
+  700,
+  224,
+  442,
+  644,
+  750,
+  252,
+  476,
+  690,
+  816,
+  270,
+  504,
+  750,
+  900,
+  300,
+  560,
+  810,
+  960,
+  312,
+  588,
+  870,
+  1050,
+  336,
+  644,
+  952,
+  1110,
+  360,
+  700,
+  1020,
+  1200,
+  390,
+  728,
+  1050,
+  1260,
+  420,
+  784,
+  1140,
+  1350,
+  450,
+  812,
+  1200,
+  1440,
+  480,
+  868,
+  1290,
+  1530,
+  510,
+  924,
+  1350,
+  1620,
+  540,
+  980,
+  1440,
+  1710,
+  570,
+  1036,
+  1530,
+  1800,
+  570,
+  1064,
+  1590,
+  1890,
+  600,
+  1120,
+  1680,
+  1980,
+  630,
+  1204,
+  1770,
+  2100,
+  660,
+  1260,
+  1860,
+  2220,
+  720,
+  1316,
+  1950,
+  2310,
+  750,
+  1372,
+  2040,
+  2430
+];
+errorCorrectionCode.getBlocksCount = function getBlocksCount(version2, errorCorrectionLevel2) {
+  switch (errorCorrectionLevel2) {
+    case ECLevel$1.L:
+      return EC_BLOCKS_TABLE[(version2 - 1) * 4 + 0];
+    case ECLevel$1.M:
+      return EC_BLOCKS_TABLE[(version2 - 1) * 4 + 1];
+    case ECLevel$1.Q:
+      return EC_BLOCKS_TABLE[(version2 - 1) * 4 + 2];
+    case ECLevel$1.H:
+      return EC_BLOCKS_TABLE[(version2 - 1) * 4 + 3];
+    default:
+      return void 0;
+  }
+};
+errorCorrectionCode.getTotalCodewordsCount = function getTotalCodewordsCount(version2, errorCorrectionLevel2) {
+  switch (errorCorrectionLevel2) {
+    case ECLevel$1.L:
+      return EC_CODEWORDS_TABLE[(version2 - 1) * 4 + 0];
+    case ECLevel$1.M:
+      return EC_CODEWORDS_TABLE[(version2 - 1) * 4 + 1];
+    case ECLevel$1.Q:
+      return EC_CODEWORDS_TABLE[(version2 - 1) * 4 + 2];
+    case ECLevel$1.H:
+      return EC_CODEWORDS_TABLE[(version2 - 1) * 4 + 3];
+    default:
+      return void 0;
+  }
+};
+var polynomial = {};
+var galoisField = {};
+const EXP_TABLE = new Uint8Array(512);
+const LOG_TABLE = new Uint8Array(256);
+(function initTables() {
+  let x = 1;
+  for (let i = 0; i < 255; i++) {
+    EXP_TABLE[i] = x;
+    LOG_TABLE[x] = i;
+    x <<= 1;
+    if (x & 256) {
+      x ^= 285;
+    }
+  }
+  for (let i = 255; i < 512; i++) {
+    EXP_TABLE[i] = EXP_TABLE[i - 255];
+  }
+})();
+galoisField.log = function log(n2) {
+  if (n2 < 1)
+    throw new Error("log(" + n2 + ")");
+  return LOG_TABLE[n2];
+};
+galoisField.exp = function exp(n2) {
+  return EXP_TABLE[n2];
+};
+galoisField.mul = function mul(x, y) {
+  if (x === 0 || y === 0)
+    return 0;
+  return EXP_TABLE[LOG_TABLE[x] + LOG_TABLE[y]];
+};
+(function(exports2) {
+  const GF = galoisField;
+  exports2.mul = function mul2(p1, p2) {
+    const coeff = new Uint8Array(p1.length + p2.length - 1);
+    for (let i = 0; i < p1.length; i++) {
+      for (let j = 0; j < p2.length; j++) {
+        coeff[i + j] ^= GF.mul(p1[i], p2[j]);
+      }
+    }
+    return coeff;
+  };
+  exports2.mod = function mod(divident, divisor) {
+    let result = new Uint8Array(divident);
+    while (result.length - divisor.length >= 0) {
+      const coeff = result[0];
+      for (let i = 0; i < divisor.length; i++) {
+        result[i] ^= GF.mul(divisor[i], coeff);
+      }
+      let offset = 0;
+      while (offset < result.length && result[offset] === 0)
+        offset++;
+      result = result.slice(offset);
+    }
+    return result;
+  };
+  exports2.generateECPolynomial = function generateECPolynomial(degree) {
+    let poly = new Uint8Array([1]);
+    for (let i = 0; i < degree; i++) {
+      poly = exports2.mul(poly, new Uint8Array([1, GF.exp(i)]));
+    }
+    return poly;
+  };
+})(polynomial);
+const Polynomial = polynomial;
+function ReedSolomonEncoder$1(degree) {
+  this.genPoly = void 0;
+  this.degree = degree;
+  if (this.degree)
+    this.initialize(this.degree);
+}
+ReedSolomonEncoder$1.prototype.initialize = function initialize(degree) {
+  this.degree = degree;
+  this.genPoly = Polynomial.generateECPolynomial(this.degree);
+};
+ReedSolomonEncoder$1.prototype.encode = function encode(data) {
+  if (!this.genPoly) {
+    throw new Error("Encoder not initialized");
+  }
+  const paddedData = new Uint8Array(data.length + this.degree);
+  paddedData.set(data);
+  const remainder = Polynomial.mod(paddedData, this.genPoly);
+  const start = this.degree - remainder.length;
+  if (start > 0) {
+    const buff = new Uint8Array(this.degree);
+    buff.set(remainder, start);
+    return buff;
+  }
+  return remainder;
+};
+var reedSolomonEncoder = ReedSolomonEncoder$1;
+var version = {};
+var mode = {};
+var versionCheck = {};
+versionCheck.isValid = function isValid(version2) {
+  return !isNaN(version2) && version2 >= 1 && version2 <= 40;
+};
+var regex = {};
+const numeric = "[0-9]+";
+const alphanumeric = "[A-Z $%*+\\-./:]+";
+let kanji = "(?:[u3000-u303F]|[u3040-u309F]|[u30A0-u30FF]|[uFF00-uFFEF]|[u4E00-u9FAF]|[u2605-u2606]|[u2190-u2195]|u203B|[u2010u2015u2018u2019u2025u2026u201Cu201Du2225u2260]|[u0391-u0451]|[u00A7u00A8u00B1u00B4u00D7u00F7])+";
+kanji = kanji.replace(/u/g, "\\u");
+const byte = "(?:(?![A-Z0-9 $%*+\\-./:]|" + kanji + ")(?:.|[\r\n]))+";
+regex.KANJI = new RegExp(kanji, "g");
+regex.BYTE_KANJI = new RegExp("[^A-Z0-9 $%*+\\-./:]+", "g");
+regex.BYTE = new RegExp(byte, "g");
+regex.NUMERIC = new RegExp(numeric, "g");
+regex.ALPHANUMERIC = new RegExp(alphanumeric, "g");
+const TEST_KANJI = new RegExp("^" + kanji + "$");
+const TEST_NUMERIC = new RegExp("^" + numeric + "$");
+const TEST_ALPHANUMERIC = new RegExp("^[A-Z0-9 $%*+\\-./:]+$");
+regex.testKanji = function testKanji(str) {
+  return TEST_KANJI.test(str);
+};
+regex.testNumeric = function testNumeric(str) {
+  return TEST_NUMERIC.test(str);
+};
+regex.testAlphanumeric = function testAlphanumeric(str) {
+  return TEST_ALPHANUMERIC.test(str);
+};
+(function(exports2) {
+  const VersionCheck = versionCheck;
+  const Regex = regex;
+  exports2.NUMERIC = {
+    id: "Numeric",
+    bit: 1 << 0,
+    ccBits: [10, 12, 14]
+  };
+  exports2.ALPHANUMERIC = {
+    id: "Alphanumeric",
+    bit: 1 << 1,
+    ccBits: [9, 11, 13]
+  };
+  exports2.BYTE = {
+    id: "Byte",
+    bit: 1 << 2,
+    ccBits: [8, 16, 16]
+  };
+  exports2.KANJI = {
+    id: "Kanji",
+    bit: 1 << 3,
+    ccBits: [8, 10, 12]
+  };
+  exports2.MIXED = {
+    bit: -1
+  };
+  exports2.getCharCountIndicator = function getCharCountIndicator(mode2, version2) {
+    if (!mode2.ccBits)
+      throw new Error("Invalid mode: " + mode2);
+    if (!VersionCheck.isValid(version2)) {
+      throw new Error("Invalid version: " + version2);
+    }
+    if (version2 >= 1 && version2 < 10)
+      return mode2.ccBits[0];
+    else if (version2 < 27)
+      return mode2.ccBits[1];
+    return mode2.ccBits[2];
+  };
+  exports2.getBestModeForData = function getBestModeForData(dataStr) {
+    if (Regex.testNumeric(dataStr))
+      return exports2.NUMERIC;
+    else if (Regex.testAlphanumeric(dataStr))
+      return exports2.ALPHANUMERIC;
+    else if (Regex.testKanji(dataStr))
+      return exports2.KANJI;
+    else
+      return exports2.BYTE;
+  };
+  exports2.toString = function toString(mode2) {
+    if (mode2 && mode2.id)
+      return mode2.id;
+    throw new Error("Invalid mode");
+  };
+  exports2.isValid = function isValid2(mode2) {
+    return mode2 && mode2.bit && mode2.ccBits;
+  };
+  function fromString(string) {
+    if (typeof string !== "string") {
+      throw new Error("Param is not a string");
+    }
+    const lcStr = string.toLowerCase();
+    switch (lcStr) {
+      case "numeric":
+        return exports2.NUMERIC;
+      case "alphanumeric":
+        return exports2.ALPHANUMERIC;
+      case "kanji":
+        return exports2.KANJI;
+      case "byte":
+        return exports2.BYTE;
+      default:
+        throw new Error("Unknown mode: " + string);
+    }
+  }
+  exports2.from = function from(value, defaultValue) {
+    if (exports2.isValid(value)) {
+      return value;
+    }
+    try {
+      return fromString(value);
+    } catch (e2) {
+      return defaultValue;
+    }
+  };
+})(mode);
+(function(exports2) {
+  const Utils2 = utils$1;
+  const ECCode2 = errorCorrectionCode;
+  const ECLevel2 = errorCorrectionLevel;
+  const Mode2 = mode;
+  const VersionCheck = versionCheck;
+  const G18 = 1 << 12 | 1 << 11 | 1 << 10 | 1 << 9 | 1 << 8 | 1 << 5 | 1 << 2 | 1 << 0;
+  const G18_BCH = Utils2.getBCHDigit(G18);
+  function getBestVersionForDataLength(mode2, length, errorCorrectionLevel2) {
+    for (let currentVersion = 1; currentVersion <= 40; currentVersion++) {
+      if (length <= exports2.getCapacity(currentVersion, errorCorrectionLevel2, mode2)) {
+        return currentVersion;
+      }
+    }
+    return void 0;
+  }
+  function getReservedBitsCount(mode2, version2) {
+    return Mode2.getCharCountIndicator(mode2, version2) + 4;
+  }
+  function getTotalBitsFromDataArray(segments2, version2) {
+    let totalBits = 0;
+    segments2.forEach(function(data) {
+      const reservedBits = getReservedBitsCount(data.mode, version2);
+      totalBits += reservedBits + data.getBitsLength();
+    });
+    return totalBits;
+  }
+  function getBestVersionForMixedData(segments2, errorCorrectionLevel2) {
+    for (let currentVersion = 1; currentVersion <= 40; currentVersion++) {
+      const length = getTotalBitsFromDataArray(segments2, currentVersion);
+      if (length <= exports2.getCapacity(currentVersion, errorCorrectionLevel2, Mode2.MIXED)) {
+        return currentVersion;
+      }
+    }
+    return void 0;
+  }
+  exports2.from = function from(value, defaultValue) {
+    if (VersionCheck.isValid(value)) {
+      return parseInt(value, 10);
+    }
+    return defaultValue;
+  };
+  exports2.getCapacity = function getCapacity(version2, errorCorrectionLevel2, mode2) {
+    if (!VersionCheck.isValid(version2)) {
+      throw new Error("Invalid QR Code version");
+    }
+    if (typeof mode2 === "undefined")
+      mode2 = Mode2.BYTE;
+    const totalCodewords = Utils2.getSymbolTotalCodewords(version2);
+    const ecTotalCodewords = ECCode2.getTotalCodewordsCount(version2, errorCorrectionLevel2);
+    const dataTotalCodewordsBits = (totalCodewords - ecTotalCodewords) * 8;
+    if (mode2 === Mode2.MIXED)
+      return dataTotalCodewordsBits;
+    const usableBits = dataTotalCodewordsBits - getReservedBitsCount(mode2, version2);
+    switch (mode2) {
+      case Mode2.NUMERIC:
+        return Math.floor(usableBits / 10 * 3);
+      case Mode2.ALPHANUMERIC:
+        return Math.floor(usableBits / 11 * 2);
+      case Mode2.KANJI:
+        return Math.floor(usableBits / 13);
+      case Mode2.BYTE:
+      default:
+        return Math.floor(usableBits / 8);
+    }
+  };
+  exports2.getBestVersionForData = function getBestVersionForData(data, errorCorrectionLevel2) {
+    let seg;
+    const ecl = ECLevel2.from(errorCorrectionLevel2, ECLevel2.M);
+    if (Array.isArray(data)) {
+      if (data.length > 1) {
+        return getBestVersionForMixedData(data, ecl);
+      }
+      if (data.length === 0) {
+        return 1;
+      }
+      seg = data[0];
+    } else {
+      seg = data;
+    }
+    return getBestVersionForDataLength(seg.mode, seg.getLength(), ecl);
+  };
+  exports2.getEncodedBits = function getEncodedBits2(version2) {
+    if (!VersionCheck.isValid(version2) || version2 < 7) {
+      throw new Error("Invalid QR Code version");
+    }
+    let d = version2 << 12;
+    while (Utils2.getBCHDigit(d) - G18_BCH >= 0) {
+      d ^= G18 << Utils2.getBCHDigit(d) - G18_BCH;
+    }
+    return version2 << 12 | d;
+  };
+})(version);
+var formatInfo = {};
+const Utils$4 = utils$1;
+const G15 = 1 << 10 | 1 << 8 | 1 << 5 | 1 << 4 | 1 << 2 | 1 << 1 | 1 << 0;
+const G15_MASK = 1 << 14 | 1 << 12 | 1 << 10 | 1 << 4 | 1 << 1;
+const G15_BCH = Utils$4.getBCHDigit(G15);
+formatInfo.getEncodedBits = function getEncodedBits(errorCorrectionLevel2, mask) {
+  const data = errorCorrectionLevel2.bit << 3 | mask;
+  let d = data << 10;
+  while (Utils$4.getBCHDigit(d) - G15_BCH >= 0) {
+    d ^= G15 << Utils$4.getBCHDigit(d) - G15_BCH;
+  }
+  return (data << 10 | d) ^ G15_MASK;
+};
+var segments = {};
+const Mode$4 = mode;
+function NumericData(data) {
+  this.mode = Mode$4.NUMERIC;
+  this.data = data.toString();
+}
+NumericData.getBitsLength = function getBitsLength(length) {
+  return 10 * Math.floor(length / 3) + (length % 3 ? length % 3 * 3 + 1 : 0);
+};
+NumericData.prototype.getLength = function getLength() {
+  return this.data.length;
+};
+NumericData.prototype.getBitsLength = function getBitsLength2() {
+  return NumericData.getBitsLength(this.data.length);
+};
+NumericData.prototype.write = function write(bitBuffer2) {
+  let i, group, value;
+  for (i = 0; i + 3 <= this.data.length; i += 3) {
+    group = this.data.substr(i, 3);
+    value = parseInt(group, 10);
+    bitBuffer2.put(value, 10);
+  }
+  const remainingNum = this.data.length - i;
+  if (remainingNum > 0) {
+    group = this.data.substr(i);
+    value = parseInt(group, 10);
+    bitBuffer2.put(value, remainingNum * 3 + 1);
+  }
+};
+var numericData = NumericData;
+const Mode$3 = mode;
+const ALPHA_NUM_CHARS = [
+  "0",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8",
+  "9",
+  "A",
+  "B",
+  "C",
+  "D",
+  "E",
+  "F",
+  "G",
+  "H",
+  "I",
+  "J",
+  "K",
+  "L",
+  "M",
+  "N",
+  "O",
+  "P",
+  "Q",
+  "R",
+  "S",
+  "T",
+  "U",
+  "V",
+  "W",
+  "X",
+  "Y",
+  "Z",
+  " ",
+  "$",
+  "%",
+  "*",
+  "+",
+  "-",
+  ".",
+  "/",
+  ":"
+];
+function AlphanumericData(data) {
+  this.mode = Mode$3.ALPHANUMERIC;
+  this.data = data;
+}
+AlphanumericData.getBitsLength = function getBitsLength3(length) {
+  return 11 * Math.floor(length / 2) + 6 * (length % 2);
+};
+AlphanumericData.prototype.getLength = function getLength2() {
+  return this.data.length;
+};
+AlphanumericData.prototype.getBitsLength = function getBitsLength4() {
+  return AlphanumericData.getBitsLength(this.data.length);
+};
+AlphanumericData.prototype.write = function write2(bitBuffer2) {
+  let i;
+  for (i = 0; i + 2 <= this.data.length; i += 2) {
+    let value = ALPHA_NUM_CHARS.indexOf(this.data[i]) * 45;
+    value += ALPHA_NUM_CHARS.indexOf(this.data[i + 1]);
+    bitBuffer2.put(value, 11);
+  }
+  if (this.data.length % 2) {
+    bitBuffer2.put(ALPHA_NUM_CHARS.indexOf(this.data[i]), 6);
+  }
+};
+var alphanumericData = AlphanumericData;
+const Mode$2 = mode;
+function ByteData(data) {
+  this.mode = Mode$2.BYTE;
+  if (typeof data === "string") {
+    this.data = new TextEncoder().encode(data);
+  } else {
+    this.data = new Uint8Array(data);
+  }
+}
+ByteData.getBitsLength = function getBitsLength5(length) {
+  return length * 8;
+};
+ByteData.prototype.getLength = function getLength3() {
+  return this.data.length;
+};
+ByteData.prototype.getBitsLength = function getBitsLength6() {
+  return ByteData.getBitsLength(this.data.length);
+};
+ByteData.prototype.write = function(bitBuffer2) {
+  for (let i = 0, l = this.data.length; i < l; i++) {
+    bitBuffer2.put(this.data[i], 8);
+  }
+};
+var byteData = ByteData;
+const Mode$1 = mode;
+const Utils$3 = utils$1;
+function KanjiData(data) {
+  this.mode = Mode$1.KANJI;
+  this.data = data;
+}
+KanjiData.getBitsLength = function getBitsLength7(length) {
+  return length * 13;
+};
+KanjiData.prototype.getLength = function getLength4() {
+  return this.data.length;
+};
+KanjiData.prototype.getBitsLength = function getBitsLength8() {
+  return KanjiData.getBitsLength(this.data.length);
+};
+KanjiData.prototype.write = function(bitBuffer2) {
+  let i;
+  for (i = 0; i < this.data.length; i++) {
+    let value = Utils$3.toSJIS(this.data[i]);
+    if (value >= 33088 && value <= 40956) {
+      value -= 33088;
+    } else if (value >= 57408 && value <= 60351) {
+      value -= 49472;
+    } else {
+      throw new Error(
+        "Invalid SJIS character: " + this.data[i] + "\nMake sure your charset is UTF-8"
+      );
+    }
+    value = (value >>> 8 & 255) * 192 + (value & 255);
+    bitBuffer2.put(value, 13);
+  }
+};
+var kanjiData = KanjiData;
+var dijkstra = { exports: {} };
+(function(module2) {
+  var dijkstra2 = {
+    single_source_shortest_paths: function(graph, s2, d) {
+      var predecessors = {};
+      var costs = {};
+      costs[s2] = 0;
+      var open = dijkstra2.PriorityQueue.make();
+      open.push(s2, 0);
+      var closest, u, v, cost_of_s_to_u, adjacent_nodes, cost_of_e, cost_of_s_to_u_plus_cost_of_e, cost_of_s_to_v, first_visit;
+      while (!open.empty()) {
+        closest = open.pop();
+        u = closest.value;
+        cost_of_s_to_u = closest.cost;
+        adjacent_nodes = graph[u] || {};
+        for (v in adjacent_nodes) {
+          if (adjacent_nodes.hasOwnProperty(v)) {
+            cost_of_e = adjacent_nodes[v];
+            cost_of_s_to_u_plus_cost_of_e = cost_of_s_to_u + cost_of_e;
+            cost_of_s_to_v = costs[v];
+            first_visit = typeof costs[v] === "undefined";
+            if (first_visit || cost_of_s_to_v > cost_of_s_to_u_plus_cost_of_e) {
+              costs[v] = cost_of_s_to_u_plus_cost_of_e;
+              open.push(v, cost_of_s_to_u_plus_cost_of_e);
+              predecessors[v] = u;
+            }
+          }
+        }
+      }
+      if (typeof d !== "undefined" && typeof costs[d] === "undefined") {
+        var msg = ["Could not find a path from ", s2, " to ", d, "."].join("");
+        throw new Error(msg);
+      }
+      return predecessors;
+    },
+    extract_shortest_path_from_predecessor_list: function(predecessors, d) {
+      var nodes = [];
+      var u = d;
+      while (u) {
+        nodes.push(u);
+        predecessors[u];
+        u = predecessors[u];
+      }
+      nodes.reverse();
+      return nodes;
+    },
+    find_path: function(graph, s2, d) {
+      var predecessors = dijkstra2.single_source_shortest_paths(graph, s2, d);
+      return dijkstra2.extract_shortest_path_from_predecessor_list(
+        predecessors,
+        d
+      );
+    },
+    /**
+     * A very naive priority queue implementation.
+     */
+    PriorityQueue: {
+      make: function(opts) {
+        var T = dijkstra2.PriorityQueue, t2 = {}, key;
+        opts = opts || {};
+        for (key in T) {
+          if (T.hasOwnProperty(key)) {
+            t2[key] = T[key];
+          }
+        }
+        t2.queue = [];
+        t2.sorter = opts.sorter || T.default_sorter;
+        return t2;
+      },
+      default_sorter: function(a, b) {
+        return a.cost - b.cost;
+      },
+      /**
+       * Add a new item to the queue and ensure the highest priority element
+       * is at the front of the queue.
+       */
+      push: function(value, cost) {
+        var item = { value, cost };
+        this.queue.push(item);
+        this.queue.sort(this.sorter);
+      },
+      /**
+       * Return the highest priority element in the queue.
+       */
+      pop: function() {
+        return this.queue.shift();
+      },
+      empty: function() {
+        return this.queue.length === 0;
+      }
+    }
+  };
+  {
+    module2.exports = dijkstra2;
+  }
+})(dijkstra);
+var dijkstraExports = dijkstra.exports;
+(function(exports2) {
+  const Mode2 = mode;
+  const NumericData2 = numericData;
+  const AlphanumericData2 = alphanumericData;
+  const ByteData2 = byteData;
+  const KanjiData2 = kanjiData;
+  const Regex = regex;
+  const Utils2 = utils$1;
+  const dijkstra2 = dijkstraExports;
+  function getStringByteLength(str) {
+    return unescape(encodeURIComponent(str)).length;
+  }
+  function getSegments(regex2, mode2, str) {
+    const segments2 = [];
+    let result;
+    while ((result = regex2.exec(str)) !== null) {
+      segments2.push({
+        data: result[0],
+        index: result.index,
+        mode: mode2,
+        length: result[0].length
+      });
+    }
+    return segments2;
+  }
+  function getSegmentsFromString(dataStr) {
+    const numSegs = getSegments(Regex.NUMERIC, Mode2.NUMERIC, dataStr);
+    const alphaNumSegs = getSegments(Regex.ALPHANUMERIC, Mode2.ALPHANUMERIC, dataStr);
+    let byteSegs;
+    let kanjiSegs;
+    if (Utils2.isKanjiModeEnabled()) {
+      byteSegs = getSegments(Regex.BYTE, Mode2.BYTE, dataStr);
+      kanjiSegs = getSegments(Regex.KANJI, Mode2.KANJI, dataStr);
+    } else {
+      byteSegs = getSegments(Regex.BYTE_KANJI, Mode2.BYTE, dataStr);
+      kanjiSegs = [];
+    }
+    const segs = numSegs.concat(alphaNumSegs, byteSegs, kanjiSegs);
+    return segs.sort(function(s1, s2) {
+      return s1.index - s2.index;
+    }).map(function(obj) {
+      return {
+        data: obj.data,
+        mode: obj.mode,
+        length: obj.length
+      };
+    });
+  }
+  function getSegmentBitsLength(length, mode2) {
+    switch (mode2) {
+      case Mode2.NUMERIC:
+        return NumericData2.getBitsLength(length);
+      case Mode2.ALPHANUMERIC:
+        return AlphanumericData2.getBitsLength(length);
+      case Mode2.KANJI:
+        return KanjiData2.getBitsLength(length);
+      case Mode2.BYTE:
+        return ByteData2.getBitsLength(length);
+    }
+  }
+  function mergeSegments(segs) {
+    return segs.reduce(function(acc, curr) {
+      const prevSeg = acc.length - 1 >= 0 ? acc[acc.length - 1] : null;
+      if (prevSeg && prevSeg.mode === curr.mode) {
+        acc[acc.length - 1].data += curr.data;
+        return acc;
+      }
+      acc.push(curr);
+      return acc;
+    }, []);
+  }
+  function buildNodes(segs) {
+    const nodes = [];
+    for (let i = 0; i < segs.length; i++) {
+      const seg = segs[i];
+      switch (seg.mode) {
+        case Mode2.NUMERIC:
+          nodes.push([
+            seg,
+            { data: seg.data, mode: Mode2.ALPHANUMERIC, length: seg.length },
+            { data: seg.data, mode: Mode2.BYTE, length: seg.length }
+          ]);
+          break;
+        case Mode2.ALPHANUMERIC:
+          nodes.push([
+            seg,
+            { data: seg.data, mode: Mode2.BYTE, length: seg.length }
+          ]);
+          break;
+        case Mode2.KANJI:
+          nodes.push([
+            seg,
+            { data: seg.data, mode: Mode2.BYTE, length: getStringByteLength(seg.data) }
+          ]);
+          break;
+        case Mode2.BYTE:
+          nodes.push([
+            { data: seg.data, mode: Mode2.BYTE, length: getStringByteLength(seg.data) }
+          ]);
+      }
+    }
+    return nodes;
+  }
+  function buildGraph(nodes, version2) {
+    const table = {};
+    const graph = { start: {} };
+    let prevNodeIds = ["start"];
+    for (let i = 0; i < nodes.length; i++) {
+      const nodeGroup = nodes[i];
+      const currentNodeIds = [];
+      for (let j = 0; j < nodeGroup.length; j++) {
+        const node = nodeGroup[j];
+        const key = "" + i + j;
+        currentNodeIds.push(key);
+        table[key] = { node, lastCount: 0 };
+        graph[key] = {};
+        for (let n2 = 0; n2 < prevNodeIds.length; n2++) {
+          const prevNodeId = prevNodeIds[n2];
+          if (table[prevNodeId] && table[prevNodeId].node.mode === node.mode) {
+            graph[prevNodeId][key] = getSegmentBitsLength(table[prevNodeId].lastCount + node.length, node.mode) - getSegmentBitsLength(table[prevNodeId].lastCount, node.mode);
+            table[prevNodeId].lastCount += node.length;
+          } else {
+            if (table[prevNodeId])
+              table[prevNodeId].lastCount = node.length;
+            graph[prevNodeId][key] = getSegmentBitsLength(node.length, node.mode) + 4 + Mode2.getCharCountIndicator(node.mode, version2);
+          }
+        }
+      }
+      prevNodeIds = currentNodeIds;
+    }
+    for (let n2 = 0; n2 < prevNodeIds.length; n2++) {
+      graph[prevNodeIds[n2]].end = 0;
+    }
+    return { map: graph, table };
+  }
+  function buildSingleSegment(data, modesHint) {
+    let mode2;
+    const bestMode = Mode2.getBestModeForData(data);
+    mode2 = Mode2.from(modesHint, bestMode);
+    if (mode2 !== Mode2.BYTE && mode2.bit < bestMode.bit) {
+      throw new Error('"' + data + '" cannot be encoded with mode ' + Mode2.toString(mode2) + ".\n Suggested mode is: " + Mode2.toString(bestMode));
+    }
+    if (mode2 === Mode2.KANJI && !Utils2.isKanjiModeEnabled()) {
+      mode2 = Mode2.BYTE;
+    }
+    switch (mode2) {
+      case Mode2.NUMERIC:
+        return new NumericData2(data);
+      case Mode2.ALPHANUMERIC:
+        return new AlphanumericData2(data);
+      case Mode2.KANJI:
+        return new KanjiData2(data);
+      case Mode2.BYTE:
+        return new ByteData2(data);
+    }
+  }
+  exports2.fromArray = function fromArray(array) {
+    return array.reduce(function(acc, seg) {
+      if (typeof seg === "string") {
+        acc.push(buildSingleSegment(seg, null));
+      } else if (seg.data) {
+        acc.push(buildSingleSegment(seg.data, seg.mode));
+      }
+      return acc;
+    }, []);
+  };
+  exports2.fromString = function fromString(data, version2) {
+    const segs = getSegmentsFromString(data, Utils2.isKanjiModeEnabled());
+    const nodes = buildNodes(segs);
+    const graph = buildGraph(nodes, version2);
+    const path = dijkstra2.find_path(graph.map, "start", "end");
+    const optimizedSegs = [];
+    for (let i = 1; i < path.length - 1; i++) {
+      optimizedSegs.push(graph.table[path[i]].node);
+    }
+    return exports2.fromArray(mergeSegments(optimizedSegs));
+  };
+  exports2.rawSplit = function rawSplit(data) {
+    return exports2.fromArray(
+      getSegmentsFromString(data, Utils2.isKanjiModeEnabled())
+    );
+  };
+})(segments);
+const Utils$2 = utils$1;
+const ECLevel = errorCorrectionLevel;
+const BitBuffer = bitBuffer;
+const BitMatrix = bitMatrix;
+const AlignmentPattern = alignmentPattern;
+const FinderPattern = finderPattern;
+const MaskPattern = maskPattern;
+const ECCode = errorCorrectionCode;
+const ReedSolomonEncoder = reedSolomonEncoder;
+const Version = version;
+const FormatInfo = formatInfo;
+const Mode = mode;
+const Segments = segments;
+function setupFinderPattern(matrix, version2) {
+  const size2 = matrix.size;
+  const pos = FinderPattern.getPositions(version2);
+  for (let i = 0; i < pos.length; i++) {
+    const row = pos[i][0];
+    const col = pos[i][1];
+    for (let r = -1; r <= 7; r++) {
+      if (row + r <= -1 || size2 <= row + r)
+        continue;
+      for (let c = -1; c <= 7; c++) {
+        if (col + c <= -1 || size2 <= col + c)
+          continue;
+        if (r >= 0 && r <= 6 && (c === 0 || c === 6) || c >= 0 && c <= 6 && (r === 0 || r === 6) || r >= 2 && r <= 4 && c >= 2 && c <= 4) {
+          matrix.set(row + r, col + c, true, true);
+        } else {
+          matrix.set(row + r, col + c, false, true);
+        }
+      }
+    }
+  }
+}
+function setupTimingPattern(matrix) {
+  const size2 = matrix.size;
+  for (let r = 8; r < size2 - 8; r++) {
+    const value = r % 2 === 0;
+    matrix.set(r, 6, value, true);
+    matrix.set(6, r, value, true);
+  }
+}
+function setupAlignmentPattern(matrix, version2) {
+  const pos = AlignmentPattern.getPositions(version2);
+  for (let i = 0; i < pos.length; i++) {
+    const row = pos[i][0];
+    const col = pos[i][1];
+    for (let r = -2; r <= 2; r++) {
+      for (let c = -2; c <= 2; c++) {
+        if (r === -2 || r === 2 || c === -2 || c === 2 || r === 0 && c === 0) {
+          matrix.set(row + r, col + c, true, true);
+        } else {
+          matrix.set(row + r, col + c, false, true);
+        }
+      }
+    }
+  }
+}
+function setupVersionInfo(matrix, version2) {
+  const size2 = matrix.size;
+  const bits = Version.getEncodedBits(version2);
+  let row, col, mod;
+  for (let i = 0; i < 18; i++) {
+    row = Math.floor(i / 3);
+    col = i % 3 + size2 - 8 - 3;
+    mod = (bits >> i & 1) === 1;
+    matrix.set(row, col, mod, true);
+    matrix.set(col, row, mod, true);
+  }
+}
+function setupFormatInfo(matrix, errorCorrectionLevel2, maskPattern2) {
+  const size2 = matrix.size;
+  const bits = FormatInfo.getEncodedBits(errorCorrectionLevel2, maskPattern2);
+  let i, mod;
+  for (i = 0; i < 15; i++) {
+    mod = (bits >> i & 1) === 1;
+    if (i < 6) {
+      matrix.set(i, 8, mod, true);
+    } else if (i < 8) {
+      matrix.set(i + 1, 8, mod, true);
+    } else {
+      matrix.set(size2 - 15 + i, 8, mod, true);
+    }
+    if (i < 8) {
+      matrix.set(8, size2 - i - 1, mod, true);
+    } else if (i < 9) {
+      matrix.set(8, 15 - i - 1 + 1, mod, true);
+    } else {
+      matrix.set(8, 15 - i - 1, mod, true);
+    }
+  }
+  matrix.set(size2 - 8, 8, 1, true);
+}
+function setupData(matrix, data) {
+  const size2 = matrix.size;
+  let inc = -1;
+  let row = size2 - 1;
+  let bitIndex = 7;
+  let byteIndex = 0;
+  for (let col = size2 - 1; col > 0; col -= 2) {
+    if (col === 6)
+      col--;
+    while (true) {
+      for (let c = 0; c < 2; c++) {
+        if (!matrix.isReserved(row, col - c)) {
+          let dark = false;
+          if (byteIndex < data.length) {
+            dark = (data[byteIndex] >>> bitIndex & 1) === 1;
+          }
+          matrix.set(row, col - c, dark);
+          bitIndex--;
+          if (bitIndex === -1) {
+            byteIndex++;
+            bitIndex = 7;
+          }
+        }
+      }
+      row += inc;
+      if (row < 0 || size2 <= row) {
+        row -= inc;
+        inc = -inc;
+        break;
+      }
+    }
+  }
+}
+function createData(version2, errorCorrectionLevel2, segments2) {
+  const buffer2 = new BitBuffer();
+  segments2.forEach(function(data) {
+    buffer2.put(data.mode.bit, 4);
+    buffer2.put(data.getLength(), Mode.getCharCountIndicator(data.mode, version2));
+    data.write(buffer2);
+  });
+  const totalCodewords = Utils$2.getSymbolTotalCodewords(version2);
+  const ecTotalCodewords = ECCode.getTotalCodewordsCount(version2, errorCorrectionLevel2);
+  const dataTotalCodewordsBits = (totalCodewords - ecTotalCodewords) * 8;
+  if (buffer2.getLengthInBits() + 4 <= dataTotalCodewordsBits) {
+    buffer2.put(0, 4);
+  }
+  while (buffer2.getLengthInBits() % 8 !== 0) {
+    buffer2.putBit(0);
+  }
+  const remainingByte = (dataTotalCodewordsBits - buffer2.getLengthInBits()) / 8;
+  for (let i = 0; i < remainingByte; i++) {
+    buffer2.put(i % 2 ? 17 : 236, 8);
+  }
+  return createCodewords(buffer2, version2, errorCorrectionLevel2);
+}
+function createCodewords(bitBuffer2, version2, errorCorrectionLevel2) {
+  const totalCodewords = Utils$2.getSymbolTotalCodewords(version2);
+  const ecTotalCodewords = ECCode.getTotalCodewordsCount(version2, errorCorrectionLevel2);
+  const dataTotalCodewords = totalCodewords - ecTotalCodewords;
+  const ecTotalBlocks = ECCode.getBlocksCount(version2, errorCorrectionLevel2);
+  const blocksInGroup2 = totalCodewords % ecTotalBlocks;
+  const blocksInGroup1 = ecTotalBlocks - blocksInGroup2;
+  const totalCodewordsInGroup1 = Math.floor(totalCodewords / ecTotalBlocks);
+  const dataCodewordsInGroup1 = Math.floor(dataTotalCodewords / ecTotalBlocks);
+  const dataCodewordsInGroup2 = dataCodewordsInGroup1 + 1;
+  const ecCount = totalCodewordsInGroup1 - dataCodewordsInGroup1;
+  const rs = new ReedSolomonEncoder(ecCount);
+  let offset = 0;
+  const dcData = new Array(ecTotalBlocks);
+  const ecData = new Array(ecTotalBlocks);
+  let maxDataSize = 0;
+  const buffer2 = new Uint8Array(bitBuffer2.buffer);
+  for (let b = 0; b < ecTotalBlocks; b++) {
+    const dataSize = b < blocksInGroup1 ? dataCodewordsInGroup1 : dataCodewordsInGroup2;
+    dcData[b] = buffer2.slice(offset, offset + dataSize);
+    ecData[b] = rs.encode(dcData[b]);
+    offset += dataSize;
+    maxDataSize = Math.max(maxDataSize, dataSize);
+  }
+  const data = new Uint8Array(totalCodewords);
+  let index2 = 0;
+  let i, r;
+  for (i = 0; i < maxDataSize; i++) {
+    for (r = 0; r < ecTotalBlocks; r++) {
+      if (i < dcData[r].length) {
+        data[index2++] = dcData[r][i];
+      }
+    }
+  }
+  for (i = 0; i < ecCount; i++) {
+    for (r = 0; r < ecTotalBlocks; r++) {
+      data[index2++] = ecData[r][i];
+    }
+  }
+  return data;
+}
+function createSymbol(data, version2, errorCorrectionLevel2, maskPattern2) {
+  let segments2;
+  if (Array.isArray(data)) {
+    segments2 = Segments.fromArray(data);
+  } else if (typeof data === "string") {
+    let estimatedVersion = version2;
+    if (!estimatedVersion) {
+      const rawSegments = Segments.rawSplit(data);
+      estimatedVersion = Version.getBestVersionForData(rawSegments, errorCorrectionLevel2);
+    }
+    segments2 = Segments.fromString(data, estimatedVersion || 40);
+  } else {
+    throw new Error("Invalid data");
+  }
+  const bestVersion = Version.getBestVersionForData(segments2, errorCorrectionLevel2);
+  if (!bestVersion) {
+    throw new Error("The amount of data is too big to be stored in a QR Code");
+  }
+  if (!version2) {
+    version2 = bestVersion;
+  } else if (version2 < bestVersion) {
+    throw new Error(
+      "\nThe chosen QR Code version cannot contain this amount of data.\nMinimum version required to store current data is: " + bestVersion + ".\n"
+    );
+  }
+  const dataBits = createData(version2, errorCorrectionLevel2, segments2);
+  const moduleCount = Utils$2.getSymbolSize(version2);
+  const modules = new BitMatrix(moduleCount);
+  setupFinderPattern(modules, version2);
+  setupTimingPattern(modules);
+  setupAlignmentPattern(modules, version2);
+  setupFormatInfo(modules, errorCorrectionLevel2, 0);
+  if (version2 >= 7) {
+    setupVersionInfo(modules, version2);
+  }
+  setupData(modules, dataBits);
+  if (isNaN(maskPattern2)) {
+    maskPattern2 = MaskPattern.getBestMask(
+      modules,
+      setupFormatInfo.bind(null, modules, errorCorrectionLevel2)
+    );
+  }
+  MaskPattern.applyMask(maskPattern2, modules);
+  setupFormatInfo(modules, errorCorrectionLevel2, maskPattern2);
+  return {
+    modules,
+    version: version2,
+    errorCorrectionLevel: errorCorrectionLevel2,
+    maskPattern: maskPattern2,
+    segments: segments2
+  };
+}
+qrcode.create = function create(data, options) {
+  if (typeof data === "undefined" || data === "") {
+    throw new Error("No input text");
+  }
+  let errorCorrectionLevel2 = ECLevel.M;
+  let version2;
+  let mask;
+  if (typeof options !== "undefined") {
+    errorCorrectionLevel2 = ECLevel.from(options.errorCorrectionLevel, ECLevel.M);
+    version2 = Version.from(options.version);
+    mask = MaskPattern.from(options.maskPattern);
+    if (options.toSJISFunc) {
+      Utils$2.setToSJISFunction(options.toSJISFunc);
+    }
+  }
+  return createSymbol(data, version2, errorCorrectionLevel2, mask);
+};
+var canvas = {};
+var utils = {};
+(function(exports2) {
+  function hex2rgba(hex) {
+    if (typeof hex === "number") {
+      hex = hex.toString();
+    }
+    if (typeof hex !== "string") {
+      throw new Error("Color should be defined as hex string");
+    }
+    let hexCode = hex.slice().replace("#", "").split("");
+    if (hexCode.length < 3 || hexCode.length === 5 || hexCode.length > 8) {
+      throw new Error("Invalid hex color: " + hex);
+    }
+    if (hexCode.length === 3 || hexCode.length === 4) {
+      hexCode = Array.prototype.concat.apply([], hexCode.map(function(c) {
+        return [c, c];
+      }));
+    }
+    if (hexCode.length === 6)
+      hexCode.push("F", "F");
+    const hexValue = parseInt(hexCode.join(""), 16);
+    return {
+      r: hexValue >> 24 & 255,
+      g: hexValue >> 16 & 255,
+      b: hexValue >> 8 & 255,
+      a: hexValue & 255,
+      hex: "#" + hexCode.slice(0, 6).join("")
+    };
+  }
+  exports2.getOptions = function getOptions(options) {
+    if (!options)
+      options = {};
+    if (!options.color)
+      options.color = {};
+    const margin = typeof options.margin === "undefined" || options.margin === null || options.margin < 0 ? 4 : options.margin;
+    const width = options.width && options.width >= 21 ? options.width : void 0;
+    const scale = options.scale || 4;
+    return {
+      width,
+      scale: width ? 4 : scale,
+      margin,
+      color: {
+        dark: hex2rgba(options.color.dark || "#000000ff"),
+        light: hex2rgba(options.color.light || "#ffffffff")
+      },
+      type: options.type,
+      rendererOpts: options.rendererOpts || {}
+    };
+  };
+  exports2.getScale = function getScale(qrSize, opts) {
+    return opts.width && opts.width >= qrSize + opts.margin * 2 ? opts.width / (qrSize + opts.margin * 2) : opts.scale;
+  };
+  exports2.getImageWidth = function getImageWidth(qrSize, opts) {
+    const scale = exports2.getScale(qrSize, opts);
+    return Math.floor((qrSize + opts.margin * 2) * scale);
+  };
+  exports2.qrToImageData = function qrToImageData(imgData, qr, opts) {
+    const size2 = qr.modules.size;
+    const data = qr.modules.data;
+    const scale = exports2.getScale(size2, opts);
+    const symbolSize = Math.floor((size2 + opts.margin * 2) * scale);
+    const scaledMargin = opts.margin * scale;
+    const palette = [opts.color.light, opts.color.dark];
+    for (let i = 0; i < symbolSize; i++) {
+      for (let j = 0; j < symbolSize; j++) {
+        let posDst = (i * symbolSize + j) * 4;
+        let pxColor = opts.color.light;
+        if (i >= scaledMargin && j >= scaledMargin && i < symbolSize - scaledMargin && j < symbolSize - scaledMargin) {
+          const iSrc = Math.floor((i - scaledMargin) / scale);
+          const jSrc = Math.floor((j - scaledMargin) / scale);
+          pxColor = palette[data[iSrc * size2 + jSrc] ? 1 : 0];
+        }
+        imgData[posDst++] = pxColor.r;
+        imgData[posDst++] = pxColor.g;
+        imgData[posDst++] = pxColor.b;
+        imgData[posDst] = pxColor.a;
+      }
+    }
+  };
+})(utils);
+(function(exports2) {
+  const Utils2 = utils;
+  function clearCanvas(ctx, canvas2, size2) {
+    ctx.clearRect(0, 0, canvas2.width, canvas2.height);
+    if (!canvas2.style)
+      canvas2.style = {};
+    canvas2.height = size2;
+    canvas2.width = size2;
+    canvas2.style.height = size2 + "px";
+    canvas2.style.width = size2 + "px";
+  }
+  function getCanvasElement() {
+    try {
+      return document.createElement("canvas");
+    } catch (e2) {
+      throw new Error("You need to specify a canvas element");
+    }
+  }
+  exports2.render = function render2(qrData, canvas2, options) {
+    let opts = options;
+    let canvasEl = canvas2;
+    if (typeof opts === "undefined" && (!canvas2 || !canvas2.getContext)) {
+      opts = canvas2;
+      canvas2 = void 0;
+    }
+    if (!canvas2) {
+      canvasEl = getCanvasElement();
+    }
+    opts = Utils2.getOptions(opts);
+    const size2 = Utils2.getImageWidth(qrData.modules.size, opts);
+    const ctx = canvasEl.getContext("2d");
+    const image = ctx.createImageData(size2, size2);
+    Utils2.qrToImageData(image.data, qrData, opts);
+    clearCanvas(ctx, canvasEl, size2);
+    ctx.putImageData(image, 0, 0);
+    return canvasEl;
+  };
+  exports2.renderToDataURL = function renderToDataURL(qrData, canvas2, options) {
+    let opts = options;
+    if (typeof opts === "undefined" && (!canvas2 || !canvas2.getContext)) {
+      opts = canvas2;
+      canvas2 = void 0;
+    }
+    if (!opts)
+      opts = {};
+    const canvasEl = exports2.render(qrData, canvas2, opts);
+    const type = opts.type || "image/png";
+    const rendererOpts = opts.rendererOpts || {};
+    return canvasEl.toDataURL(type, rendererOpts.quality);
+  };
+})(canvas);
+var svgTag = {};
+const Utils$1 = utils;
+function getColorAttrib(color, attrib) {
+  const alpha = color.a / 255;
+  const str = attrib + '="' + color.hex + '"';
+  return alpha < 1 ? str + " " + attrib + '-opacity="' + alpha.toFixed(2).slice(1) + '"' : str;
+}
+function svgCmd(cmd, x, y) {
+  let str = cmd + x;
+  if (typeof y !== "undefined")
+    str += " " + y;
+  return str;
+}
+function qrToPath(data, size2, margin) {
+  let path = "";
+  let moveBy = 0;
+  let newRow = false;
+  let lineLength = 0;
+  for (let i = 0; i < data.length; i++) {
+    const col = Math.floor(i % size2);
+    const row = Math.floor(i / size2);
+    if (!col && !newRow)
+      newRow = true;
+    if (data[i]) {
+      lineLength++;
+      if (!(i > 0 && col > 0 && data[i - 1])) {
+        path += newRow ? svgCmd("M", col + margin, 0.5 + row + margin) : svgCmd("m", moveBy, 0);
+        moveBy = 0;
+        newRow = false;
+      }
+      if (!(col + 1 < size2 && data[i + 1])) {
+        path += svgCmd("h", lineLength);
+        lineLength = 0;
+      }
+    } else {
+      moveBy++;
+    }
+  }
+  return path;
+}
+svgTag.render = function render(qrData, options, cb) {
+  const opts = Utils$1.getOptions(options);
+  const size2 = qrData.modules.size;
+  const data = qrData.modules.data;
+  const qrcodesize = size2 + opts.margin * 2;
+  const bg = !opts.color.light.a ? "" : "<path " + getColorAttrib(opts.color.light, "fill") + ' d="M0 0h' + qrcodesize + "v" + qrcodesize + 'H0z"/>';
+  const path = "<path " + getColorAttrib(opts.color.dark, "stroke") + ' d="' + qrToPath(data, size2, opts.margin) + '"/>';
+  const viewBox = 'viewBox="0 0 ' + qrcodesize + " " + qrcodesize + '"';
+  const width = !opts.width ? "" : 'width="' + opts.width + '" height="' + opts.width + '" ';
+  const svgTag2 = '<svg xmlns="http://www.w3.org/2000/svg" ' + width + viewBox + ' shape-rendering="crispEdges">' + bg + path + "</svg>\n";
+  if (typeof cb === "function") {
+    cb(null, svgTag2);
+  }
+  return svgTag2;
+};
+const canPromise = canPromise$1;
+const QRCode = qrcode;
+const CanvasRenderer = canvas;
+const SvgRenderer = svgTag;
+function renderCanvas(renderFunc, canvas2, text, opts, cb) {
+  const args = [].slice.call(arguments, 1);
+  const argsNum = args.length;
+  const isLastArgCb = typeof args[argsNum - 1] === "function";
+  if (!isLastArgCb && !canPromise()) {
+    throw new Error("Callback required as last argument");
+  }
+  if (isLastArgCb) {
+    if (argsNum < 2) {
+      throw new Error("Too few arguments provided");
+    }
+    if (argsNum === 2) {
+      cb = text;
+      text = canvas2;
+      canvas2 = opts = void 0;
+    } else if (argsNum === 3) {
+      if (canvas2.getContext && typeof cb === "undefined") {
+        cb = opts;
+        opts = void 0;
+      } else {
+        cb = opts;
+        opts = text;
+        text = canvas2;
+        canvas2 = void 0;
+      }
+    }
+  } else {
+    if (argsNum < 1) {
+      throw new Error("Too few arguments provided");
+    }
+    if (argsNum === 1) {
+      text = canvas2;
+      canvas2 = opts = void 0;
+    } else if (argsNum === 2 && !canvas2.getContext) {
+      opts = text;
+      text = canvas2;
+      canvas2 = void 0;
+    }
+    return new Promise(function(resolve2, reject) {
+      try {
+        const data = QRCode.create(text, opts);
+        resolve2(renderFunc(data, canvas2, opts));
+      } catch (e2) {
+        reject(e2);
+      }
+    });
+  }
+  try {
+    const data = QRCode.create(text, opts);
+    cb(null, renderFunc(data, canvas2, opts));
+  } catch (e2) {
+    cb(e2);
+  }
+}
+browser.create = QRCode.create;
+browser.toCanvas = renderCanvas.bind(null, CanvasRenderer.render);
+browser.toDataURL = renderCanvas.bind(null, CanvasRenderer.renderToDataURL);
+browser.toString = renderCanvas.bind(null, function(data, _, opts) {
+  return SvgRenderer.render(data, opts);
+});
+const numericProp = [Number, String];
+const makeRequiredProp = (type) => ({
+  type,
+  required: true
+});
+const makeArrayProp = () => ({
+  type: Array,
+  default: () => []
+});
+const makeBooleanProp = (defaultVal) => ({
+  type: Boolean,
+  default: defaultVal
+});
+const makeNumberProp = (defaultVal) => ({
+  type: Number,
+  default: defaultVal
+});
+const makeNumericProp = (defaultVal) => ({
+  type: numericProp,
+  default: defaultVal
+});
+const makeStringProp = (defaultVal) => ({
+  type: String,
+  default: defaultVal
+});
+const baseProps = {
+  /**
+   * 自定义根节点样式
+   */
+  customStyle: makeStringProp(""),
+  /**
+   * 自定义根节点样式类
+   */
+  customClass: makeStringProp("")
+};
+const badgeProps = {
+  ...baseProps,
+  /**
+   * 显示值
+   */
+  modelValue: numericProp,
+  /** 当数值为 0 时，是否展示徽标 */
+  showZero: makeBooleanProp(false),
+  bgColor: String,
+  /**
+   * 最大值，超过最大值会显示 '{max}+'，要求 value 是 Number 类型
+   */
+  max: Number,
+  /**
+   * 是否为红色点状标注
+   */
+  isDot: Boolean,
+  /**
+   * 是否隐藏 badge
+   */
+  hidden: Boolean,
+  /**
+   * badge类型，可选值primary / success / warning / danger / info
+   */
+  type: makeStringProp(void 0),
+  /**
+   * 为正时，角标向下偏移对应的像素
+   */
+  top: numericProp,
+  /**
+   * 为正时，角标向左偏移对应的像素
+   */
+  right: numericProp
+};
+class AbortablePromise {
+  constructor(executor) {
+    this._reject = null;
+    this.promise = new Promise((resolve2, reject) => {
+      executor(resolve2, reject);
+      this._reject = reject;
+    });
+  }
+  // 提供abort方法来中止Promise
+  abort(error) {
+    if (this._reject) {
+      this._reject(error);
+    }
+  }
+  then(onfulfilled, onrejected) {
+    return this.promise.then(onfulfilled, onrejected);
+  }
+  catch(onrejected) {
+    return this.promise.catch(onrejected);
+  }
+}
+function uuid() {
+  return s4() + s4() + s4() + s4() + s4() + s4() + s4() + s4();
+}
+function s4() {
+  return Math.floor((1 + Math.random()) * 65536).toString(16).substring(1);
+}
+function addUnit(num) {
+  return Number.isNaN(Number(num)) ? `${num}` : `${num}px`;
+}
+function isObj(value) {
+  return Object.prototype.toString.call(value) === "[object Object]" || typeof value === "object";
+}
+function getType(target) {
+  const typeStr = Object.prototype.toString.call(target);
+  const match = typeStr.match(/\[object (\w+)\]/);
+  const type = match && match.length ? match[1].toLowerCase() : "";
+  return type;
+}
+const defaultDisplayFormat = function(items, kv) {
+  const labelKey = (kv == null ? void 0 : kv.labelKey) || "value";
+  if (Array.isArray(items)) {
+    return items.map((item) => item[labelKey]).join(", ");
+  } else {
+    return items[labelKey];
+  }
+};
+const isDef = (value) => value !== void 0 && value !== null;
+const checkNumRange = (num, label = "value") => {
+  if (num < 0) {
+    throw new Error(`${label} shouldn't be less than zero`);
+  }
+};
+function rgbToHex(r, g, b) {
+  const hex = (r << 16 | g << 8 | b).toString(16);
+  const paddedHex = "#" + "0".repeat(Math.max(0, 6 - hex.length)) + hex;
+  return paddedHex;
+}
+function hexToRgb(hex) {
+  const rgb = [];
+  for (let i = 1; i < 7; i += 2) {
+    rgb.push(parseInt("0x" + hex.slice(i, i + 2), 16));
+  }
+  return rgb;
+}
+const gradient = (startColor, endColor, step = 2) => {
+  const sColor = hexToRgb(startColor);
+  const eColor = hexToRgb(endColor);
+  const rStep = (eColor[0] - sColor[0]) / step;
+  const gStep = (eColor[1] - sColor[1]) / step;
+  const bStep = (eColor[2] - sColor[2]) / step;
+  const gradientColorArr = [];
+  for (let i = 0; i < step; i++) {
+    gradientColorArr.push(
+      rgbToHex(parseInt(String(rStep * i + sColor[0])), parseInt(String(gStep * i + sColor[1])), parseInt(String(bStep * i + sColor[2])))
+    );
+  }
+  return gradientColorArr;
+};
+const range = (num, min, max) => {
+  return Math.min(Math.max(num, min), max);
+};
+const isEqual = (value1, value2) => {
+  if (value1 === value2) {
+    return true;
+  }
+  if (!Array.isArray(value1) || !Array.isArray(value2)) {
+    return false;
+  }
+  if (value1.length !== value2.length) {
+    return false;
+  }
+  for (let i = 0; i < value1.length; ++i) {
+    if (value1[i] !== value2[i]) {
+      return false;
+    }
+  }
+  return true;
+};
+const context = {
+  id: 1e3
+};
+function getRect(selector, all, scope, useFields) {
+  return new Promise((resolve2, reject) => {
+    let query = null;
+    if (scope) {
+      query = index.createSelectorQuery().in(scope);
+    } else {
+      query = index.createSelectorQuery();
+    }
+    const method = all ? "selectAll" : "select";
+    const callback = (rect) => {
+      if (all && isArray(rect) && rect.length > 0) {
+        resolve2(rect);
+      } else if (!all && rect) {
+        resolve2(rect);
+      } else {
+        reject(new Error("No nodes found"));
+      }
+    };
+    {
+      query[method](selector).boundingClientRect(callback).exec();
+    }
+  });
+}
+function kebabCase(word) {
+  const newWord = word.replace(/[A-Z]/g, function(match) {
+    return "-" + match;
+  }).toLowerCase();
+  return newWord;
+}
+function camelCase(word) {
+  return word.replace(/-(\w)/g, (_, c) => c.toUpperCase());
+}
+function isArray(value) {
+  if (typeof Array.isArray === "function") {
+    return Array.isArray(value);
+  }
+  return Object.prototype.toString.call(value) === "[object Array]";
+}
+function isFunction(value) {
+  return getType(value) === "function" || getType(value) === "asyncfunction";
+}
+function isString(value) {
+  return getType(value) === "string";
+}
+function isNumber(value) {
+  return getType(value) === "number";
+}
+function isPromise(value) {
+  if (isObj(value) && isDef(value)) {
+    return isFunction(value.then) && isFunction(value.catch);
+  }
+  return false;
+}
+function objToStyle(styles) {
+  if (isArray(styles)) {
+    const result = styles.filter(function(item) {
+      return item != null && item !== "";
+    }).map(function(item) {
+      return objToStyle(item);
+    }).join(";");
+    return result ? result.endsWith(";") ? result : result + ";" : "";
+  }
+  if (isString(styles)) {
+    return styles ? styles.endsWith(";") ? styles : styles + ";" : "";
+  }
+  if (isObj(styles)) {
+    const result = Object.keys(styles).filter(function(key) {
+      return styles[key] != null && styles[key] !== "";
+    }).map(function(key) {
+      return [kebabCase(key), styles[key]].join(":");
+    }).join(";");
+    return result ? result.endsWith(";") ? result : result + ";" : "";
+  }
+  return "";
+}
+const pause = (ms = 1e3 / 30) => {
+  return new AbortablePromise((resolve2) => {
+    const timer = setTimeout(() => {
+      clearTimeout(timer);
+      resolve2(true);
+    }, ms);
+  });
+};
+function deepClone(obj, cache = /* @__PURE__ */ new Map()) {
+  if (obj === null || typeof obj !== "object") {
+    return obj;
+  }
+  if (isDate(obj)) {
+    return new Date(obj.getTime());
+  }
+  if (obj instanceof RegExp) {
+    return new RegExp(obj.source, obj.flags);
+  }
+  if (obj instanceof Error) {
+    const errorCopy = new Error(obj.message);
+    errorCopy.stack = obj.stack;
+    return errorCopy;
+  }
+  if (cache.has(obj)) {
+    return cache.get(obj);
+  }
+  const copy = Array.isArray(obj) ? [] : {};
+  cache.set(obj, copy);
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      copy[key] = deepClone(obj[key], cache);
+    }
+  }
+  return copy;
+}
+function deepMerge(target, source) {
+  target = deepClone(target);
+  if (typeof target !== "object" || typeof source !== "object") {
+    throw new Error("Both target and source must be objects.");
+  }
+  for (const prop in source) {
+    if (!source.hasOwnProperty(prop))
+      continue;
+    target[prop] = source[prop];
+  }
+  return target;
+}
+function deepAssign(target, source) {
+  Object.keys(source).forEach((key) => {
+    const targetValue = target[key];
+    const newObjValue = source[key];
+    if (isObj(targetValue) && isObj(newObjValue)) {
+      deepAssign(targetValue, newObjValue);
+    } else {
+      target[key] = newObjValue;
+    }
+  });
+  return target;
+}
+function debounce(func, wait, options = {}) {
+  let timeoutId = null;
+  let lastArgs;
+  let lastThis;
+  let result;
+  const leading = isDef(options.leading) ? options.leading : false;
+  const trailing = isDef(options.trailing) ? options.trailing : true;
+  function invokeFunc() {
+    if (lastArgs !== void 0) {
+      result = func.apply(lastThis, lastArgs);
+      lastArgs = void 0;
+    }
+  }
+  function startTimer() {
+    timeoutId = setTimeout(() => {
+      timeoutId = null;
+      if (trailing) {
+        invokeFunc();
+      }
+    }, wait);
+  }
+  function cancelTimer() {
+    if (timeoutId !== null) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
+  }
+  function debounced(...args) {
+    lastArgs = args;
+    lastThis = this;
+    if (timeoutId === null) {
+      if (leading) {
+        invokeFunc();
+      }
+      startTimer();
+    } else if (trailing) {
+      cancelTimer();
+      startTimer();
+    }
+    return result;
+  }
+  return debounced;
+}
+const getPropByPath = (obj, path) => {
+  const keys = path.split(".");
+  try {
+    return keys.reduce((acc, key) => acc !== void 0 && acc !== null ? acc[key] : void 0, obj);
+  } catch (error) {
+    return void 0;
+  }
+};
+const isDate = (val) => Object.prototype.toString.call(val) === "[object Date]" && !Number.isNaN(val.getTime());
+function getSystemInfo() {
+  let systemInfo;
+  try {
+    const deviceInfo = index.getDeviceInfo();
+    const windowInfo = index.getWindowInfo();
+    const appBaseInfo = index.getAppBaseInfo();
+    systemInfo = {
+      ...deviceInfo,
+      ...windowInfo,
+      ...appBaseInfo
+    };
+  } catch (error) {
+    console.warn("获取系统信息失败，降级使用uni.getSystemInfoSync:", error);
+    systemInfo = index.getSystemInfoSync();
+  }
+  return systemInfo;
+}
+const overlayProps = {
+  ...baseProps,
+  /**
+   * 是否展示遮罩层
+   */
+  show: makeBooleanProp(false),
+  /**
+   * 动画时长，单位毫秒
+   */
+  duration: {
+    type: [Object, Number, Boolean],
+    default: 300
+  },
+  /**
+   * 是否锁定滚动
+   */
+  lockScroll: makeBooleanProp(true),
+  /**
+   * 层级
+   */
+  zIndex: makeNumberProp(10)
+};
+const transitionProps = {
+  ...baseProps,
+  /**
+   * 是否展示组件
+   * 类型：boolean
+   * 默认值：false
+   */
+  show: makeBooleanProp(false),
+  /**
+   * 动画执行时间
+   * 类型：number | boolean | Record<string, number>
+   * 默认值：300 (毫秒)
+   */
+  duration: {
+    type: [Object, Number, Boolean],
+    default: 300
+  },
+  /**
+   * 弹层内容懒渲染，触发展示时才渲染内容
+   * 类型：boolean
+   * 默认值：false
+   */
+  lazyRender: makeBooleanProp(false),
+  /**
+   * 动画类型
+   * 类型：string
+   * 可选值：fade / fade-up / fade-down / fade-left / fade-right / slide-up / slide-down / slide-left / slide-right / zoom-in
+   * 默认值：'fade'
+   */
+  name: [String, Array],
+  /**
+   * 是否在动画结束时销毁子节点（display: none)
+   * 类型：boolean
+   * 默认值：false
+   */
+  destroy: makeBooleanProp(true),
+  /**
+   * 进入过渡的开始状态
+   * 类型：string
+   */
+  enterClass: makeStringProp(""),
+  /**
+   * 进入过渡的激活状态
+   * 类型：string
+   */
+  enterActiveClass: makeStringProp(""),
+  /**
+   * 进入过渡的结束状态
+   * 类型：string
+   */
+  enterToClass: makeStringProp(""),
+  /**
+   * 离开过渡的开始状态
+   * 类型：string
+   */
+  leaveClass: makeStringProp(""),
+  /**
+   * 离开过渡的激活状态
+   * 类型：string
+   */
+  leaveActiveClass: makeStringProp(""),
+  /**
+   * 离开过渡的结束状态
+   * 类型：string
+   */
+  leaveToClass: makeStringProp(""),
+  /**
+   * 是否阻止触摸滚动
+   * 类型：boolean
+   * 默认值：false
+   */
+  disableTouchMove: makeBooleanProp(false)
+};
+const pickerViewProps = {
+  ...baseProps,
+  /**
+   * 加载状态
+   */
+  loading: makeBooleanProp(false),
+  /**
+   * 加载的颜色，只能使用十六进制的色值写法，且不能使用缩写
+   */
+  loadingColor: makeStringProp("#4D80F0"),
+  /**
+   * picker内部滚筒高
+   */
+  columnsHeight: makeNumberProp(217),
+  /**
+   * picker item的高度
+   */
+  itemHeight: makeNumberProp(35),
+  /**
+   * 选项对象中，value对应的 key
+   */
+  valueKey: makeStringProp("value"),
+  /**
+   * 选项对象中，展示的文本对应的 key
+   */
+  labelKey: makeStringProp("label"),
+  /**
+   * 是否在手指松开时立即触发picker-view的 change 事件。若不开启则会在滚动动画结束后触发 change 事件，1.2.25版本起提供，仅微信小程序和支付宝小程序支持。
+   */
+  immediateChange: makeBooleanProp(false),
+  /**
+   * 选中项，如果为多列选择器，则其类型应为数组
+   */
+  modelValue: {
+    type: [String, Number, Boolean, Array, Array, Array],
+    default: "",
+    required: true
+  },
+  /**
+   * 选择器数据，可以为字符串数组，也可以为对象数组，如果为二维数组，则为多列选择器
+   */
+  columns: makeArrayProp(),
+  /**
+   * 接收 pickerView 实例、选中项、当前修改列的下标、resolve 作为入参，根据选中项和列下标进行判断，通过 pickerView 实例暴露出来的 setColumnData 方法修改其他列的数据源。
+   */
+  columnChange: Function
+};
+function formatArray(array, valueKey, labelKey) {
+  let tempArray = isArray(array) ? array : [array];
+  const firstLevelTypeList = new Set(array.map(getType));
+  if (firstLevelTypeList.size !== 1 && firstLevelTypeList.has("object")) {
+    throw Error("The columns are correct");
+  }
+  if (!isArray(array[0])) {
+    tempArray = [tempArray];
+  }
+  const result = tempArray.map((col) => {
+    return col.map((row) => {
+      if (!isObj(row)) {
+        return {
+          [valueKey]: row,
+          [labelKey]: row
+        };
+      }
+      if (!row.hasOwnProperty(valueKey) && !row.hasOwnProperty(labelKey)) {
+        throw Error("Can't find valueKey and labelKey in columns");
+      }
+      if (!row.hasOwnProperty(labelKey)) {
+        row[labelKey] = row[valueKey];
+      }
+      if (!row.hasOwnProperty(valueKey)) {
+        row[valueKey] = row[labelKey];
+      }
+      return row;
+    });
+  });
+  return result;
+}
+const zhCN = {
+  calendar: {
+    placeholder: "请选择",
+    title: "选择日期",
+    day: "日",
+    week: "周",
+    month: "月",
+    confirm: "确定",
+    startTime: "开始时间",
+    endTime: "结束时间",
+    to: "至",
+    timeFormat: "YY年MM月DD日 HH:mm:ss",
+    dateFormat: "YYYY年MM月DD日",
+    weekFormat: (year, week) => `${year} 第 ${week} 周`,
+    startWeek: "开始周",
+    endWeek: "结束周",
+    startMonth: "开始月",
+    endMonth: "结束月",
+    monthFormat: "YYYY年MM月"
+  },
+  calendarView: {
+    startTime: "开始",
+    endTime: "结束",
+    weeks: {
+      sun: "日",
+      mon: "一",
+      tue: "二",
+      wed: "三",
+      thu: "四",
+      fri: "五",
+      sat: "六"
+    },
+    rangePrompt: (maxRange) => `选择天数不能超过${maxRange}天`,
+    rangePromptWeek: (maxRange) => `选择周数不能超过${maxRange}周`,
+    rangePromptMonth: (maxRange) => `选择月份不能超过${maxRange}个月`,
+    monthTitle: "YYYY年M月",
+    yearTitle: "YYYY年",
+    month: "M月",
+    hour: (value) => `${value}时`,
+    minute: (value) => `${value}分`,
+    second: (value) => `${value}秒`
+  },
+  collapse: {
+    expand: "展开",
+    retract: "收起"
+  },
+  colPicker: {
+    title: "请选择",
+    placeholder: "请选择",
+    select: "请选择"
+  },
+  datetimePicker: {
+    start: "开始时间",
+    end: "结束时间",
+    to: "至",
+    placeholder: "请选择",
+    confirm: "完成",
+    cancel: "取消"
+  },
+  loadmore: {
+    loading: "正在努力加载中...",
+    finished: "已加载完毕",
+    error: "加载失败",
+    retry: "点击重试"
+  },
+  messageBox: {
+    inputPlaceholder: "请输入",
+    confirm: "确定",
+    cancel: "取消",
+    inputNoValidate: "输入的数据不合法"
+  },
+  numberKeyboard: {
+    confirm: "完成"
+  },
+  pagination: {
+    prev: "上一页",
+    next: "下一页",
+    page: (value) => `当前页：${value}`,
+    total: (total) => `当前数据：${total}条`,
+    size: (size2) => `分页大小：${size2}`
+  },
+  picker: {
+    cancel: "取消",
+    done: "完成",
+    placeholder: "请选择"
+  },
+  imgCropper: {
+    confirm: "完成",
+    cancel: "取消"
+  },
+  search: {
+    search: "搜索",
+    cancel: "取消"
+  },
+  steps: {
+    wait: "未开始",
+    finished: "已完成",
+    process: "进行中",
+    failed: "失败"
+  },
+  tabs: {
+    all: "全部"
+  },
+  upload: {
+    error: "上传失败"
+  },
+  input: {
+    placeholder: "请输入..."
+  },
+  selectPicker: {
+    title: "请选择",
+    placeholder: "请选择",
+    select: "请选择",
+    confirm: "确认",
+    filterPlaceholder: "搜索"
+  },
+  tag: {
+    placeholder: "请输入",
+    add: "新增标签"
+  },
+  textarea: {
+    placeholder: "请输入..."
+  },
+  tableCol: {
+    indexLabel: "序号"
+  },
+  tour: {
+    prev: "上一步",
+    next: "下一步",
+    finish: "完成",
+    skip: "跳过"
+  },
+  signature: {
+    confirmText: "确认",
+    clearText: "清空",
+    revokeText: "撤销",
+    restoreText: "恢复"
+  },
+  slideVerify: {
+    text: "向右滑动验证",
+    successText: "验证通过"
+  }
+};
+const lang = ref("zh-CN");
+const messages = reactive({
+  "zh-CN": zhCN
+});
+const Locale = {
+  messages() {
+    return messages[lang.value];
+  },
+  use(newLang, newMessage) {
+    lang.value = newLang;
+    if (newMessage) {
+      this.add({ [newLang]: newMessage });
+    }
+  },
+  add(newMessages = {}) {
+    deepAssign(messages, newMessages);
+  }
+};
+const useTranslate = (name) => {
+  const prefix = name ? camelCase(name) + "." : "";
+  const translate = (key, ...args) => {
+    const currentMessages = Locale.messages();
+    const message = getPropByPath(currentMessages, prefix + key);
+    return isFunction(message) ? message(...args) : isDef(message) ? message : `${prefix}${key}`;
+  };
+  return { translate };
+};
+const pickerProps = {
+  ...baseProps,
+  /**
+   * label 外部自定义样式
+   */
+  customLabelClass: makeStringProp(""),
+  /**
+   * value 外部自定义样式
+   */
+  customValueClass: makeStringProp(""),
+  /**
+   * pickerView 外部自定义样式
+   */
+  customViewClass: makeStringProp(""),
+  /**
+   * 选择器左侧文案
+   */
+  label: String,
+  /**
+   * 选择器占位符
+   */
+  placeholder: String,
+  /**
+   * 是否禁用
+   */
+  disabled: makeBooleanProp(false),
+  /**
+   * 是否只读
+   */
+  readonly: makeBooleanProp(false),
+  /**
+   * 加载中
+   */
+  loading: makeBooleanProp(false),
+  /**
+   * 加载中颜色
+   */
+  loadingColor: makeStringProp("#4D80F0"),
+  /* popup */
+  /**
+   * 弹出层标题
+   */
+  title: String,
+  /**
+   * 取消按钮文案
+   */
+  cancelButtonText: String,
+  /**
+   * 确认按钮文案
+   */
+  confirmButtonText: String,
+  /**
+   * 是否必填
+   */
+  required: makeBooleanProp(false),
+  /**
+   * 尺寸
+   */
+  size: String,
+  /**
+   * 设置左侧标题宽度
+   */
+  labelWidth: makeStringProp("33%"),
+  /**
+   * 使用默认插槽
+   * @deprecated 可以直接使用默认插槽，无需配置此选项
+   */
+  useDefaultSlot: makeBooleanProp(false),
+  /**
+   * 使用标签插槽
+   * @deprecated 可以直接使用标签插槽，无需配置此选项
+   */
+  useLabelSlot: makeBooleanProp(false),
+  /**
+   * 错误状态
+   */
+  error: makeBooleanProp(false),
+  /**
+   * 右对齐
+   */
+  alignRight: makeBooleanProp(false),
+  /**
+   * 确定前校验函数，接收 (value, resolve, picker) 参数，通过 resolve 继续执行 picker，resolve 接收1个boolean参数
+   */
+  beforeConfirm: Function,
+  /**
+   * 点击蒙层关闭
+   */
+  closeOnClickModal: makeBooleanProp(true),
+  /**
+   * 底部安全区域内
+   */
+  safeAreaInsetBottom: makeBooleanProp(true),
+  /**
+   * 文本溢出显示省略号
+   */
+  ellipsis: makeBooleanProp(false),
+  /**
+   * 选项总高度
+   */
+  columnsHeight: makeNumberProp(217),
+  /**
+   * 选项值对应的键名
+   */
+  valueKey: makeStringProp("value"),
+  /**
+   * 选项文本对应的键名
+   */
+  labelKey: makeStringProp("label"),
+  /**
+   * 选中项，如果为多列选择器，则其类型应为数组
+   */
+  modelValue: {
+    type: [String, Number, Array],
+    default: ""
+  },
+  /**
+   * 选择器数据，可以为字符串数组，也可以为对象数组，如果为二维数组，则为多列选择器
+   */
+  columns: {
+    type: Array,
+    default: () => []
+  },
+  /**
+   * 接收 pickerView 实例、选中项、当前修改列的下标、resolve 作为入参，根据选中项和列下标进行判断，通过 pickerView 实例暴露出来的 setColumnData 方法修改其他列的数据源。
+   */
+  columnChange: Function,
+  /**
+   * 自定义展示文案的格式化函数，返回一个字符串
+   */
+  displayFormat: Function,
+  /**
+   * 自定义层级
+   */
+  zIndex: makeNumberProp(15),
+  /**
+   * 表单域 model 字段名，在使用表单校验功能的情况下，该属性是必填的
+   */
+  prop: String,
+  /**
+   * 表单验证规则，结合wd-form组件使用
+   */
+  rules: makeArrayProp(),
+  /**
+   * 是否在手指松开时立即触发 change 事件。若不开启则会在滚动动画结束后触发 change 事件，1.2.25版本起提供，仅微信小程序和支付宝小程序支持。
+   */
+  immediateChange: makeBooleanProp(false),
+  /**
+   * 是否从页面中脱离出来，用于解决各种 fixed 失效问题 (H5: teleport, APP: renderjs, 小程序: root-portal)
+   */
+  rootPortal: makeBooleanProp(false),
+  /**
+   * 显示清空按钮
+   */
+  clearable: makeBooleanProp(false),
+  /**
+   * 必填标记位置，可选值：before、after
+   */
+  markerSide: makeStringProp("before")
+};
+function useParent(key) {
+  const parent = inject(key, null);
+  if (parent) {
+    const instance = getCurrentInstance();
+    const { link, unlink, internalChildren } = parent;
+    link(instance);
+    onUnmounted(() => unlink(instance));
+    const index2 = computed(() => internalChildren.indexOf(instance));
+    return {
+      parent,
+      index: index2
+    };
+  }
+  return {
+    parent: null,
+    index: ref(-1)
+  };
+}
+const TABS_KEY = Symbol("wd-tabs");
+const tabsProps = {
+  ...baseProps,
+  /**
+   * 绑定值
+   */
+  modelValue: makeNumericProp(0),
+  /**
+   * 标签数超过阈值可滑动
+   */
+  slidableNum: makeNumberProp(6),
+  /**
+   * 标签数超过阈值显示导航地图
+   */
+  mapNum: makeNumberProp(10),
+  /**
+   * 导航地图的标题
+   */
+  mapTitle: String,
+  /**
+   * 粘性布局
+   */
+  sticky: makeBooleanProp(false),
+  /**
+   * 粘性布局吸顶位置
+   */
+  offsetTop: makeNumberProp(0),
+  /**
+   * 开启手势滑动
+   */
+  swipeable: makeBooleanProp(false),
+  /**
+   * 自动调整底部条宽度，设置了 lineWidth 后无效
+   */
+  autoLineWidth: makeBooleanProp(false),
+  /**
+   * 底部条宽度，单位像素
+   */
+  lineWidth: numericProp,
+  /**
+   * 底部条高度，单位像素
+   */
+  lineHeight: numericProp,
+  /**
+   * 颜色
+   */
+  color: makeStringProp(""),
+  /**
+   * 非活动状态颜色
+   */
+  inactiveColor: makeStringProp(""),
+  /**
+   * 是否开启切换标签内容时的过渡动画
+   */
+  animated: makeBooleanProp(false),
+  /**
+   * 切换动画过渡时间，单位毫秒
+   */
+  duration: makeNumberProp(300),
+  /**
+   * 是否开启滚动导航
+   * 可选值：'auto' | 'always'
+   * @default auto
+   */
+  slidable: makeStringProp("auto"),
+  /**
+   * 标签可滑动时是否显示滚动条
+   */
+  showScrollbar: makeBooleanProp(false)
+};
+const tabProps = {
+  ...baseProps,
+  /**
+   * 唯一标识符
+   */
+  name: numericProp,
+  /**
+   * tab的标题
+   */
+  title: String,
+  /**
+   *  是否禁用，无法点击
+   */
+  disabled: makeBooleanProp(false),
+  /**
+   * 是否懒加载，切换到该tab时才加载内容
+   * @default true
+   */
+  lazy: makeBooleanProp(true),
+  /**
+   * 徽标属性，透传给 Badge 组件
+   */
+  badgeProps: Object
+};
+function useTouch() {
+  const direction = ref("");
+  const deltaX = ref(0);
+  const deltaY = ref(0);
+  const offsetX = ref(0);
+  const offsetY = ref(0);
+  const startX = ref(0);
+  const startY = ref(0);
+  function touchStart(event) {
+    const touch = event.touches[0];
+    direction.value = "";
+    deltaX.value = 0;
+    deltaY.value = 0;
+    offsetX.value = 0;
+    offsetY.value = 0;
+    startX.value = touch.clientX;
+    startY.value = touch.clientY;
+  }
+  function touchMove(event) {
+    const touch = event.touches[0];
+    deltaX.value = touch.clientX - startX.value;
+    deltaY.value = touch.clientY - startY.value;
+    offsetX.value = Math.abs(deltaX.value);
+    offsetY.value = Math.abs(deltaY.value);
+    direction.value = offsetX.value > offsetY.value ? "horizontal" : offsetX.value < offsetY.value ? "vertical" : "";
+  }
+  return {
+    touchStart,
+    touchMove,
+    direction,
+    deltaX,
+    deltaY,
+    offsetX,
+    offsetY,
+    startX,
+    startY
+  };
+}
+function isVNode(value) {
+  return value ? value.__v_isVNode === true : false;
+}
+function flattenVNodes(children) {
+  const result = [];
+  const traverse2 = (children2) => {
+    const vNode = Array.isArray(children2) ? children2 : [children2];
+    vNode.forEach((child) => {
+      var _a;
+      if (Array.isArray(child)) {
+        traverse2(child);
+      } else if (isVNode(child) && ((_a = child.component) == null ? void 0 : _a.subTree)) {
+        result.push(child);
+        traverse2(child.component.subTree);
+      } else if (isVNode(child) && Array.isArray(child.children)) {
+        traverse2(child.children);
+      } else if (isVNode(child)) {
+        result.push(child);
+      }
+    });
+  };
+  traverse2(children);
+  return result;
+}
+const findVNodeIndex = (vnodes, vnode) => {
+  const index2 = vnodes.indexOf(vnode);
+  if (index2 === -1) {
+    return vnodes.findIndex((item) => vnode.key !== void 0 && vnode.key !== null && item.type === vnode.type && item.key === vnode.key);
+  }
+  return index2;
+};
+function sortChildren(parent, publicChildren, internalChildren) {
+  const vnodes = parent && parent.subTree && parent.subTree.children ? flattenVNodes(parent.subTree) : [];
+  internalChildren.sort((a, b) => findVNodeIndex(vnodes, a.vnode) - findVNodeIndex(vnodes, b.vnode));
+  const orderedPublicChildren = internalChildren.map((item) => item.proxy);
+  publicChildren.sort((a, b) => {
+    const getIndex = (comp) => {
+      const uid2 = comp.$.uid;
+      return orderedPublicChildren.findIndex((i) => i.$.uid === uid2);
+    };
+    const indexA = getIndex(a);
+    const indexB = getIndex(b);
+    return indexA - indexB;
+  });
+}
+function useChildren(key) {
+  const publicChildren = reactive([]);
+  const internalChildren = reactive([]);
+  const parent = getCurrentInstance();
+  const linkChildren = (value) => {
+    const link = (child) => {
+      if (child.proxy) {
+        internalChildren.push(child);
+        publicChildren.push(child.proxy);
+        sortChildren(parent, publicChildren, internalChildren);
+      }
+    };
+    const unlink = (child) => {
+      const index2 = internalChildren.indexOf(child);
+      publicChildren.splice(index2, 1);
+      internalChildren.splice(index2, 1);
+    };
+    provide(
+      key,
+      Object.assign(
+        {
+          link,
+          unlink,
+          children: publicChildren,
+          internalChildren
+        },
+        value
+      )
+    );
+  };
+  return {
+    children: publicChildren,
+    linkChildren
+  };
+}
+const toastDefaultOptionKey = "__TOAST_OPTION__";
+const defaultOptions = {
+  duration: 2e3,
+  show: false
+};
+const None = Symbol("None");
+const toastTimerMap = /* @__PURE__ */ new Map();
+function useToast(selector = "") {
+  const toastOptionKey = getToastOptionKey(selector);
+  const toastOption = inject(toastOptionKey, ref(None));
+  if (toastOption.value === None) {
+    toastOption.value = defaultOptions;
+    provide(toastOptionKey, toastOption);
+  }
+  const createMethod = (toastOptions) => {
+    return (options) => {
+      return show(deepMerge(toastOptions, typeof options === "string" ? { msg: options } : options));
+    };
+  };
+  const show = (option) => {
+    const options = deepMerge(defaultOptions, typeof option === "string" ? { msg: option } : option);
+    toastOption.value = deepMerge(options, {
+      show: true
+    });
+    const prevTimer = toastTimerMap.get(toastOptionKey);
+    if (prevTimer) {
+      clearTimeout(prevTimer);
+      toastTimerMap.delete(toastOptionKey);
+    }
+    if (options.duration && options.duration > 0) {
+      const nextTimer = setTimeout(() => {
+        toastTimerMap.delete(toastOptionKey);
+        close();
+      }, options.duration);
+      toastTimerMap.set(toastOptionKey, nextTimer);
+    }
+  };
+  const loading = createMethod({
+    iconName: "loading",
+    duration: 0,
+    cover: true
+  });
+  const success = createMethod({
+    iconName: "success",
+    duration: 1500
+  });
+  const error = createMethod({ iconName: "error" });
+  const warning = createMethod({ iconName: "warning" });
+  const info = createMethod({ iconName: "info" });
+  const close = () => {
+    const timer = toastTimerMap.get(toastOptionKey);
+    if (timer) {
+      clearTimeout(timer);
+      toastTimerMap.delete(toastOptionKey);
+    }
+    toastOption.value = { show: false };
+  };
+  return {
+    show,
+    loading,
+    success,
+    error,
+    warning,
+    info,
+    close
+  };
+}
+const getToastOptionKey = (selector) => {
+  return selector ? `${toastDefaultOptionKey}${selector}` : toastDefaultOptionKey;
+};
+const CELL_GROUP_KEY = Symbol("wd-cell-group");
+({
+  ...baseProps
+});
+function useCell() {
+  const { parent: cellGroup, index: index2 } = useParent(CELL_GROUP_KEY);
+  const border = computed(() => {
+    return cellGroup && cellGroup.props.border && index2.value;
+  });
+  return { border };
+}
+const USE_CONFIG_PROVIDER_KEY = "__CONFIG_PROVIDER__";
+var SECONDS_A_MINUTE = 60;
+var SECONDS_A_HOUR = SECONDS_A_MINUTE * 60;
+var SECONDS_A_DAY = SECONDS_A_HOUR * 24;
+var SECONDS_A_WEEK = SECONDS_A_DAY * 7;
+var MILLISECONDS_A_SECOND = 1e3;
+var MILLISECONDS_A_MINUTE = SECONDS_A_MINUTE * MILLISECONDS_A_SECOND;
+var MILLISECONDS_A_HOUR = SECONDS_A_HOUR * MILLISECONDS_A_SECOND;
+var MILLISECONDS_A_DAY = SECONDS_A_DAY * MILLISECONDS_A_SECOND;
+var MILLISECONDS_A_WEEK = SECONDS_A_WEEK * MILLISECONDS_A_SECOND;
+var MS = "millisecond";
+var S = "second";
+var MIN = "minute";
+var H = "hour";
+var D = "day";
+var W = "week";
+var M = "month";
+var Q = "quarter";
+var Y = "year";
+var DATE = "date";
+var FORMAT_DEFAULT = "YYYY-MM-DDTHH:mm:ssZ";
+var INVALID_DATE_STRING = "Invalid Date";
+var REGEX_PARSE = /^(\d{4})[-/]?(\d{1,2})?[-/]?(\d{0,2})[Tt\s]*(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?[.:]?(\d+)?$/;
+var REGEX_FORMAT = /\[([^\]]+)]|Y{1,4}|M{1,4}|D{1,2}|d{1,4}|H{1,2}|h{1,2}|a|A|m{1,2}|s{1,2}|Z{1,2}|SSS/g;
+const en = {
+  name: "en",
+  weekdays: "Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split("_"),
+  months: "January_February_March_April_May_June_July_August_September_October_November_December".split("_"),
+  ordinal: function ordinal(n2) {
+    var s2 = ["th", "st", "nd", "rd"];
+    var v = n2 % 100;
+    return "[" + n2 + (s2[(v - 20) % 10] || s2[v] || s2[0]) + "]";
+  }
+};
+var padStart = function padStart2(string, length, pad) {
+  var s2 = String(string);
+  if (!s2 || s2.length >= length)
+    return string;
+  return "" + Array(length + 1 - s2.length).join(pad) + string;
+};
+var padZoneStr = function padZoneStr2(instance) {
+  var negMinutes = -instance.utcOffset();
+  var minutes = Math.abs(negMinutes);
+  var hourOffset = Math.floor(minutes / 60);
+  var minuteOffset = minutes % 60;
+  return (negMinutes <= 0 ? "+" : "-") + padStart(hourOffset, 2, "0") + ":" + padStart(minuteOffset, 2, "0");
+};
+var monthDiff = function monthDiff2(a, b) {
+  if (a.date() < b.date())
+    return -monthDiff2(b, a);
+  var wholeMonthDiff = (b.year() - a.year()) * 12 + (b.month() - a.month());
+  var anchor = a.clone().add(wholeMonthDiff, M);
+  var c = b - anchor < 0;
+  var anchor2 = a.clone().add(wholeMonthDiff + (c ? -1 : 1), M);
+  return +(-(wholeMonthDiff + (b - anchor) / (c ? anchor - anchor2 : anchor2 - anchor)) || 0);
+};
+var absFloor = function absFloor2(n2) {
+  return n2 < 0 ? Math.ceil(n2) || 0 : Math.floor(n2);
+};
+var prettyUnit = function prettyUnit2(u) {
+  var special = {
+    M,
+    y: Y,
+    w: W,
+    d: D,
+    D: DATE,
+    h: H,
+    m: MIN,
+    s: S,
+    ms: MS,
+    Q
+  };
+  return special[u] || String(u || "").toLowerCase().replace(/s$/, "");
+};
+var isUndefined = function isUndefined2(s2) {
+  return s2 === void 0;
+};
+const U = {
+  s: padStart,
+  z: padZoneStr,
+  m: monthDiff,
+  a: absFloor,
+  p: prettyUnit,
+  u: isUndefined
+};
+var L = "en";
+var Ls = {};
+Ls[L] = en;
+var IS_DAYJS = "$isDayjsObject";
+var isDayjs = function isDayjs2(d) {
+  return d instanceof Dayjs || !!(d && d[IS_DAYJS]);
+};
+var parseLocale = function parseLocale2(preset, object, isLocal) {
+  var l;
+  if (!preset)
+    return L;
+  if (typeof preset === "string") {
+    var presetLower = preset.toLowerCase();
+    if (Ls[presetLower]) {
+      l = presetLower;
+    }
+    if (object) {
+      Ls[presetLower] = object;
+      l = presetLower;
+    }
+    var presetSplit = preset.split("-");
+    if (!l && presetSplit.length > 1) {
+      return parseLocale2(presetSplit[0]);
+    }
+  } else {
+    var name = preset.name;
+    Ls[name] = preset;
+    l = name;
+  }
+  if (!isLocal && l)
+    L = l;
+  return l || !isLocal && L;
+};
+var dayjs = function dayjs2(date, c) {
+  if (isDayjs(date)) {
+    return date.clone();
+  }
+  var cfg = typeof c === "object" ? c : {};
+  cfg.date = date;
+  cfg.args = arguments;
+  return new Dayjs(cfg);
+};
+var wrapper = function wrapper2(date, instance) {
+  return dayjs(date, {
+    locale: instance.$L,
+    utc: instance.$u,
+    x: instance.$x,
+    $offset: instance.$offset
+    // todo: refactor; do not use this.$offset in you code
+  });
+};
+var Utils = U;
+Utils.l = parseLocale;
+Utils.i = isDayjs;
+Utils.w = wrapper;
+var parseDate = function parseDate2(cfg) {
+  var date = cfg.date, utc = cfg.utc;
+  if (date === null)
+    return /* @__PURE__ */ new Date(NaN);
+  if (Utils.u(date))
+    return /* @__PURE__ */ new Date();
+  if (date instanceof Date)
+    return new Date(date);
+  if (typeof date === "string" && !/Z$/i.test(date)) {
+    var d = date.match(REGEX_PARSE);
+    if (d) {
+      var m = d[2] - 1 || 0;
+      var ms = (d[7] || "0").substring(0, 3);
+      if (utc) {
+        return new Date(Date.UTC(d[1], m, d[3] || 1, d[4] || 0, d[5] || 0, d[6] || 0, ms));
+      }
+      return new Date(d[1], m, d[3] || 1, d[4] || 0, d[5] || 0, d[6] || 0, ms);
+    }
+  }
+  return new Date(date);
+};
+var Dayjs = /* @__PURE__ */ function() {
+  function Dayjs2(cfg) {
+    this.$L = parseLocale(cfg.locale, null, true);
+    this.parse(cfg);
+    this.$x = this.$x || cfg.x || {};
+    this[IS_DAYJS] = true;
+  }
+  var _proto = Dayjs2.prototype;
+  _proto.parse = function parse(cfg) {
+    this.$d = parseDate(cfg);
+    this.init();
+  };
+  _proto.init = function init() {
+    var $d = this.$d;
+    this.$y = $d.getFullYear();
+    this.$M = $d.getMonth();
+    this.$D = $d.getDate();
+    this.$W = $d.getDay();
+    this.$H = $d.getHours();
+    this.$m = $d.getMinutes();
+    this.$s = $d.getSeconds();
+    this.$ms = $d.getMilliseconds();
+  };
+  _proto.$utils = function $utils() {
+    return Utils;
+  };
+  _proto.isValid = function isValid2() {
+    return !(this.$d.toString() === INVALID_DATE_STRING);
+  };
+  _proto.isSame = function isSame(that, units) {
+    var other = dayjs(that);
+    return this.startOf(units) <= other && other <= this.endOf(units);
+  };
+  _proto.isAfter = function isAfter(that, units) {
+    return dayjs(that) < this.startOf(units);
+  };
+  _proto.isBefore = function isBefore(that, units) {
+    return this.endOf(units) < dayjs(that);
+  };
+  _proto.$g = function $g(input, get3, set2) {
+    if (Utils.u(input))
+      return this[get3];
+    return this.set(set2, input);
+  };
+  _proto.unix = function unix() {
+    return Math.floor(this.valueOf() / 1e3);
+  };
+  _proto.valueOf = function valueOf() {
+    return this.$d.getTime();
+  };
+  _proto.startOf = function startOf(units, _startOf) {
+    var _this = this;
+    var isStartOf = !Utils.u(_startOf) ? _startOf : true;
+    var unit = Utils.p(units);
+    var instanceFactory = function instanceFactory2(d, m) {
+      var ins = Utils.w(_this.$u ? Date.UTC(_this.$y, m, d) : new Date(_this.$y, m, d), _this);
+      return isStartOf ? ins : ins.endOf(D);
+    };
+    var instanceFactorySet = function instanceFactorySet2(method, slice) {
+      var argumentStart = [0, 0, 0, 0];
+      var argumentEnd = [23, 59, 59, 999];
+      return Utils.w(_this.toDate()[method].apply(
+        // eslint-disable-line prefer-spread
+        _this.toDate("s"),
+        (isStartOf ? argumentStart : argumentEnd).slice(slice)
+      ), _this);
+    };
+    var $W = this.$W, $M = this.$M, $D = this.$D;
+    var utcPad = "set" + (this.$u ? "UTC" : "");
+    switch (unit) {
+      case Y:
+        return isStartOf ? instanceFactory(1, 0) : instanceFactory(31, 11);
+      case M:
+        return isStartOf ? instanceFactory(1, $M) : instanceFactory(0, $M + 1);
+      case W: {
+        var weekStart = this.$locale().weekStart || 0;
+        var gap = ($W < weekStart ? $W + 7 : $W) - weekStart;
+        return instanceFactory(isStartOf ? $D - gap : $D + (6 - gap), $M);
+      }
+      case D:
+      case DATE:
+        return instanceFactorySet(utcPad + "Hours", 0);
+      case H:
+        return instanceFactorySet(utcPad + "Minutes", 1);
+      case MIN:
+        return instanceFactorySet(utcPad + "Seconds", 2);
+      case S:
+        return instanceFactorySet(utcPad + "Milliseconds", 3);
+      default:
+        return this.clone();
+    }
+  };
+  _proto.endOf = function endOf(arg) {
+    return this.startOf(arg, false);
+  };
+  _proto.$set = function $set(units, _int) {
+    var _C$D$C$DATE$C$M$C$Y$C;
+    var unit = Utils.p(units);
+    var utcPad = "set" + (this.$u ? "UTC" : "");
+    var name = (_C$D$C$DATE$C$M$C$Y$C = {}, _C$D$C$DATE$C$M$C$Y$C[D] = utcPad + "Date", _C$D$C$DATE$C$M$C$Y$C[DATE] = utcPad + "Date", _C$D$C$DATE$C$M$C$Y$C[M] = utcPad + "Month", _C$D$C$DATE$C$M$C$Y$C[Y] = utcPad + "FullYear", _C$D$C$DATE$C$M$C$Y$C[H] = utcPad + "Hours", _C$D$C$DATE$C$M$C$Y$C[MIN] = utcPad + "Minutes", _C$D$C$DATE$C$M$C$Y$C[S] = utcPad + "Seconds", _C$D$C$DATE$C$M$C$Y$C[MS] = utcPad + "Milliseconds", _C$D$C$DATE$C$M$C$Y$C)[unit];
+    var arg = unit === D ? this.$D + (_int - this.$W) : _int;
+    if (unit === M || unit === Y) {
+      var date = this.clone().set(DATE, 1);
+      date.$d[name](arg);
+      date.init();
+      this.$d = date.set(DATE, Math.min(this.$D, date.daysInMonth())).$d;
+    } else if (name)
+      this.$d[name](arg);
+    this.init();
+    return this;
+  };
+  _proto.set = function set2(string, _int2) {
+    return this.clone().$set(string, _int2);
+  };
+  _proto.get = function get3(unit) {
+    return this[Utils.p(unit)]();
+  };
+  _proto.add = function add2(number, units) {
+    var _this2 = this, _C$MIN$C$H$C$S$unit;
+    number = Number(number);
+    var unit = Utils.p(units);
+    var instanceFactorySet = function instanceFactorySet2(n2) {
+      var d = dayjs(_this2);
+      return Utils.w(d.date(d.date() + Math.round(n2 * number)), _this2);
+    };
+    if (unit === M) {
+      return this.set(M, this.$M + number);
+    }
+    if (unit === Y) {
+      return this.set(Y, this.$y + number);
+    }
+    if (unit === D) {
+      return instanceFactorySet(1);
+    }
+    if (unit === W) {
+      return instanceFactorySet(7);
+    }
+    var step = (_C$MIN$C$H$C$S$unit = {}, _C$MIN$C$H$C$S$unit[MIN] = MILLISECONDS_A_MINUTE, _C$MIN$C$H$C$S$unit[H] = MILLISECONDS_A_HOUR, _C$MIN$C$H$C$S$unit[S] = MILLISECONDS_A_SECOND, _C$MIN$C$H$C$S$unit)[unit] || 1;
+    var nextTimeStamp = this.$d.getTime() + number * step;
+    return Utils.w(nextTimeStamp, this);
+  };
+  _proto.subtract = function subtract(number, string) {
+    return this.add(number * -1, string);
+  };
+  _proto.format = function format(formatStr) {
+    var _this3 = this;
+    var locale = this.$locale();
+    if (!this.isValid())
+      return locale.invalidDate || INVALID_DATE_STRING;
+    var str = formatStr || FORMAT_DEFAULT;
+    var zoneStr = Utils.z(this);
+    var $H = this.$H, $m = this.$m, $M = this.$M;
+    var weekdays = locale.weekdays, months = locale.months, meridiem = locale.meridiem;
+    var getShort = function getShort2(arr, index2, full, length) {
+      return arr && (arr[index2] || arr(_this3, str)) || full[index2].slice(0, length);
+    };
+    var get$H = function get$H2(num) {
+      return Utils.s($H % 12 || 12, num, "0");
+    };
+    var meridiemFunc = meridiem || function(hour, minute, isLowercase) {
+      var m = hour < 12 ? "AM" : "PM";
+      return isLowercase ? m.toLowerCase() : m;
+    };
+    var matches = function matches2(match) {
+      switch (match) {
+        case "YY":
+          return String(_this3.$y).slice(-2);
+        case "YYYY":
+          return Utils.s(_this3.$y, 4, "0");
+        case "M":
+          return $M + 1;
+        case "MM":
+          return Utils.s($M + 1, 2, "0");
+        case "MMM":
+          return getShort(locale.monthsShort, $M, months, 3);
+        case "MMMM":
+          return getShort(months, $M);
+        case "D":
+          return _this3.$D;
+        case "DD":
+          return Utils.s(_this3.$D, 2, "0");
+        case "d":
+          return String(_this3.$W);
+        case "dd":
+          return getShort(locale.weekdaysMin, _this3.$W, weekdays, 2);
+        case "ddd":
+          return getShort(locale.weekdaysShort, _this3.$W, weekdays, 3);
+        case "dddd":
+          return weekdays[_this3.$W];
+        case "H":
+          return String($H);
+        case "HH":
+          return Utils.s($H, 2, "0");
+        case "h":
+          return get$H(1);
+        case "hh":
+          return get$H(2);
+        case "a":
+          return meridiemFunc($H, $m, true);
+        case "A":
+          return meridiemFunc($H, $m, false);
+        case "m":
+          return String($m);
+        case "mm":
+          return Utils.s($m, 2, "0");
+        case "s":
+          return String(_this3.$s);
+        case "ss":
+          return Utils.s(_this3.$s, 2, "0");
+        case "SSS":
+          return Utils.s(_this3.$ms, 3, "0");
+        case "Z":
+          return zoneStr;
+      }
+      return null;
+    };
+    return str.replace(REGEX_FORMAT, function(match, $1) {
+      return $1 || matches(match) || zoneStr.replace(":", "");
+    });
+  };
+  _proto.utcOffset = function utcOffset() {
+    return -Math.round(this.$d.getTimezoneOffset() / 15) * 15;
+  };
+  _proto.diff = function diff2(input, units, _float) {
+    var _this4 = this;
+    var unit = Utils.p(units);
+    var that = dayjs(input);
+    var zoneDelta = (that.utcOffset() - this.utcOffset()) * MILLISECONDS_A_MINUTE;
+    var diff3 = this - that;
+    var getMonth = function getMonth2() {
+      return Utils.m(_this4, that);
+    };
+    var result;
+    switch (unit) {
+      case Y:
+        result = getMonth() / 12;
+        break;
+      case M:
+        result = getMonth();
+        break;
+      case Q:
+        result = getMonth() / 3;
+        break;
+      case W:
+        result = (diff3 - zoneDelta) / MILLISECONDS_A_WEEK;
+        break;
+      case D:
+        result = (diff3 - zoneDelta) / MILLISECONDS_A_DAY;
+        break;
+      case H:
+        result = diff3 / MILLISECONDS_A_HOUR;
+        break;
+      case MIN:
+        result = diff3 / MILLISECONDS_A_MINUTE;
+        break;
+      case S:
+        result = diff3 / MILLISECONDS_A_SECOND;
+        break;
+      default:
+        result = diff3;
+        break;
+    }
+    return _float ? result : Utils.a(result);
+  };
+  _proto.daysInMonth = function daysInMonth() {
+    return this.endOf(M).$D;
+  };
+  _proto.$locale = function $locale() {
+    return Ls[this.$L];
+  };
+  _proto.locale = function locale(preset, object) {
+    if (!preset)
+      return this.$L;
+    var that = this.clone();
+    var nextLocaleName = parseLocale(preset, object, true);
+    if (nextLocaleName)
+      that.$L = nextLocaleName;
+    return that;
+  };
+  _proto.clone = function clone2() {
+    return Utils.w(this.$d, this);
+  };
+  _proto.toDate = function toDate() {
+    return new Date(this.valueOf());
+  };
+  _proto.toJSON = function toJSON() {
+    return this.isValid() ? this.toISOString() : null;
+  };
+  _proto.toISOString = function toISOString() {
+    return this.$d.toISOString();
+  };
+  _proto.toString = function toString() {
+    return this.$d.toUTCString();
+  };
+  return Dayjs2;
+}();
+var proto = Dayjs.prototype;
+dayjs.prototype = proto;
+[["$ms", MS], ["$s", S], ["$m", MIN], ["$H", H], ["$W", D], ["$M", M], ["$y", Y], ["$D", DATE]].forEach(function(g) {
+  proto[g[1]] = function(input) {
+    return this.$g(input, g[0], g[1]);
+  };
+});
+dayjs.extend = function(plugin2, option) {
+  if (!plugin2.$i) {
+    plugin2(option, Dayjs, dayjs);
+    plugin2.$i = true;
+  }
+  return dayjs;
+};
+dayjs.locale = parseLocale;
+dayjs.isDayjs = isDayjs;
+dayjs.unix = function(timestamp) {
+  return dayjs(timestamp * 1e3);
+};
+dayjs.en = Ls[L];
+dayjs.Ls = Ls;
+dayjs.p = {};
+const iconProps = {
+  ...baseProps,
+  /**
+   * 使用的图标名字，可以使用链接图片
+   */
+  name: makeRequiredProp(String),
+  /**
+   * 图标的颜色
+   */
+  color: String,
+  /**
+   * 图标的字体大小
+   */
+  size: numericProp,
+  /**
+   * 类名前缀，用于使用自定义图标
+   */
+  classPrefix: makeStringProp("wd-icon")
+};
+const popupProps = {
+  ...baseProps,
+  /**
+   * 动画类型，参见 wd-transition 组件的name
+   * 类型：string
+   * 可选值：fade / fade-up / fade-down / fade-left / fade-right / slide-up / slide-down / slide-left / slide-right / zoom-in
+   */
+  transition: String,
+  /**
+   * 关闭按钮
+   * 类型：boolean
+   * 默认值：false
+   */
+  closable: makeBooleanProp(false),
+  /**
+   * 弹出框的位置
+   * 类型：string
+   * 默认值：center
+   * 可选值：center / top / right / bottom / left
+   */
+  position: makeStringProp("center"),
+  /**
+   * 点击遮罩是否关闭
+   * 类型：boolean
+   * 默认值：true
+   */
+  closeOnClickModal: makeBooleanProp(true),
+  /**
+   * 动画持续时间
+   * 类型：number | boolean
+   * 默认值：300
+   */
+  duration: {
+    type: [Number, Boolean],
+    default: 300
+  },
+  /**
+   * 是否显示遮罩
+   * 类型：boolean
+   * 默认值：true
+   */
+  modal: makeBooleanProp(true),
+  /**
+   * 设置层级
+   * 类型：number
+   * 默认值：10
+   */
+  zIndex: makeNumberProp(10),
+  /**
+   * 是否当关闭时将弹出层隐藏（display: none)
+   * 类型：boolean
+   * 默认值：true
+   */
+  hideWhenClose: makeBooleanProp(true),
+  /**
+   * 遮罩样式
+   * 类型：string
+   * 默认值：''
+   */
+  modalStyle: makeStringProp(""),
+  /**
+   * 弹出面板是否设置底部安全距离（iphone X 类型的机型）
+   * 类型：boolean
+   * 默认值：false
+   */
+  safeAreaInsetBottom: makeBooleanProp(false),
+  /**
+   * 弹出层是否显示
+   */
+  modelValue: makeBooleanProp(false),
+  /**
+   * 弹层内容懒渲染，触发展示时才渲染内容
+   * 类型：boolean
+   * 默认值：true
+   */
+  lazyRender: makeBooleanProp(true),
+  /**
+   * 是否锁定滚动
+   * 类型：boolean
+   * 默认值：true
+   */
+  lockScroll: makeBooleanProp(true),
+  /**
+   * 是否从页面中脱离出来，用于解决各种 fixed 失效问题 (H5: teleport, APP: renderjs, 小程序: root-portal)
+   * 类型：boolean
+   * 默认值：false
+   */
+  rootPortal: makeBooleanProp(false)
+};
+const FORM_KEY = Symbol("wd-form");
+({
+  ...baseProps
+});
+const cellProps = {
+  ...baseProps,
+  /**
+   * 标题
+   */
+  title: String,
+  /**
+   * 右侧内容
+   */
+  value: makeNumericProp(""),
+  /**
+   * 图标类名
+   */
+  icon: String,
+  /**
+   * 图标大小
+   */
+  iconSize: numericProp,
+  /**
+   * 描述信息
+   */
+  label: String,
+  /**
+   * 是否为跳转链接
+   */
+  isLink: makeBooleanProp(false),
+  /**
+   * 跳转地址
+   */
+  to: String,
+  /**
+   * 跳转时是否替换栈顶页面
+   */
+  replace: makeBooleanProp(false),
+  /**
+   * 开启点击反馈，is-link 默认开启
+   */
+  clickable: makeBooleanProp(false),
+  /**
+   * 设置单元格大小，可选值：large
+   */
+  size: String,
+  /**
+   * 是否展示边框线
+   */
+  border: makeBooleanProp(void 0),
+  /**
+   * 设置左侧标题宽度
+   */
+  titleWidth: String,
+  /**
+   * 是否垂直居中，默认顶部居中
+   */
+  center: makeBooleanProp(false),
+  /**
+   * 是否必填
+   */
+  required: makeBooleanProp(false),
+  /**
+   * 表单属性，上下结构
+   */
+  vertical: makeBooleanProp(false),
+  /**
+   * 表单域 model 字段名，在使用表单校验功能的情况下，该属性是必填的
+   */
+  prop: String,
+  /**
+   * 表单验证规则，结合wd-form组件使用
+   */
+  rules: makeArrayProp(),
+  /**
+   * icon 使用 slot 时的自定义样式
+   */
+  customIconClass: makeStringProp(""),
+  /**
+   * label 使用 slot 时的自定义样式
+   */
+  customLabelClass: makeStringProp(""),
+  /**
+   * value 使用 slot 时的自定义样式
+   */
+  customValueClass: makeStringProp(""),
+  /**
+   * title 使用 slot 时的自定义样式
+   */
+  customTitleClass: makeStringProp(""),
+  /**
+   * value 文字对齐方式，可选值：left、right、center
+   */
+  valueAlign: makeStringProp("right"),
+  /**
+   * 是否超出隐藏，显示省略号
+   */
+  ellipsis: makeBooleanProp(false),
+  /**
+   * 是否启用title插槽，默认启用，用来解决插槽传递时v-slot和v-if冲突问题。
+   * 问题见：https://github.com/dcloudio/uni-app/issues/4847
+   */
+  useTitleSlot: makeBooleanProp(true),
+  /**
+   * 必填标记位置,可选值:before(标签前)、after(标签后)
+   */
+  markerSide: makeStringProp("before"),
+  /**
+   * 箭头方向,可选值:left、up、down、right,只在 is-link 为 true 时生效
+   */
+  arrowDirection: makeStringProp("right")
+};
+const stickyProps = {
+  ...baseProps,
+  /**
+   * 层级
+   */
+  zIndex: makeNumberProp(1),
+  /**
+   * 吸顶距离
+   */
+  offsetTop: makeNumberProp(0)
+};
+const STICKY_BOX_KEY = Symbol("wd-sticky-box");
+const RADIO_GROUP_KEY = Symbol("wd-radio-group");
+const radioGroupProps = {
+  ...baseProps,
+  /** 会自动选中value对应的单选框 */
+  modelValue: [String, Number, Boolean],
+  /** 单选框形状，可选值为 dot / button / check，默认为 check */
+  shape: makeStringProp("check"),
+  /** 选中的颜色，默认为 #4D80F0 */
+  checkedColor: String,
+  /** 是否禁用，默认为 false */
+  disabled: makeBooleanProp(false),
+  /** 表单模式，默认为 false */
+  cell: makeBooleanProp(false),
+  /** 设置大小，默认为空 */
+  size: makeStringProp(""),
+  /** 同行展示，默认为 false */
+  inline: makeBooleanProp(false),
+  /** 图标位置，默认为 left */
+  iconPlacement: makeStringProp("auto")
+};
+const radioProps = {
+  ...baseProps,
+  /** 选中时的值 */
+  value: makeRequiredProp([String, Number, Boolean]),
+  /** 单选框的形状 */
+  shape: String,
+  /** 选中的颜色 */
+  checkedColor: String,
+  /** 禁用 */
+  disabled: {
+    type: [Boolean, null],
+    default: null
+  },
+  /** 单元格 */
+  cell: {
+    type: [Boolean, null],
+    default: null
+  },
+  /** 大小 */
+  size: String,
+  /** 内联 */
+  inline: {
+    type: [Boolean, null],
+    default: null
+  },
+  /** 最大宽度 */
+  maxWidth: String,
+  /**
+   * 图标位置
+   * 可选值: 'left' | 'right' | 'auto'
+   */
+  iconPlacement: {
+    type: String
+  }
+};
+const textareaProps = {
+  ...baseProps,
+  /**
+   * * 自定义文本域容器class名称。
+   * 类型：string
+   */
+  customTextareaContainerClass: makeStringProp(""),
+  /**
+   * * 自定义文本域class名称。
+   * 类型：string
+   */
+  customTextareaClass: makeStringProp(""),
+  /**
+   * * 自定义标签class名称。
+   * 类型：string
+   */
+  customLabelClass: makeStringProp(""),
+  // 原生属性
+  /**
+   * * 绑定值。
+   * 类型：string | number
+   */
+  modelValue: makeNumericProp(""),
+  /**
+   * * 占位文本。
+   * 类型：string
+   * 默认值：'请输入...'
+   */
+  placeholder: String,
+  /**
+   * 指定placeholder的样式。
+   * 类型：string
+   */
+  placeholderStyle: String,
+  /**
+   * * 指定placeholder的样式类。
+   * 类型：string
+   * 默认值：空字符串
+   */
+  placeholderClass: makeStringProp(""),
+  /**
+   * * 禁用输入框。
+   * 类型：boolean
+   * 默认值：false
+   */
+  disabled: makeBooleanProp(false),
+  /**
+   * * 最大输入长度，设置为-1表示不限制最大长度。
+   * 类型：number
+   * 默认值：-1
+   */
+  maxlength: makeNumberProp(-1),
+  /**
+   * * 自动聚焦并拉起键盘。
+   * 类型：boolean
+   * 默认值：false
+   */
+  autoFocus: makeBooleanProp(false),
+  /**
+   * * 获取焦点。
+   * 类型：boolean
+   * 默认值：false
+   */
+  focus: makeBooleanProp(false),
+  /**
+   * * 是否自动增高输入框高度，style.height属性在auto-height生效时不生效。
+   * 类型：boolean
+   * 默认值：false
+   */
+  autoHeight: makeBooleanProp(false),
+  /**
+   * * 如果textarea处于position:fixed区域，需要设置此属性为true。
+   * 类型：boolean
+   * 默认值：false
+   */
+  fixed: makeBooleanProp(false),
+  /**
+   * * 指定光标与键盘的距离，取textarea距离底部的距离和cursor-spacing指定的距离的最小值作为实际距离。
+   * 类型：number
+   * 默认值：0
+   */
+  cursorSpacing: makeNumberProp(0),
+  /**
+   * * 指定focus时的光标位置。
+   * 类型：number
+   * 默认值：-1
+   */
+  cursor: makeNumberProp(-1),
+  /**
+   * * 设置键盘右下角按钮的文字。
+   * 类型：string
+   * 默认值：'done'
+   * 可选值有'done', 'go', 'next', 'search', 'send'
+   */
+  confirmType: String,
+  /**
+   * * 点击键盘右下角按钮时是否保持键盘不收起。
+   * 类型：boolean
+   * 默认值：false
+   */
+  confirmHold: makeBooleanProp(false),
+  /**
+   * * 是否显示键盘上方带有“完成”按钮那一栏。
+   * 类型：boolean
+   * 默认值：true
+   */
+  showConfirmBar: makeBooleanProp(true),
+  /**
+   * * 光标起始位置，自动聚集时有效，需与selection-end搭配使用。
+   * 类型：number
+   * 默认值：-1
+   */
+  selectionStart: makeNumberProp(-1),
+  /**
+   * * 光标结束位置，自动聚集时有效，需与selection-start搭配使用。
+   * 类型：number
+   * 默认值：-1
+   */
+  selectionEnd: makeNumberProp(-1),
+  /**
+   * * 键盘弹起时是否自动上推页面。
+   * 类型：boolean
+   * 默认值：true
+   */
+  adjustPosition: makeBooleanProp(true),
+  /**
+   * * 是否去掉iOS下的默认内边距。
+   * 类型：boolean
+   * 默认值：false
+   */
+  disableDefaultPadding: makeBooleanProp(false),
+  /**
+   * * focus状态下点击页面时是否不收起键盘。
+   * 类型：boolean
+   * 默认值：false
+   */
+  holdKeyboard: makeBooleanProp(false),
+  // 非原生属性
+  /**
+   * * 显示为密码框。
+   * 类型：boolean
+   * 默认值：false
+   */
+  showPassword: makeBooleanProp(false),
+  /**
+   * * 是否显示清空按钮。
+   * 类型：boolean
+   * 默认值：false
+   */
+  clearable: makeBooleanProp(false),
+  /**
+   * * 输入框只读状态。
+   * 类型：boolean
+   * 默认值：false
+   */
+  readonly: makeBooleanProp(false),
+  /**
+   * * 前置图标，icon组件中的图标类名。
+   * 类型：string
+   */
+  prefixIcon: String,
+  /**
+   * * 是否显示字数限制，需要同时设置maxlength。
+   * 类型：boolean
+   * 默认值：false
+   */
+  showWordLimit: makeBooleanProp(false),
+  /**
+   * 设置左侧标题。
+   * 类型：string
+   */
+  label: String,
+  /**
+   * 设置左侧标题宽度。
+   * 类型：string
+   */
+  labelWidth: makeStringProp(""),
+  /**
+   * * 设置输入框大小。
+   * 类型：string
+   */
+  size: String,
+  /**
+   * * 设置输入框错误状态（红色）。
+   * 类型：boolean
+   * 默认值：false
+   */
+  error: makeBooleanProp(false),
+  /**
+   * * 当存在label属性时，设置标题和输入框垂直居中，默认为顶部居中。
+   * 类型：boolean
+   * 默认值：false
+   */
+  center: makeBooleanProp(false),
+  /**
+   * * 非cell类型下是否隐藏下划线。
+   * 类型：boolean
+   * 默认值：false
+   */
+  noBorder: makeBooleanProp(false),
+  /**
+   * * cell类型下必填样式。
+   * 类型：boolean
+   * 默认值：false
+   */
+  required: makeBooleanProp(false),
+  /**
+   * * 表单域model字段名，在使用表单校验功能的情况下，该属性是必填的。
+   * 类型：string
+   */
+  prop: makeStringProp(""),
+  /**
+   * * 表单验证规则。
+   * 类型：FormItemRule[]
+   * 默认值：[]
+   */
+  rules: makeArrayProp(),
+  /**
+   * 显示清除图标的时机，always 表示输入框不为空时展示，focus 表示输入框聚焦且不为空时展示
+   * 类型: "focus" | "always"
+   * 默认值: "always"
+   */
+  clearTrigger: makeStringProp("always"),
+  /**
+   * 是否在点击清除按钮时聚焦输入框
+   * 类型: boolean
+   * 默认值: true
+   */
+  focusWhenClear: makeBooleanProp(true),
+  /**
+   * 是否忽略组件内对文本合成系统事件的处理。为 false 时将触发 compositionstart、compositionend、compositionupdate 事件，且在文本合成期间会触发 input 事件
+   * 类型: boolean
+   * 默认值: true
+   */
+  ignoreCompositionEvent: makeBooleanProp(true),
+  /**
+   * 它提供了用户在编辑元素或其内容时可能输入的数据类型的提示。在符合条件的高版本webview里，uni-app的web和app-vue平台中可使用本属性。
+   * 类型: InputMode
+   * 可选值: "none" | "text" | "tel" | "url" | "email" | "numeric" | "decimal" | "search" | "password"
+   * 默认值: "text"
+   */
+  inputmode: makeStringProp("text"),
+  /**
+   * 必填标记位置，可选值：before（标签前）、after（标签后）
+   */
+  markerSide: makeStringProp("before"),
+  /**
+   * 支付宝小程序，可以在 input / textarea 组件中加上 enableNative="{{false}}"，避免 textarea 弹出键盘后出现内容上移
+   * 仅支付宝小程序支持
+   * 类型: boolean
+   * 默认值: true
+   */
+  enableNative: makeBooleanProp(true)
+};
+const inputProps = {
+  ...baseProps,
+  customInputClass: makeStringProp(""),
+  customLabelClass: makeStringProp(""),
+  // 原生属性
+  /**
+   * 占位文本
+   */
+  placeholder: String,
+  /**
+   * 原生属性，指定 placeholder 的样式，目前仅支持color,font-size和font-weight
+   */
+  placeholderStyle: String,
+  /**
+   * 原生属性，指定 placeholder 的样式类
+   */
+  placeholderClass: makeStringProp(""),
+  /**
+   * 原生属性，指定光标与键盘的距离。取 input 距离底部的距离和cursor-spacing指定的距离的最小值作为光标与键盘的距离
+   */
+  cursorSpacing: makeNumberProp(0),
+  /**
+   * 原生属性，指定focus时的光标位置
+   */
+  cursor: makeNumberProp(-1),
+  /**
+   * 原生属性，光标起始位置，自动聚集时有效，需与selection-end搭配使用
+   */
+  selectionStart: makeNumberProp(-1),
+  /**
+   * 原生属性，光标结束位置，自动聚集时有效，需与selection-start搭配使用
+   */
+  selectionEnd: makeNumberProp(-1),
+  /**
+   * 原生属性，键盘弹起时，是否自动上推页面
+   */
+  adjustPosition: makeBooleanProp(true),
+  /**
+   * focus时，点击页面的时候不收起键盘
+   */
+  holdKeyboard: makeBooleanProp(false),
+  /**
+   * 设置键盘右下角按钮的文字，仅在type='text'时生效，可选值：done / go / next / search / send
+   */
+  confirmType: makeStringProp("done"),
+  /**
+   * 点击键盘右下角按钮时是否保持键盘不收起
+   */
+  confirmHold: makeBooleanProp(false),
+  /**
+   * 原生属性，获取焦点
+   */
+  focus: makeBooleanProp(false),
+  /**
+   * 类型，可选值：text / number / digit / idcard / safe-password / nickname / tel
+   */
+  type: makeStringProp("text"),
+  /**
+   * 原生属性，最大长度
+   */
+  maxlength: {
+    type: Number,
+    default: -1
+  },
+  /**
+   * 原生属性，禁用
+   */
+  disabled: makeBooleanProp(false),
+  /**
+   * 微信小程序原生属性，强制 input 处于同层状态，默认 focus 时 input 会切到非同层状态 (仅在 iOS 下生效)
+   */
+  alwaysEmbed: makeBooleanProp(false),
+  // 原生属性结束
+  /**
+   * 输入框的值靠右展示
+   */
+  alignRight: makeBooleanProp(false),
+  /**
+   * 绑定值
+   */
+  modelValue: makeNumericProp(""),
+  /**
+   * 显示为密码框
+   */
+  showPassword: makeBooleanProp(false),
+  /**
+   * 显示清空按钮
+   */
+  clearable: makeBooleanProp(false),
+  /**
+   * 只读
+   */
+  readonly: makeBooleanProp(false),
+  /**
+   * 前置图标，icon组件中的图标类名
+   */
+  prefixIcon: String,
+  /**
+   * 后置图标，icon组件中的图标类名
+   */
+  suffixIcon: String,
+  /**
+   * 显示字数限制，需要同时设置 maxlength
+   */
+  showWordLimit: makeBooleanProp(false),
+  /**
+   * 设置左侧标题
+   */
+  label: String,
+  /**
+   * 设置左侧标题宽度
+   */
+  labelWidth: makeStringProp(""),
+  /**
+   * 设置输入框大小，可选值：large
+   */
+  size: String,
+  /**
+   * 设置输入框错误状态，错误状态时为红色
+   */
+  error: makeBooleanProp(false),
+  /**
+   * 当有label属性时，设置标题和输入框垂直居中，默认为顶部居中
+   */
+  center: makeBooleanProp(false),
+  /**
+   * 非 cell 类型下是否隐藏下划线
+   */
+  noBorder: makeBooleanProp(false),
+  /**
+   * 是否必填
+   */
+  required: makeBooleanProp(false),
+  /**
+   * 表单域 model 字段名，在使用表单校验功能的情况下，该属性是必填的
+   */
+  prop: String,
+  /**
+   * 表单验证规则，结合wd-form组件使用
+   */
+  rules: makeArrayProp(),
+  /**
+   * 显示清除图标的时机，always 表示输入框不为空时展示，focus 表示输入框聚焦且不为空时展示
+   * 类型: "focus" | "always"
+   * 默认值: "always"
+   */
+  clearTrigger: makeStringProp("always"),
+  /**
+   * 是否在点击清除按钮时聚焦输入框
+   * 类型: boolean
+   * 默认值: true
+   */
+  focusWhenClear: makeBooleanProp(true),
+  /**
+   * 是否忽略组件内对文本合成系统事件的处理。为 false 时将触发 compositionstart、compositionend、compositionupdate 事件，且在文本合成期间会触发 input 事件
+   * 类型: boolean
+   * 默认值: true
+   */
+  ignoreCompositionEvent: makeBooleanProp(true),
+  /**
+   * 它提供了用户在编辑元素或其内容时可能输入的数据类型的提示。在符合条件的高版本webview里，uni-app的web和app-vue平台中可使用本属性。
+   * 类型: InputMode
+   * 可选值: "none" | "text" | "tel" | "url" | "email" | "numeric" | "decimal" | "search" | "password"
+   * 默认值: "text"
+   */
+  inputmode: makeStringProp("text"),
+  /**
+   * 必填标记位置，可选值：before（标签前）、after（标签后）
+   */
+  markerSide: makeStringProp("before"),
+  /**
+   * 支付宝小程序，可以在 input / textarea 组件中加上 enableNative="{{false}}"，避免 textarea 弹出键盘后出现内容上移
+   * 仅支付宝小程序支持
+   * 类型: boolean
+   * 默认值: true
+   */
+  enableNative: makeBooleanProp(true)
+};
+const _b64chars = [..."ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"];
+const _mkUriSafe = (src) => src.replace(/[+/]/g, (m0) => m0 === "+" ? "-" : "_").replace(/=+\$/m, "");
+const fromUint8Array = (src, rfc4648 = false) => {
+  let b642 = "";
+  for (let i = 0, l = src.length; i < l; i += 3) {
+    const [a0, a1, a2] = [src[i], src[i + 1], src[i + 2]];
+    const ord = a0 << 16 | a1 << 8 | a2;
+    b642 += _b64chars[ord >>> 18];
+    b642 += _b64chars[ord >>> 12 & 63];
+    b642 += typeof a1 !== "undefined" ? _b64chars[ord >>> 6 & 63] : "=";
+    b642 += typeof a2 !== "undefined" ? _b64chars[ord & 63] : "=";
+  }
+  return rfc4648 ? _mkUriSafe(b642) : b642;
+};
+const _btoa = typeof btoa === "function" ? (s2) => btoa(s2) : (s2) => {
+  if (s2.charCodeAt(0) > 255) {
+    throw new RangeError("The string contains invalid characters.");
+  }
+  return fromUint8Array(Uint8Array.from(s2, (c) => c.charCodeAt(0)));
+};
+const utob = (src) => unescape(encodeURIComponent(src));
+function encode2(src, rfc4648 = false) {
+  const b642 = _btoa(utob(src));
+  return rfc4648 ? _mkUriSafe(b642) : b642;
+}
+const buttonProps = {
+  ...baseProps,
+  /**
+   * 幽灵按钮
+   */
+  plain: makeBooleanProp(false),
+  /**
+   * 圆角按钮
+   */
+  round: makeBooleanProp(true),
+  /**
+   * 禁用按钮
+   */
+  disabled: makeBooleanProp(false),
+  /**
+   * 是否细边框
+   */
+  hairline: makeBooleanProp(false),
+  /**
+   * 块状按钮
+   */
+  block: makeBooleanProp(false),
+  /**
+   * 按钮类型，可选值：primary / success / info / warning / error / text / icon
+   */
+  type: makeStringProp("primary"),
+  /**
+   * 按钮尺寸，可选值：small / medium / large
+   */
+  size: makeStringProp("medium"),
+  /**
+   * 图标类名
+   */
+  icon: String,
+  /**
+   * 类名前缀，用于使用自定义图标，用法参考Icon组件
+   */
+  classPrefix: makeStringProp("wd-icon"),
+  /**
+   * 加载中按钮
+   */
+  loading: makeBooleanProp(false),
+  /**
+   * 加载图标颜色
+   */
+  loadingColor: String,
+  /**
+   * 开放能力
+   */
+  openType: String,
+  /**
+   * 指定是否阻止本节点的祖先节点出现点击态
+   */
+  hoverStopPropagation: Boolean,
+  /**
+   * 指定返回用户信息的语言，zh_CN 简体中文，zh_TW 繁体中文，en 英文
+   */
+  lang: String,
+  /**
+   * 会话来源，open-type="contact"时有效
+   */
+  sessionFrom: String,
+  /**
+   * 会话内消息卡片标题，open-type="contact"时有效
+   */
+  sendMessageTitle: String,
+  /**
+   * 会话内消息卡片点击跳转小程序路径，open-type="contact"时有效
+   */
+  sendMessagePath: String,
+  /**
+   * 会话内消息卡片图片，open-type="contact"时有效
+   */
+  sendMessageImg: String,
+  /**
+   * 打开 APP 时，向 APP 传递的参数，open-type=launchApp时有效
+   */
+  appParameter: String,
+  /**
+   * 是否显示会话内消息卡片，设置此参数为 true，用户进入客服会话会在右下角显示"可能要发送的小程序"提示，用户点击后可以快速发送小程序消息，open-type="contact"时有效
+   */
+  showMessageCard: Boolean,
+  /**
+   * 按钮的唯一标识，可用于设置隐私同意授权按钮的id
+   */
+  buttonId: String,
+  /**
+   * 支付宝小程序，当 open-type 为 getAuthorize 时有效。
+   * 可选值：'phoneNumber' | 'userInfo'
+   */
+  scope: String
+};
+({
+  ...baseProps
+});
+const CONFIG_PROVIDER_KEY = Symbol("wd-config-provider");
+const loadingProps = {
+  ...baseProps,
+  /**
+   * 加载指示器类型，可选值：'outline' | 'ring' | 'spinner'
+   */
+  type: makeStringProp("ring"),
+  /**
+   * 设置加载指示器颜色
+   */
+  color: makeStringProp("#4D80F0"),
+  /**
+   * 设置加载指示器大小
+   */
+  size: makeNumericProp("")
+};
+const resizeProps = {
+  ...baseProps,
+  customContainerClass: makeStringProp("")
+};
+exports.AbortablePromise = AbortablePromise;
+exports.CONFIG_PROVIDER_KEY = CONFIG_PROVIDER_KEY;
+exports.FORM_KEY = FORM_KEY;
+exports.RADIO_GROUP_KEY = RADIO_GROUP_KEY;
+exports.STICKY_BOX_KEY = STICKY_BOX_KEY;
+exports.TABS_KEY = TABS_KEY;
+exports.USE_CONFIG_PROVIDER_KEY = USE_CONFIG_PROVIDER_KEY;
 exports._export_sfc = _export_sfc;
+exports.addUnit = addUnit;
+exports.badgeProps = badgeProps;
+exports.baseProps = baseProps;
+exports.browser = browser;
+exports.buttonProps = buttonProps;
+exports.cellProps = cellProps;
+exports.checkNumRange = checkNumRange;
 exports.computed = computed;
+exports.context = context;
 exports.createPinia = createPinia;
 exports.createSSRApp = createSSRApp;
 exports.createStore = createStore;
+exports.debounce = debounce;
+exports.deepClone = deepClone;
+exports.defaultDisplayFormat = defaultDisplayFormat;
+exports.defineComponent = defineComponent;
+exports.defineStore = defineStore;
 exports.e = e;
+exports.encode = encode2;
 exports.f = f;
+exports.formatArray = formatArray;
 exports.getCurrentInstance = getCurrentInstance;
+exports.getPropByPath = getPropByPath;
+exports.getRect = getRect;
+exports.getSystemInfo = getSystemInfo;
+exports.getType = getType;
+exports.gradient = gradient;
+exports.iconProps = iconProps;
 exports.index = index;
+exports.inject = inject;
+exports.inputProps = inputProps;
+exports.isArray = isArray;
+exports.isDef = isDef;
+exports.isEqual = isEqual;
+exports.isFunction = isFunction;
+exports.isNumber = isNumber;
+exports.isObj = isObj;
+exports.isPromise = isPromise;
+exports.isString = isString;
+exports.loadingProps = loadingProps;
 exports.n = n;
 exports.nextTick$1 = nextTick$1;
 exports.o = o;
+exports.objToStyle = objToStyle;
+exports.onBeforeMount = onBeforeMount;
 exports.onBeforeUnmount = onBeforeUnmount;
+exports.onHide = onHide;
 exports.onLoad = onLoad;
+exports.onMounted = onMounted;
+exports.onShareAppMessage = onShareAppMessage;
+exports.onShareTimeline = onShareTimeline;
 exports.onShow = onShow;
 exports.onUnload = onUnload;
+exports.overlayProps = overlayProps;
 exports.p = p;
+exports.pause = pause;
+exports.pickerProps = pickerProps;
+exports.pickerViewProps = pickerViewProps;
+exports.popupProps = popupProps;
+exports.radioGroupProps = radioGroupProps;
+exports.radioProps = radioProps;
+exports.range = range;
 exports.reactive = reactive;
 exports.ref = ref;
+exports.resizeProps = resizeProps;
 exports.resolveComponent = resolveComponent;
 exports.s = s;
 exports.sr = sr;
+exports.stickyProps = stickyProps;
 exports.t = t;
+exports.tabProps = tabProps;
+exports.tabsProps = tabsProps;
+exports.textareaProps = textareaProps;
+exports.toRefs = toRefs;
+exports.transitionProps = transitionProps;
+exports.unref = unref;
+exports.useCell = useCell;
+exports.useChildren = useChildren;
+exports.useCssVars = useCssVars;
+exports.useParent = useParent;
+exports.useSlots = useSlots;
+exports.useToast = useToast;
+exports.useTouch = useTouch;
+exports.useTranslate = useTranslate;
+exports.uuid = uuid;
 exports.watch = watch;
 exports.wx$1 = wx$1;

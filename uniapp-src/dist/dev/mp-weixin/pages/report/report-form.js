@@ -4,6 +4,7 @@ const api_complaint = require("../../api/complaint.js");
 const platform_weixin_file = require("../../platform/weixin/file.js");
 const services_h5AuthContext = require("../../services/h5-auth-context.js");
 const utils_liveRoomContext = require("../../utils/live-room-context.js");
+const pages_broadcast_utils_liveRouteContext = require("../broadcast/utils/live-route-context.js");
 const _sfc_main = {
   __name: "report-form",
   setup(__props) {
@@ -20,6 +21,12 @@ const _sfc_main = {
     const type = common_vendor.ref("");
     const typeLabel = common_vendor.ref("");
     const liveId = common_vendor.ref("");
+    const roomCode = common_vendor.ref("");
+    const tenantId = common_vendor.ref("");
+    const termId = common_vendor.ref("");
+    const customerId = common_vendor.ref("");
+    const replayVideoId = common_vendor.ref("");
+    const liveType = common_vendor.ref("");
     const liveName = common_vendor.ref("");
     const cover = common_vendor.ref("");
     const fromPath = common_vendor.ref("");
@@ -29,10 +36,81 @@ const _sfc_main = {
     const submitting = common_vendor.ref(false);
     const uploading = common_vendor.ref(false);
     let uploadIdCounter = 0;
+    function appendQuery(params, key, value) {
+      const text = value === void 0 || value === null ? "" : String(value);
+      if (text)
+        params.push(key + "=" + encodeURIComponent(text));
+    }
+    function numberOrZero(value) {
+      const numberValue = Number(value);
+      return Number.isFinite(numberValue) ? numberValue : 0;
+    }
+    function getComplaintRoomPayload() {
+      const roomId = numberOrZero(liveId.value);
+      const tenant = numberOrZero(tenantId.value);
+      const term = numberOrZero(termId.value);
+      const customer = numberOrZero(customerId.value);
+      const video = numberOrZero(replayVideoId.value);
+      const isReplay = liveType.value === "replay" || !!video;
+      return {
+        roomId,
+        room_id: roomId,
+        liveId: roomId,
+        live_id: roomId,
+        roomCode: roomCode.value || "",
+        room_code: roomCode.value || "",
+        tenantId: tenant,
+        tenant_id: tenant,
+        termId: term,
+        term_id: term,
+        liveTermId: term,
+        live_term_id: term,
+        customerId: customer,
+        customer_id: customer,
+        userId: customer,
+        user_id: customer,
+        isReplay,
+        is_replay: isReplay,
+        replay: isReplay,
+        liveType: isReplay ? "replay" : liveType.value || "live",
+        live_type: isReplay ? "replay" : liveType.value || "live",
+        replayVideoId: video,
+        replay_video_id: video,
+        videoId: video,
+        video_id: video,
+        liveName: liveName.value || "",
+        live_name: liveName.value || "",
+        roomName: liveName.value || "",
+        room_name: liveName.value || "",
+        cover: cover.value || "",
+        coverImage: cover.value || "",
+        cover_image: cover.value || "",
+        liveCover: cover.value || "",
+        live_cover: cover.value || "",
+        fromPath: fromPath.value || "",
+        from_path: fromPath.value || "",
+        sourcePath: fromPath.value || "",
+        source_path: fromPath.value || "",
+        returnPath: fromPath.value || "",
+        return_path: fromPath.value || ""
+      };
+    }
     function goSelectType() {
-      const q = "liveId=" + encodeURIComponent(liveId.value || "") + "&liveName=" + encodeURIComponent(liveName.value || "") + "&cover=" + encodeURIComponent(cover.value || "") + "&from=form";
+      const params = [];
+      appendQuery(params, "liveId", liveId.value);
+      appendQuery(params, "roomCode", roomCode.value);
+      appendQuery(params, "tenantId", tenantId.value);
+      appendQuery(params, "termId", termId.value);
+      appendQuery(params, "customerId", customerId.value);
+      appendQuery(params, "replayVideoId", replayVideoId.value);
+      appendQuery(params, "videoId", replayVideoId.value);
+      appendQuery(params, "liveType", liveType.value);
+      appendQuery(params, "liveName", liveName.value);
+      appendQuery(params, "cover", cover.value);
+      appendQuery(params, "from", "form");
+      appendQuery(params, "fromPath", fromPath.value);
       common_vendor.index.navigateTo({
-        url: "/pages/report/report-type?" + q,
+        url: "/pages/report/report-type?" + params.join("&"),
         success: (res) => {
           if (res && res.eventChannel && res.eventChannel.on) {
             res.eventChannel.on("selectType", (data) => {
@@ -78,10 +156,10 @@ const _sfc_main = {
           images.value = [...images.value, tempItem];
           try {
             const uploaded = await api_complaint.uploadComplaintImage({
+              ...getComplaintRoomPayload(),
               filePath,
               fileName,
-              contentType: contentTypeMap[ext] || "image/jpeg",
-              roomId: Number(liveId.value) || 0
+              contentType: contentTypeMap[ext] || "image/jpeg"
             });
             images.value = images.value.map(
               (item) => (item == null ? void 0 : item.id) === uploadId ? { ...item, url: uploaded.url, rawUrl: uploaded.rawUrl || uploaded.url, uploading: false } : item
@@ -134,11 +212,17 @@ const _sfc_main = {
       try {
         const uploadedUrls = images.value.map((item) => item.rawUrl || item.url).filter((url) => url && /^https?:\/\//i.test(url));
         await api_complaint.createComplaint({
-          roomId: Number(liveId.value) || 0,
+          ...getComplaintRoomPayload(),
           complaintType: typeMap[type.value] || 5,
+          complaint_type: typeMap[type.value] || 5,
           content: desc.value.trim(),
+          description: desc.value.trim(),
           reporterPhone: phone.value.trim(),
-          images: uploadedUrls
+          reporter_phone: phone.value.trim(),
+          phone: phone.value.trim(),
+          images: uploadedUrls,
+          imageUrls: uploadedUrls,
+          image_urls: uploadedUrls
         });
         const q = fromPath.value ? "fromPath=" + encodeURIComponent(fromPath.value) : "";
         common_vendor.index.redirectTo({
@@ -156,20 +240,33 @@ const _sfc_main = {
       type.value = options.type || "";
       typeLabel.value = options.typeLabel || "";
       liveId.value = options.liveId || "";
+      roomCode.value = options.roomCode || options.room_code || "";
+      tenantId.value = options.tenantId || options.tenant_id || "";
+      termId.value = options.termId || options.term_id || options.liveTermId || options.live_term_id || "";
+      customerId.value = options.customerId || options.customer_id || options.userId || options.user_id || "";
+      replayVideoId.value = options.replayVideoId || options.replay_video_id || options.videoId || options.video_id || "";
+      liveType.value = options.liveType || options.live_type || (options.replay === "1" ? "replay" : "");
       liveName.value = options.liveName || "";
       cover.value = options.cover || "";
-      if (!liveId.value) {
+      fromPath.value = options.fromPath || "";
+      if (!liveId.value || !roomCode.value || !fromPath.value) {
         try {
           const ctx = utils_liveRoomContext.loadLiveRoomContext();
           if (ctx && (ctx.liveId || ctx.roomId)) {
             liveId.value = ctx.liveId || ctx.roomId;
+            roomCode.value = roomCode.value || ctx.roomCode || "";
+            tenantId.value = tenantId.value || ctx.tenantId || ctx.tenant_id || "";
+            termId.value = termId.value || ctx.termId || ctx.term_id || ctx.liveTermId || ctx.live_term_id || "";
+            customerId.value = customerId.value || ctx.customerId || ctx.customer_id || ctx.userId || ctx.user_id || "";
+            replayVideoId.value = replayVideoId.value || ctx.replayVideoId || ctx.replay_video_id || ctx.videoId || ctx.video_id || "";
+            liveType.value = liveType.value || ctx.liveType || ctx.live_type || (ctx.replay === "1" ? "replay" : "");
             liveName.value = liveName.value || ctx.liveName || "";
             cover.value = cover.value || ctx.cover || "";
+            fromPath.value = fromPath.value || pages_broadcast_utils_liveRouteContext.buildBroadcastReturnPath(ctx);
           }
         } catch (_) {
         }
       }
-      fromPath.value = options.fromPath || "";
       if (!fromPath.value) {
         const pages = getCurrentPages();
         const liveIdx = (() => {
@@ -184,6 +281,19 @@ const _sfc_main = {
           fromPath.value = "/" + pages[liveIdx].route;
         }
       }
+      if (!fromPath.value) {
+        fromPath.value = pages_broadcast_utils_liveRouteContext.buildBroadcastReturnPath({
+          roomCode: roomCode.value,
+          liveId: liveId.value,
+          tenantId: tenantId.value,
+          termId: termId.value,
+          customerId: customerId.value,
+          videoId: replayVideoId.value,
+          liveType: liveType.value,
+          liveName: liveName.value,
+          cover: cover.value
+        });
+      }
     });
     return (_ctx, _cache) => {
       return common_vendor.e({
@@ -194,9 +304,9 @@ const _sfc_main = {
         e: common_vendor.t(liveName.value || "直播间名称"),
         f: common_vendor.t(liveId.value || "-"),
         g: desc.value,
-        h: common_vendor.o(($event) => desc.value = $event.detail.value, "44"),
+        h: common_vendor.o(($event) => desc.value = $event.detail.value, "c8"),
         i: phone.value,
-        j: common_vendor.o(($event) => phone.value = $event.detail.value, "49"),
+        j: common_vendor.o(($event) => phone.value = $event.detail.value, "33"),
         k: common_vendor.f(images.value, (item, idx, i0) => {
           return common_vendor.e({
             a: item.url,
@@ -209,9 +319,9 @@ const _sfc_main = {
         }),
         l: images.value.length < 9
       }, images.value.length < 9 ? {
-        m: common_vendor.o(chooseImage, "3a")
+        m: common_vendor.o(chooseImage, "3d")
       } : {}, {
-        n: common_vendor.o(submit, "e4")
+        n: common_vendor.o(submit, "77")
       });
     };
   }

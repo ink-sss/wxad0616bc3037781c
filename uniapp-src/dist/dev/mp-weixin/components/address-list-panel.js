@@ -73,9 +73,9 @@ const _sfc_main = {
       } : {}, {
         c: __props.list.length === 0
       }, __props.list.length === 0 ? {
-        d: common_assets._imports_0$8,
-        e: common_vendor.o(($event) => emit("add"), "74"),
-        f: common_vendor.o(($event) => emit("import-wx"), "ff")
+        d: common_assets._imports_0$7,
+        e: common_vendor.o(($event) => emit("add"), "7e"),
+        f: common_vendor.o(($event) => emit("import-wx"), "2a")
       } : __props.list.length > 0 ? common_vendor.e({
         h: common_vendor.f(__props.list, (item, k0, i0) => {
           return common_vendor.e({
@@ -97,8 +97,8 @@ const _sfc_main = {
       }, __props.showFooter ? {
         j: common_vendor.t(__props.buttonText),
         k: common_vendor.n(__props.buttonDisabled ? "address-save-btn-disabled" : ""),
-        l: common_vendor.o(onSave, "8a"),
-        m: common_vendor.o(($event) => emit("import-wx"), "25"),
+        l: common_vendor.o(onSave, "de"),
+        m: common_vendor.o(($event) => emit("import-wx"), "11"),
         n: common_vendor.n(__props.pageMode ? "address-footer-page" : "")
       } : {}) : {}, {
         g: __props.list.length > 0,

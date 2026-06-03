@@ -1,0 +1,60 @@
+/* uni-app automatically injects uni.scss into every component style block.
+   Keep this file for variables/mixins only; global CSS rules live in
+   app-global.scss so they do not become invalid component WXSS selectors. */
+.center-popup.data-v-77414119 {
+  min-height: 760rpx;
+  background: linear-gradient(178.56deg, #ffffff 3.09%, #fff0e9 56.44%);
+  border-radius: 32rpx 32rpx 0 0;
+  padding: 0 24rpx 40rpx;
+  box-sizing: border-box;
+}
+.center-header.data-v-77414119 {
+  position: relative;
+  padding: 36rpx 12rpx 30rpx;
+  margin-top: -42rpx;
+  min-height: 150rpx;
+}
+.center-user.data-v-77414119 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10rpx;
+  padding-top: 60rpx;
+}
+.center-avatar.data-v-77414119 {
+  position: absolute;
+  left: 50%;
+  top: -12rpx;
+  transform: translateX(-50%);
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  background: #f0f0f0;
+  z-index: 2;
+}
+.center-name.data-v-77414119 {
+  font-size: 34rpx;
+  line-height: 48rpx;
+  color: #222;
+  font-weight: 500;
+}
+.center-entry.data-v-77414119 {
+  position: absolute;
+  right: 8rpx;
+  top: 72rpx;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+.entry-icon.data-v-77414119 {
+  width: 28rpx;
+  height: 28rpx;
+}
+.entry-text.data-v-77414119 {
+  font-size: 28rpx;
+  color: #666;
+}
+.more-card.data-v-77414119 {
+  margin-top: 20rpx;
+}

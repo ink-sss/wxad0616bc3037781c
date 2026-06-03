@@ -1,19 +1,6 @@
-page.data-v-faef4742 {
-  min-height: 100%;
-  background-color: #f5f5f5;
-  color: #333333;
-  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, sans-serif;
-}
-view.data-v-faef4742,
-text.data-v-faef4742,
-button.data-v-faef4742,
-input.data-v-faef4742,
-textarea.data-v-faef4742 {
-  box-sizing: border-box;
-}
-image.data-v-faef4742 {
-  display: block;
-}
+/* uni-app automatically injects uni.scss into every component style block.
+   Keep this file for variables/mixins only; global CSS rules live in
+   app-global.scss so they do not become invalid component WXSS selectors. */
 .pay-page.data-v-faef4742 {
   min-height: 100vh;
   background: #f5f6fa;

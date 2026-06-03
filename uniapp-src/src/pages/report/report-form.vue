@@ -24,7 +24,7 @@
 
     <view class="section-title">
       <text class="req">*</text>
-      <text class="section-text">举报说明1</text>
+      <text class="section-text">举报说明</text>
     </view>
     <view class="report-desc-wrap">
       <textarea
@@ -84,6 +84,7 @@ import { createComplaint, uploadComplaintImage } from "@/api/complaint";
 import { chooseImage as chooseMpImage } from "@/platform/weixin/file";
 import { ensureH5PageAuth } from "@/services/h5-auth-context";
 import { loadLiveRoomContext } from "@/utils/live-room-context";
+import { buildBroadcastReturnPath } from "@/pages/broadcast/utils/live-route-context.js";
 
 // 前端类型 -> 后端 complaintType 映射（1-8独立编号）
 const typeMap = {
@@ -100,6 +101,12 @@ const typeMap = {
 const type = ref("");
 const typeLabel = ref("");
 const liveId = ref("");
+const roomCode = ref("");
+const tenantId = ref("");
+const termId = ref("");
+const customerId = ref("");
+const replayVideoId = ref("");
+const liveType = ref("");
 const liveName = ref("");
 const cover = ref("");
 const fromPath = ref("");
@@ -110,17 +117,83 @@ const submitting = ref(false);
 const uploading = ref(false);
 let uploadIdCounter = 0;
 
+function appendQuery(params, key, value) {
+  const text = value === undefined || value === null ? "" : String(value);
+  if (text) params.push(key + "=" + encodeURIComponent(text));
+}
+
+function numberOrZero(value) {
+  const numberValue = Number(value);
+  return Number.isFinite(numberValue) ? numberValue : 0;
+}
+
+function getComplaintRoomPayload() {
+  const roomId = numberOrZero(liveId.value);
+  const tenant = numberOrZero(tenantId.value);
+  const term = numberOrZero(termId.value);
+  const customer = numberOrZero(customerId.value);
+  const video = numberOrZero(replayVideoId.value);
+  const isReplay = liveType.value === "replay" || !!video;
+  return {
+    roomId,
+    room_id: roomId,
+    liveId: roomId,
+    live_id: roomId,
+    roomCode: roomCode.value || "",
+    room_code: roomCode.value || "",
+    tenantId: tenant,
+    tenant_id: tenant,
+    termId: term,
+    term_id: term,
+    liveTermId: term,
+    live_term_id: term,
+    customerId: customer,
+    customer_id: customer,
+    userId: customer,
+    user_id: customer,
+    isReplay,
+    is_replay: isReplay,
+    replay: isReplay,
+    liveType: isReplay ? "replay" : (liveType.value || "live"),
+    live_type: isReplay ? "replay" : (liveType.value || "live"),
+    replayVideoId: video,
+    replay_video_id: video,
+    videoId: video,
+    video_id: video,
+    liveName: liveName.value || "",
+    live_name: liveName.value || "",
+    roomName: liveName.value || "",
+    room_name: liveName.value || "",
+    cover: cover.value || "",
+    coverImage: cover.value || "",
+    cover_image: cover.value || "",
+    liveCover: cover.value || "",
+    live_cover: cover.value || "",
+    fromPath: fromPath.value || "",
+    from_path: fromPath.value || "",
+    sourcePath: fromPath.value || "",
+    source_path: fromPath.value || "",
+    returnPath: fromPath.value || "",
+    return_path: fromPath.value || "",
+  };
+}
+
 function goSelectType() {
-  const q =
-    "liveId=" +
-    encodeURIComponent(liveId.value || "") +
-    "&liveName=" +
-    encodeURIComponent(liveName.value || "") +
-    "&cover=" +
-    encodeURIComponent(cover.value || "") +
-    "&from=form";
+  const params = [];
+  appendQuery(params, "liveId", liveId.value);
+  appendQuery(params, "roomCode", roomCode.value);
+  appendQuery(params, "tenantId", tenantId.value);
+  appendQuery(params, "termId", termId.value);
+  appendQuery(params, "customerId", customerId.value);
+  appendQuery(params, "replayVideoId", replayVideoId.value);
+  appendQuery(params, "videoId", replayVideoId.value);
+  appendQuery(params, "liveType", liveType.value);
+  appendQuery(params, "liveName", liveName.value);
+  appendQuery(params, "cover", cover.value);
+  appendQuery(params, "from", "form");
+  appendQuery(params, "fromPath", fromPath.value);
   uni.navigateTo({
-    url: "/pages/report/report-type?" + q,
+    url: "/pages/report/report-type?" + params.join("&"),
     success: (res) => {
       if (res && res.eventChannel && res.eventChannel.on) {
         res.eventChannel.on("selectType", (data) => {
@@ -171,10 +244,10 @@ async function uploadImages(filePaths = []) {
       images.value = [...images.value, tempItem];
       try {
         const uploaded = await uploadComplaintImage({
+          ...getComplaintRoomPayload(),
           filePath,
           fileName,
           contentType: contentTypeMap[ext] || "image/jpeg",
-          roomId: Number(liveId.value) || 0,
         });
         images.value = images.value.map((item) =>
           item?.id === uploadId
@@ -234,11 +307,17 @@ async function submit() {
       .map((item) => item.rawUrl || item.url)
       .filter((url) => url && /^https?:\/\//i.test(url));
     await createComplaint({
-      roomId: Number(liveId.value) || 0,
+      ...getComplaintRoomPayload(),
       complaintType: typeMap[type.value] || 5,
+      complaint_type: typeMap[type.value] || 5,
       content: desc.value.trim(),
+      description: desc.value.trim(),
       reporterPhone: phone.value.trim(),
+      reporter_phone: phone.value.trim(),
+      phone: phone.value.trim(),
       images: uploadedUrls,
+      imageUrls: uploadedUrls,
+      image_urls: uploadedUrls,
     });
     const q = fromPath.value
       ? "fromPath=" + encodeURIComponent(fromPath.value)
@@ -258,22 +337,35 @@ onLoad((options) => {
   type.value = options.type || "";
   typeLabel.value = options.typeLabel || "";
   liveId.value = options.liveId || "";
+  roomCode.value = options.roomCode || options.room_code || "";
+  tenantId.value = options.tenantId || options.tenant_id || "";
+  termId.value = options.termId || options.term_id || options.liveTermId || options.live_term_id || "";
+  customerId.value = options.customerId || options.customer_id || options.userId || options.user_id || "";
+  replayVideoId.value = options.replayVideoId || options.replay_video_id || options.videoId || options.video_id || "";
+  liveType.value = options.liveType || options.live_type || (options.replay === "1" ? "replay" : "");
   liveName.value = options.liveName || "";
   cover.value = options.cover || "";
+  fromPath.value = options.fromPath || "";
 
-  // [2026-05-13] liveId 缺失时从 live_room_ctx_v1 缓存兜底
-  if (!liveId.value) {
+  // [2026-05-13] liveId / roomCode / fromPath 缺失时从 live_room_ctx_v1 缓存兜底
+  if (!liveId.value || !roomCode.value || !fromPath.value) {
     try {
       const ctx = loadLiveRoomContext();
       if (ctx && (ctx.liveId || ctx.roomId)) {
         liveId.value = ctx.liveId || ctx.roomId;
+        roomCode.value = roomCode.value || ctx.roomCode || "";
+        tenantId.value = tenantId.value || ctx.tenantId || ctx.tenant_id || "";
+        termId.value = termId.value || ctx.termId || ctx.term_id || ctx.liveTermId || ctx.live_term_id || "";
+        customerId.value = customerId.value || ctx.customerId || ctx.customer_id || ctx.userId || ctx.user_id || "";
+        replayVideoId.value = replayVideoId.value || ctx.replayVideoId || ctx.replay_video_id || ctx.videoId || ctx.video_id || "";
+        liveType.value = liveType.value || ctx.liveType || ctx.live_type || (ctx.replay === "1" ? "replay" : "");
         liveName.value = liveName.value || ctx.liveName || "";
         cover.value = cover.value || ctx.cover || "";
+        fromPath.value = fromPath.value || buildBroadcastReturnPath(ctx);
       }
     } catch (_) {}
   }
 
-  fromPath.value = options.fromPath || "";
   if (!fromPath.value) {
     const pages = getCurrentPages();
     const liveIdx = (() => {
@@ -286,6 +378,19 @@ onLoad((options) => {
     if (liveIdx >= 0) {
       fromPath.value = "/" + pages[liveIdx].route;
     }
+  }
+  if (!fromPath.value) {
+    fromPath.value = buildBroadcastReturnPath({
+      roomCode: roomCode.value,
+      liveId: liveId.value,
+      tenantId: tenantId.value,
+      termId: termId.value,
+      customerId: customerId.value,
+      videoId: replayVideoId.value,
+      liveType: liveType.value,
+      liveName: liveName.value,
+      cover: cover.value,
+    });
   }
 });
 </script>

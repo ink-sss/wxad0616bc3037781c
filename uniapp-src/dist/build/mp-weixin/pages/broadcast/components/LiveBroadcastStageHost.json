@@ -1,0 +1,10 @@
+{
+  "component": true,
+  "usingComponents": {
+    "live-access-denied": "./LiveAccessDenied",
+    "live-broadcast-marketing-layer": "./LiveBroadcastMarketingLayer",
+    "live-landscape-stage": "./LiveLandscapeStage",
+    "live-portrait-stage": "./LivePortraitStage",
+    "live-viewer-limit-reached": "./LiveViewerLimitReached"
+  }
+}

@@ -1,0 +1,426 @@
+/* ==================== 竖屏模式 ==================== */
+.live-portrait {
+  background: #000;
+  overflow: hidden;
+}
+.live-portrait .live-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 750rpx;
+  height: 100vh;
+  z-index: 0;
+}
+/* 竖屏等待开播封面占位 */
+.live-portrait .live-video--poster {
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1; /* 确保封面始终在视频元素之上，避免 HLS 加载期间黑屏 */
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.28s ease;
+}
+.live-portrait .live-video--poster-hidden {
+  opacity: 0;
+}
+.live-video-poster-img {
+  width: 100%;
+  height: 100%;
+}
+/* 横屏等待开播封面占位 */
+.replay-video--poster {
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.28s ease;
+}
+.replay-video--poster-hidden {
+  opacity: 0;
+}
+.replay-video-poster-img {
+  width: 100%;
+  height: 100%;
+}
+/* 竖屏点击空白区域点赞特效 */
+.screen-tap-effects {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 15;
+  pointer-events: none;
+  overflow: hidden;
+}
+.tap-heart-img {
+  position: absolute;
+  width: 80rpx;
+  height: 80rpx;
+  animation: tapHeartShake 1s ease-out forwards;
+  will-change: transform, opacity;
+}
+@keyframes tapHeartShake {
+  0% {
+    transform: scale(0) rotate(0deg);
+    opacity: 0;
+  }
+  12% {
+    transform: scale(1.3) rotate(0deg);
+    opacity: 1;
+  }
+  24% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  36% {
+    transform: scale(1.15) rotate(-14deg);
+    opacity: 1;
+  }
+  48% {
+    transform: scale(1.1) rotate(12deg);
+    opacity: 1;
+  }
+  60% {
+    transform: scale(1.08) rotate(-8deg);
+    opacity: 1;
+  }
+  72% {
+    transform: scale(1.05) rotate(6deg);
+    opacity: 0.9;
+  }
+  84% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(0.4) translateY(-160rpx) rotate(0deg);
+    opacity: 0;
+  }
+}
+/* 连击计数器 */
+.combo-counter {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  animation: comboPop 0.3s ease-out forwards;
+  white-space: nowrap;
+}
+.combo-text {
+  font-size: 56rpx;
+  font-weight: 900;
+  color: #ffffff;
+  text-shadow:
+    0 4rpx 16rpx rgba(0, 0, 0, 0.4),
+    0 0 8rpx rgba(255, 45, 85, 0.6);
+  font-style: italic;
+}
+@keyframes comboPop {
+  0% {
+    transform: translate(-50%, -100%) scale(0.5);
+    opacity: 0;
+  }
+  50% {
+    transform: translate(-50%, -100%) scale(1.3);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -100%) scale(1);
+    opacity: 1;
+  }
+}
+.live-portrait .anchor-row {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 12rpx 32rpx;
+}
+.anchor-info {
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 78rpx;
+  padding: 4rpx;
+  padding-right: 12rpx;
+}
+.anchor-info--hidden {
+  visibility: hidden;
+  pointer-events: none;
+}
+.anchor-avatar-wrap {
+  width: 62rpx;
+  height: 62rpx;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.anchor-avatar {
+  width: 62rpx;
+  height: 62rpx;
+}
+.anchor-meta {
+  display: flex;
+  flex-direction: column;
+  margin-left: 12rpx;
+  margin-right: 12rpx;
+}
+.anchor-name {
+  font-size: 24rpx;
+  color: #fff;
+  line-height: 1.4;
+}
+.anchor-likes {
+  font-size: 16rpx;
+  color: #fff;
+  opacity: 0.8;
+}
+.follow-btn {
+  background: linear-gradient(180deg, #fd7e19 0%, #ff6b2e 100%);
+  border-radius: 54rpx;
+  padding: 7rpx 14rpx;
+}
+.follow-text {
+  font-size: 26rpx;
+  color: #fff;
+}
+.viewer-area {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+.live-portrait .viewer-badge {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 46rpx;
+  height: 46rpx;
+  padding: 0 16rpx;
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+}
+.live-portrait .report-btn {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 46rpx;
+  height: 46rpx;
+  padding: 0 16rpx;
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+}
+.live-portrait .live-tag {
+  position: relative;
+  z-index: 2;
+  margin-left: 32rpx;
+  margin-top: 8rpx;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 22rpx;
+  padding: 8rpx 16rpx;
+  display: inline-flex;
+}
+.video-watermark-area {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* 竖屏弹幕 */
+.chat-area {
+  position: absolute;
+  left: 32rpx;
+  bottom: calc(100rpx + env(safe-area-inset-bottom));
+  width: 380rpx; /* 从 460rpx 缩刱 380rpx,与诺云保持一致 */
+  height: 315rpx;
+  z-index: 2;
+}
+.chat-area {
+  overflow: hidden;
+}
+.chat-bubble {
+  font-family:
+    PingFang SC,
+    pingfang-sc,
+    -apple-system,
+    BlinkMacSystemFont,
+    Helvetica Neue,
+    Helvetica,
+    Arial,
+    sans-serif;
+  // [2026-05-22 修复] 原为 inline-flex + flex-wrap: wrap，nick 与 content 作为独立 flex item，
+  //   内容较长时 content 被整体挤到下一行，造成「我：」单独留在首行。
+  //   改为 inline-block，让内部 <text> 回到正常文本流，nick + content 连写同行，超出才换行。
+  display: inline-block;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 24rpx;
+  padding: 6rpx 16rpx;
+  margin-bottom: 6rpx;
+  max-width: 100%;
+  vertical-align: middle;
+  clear: both;
+  float: left;
+  box-sizing: border-box;
+  line-height: 36rpx;
+}
+.system-bubble {
+  border-radius: 24rpx;
+}
+.enter-bubble {
+  border-radius: 24rpx;
+}
+.system-text {
+  font-size: 28rpx;
+  color: #fff;
+  line-height: 36rpx;
+}
+.lottery-win-bubble {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  float: none !important;
+  clear: both;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 4rpx 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+.lottery-win-pill {
+  display: inline-flex;
+  align-items: flex-start;
+  max-width: 100%;
+  min-height: 40rpx;
+  padding: 4rpx 14rpx;
+  border-radius: 24rpx;
+  background: rgba(0, 0, 0, 0.3);
+  box-sizing: border-box;
+  animation: commentLotteryWinSlide 0.28s ease-out 1;
+}
+.lottery-win-icon {
+  width: 28rpx;
+  height: 36rpx;
+  margin-right: 4rpx;
+  flex-shrink: 0;
+}
+.lottery-win-text {
+  flex: 0 1 auto;
+  min-width: 0;
+  color: #fff;
+  font-size: 24rpx;
+  line-height: 36rpx;
+  font-weight: 400;
+  text-align: center;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+.lottery-win-name {
+  color: #fff;
+  font-weight: 400;
+  margin: 0 2rpx;
+}
+.lottery-win-prize {
+  color: #ffd84d;
+  font-weight: 400;
+  margin-left: 2rpx;
+}
+@keyframes commentLotteryWinSlide {
+  from {
+    opacity: 0;
+    transform: translateX(80rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+.chat-nick {
+  font-size: 28rpx;
+  color: #76ddff;
+  font-weight: 700;
+  // [2026-05-22 修复] 不再需要 flex-shrink（父级不再是 flex 容器），以避免多余样式
+  line-height: 36rpx;
+}
+.admin-tag {
+  font-size: 20rpx;
+  color: #fff;
+  background: linear-gradient(145deg, #ffcd57 0%, #ff9e49 100%);
+  border-radius: 18rpx;
+  padding: 0 10rpx;
+  margin-right: 8rpx;
+  height: 32rpx;
+  line-height: 34rpx;
+  flex-shrink: 0;
+}
+.chat-content {
+  font-size: 28rpx;
+  color: #fff;
+  line-height: 36rpx;
+  word-break: break-all;
+}
+.product-area {
+  position: absolute;
+  right: 32rpx;
+  bottom: calc(190rpx + env(safe-area-inset-bottom));
+  z-index: 9;
+}
+
+/* 竖屏底部栏 */
+.live-portrait .bottom-bar {
+  background: transparent;
+}
+.live-portrait .bottom-bar.bottom-bar--focused {
+  background: #fff;
+  padding-bottom: 12rpx;
+  .bottom-bar-main {
+    background: #fff;
+  }
+}
+.live-portrait .input-wrap {
+  position: relative;
+  flex: 1;
+  height: 74rpx;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 36rpx;
+  display: flex;
+  align-items: center;
+  padding: 0 24rpx;
+}
+.live-portrait .bottom-bar--focused .input-wrap {
+  background: #f0f0f4;
+}
+.live-portrait .bottom-bar--focused .input-wrap {
+  background: #fff;
+}
+.live-portrait .msg-input {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  font-size: 26rpx;
+  color: #fff;
+  height: 74rpx;
+  background: transparent;
+}
+.live-portrait .bottom-bar--focused .msg-input {
+  color: #333;
+}
+.live-portrait .send-btn {
+  background: #ff6e2d;
+  color: #fff;
+}
+.live-portrait .tool-btn {
+  width: 74rpx;
+  height: 74rpx;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

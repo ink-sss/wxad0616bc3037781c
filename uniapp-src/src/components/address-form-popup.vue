@@ -36,12 +36,12 @@
             />
           </view>
         </view>
-        <picker
-          mode="multiSelector"
-          :range="regionPickerRange"
-          :value="regionIndexes"
-          @columnchange="onRegionColumnChange"
-          @change="onRegionConfirm"
+        <wd-picker
+          v-model="regionValue"
+          :columns="regionColumns"
+          :column-change="onRegionColumnChange"
+          use-default-slot
+          @confirm="onRegionConfirm"
         >
           <view class="form-row form-row-arrow">
             <text class="row-label">所在地区</text>
@@ -53,7 +53,7 @@
               <text class="row-arrow">›</text>
             </view>
           </view>
-        </picker>
+        </wd-picker>
         <view class="form-row">
           <text class="row-label">详细地址</text>
           <input
@@ -146,15 +146,6 @@ function findCodesByNames(provinceName, cityName, districtName) {
 
 const regionValue = ref([]);
 const regionColumns = ref([]);
-const regionIndexes = ref([0, 0, 0]);
-const regionPickerRange = computed(() =>
-  regionColumns.value.map((column) => column.map((item) => item.label)),
-);
-
-function indexOfCode(options = [], code = "") {
-  const index = options.findIndex((item) => item.value === code);
-  return index >= 0 ? index : 0;
-}
 
 function setRegionColumns(codes = []) {
   const provinceList = getProvinceList();
@@ -162,16 +153,10 @@ function setRegionColumns(codes = []) {
   const cityList = getCityList(provinceCode);
   const cityCode = codes[1] || cityList[0]?.code || "";
   const districtList = getDistrictList(provinceCode, cityCode);
-  const columns = [
+  regionColumns.value = [
     mapAreaOptions(provinceList),
     mapAreaOptions(cityList),
     mapAreaOptions(districtList),
-  ];
-  regionColumns.value = columns;
-  regionIndexes.value = [
-    indexOfCode(columns[0], provinceCode),
-    indexOfCode(columns[1], cityCode),
-    indexOfCode(columns[2], codes[2] || columns[2]?.[0]?.value || ""),
   ];
 }
 
@@ -231,38 +216,33 @@ watch(
   },
 );
 
-function onRegionColumnChange(event) {
-  const columnIndex = Number(event.detail.column || 0);
-  const selectedIndex = Number(event.detail.value || 0);
-  const nextIndexes = [...regionIndexes.value];
-  nextIndexes[columnIndex] = selectedIndex;
-
-  if (columnIndex === 0) {
-    const province = regionColumns.value[0]?.[selectedIndex];
-    const cityList = mapAreaOptions(getCityList(province?.value));
-    const firstCityCode = cityList[0]?.value || "";
-    const districtList = mapAreaOptions(getDistrictList(province?.value, firstCityCode));
-    regionColumns.value = [regionColumns.value[0], cityList, districtList];
-    nextIndexes[1] = 0;
-    nextIndexes[2] = 0;
-  } else if (columnIndex === 1) {
-    const province = regionColumns.value[0]?.[nextIndexes[0]];
-    const city = regionColumns.value[1]?.[selectedIndex];
-    const districtList = mapAreaOptions(getDistrictList(province?.value, city?.value));
-    regionColumns.value = [regionColumns.value[0], regionColumns.value[1], districtList];
-    nextIndexes[2] = 0;
+function onRegionColumnChange(pickerView, value, columnIndex, resolve) {
+  const item = value[columnIndex];
+  if (!item) {
+    resolve();
+    return;
   }
 
-  regionIndexes.value = nextIndexes;
+  if (columnIndex === 0) {
+    const cityList = mapAreaOptions(getCityList(item.value));
+    const firstCityCode = cityList[0]?.value || "";
+    const districtList = mapAreaOptions(
+      getDistrictList(item.value, firstCityCode),
+    );
+    pickerView.setColumnData(1, cityList);
+    pickerView.setColumnData(2, districtList);
+  } else if (columnIndex === 1) {
+    const provinceCode = value[0]?.value || regionValue.value[0] || "";
+    const districtList = mapAreaOptions(
+      getDistrictList(provinceCode, item.value),
+    );
+    pickerView.setColumnData(2, districtList);
+  }
+  resolve();
 }
 
-function onRegionConfirm(event) {
-  const indexes = event?.detail?.value || regionIndexes.value;
-  regionIndexes.value = indexes;
-  const province = regionColumns.value[0]?.[indexes[0]];
-  const city = regionColumns.value[1]?.[indexes[1]];
-  const district = regionColumns.value[2]?.[indexes[2]];
-  syncRegionByCodes([province?.value, city?.value, district?.value].filter(Boolean));
+function onRegionConfirm() {
+  syncRegionByCodes(regionValue.value);
 }
 
 async function onSave() {
@@ -336,8 +316,12 @@ async function onSave() {
   flex: 1;
 }
 
-.form-card picker {
+.form-card :deep(.wd-picker) {
   display: block;
+}
+
+.form-card :deep(.wd-picker__cell) {
+  display: none;
 }
 
 .form-row {

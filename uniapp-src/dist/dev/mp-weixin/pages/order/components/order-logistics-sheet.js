@@ -28,7 +28,7 @@ const _sfc_main = {
         d: common_vendor.t(__props.logisticsStatusLabel),
         e: common_vendor.n(__props.logisticsStatusClass),
         f: common_vendor.t(__props.logisticsData.trackingNo || "--"),
-        g: common_assets._imports_0$7,
+        g: common_assets._imports_0$4,
         h: common_vendor.o(($event) => _ctx.$emit("copy"), "8e")
       } : {}, {
         i: !__props.logisticsData || !__props.logisticsData.traces || __props.logisticsData.traces.length === 0

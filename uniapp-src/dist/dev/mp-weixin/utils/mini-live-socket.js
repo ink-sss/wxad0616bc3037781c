@@ -34,95 +34,239 @@ const TYPE = {
   LIVE_STATUS_UPDATE: 30
 };
 function getEnvelopePayload(data) {
-  var _a, _b;
+  var _a, _b, _c, _d, _e;
   let value = utils_wsEnvelope.unwrapMessage(data);
   if (!value || typeof value !== "object")
     return value;
+  const customEvent = value.customEvent || value.custom_event || value.eventName || value.event_name;
+  const customExts = value.customExts || value.custom_exts || value.exts || {};
+  if (customEvent || customExts.payload !== void 0) {
+    let payload = customExts.payload !== void 0 ? customExts.payload : value.payload;
+    if (typeof payload === "string") {
+      try {
+        payload = JSON.parse(payload);
+      } catch (error) {
+        payload = {};
+      }
+    }
+    if (payload && typeof payload === "object" && !Array.isArray(payload)) {
+      value = {
+        ...payload,
+        event: payload.event || customEvent || value.event,
+        name: payload.name || customEvent || value.name,
+        cmd: payload.cmd || value.cmd,
+        action: payload.action || payload.event || value.action,
+        type: payload.type ?? value.type ?? customEvent,
+        data: payload.data || payload,
+        from: value.from || payload.from
+      };
+    }
+  }
   if (value.payload !== void 0 && (value.event || value.name || value.cmd || value.action)) {
     value = {
       ...value.payload,
       event: value.event || ((_a = value.payload) == null ? void 0 : _a.event),
-      type: ((_b = value.payload) == null ? void 0 : _b.type) ?? value.type
+      name: value.name || ((_b = value.payload) == null ? void 0 : _b.name),
+      cmd: value.cmd || ((_c = value.payload) == null ? void 0 : _c.cmd),
+      action: value.action || ((_d = value.payload) == null ? void 0 : _d.action),
+      type: ((_e = value.payload) == null ? void 0 : _e.type) ?? value.type
     };
   }
-  if (value.data && typeof value.data === "object" && (value.event || value.msgType || value.eventType)) {
+  if (value.data && typeof value.data === "object" && !Array.isArray(value.data) && (value.event || value.msgType || value.eventType || value.name || value.cmd || value.action || value.data.event || value.data.eventType || value.data.msgType || value.data.name || value.data.cmd || value.data.action)) {
     value = {
       ...value.data,
       event: value.event || value.data.event,
+      eventType: value.eventType || value.data.eventType,
+      msgType: value.msgType || value.data.msgType,
+      name: value.name || value.data.name,
+      cmd: value.cmd || value.data.cmd,
+      action: value.action || value.data.action,
       type: value.data.type ?? value.type
     };
   }
   return value;
 }
+function normalizeEventName(value = "") {
+  return String(value || "").trim().replace(/([a-z0-9])([A-Z])/g, "$1_$2").replace(/[-\s.]+/g, "_").replace(/__+/g, "_").toLowerCase();
+}
+function compactEventName(value = "") {
+  return normalizeEventName(value).replace(/_/g, "");
+}
+function firstPresent(...values) {
+  return values.find((value) => value !== void 0 && value !== null && value !== "");
+}
+function getObjectPayload(value) {
+  return value && typeof value === "object" && !Array.isArray(value) ? value : {};
+}
+function getMergedPayload(data = {}) {
+  const nested = getObjectPayload(data.data);
+  const nestedPayload = getObjectPayload(nested.payload);
+  const payload = getObjectPayload(data.payload);
+  return {
+    ...payload,
+    ...nestedPayload,
+    ...nested
+  };
+}
+function matchEventName(name, aliases = []) {
+  const normalized = normalizeEventName(name);
+  const compact = compactEventName(name);
+  return aliases.some((alias) => {
+    const next = normalizeEventName(alias);
+    return normalized === next || compact === next.replace(/_/g, "");
+  });
+}
 function normalizeByName(data = {}) {
-  var _a, _b;
-  const name = String(data.event || data.eventType || data.msgType || data.cmd || data.action || data.type || "").toLowerCase();
+  var _a, _b, _c, _d;
+  const name = data.event || data.eventType || data.msgType || data.name || data.cmd || data.action || data.type || "";
   if (!name)
     return data;
-  if (["pong", "heartbeat_pong"].includes(name) || data.content === "pong")
+  const nested = getMergedPayload(data);
+  if (matchEventName(name, ["pong", "heartbeat_pong"]) || data.content === "pong")
     return { ...data, type: "pong" };
-  if (["chat", "comment", "message"].includes(name))
-    return { ...data, type: "chat", nick: data.nickname || data.nick || data.userName };
-  if (["like", "liked"].includes(name))
-    return { ...data, type: "like", totalLikes: data.totalLikes || data.likeCount || ((_a = data.data) == null ? void 0 : _a.likeCount) || data.count };
-  if (["enter", "join"].includes(name))
-    return { ...data, type: "enter", nick: data.nickname || data.nick };
-  if (["leave", "quit"].includes(name))
-    return { ...data, type: "leave", nick: data.nickname || data.nick };
-  if (["online_count", "viewer_count", "onlinecount", "viewercount"].includes(name))
-    return { ...data, type: "viewer_count", count: data.onlineCount || data.count || ((_b = data.data) == null ? void 0 : _b.onlineCount) };
-  if (["r_to_buy", "buy_reminder", "buying_notice", "paid_order_notice"].includes(name))
+  if (matchEventName(name, ["chat", "comment", "message"])) {
+    return {
+      ...data,
+      type: "chat",
+      nick: data.nickname || data.nick || data.userName || data.user_name || data.customerName || data.customer_name
+    };
+  }
+  if (matchEventName(name, ["like", "liked"])) {
+    return {
+      ...data,
+      type: "like",
+      totalLikes: firstPresent(
+        data.totalLikes,
+        data.total_likes,
+        data.likeCount,
+        data.like_count,
+        data.likes,
+        data.totalLike,
+        data.total_like,
+        data.likeTotal,
+        data.like_total,
+        data.zanCount,
+        data.zan_count,
+        nested.totalLikes,
+        nested.total_likes,
+        nested.likeCount,
+        nested.like_count,
+        nested.likes,
+        nested.totalLike,
+        nested.total_like,
+        nested.likeTotal,
+        nested.like_total,
+        nested.zanCount,
+        nested.zan_count
+      ),
+      likeDelta: firstPresent(
+        data.likeDelta,
+        data.like_delta,
+        data.delta,
+        data.count,
+        data.likeCountDelta,
+        data.like_count_delta,
+        data.addCount,
+        data.add_count,
+        data.likeNum,
+        data.like_num,
+        nested.likeDelta,
+        nested.like_delta,
+        nested.delta,
+        nested.count,
+        nested.likeCountDelta,
+        nested.like_count_delta,
+        nested.addCount,
+        nested.add_count,
+        nested.likeNum,
+        nested.like_num
+      )
+    };
+  }
+  if (matchEventName(name, ["enter", "join"]))
+    return { ...data, type: "enter", nick: data.nickname || data.nick || ((_a = data.data) == null ? void 0 : _a.nickname) || ((_b = data.data) == null ? void 0 : _b.nick) };
+  if (matchEventName(name, ["leave", "quit"]))
+    return { ...data, type: "leave", nick: data.nickname || data.nick || ((_c = data.data) == null ? void 0 : _c.nickname) || ((_d = data.data) == null ? void 0 : _d.nick) };
+  if (matchEventName(name, ["online_count", "viewer_count", "onlinecount", "viewercount"]))
+    return { ...data, type: "viewer_count", count: data.onlineCount || data.online_count || data.viewerCount || data.viewer_count || data.count || nested.onlineCount || nested.online_count || nested.viewerCount || nested.viewer_count || nested.count };
+  if (matchEventName(name, ["r_to_buy", "buy_reminder", "buying_notice", "paid_order_notice"]))
     return { ...data, type: "r_to_buy" };
-  if (["product", "current_product"].includes(name))
+  if (matchEventName(name, ["product", "current_product"]))
     return { ...data, type: "product" };
-  if (["product_status_update", "productstatusupdate", "product_status"].includes(name))
+  if (matchEventName(name, ["product_status_update", "productstatusupdate", "product_status"]))
     return { ...data, type: "product_status_update" };
-  if (["product_list", "productlist"].includes(name))
+  if (matchEventName(name, ["product_list", "productlist"]))
     return { ...data, type: "product_list" };
-  if (["product_stock", "productstock"].includes(name))
+  if (matchEventName(name, ["product_stock", "productstock"]))
     return { ...data, type: "product_stock" };
-  if (["setting_update", "room_setting_update"].includes(name))
+  if (matchEventName(name, ["setting_update", "room_setting_update"]))
     return { ...data, type: "setting_update" };
-  if (["comment_audit"].includes(name))
+  if (matchEventName(name, ["comment_audit"]))
     return { ...data, type: "comment_audit" };
-  if (["comment_delete", "delete_comment"].includes(name))
+  if (matchEventName(name, ["comment_delete", "delete_comment"]))
     return { ...data, type: "comment_delete" };
-  if (["comment_clear", "clear_comment"].includes(name))
+  if (matchEventName(name, ["comment_clear", "clear_comment"]))
     return { ...data, type: "comment_clear" };
-  if (["comment_top", "top_comment"].includes(name))
+  if (matchEventName(name, ["comment_top", "top_comment"]))
     return { ...data, type: "comment_top" };
-  if (["user_muted", "mute_user"].includes(name))
+  if (matchEventName(name, ["user_muted", "mute_user"]))
     return { ...data, type: "user_muted" };
-  if (["user_blocked", "block_user"].includes(name))
+  if (matchEventName(name, ["user_blocked", "block_user"]))
     return { ...data, type: "user_blocked" };
-  if (["user_unblocked", "unblock_user"].includes(name))
+  if (matchEventName(name, ["user_unblocked", "unblock_user"]))
     return { ...data, type: "user_unblocked" };
-  if (["mute_word_filtered"].includes(name))
+  if (matchEventName(name, ["mute_word_filtered"]))
     return { ...data, type: "mute_word_filtered" };
-  if (["live_ended", "live_end"].includes(name))
+  if (matchEventName(name, ["live_ended", "live_end"]))
     return { ...data, type: "live_ended" };
-  if (["video_loop_restart"].includes(name))
+  if (matchEventName(name, ["video_loop_restart"]))
     return { ...data, type: "video_loop_restart" };
-  if (["win_notify", "lottery_win_notify", "watch_reward_win_notify"].includes(name))
+  if (matchEventName(name, [
+    "win_notify",
+    "lottery_win_notify",
+    "watch_reward_win_notify",
+    "watch_reward_win",
+    "watch_reward_winner",
+    "watch_reward_result",
+    "watch_duration_reward_win",
+    "watch_duration_reward_result"
+  ]))
     return { ...data, type: "win_notify" };
-  if (["lottery_result", "normal_lottery_result"].includes(name))
+  if (matchEventName(name, ["lottery_result", "normal_lottery_result"]))
     return { ...data, type: "lottery_result" };
-  if (["win_record_update", "winrecordupdate"].includes(name))
+  if (matchEventName(name, ["win_record_update", "winrecordupdate"]))
     return { ...data, type: "win_record_update" };
-  if (["watch_reward_lifecycle"].includes(name))
+  if (matchEventName(name, [
+    "watch_reward_lifecycle",
+    "watch_reward_update",
+    "watch_reward_changed",
+    "watch_reward_open",
+    "watch_reward_close",
+    "watch_reward_delete",
+    "watch_reward_activity_update",
+    "watch_duration_reward_lifecycle",
+    "watch_duration_reward_update"
+  ]))
     return { ...data, type: "watch_reward_lifecycle" };
-  if (["watch_reward_broadcast"].includes(name))
+  if (matchEventName(name, [
+    "watch_reward_broadcast",
+    "watch_reward_notice",
+    "watch_reward_award_notice",
+    "watch_reward_win_broadcast",
+    "watch_duration_reward_notice",
+    "watch_duration_reward_broadcast"
+  ]))
     return { ...data, type: "watch_reward_broadcast" };
-  if (["comment_lottery_event", "begincommentlotteryprize", "openprize", "updatecommentlotteryconfig"].includes(name))
+  if (matchEventName(name, ["comment_lottery_event", "begin_comment_lottery_prize", "begincommentlotteryprize", "open_prize", "openprize", "update_comment_lottery_config", "updatecommentlotteryconfig"]))
     return { ...data, type: "comment_lottery_event" };
-  if (["comment_lottery"].includes(name))
+  if (matchEventName(name, ["comment_lottery"]))
     return { ...data, type: "comment_lottery" };
-  if (["live_status_update", "live_status"].includes(name))
+  if (matchEventName(name, ["live_status_update", "live_status", "live_status_snapshot"]))
     return { ...data, type: "live_status_update" };
   return data;
 }
 function normalizeMessage(data) {
-  var _a, _b;
+  var _a, _b, _c, _d, _e, _f, _g, _h;
   if (!data || typeof data !== "object")
     return data;
   const payload = getEnvelopePayload(data);
@@ -134,20 +278,76 @@ function normalizeMessage(data) {
   const type = Number(byName.type);
   if (type === TYPE.PING || byName.content === "pong")
     return { ...byName, type: byName.content === "pong" ? "pong" : "ping" };
-  if (type === TYPE.CHAT)
-    return { ...byName, type: "chat", nick: byName.nickname || byName.nick || byName.userName };
-  if (type === TYPE.LIKE)
-    return { ...byName, type: "like", totalLikes: ((_a = byName.data) == null ? void 0 : _a.likeCount) || byName.likeCount || byName.count };
+  if (type === TYPE.CHAT) {
+    return {
+      ...byName,
+      type: "chat",
+      nick: byName.nickname || byName.nick || byName.userName || byName.user_name || byName.customerName || byName.customer_name
+    };
+  }
+  if (type === TYPE.LIKE) {
+    const nested = getMergedPayload(byName);
+    return {
+      ...byName,
+      type: "like",
+      totalLikes: firstPresent(
+        nested.totalLikes,
+        nested.total_likes,
+        nested.likeCount,
+        nested.like_count,
+        nested.likes,
+        nested.totalLike,
+        nested.total_like,
+        nested.likeTotal,
+        nested.like_total,
+        nested.zanCount,
+        nested.zan_count,
+        byName.totalLikes,
+        byName.total_likes,
+        byName.likeCount,
+        byName.like_count,
+        byName.likes,
+        byName.totalLike,
+        byName.total_like,
+        byName.likeTotal,
+        byName.like_total,
+        byName.zanCount,
+        byName.zan_count
+      ),
+      likeDelta: firstPresent(
+        nested.likeDelta,
+        nested.like_delta,
+        nested.delta,
+        nested.count,
+        nested.likeCountDelta,
+        nested.like_count_delta,
+        nested.addCount,
+        nested.add_count,
+        nested.likeNum,
+        nested.like_num,
+        byName.likeDelta,
+        byName.like_delta,
+        byName.delta,
+        byName.count,
+        byName.likeCountDelta,
+        byName.like_count_delta,
+        byName.addCount,
+        byName.add_count,
+        byName.likeNum,
+        byName.like_num
+      )
+    };
+  }
   if (type === TYPE.ENTER)
-    return { ...byName, type: "enter", nick: byName.nickname || byName.nick };
+    return { ...byName, type: "enter", nick: byName.nickname || byName.nick || ((_a = byName.data) == null ? void 0 : _a.nickname) || ((_b = byName.data) == null ? void 0 : _b.nick) };
   if (type === TYPE.LEAVE)
-    return { ...byName, type: "leave", nick: byName.nickname || byName.nick };
+    return { ...byName, type: "leave", nick: byName.nickname || byName.nick || ((_c = byName.data) == null ? void 0 : _c.nickname) || ((_d = byName.data) == null ? void 0 : _d.nick) };
   if (type === TYPE.SYSTEM)
     return { ...byName, type: "system" };
   if (type === TYPE.PRODUCT)
     return { ...byName, type: "product" };
   if (type === TYPE.ONLINE_COUNT)
-    return { ...byName, type: "viewer_count", count: ((_b = byName.data) == null ? void 0 : _b.onlineCount) || byName.onlineCount || byName.count };
+    return { ...byName, type: "viewer_count", count: ((_e = byName.data) == null ? void 0 : _e.onlineCount) || ((_f = byName.data) == null ? void 0 : _f.online_count) || ((_g = byName.data) == null ? void 0 : _g.viewerCount) || ((_h = byName.data) == null ? void 0 : _h.viewer_count) || byName.onlineCount || byName.online_count || byName.viewerCount || byName.viewer_count || byName.count };
   if (type === TYPE.GIFT)
     return { ...byName, type: "gift" };
   if (type === TYPE.SETTING_UPDATE)
@@ -187,10 +387,19 @@ function normalizeMessage(data) {
   if (type === TYPE.WATCH_REWARD_BROADCAST)
     return { ...byName, type: "watch_reward_broadcast" };
   if (type === TYPE.COMMENT_LOTTERY)
-    return { ...byName, type: "comment_lottery" };
+    return { ...byName, type: "comment_lottery_event" };
   if (type === TYPE.LIVE_STATUS_UPDATE)
     return { ...byName, type: "live_status_update" };
   return byName;
+}
+function getMessageRoomId(message = {}) {
+  if (!message || typeof message !== "object")
+    return 0;
+  const nested = message.data && typeof message.data === "object" ? message.data : {};
+  const payload = message.payload && typeof message.payload === "object" ? message.payload : {};
+  const value = message.roomId || message.room_id || message.liveId || message.live_id || nested.roomId || nested.room_id || nested.liveId || nested.live_id || payload.roomId || payload.room_id || payload.liveId || payload.live_id || 0;
+  const id = Number(value || 0);
+  return Number.isFinite(id) ? id : 0;
 }
 function bindSocketTaskEvent(socket, taskMethodName, globalMethodName, globalOffMethodName, callback) {
   if (socket && typeof socket[taskMethodName] === "function") {
@@ -208,11 +417,55 @@ function bindSocketTaskEvent(socket, taskMethodName, globalMethodName, globalOff
   return () => {
   };
 }
+function buildRoomPayload(roomId) {
+  const id = Number(roomId || 0);
+  return {
+    roomId: id,
+    room_id: id,
+    liveId: id,
+    live_id: id
+  };
+}
+function normalizeSocketContext(context = {}) {
+  const roomId = Number(context.roomId || context.room_id || context.liveId || context.live_id || 0);
+  const termId = Number(context.termId || context.term_id || context.liveTermId || context.live_term_id || 0);
+  const customerId = Number(context.customerId || context.customer_id || context.userId || context.user_id || 0);
+  const tenantId = Number(context.tenantId || context.tenant_id || 0);
+  return {
+    ...roomId ? buildRoomPayload(roomId) : {},
+    ...termId ? {
+      termId,
+      term_id: termId,
+      liveTermId: termId,
+      live_term_id: termId
+    } : {},
+    ...customerId ? {
+      customerId,
+      customer_id: customerId,
+      userId: customerId,
+      user_id: customerId
+    } : {},
+    ...tenantId ? {
+      tenantId,
+      tenant_id: tenantId
+    } : {},
+    roomCode: context.roomCode || context.room_code || "",
+    room_code: context.room_code || context.roomCode || "",
+    shareCode: context.shareCode || context.share_code || "",
+    share_code: context.share_code || context.shareCode || "",
+    bindId: context.bindId || context.bind_id || "",
+    bind_id: context.bind_id || context.bindId || "",
+    liveType: context.liveType || context.live_type || "",
+    live_type: context.live_type || context.liveType || ""
+  };
+}
 class MiniLiveSocket {
   constructor(options = {}) {
     this.url = options.url || "";
     this.token = options.token || "";
     this.liveId = options.liveId || "";
+    this.context = normalizeSocketContext(options.context || {});
+    this.user = options.user || {};
     this.signKey = options.signKey || "";
     this.onOpen = options.onOpen || null;
     this.onMessage = options.onMessage || null;
@@ -234,10 +487,15 @@ class MiniLiveSocket {
     this.lastPongAt = 0;
     this.lastSeq = 0;
     this.unbindSocketEvents = [];
+    this.state = "idle";
   }
   setState(state) {
     var _a;
+    this.state = state || this.state;
     (_a = this.onStateChange) == null ? void 0 : _a.call(this, state);
+  }
+  getState() {
+    return this.state;
   }
   connect() {
     if (!this.url)
@@ -260,7 +518,6 @@ class MiniLiveSocket {
         this.setState("open");
         this.startHeartbeat();
         (_a = this.onOpen) == null ? void 0 : _a.call(this, { isReconnect: this.connectedOnce });
-        this.sendEnter();
         if (this.connectedOnce && this.lastSeq > 0)
           this.requestReplay(this.lastSeq);
         this.connectedOnce = true;
@@ -283,6 +540,10 @@ class MiniLiveSocket {
           this.send({ type: TYPE.PING, content: "pong" });
           return;
         }
+        const incomingRoomId = getMessageRoomId(message);
+        const currentRoomId = Number(this.liveId || 0);
+        if (incomingRoomId > 0 && currentRoomId > 0 && incomingRoomId !== currentRoomId)
+          return;
         if (message.seq && Number(message.seq) > this.lastSeq)
           this.lastSeq = Number(message.seq);
         (_a = this.onMessage) == null ? void 0 : _a.call(this, message);
@@ -310,12 +571,21 @@ class MiniLiveSocket {
     if (!this.socket || !this.open)
       return Promise.resolve(false);
     const msgId = payload.type && !payload.msgId && payload.type !== TYPE.PING ? Math.random().toString(36).slice(2, 10) : payload.msgId;
+    const roomId = Number(this.liveId || 0);
+    const roomPayload = buildRoomPayload(roomId);
+    const contextPayload = normalizeSocketContext(this.context);
     const body = {
-      roomId: Number(this.liveId || 0),
+      ...roomPayload,
+      ...contextPayload,
       ...payload,
+      data: payload.data && typeof payload.data === "object" ? {
+        ...roomPayload,
+        ...contextPayload,
+        ...payload.data
+      } : payload.data,
       ...msgId ? { msgId } : {}
     };
-    const data = utils_wsEnvelope.wrapMessage(body, this.signKey);
+    const data = utils_wsEnvelope.wrapMessage(body, this.signKey || void 0);
     return new Promise((resolve) => {
       const send = this.socket && typeof this.socket.send === "function" ? this.socket.send.bind(this.socket) : typeof common_vendor.index.sendSocketMessage === "function" ? common_vendor.index.sendSocketMessage.bind(common_vendor.index) : null;
       if (!send) {
@@ -329,19 +599,138 @@ class MiniLiveSocket {
       });
     });
   }
-  sendChat(content, data = {}) {
-    return this.send({ type: TYPE.CHAT, content, data });
+  sendChat(content, data, options = {}) {
+    const msgId = (options == null ? void 0 : options.msgId) || Math.random().toString(36).slice(2, 10);
+    const roomId = Number(this.liveId || 0);
+    const roomPayload = buildRoomPayload(roomId);
+    const audiencePayload = this.getAudiencePayload();
+    const extraPayload = data && typeof data === "object" && !Array.isArray(data) ? data : {};
+    const contextPayload = normalizeSocketContext({
+      ...this.context,
+      ...extraPayload
+    });
+    const text = String(content || (data == null ? void 0 : data.content) || (data == null ? void 0 : data.comment) || (data == null ? void 0 : data.message) || (data == null ? void 0 : data.text) || "");
+    const payload = {
+      type: TYPE.CHAT,
+      ...roomPayload,
+      ...contextPayload,
+      ...audiencePayload,
+      content: text,
+      comment: text,
+      message: text,
+      text,
+      msgId,
+      msg_id: msgId,
+      clientMsgId: msgId,
+      client_msg_id: msgId,
+      data: {
+        ...roomPayload,
+        ...contextPayload,
+        ...audiencePayload,
+        ...extraPayload,
+        content: text,
+        comment: text,
+        message: text,
+        text,
+        msgId,
+        msg_id: msgId,
+        clientMsgId: msgId,
+        client_msg_id: msgId
+      }
+    };
+    if (options == null ? void 0 : options.msgId)
+      payload.msgId = options.msgId;
+    return this.send(payload);
   }
-  sendLike(count = 1) {
-    return this.send({ type: TYPE.LIKE, data: { count: Number(count || 1) } });
+  sendLike(count = 1, context = {}) {
+    const roomPayload = buildRoomPayload(this.liveId);
+    const contextPayload = normalizeSocketContext({
+      ...this.context,
+      ...context && typeof context === "object" && !Array.isArray(context) ? context : {}
+    });
+    const resolvedCount = Number(count || contextPayload.count || contextPayload.likeCount || contextPayload.like_count || 1);
+    const safeCount = resolvedCount > 0 ? resolvedCount : 1;
+    return this.send({
+      type: TYPE.LIKE,
+      ...roomPayload,
+      ...contextPayload,
+      count: safeCount,
+      likeCount: safeCount,
+      like_count: safeCount,
+      data: {
+        ...roomPayload,
+        ...contextPayload,
+        ...this.getAudiencePayload(),
+        count: safeCount,
+        likeCount: safeCount,
+        like_count: safeCount
+      }
+    });
   }
   sendEnter() {
-    return this.send({ type: TYPE.ENTER });
+    const roomPayload = buildRoomPayload(this.liveId);
+    const contextPayload = normalizeSocketContext(this.context);
+    return this.send({
+      type: TYPE.ENTER,
+      ...roomPayload,
+      ...contextPayload,
+      data: {
+        ...roomPayload,
+        ...contextPayload,
+        ...this.getAudiencePayload()
+      }
+    });
+  }
+  sendLeave() {
+    const roomPayload = buildRoomPayload(this.liveId);
+    const contextPayload = normalizeSocketContext(this.context);
+    return this.send({
+      type: TYPE.LEAVE,
+      ...roomPayload,
+      ...contextPayload,
+      data: {
+        ...roomPayload,
+        ...contextPayload,
+        ...this.getAudiencePayload()
+      }
+    });
+  }
+  getAudiencePayload() {
+    const userId = this.user.id || this.user.userId || this.user.user_id || this.user.customerId || this.user.customer_id || 0;
+    const customerId = this.user.customerId || this.user.customer_id || this.user.id || this.user.userId || this.user.user_id || 0;
+    const nickname = this.user.nickname || this.user.nick || this.user.userName || this.user.user_name || this.user.customerName || this.user.customer_name || "";
+    const avatar = this.user.avatar || this.user.headImg || this.user.head_img || this.user.avatarUrl || this.user.avatar_url || "";
+    return {
+      userId,
+      user_id: userId,
+      customerId,
+      customer_id: customerId,
+      nickname,
+      nick: nickname,
+      userName: nickname,
+      user_name: nickname,
+      customerName: nickname,
+      customer_name: nickname,
+      avatar,
+      headImg: avatar,
+      head_img: avatar,
+      avatarUrl: avatar,
+      avatar_url: avatar
+    };
   }
   requestReplay(lastSeq = this.lastSeq) {
     if (!lastSeq)
       return Promise.resolve(false);
-    return this.send({ type: TYPE.REPLAY_REQUEST, data: { sinceSeq: Number(lastSeq), lastSeq: Number(lastSeq) } });
+    const roomPayload = buildRoomPayload(this.liveId);
+    return this.send({
+      type: TYPE.REPLAY_REQUEST,
+      ...roomPayload,
+      data: {
+        ...roomPayload,
+        sinceSeq: Number(lastSeq),
+        lastSeq: Number(lastSeq)
+      }
+    });
   }
   startHeartbeat() {
     this.stopHeartbeat();
@@ -391,6 +780,10 @@ class MiniLiveSocket {
     }, delay);
   }
   close() {
+    var _a, _b;
+    if (this.socket && this.open)
+      (_b = (_a = this.sendLeave()).catch) == null ? void 0 : _b.call(_a, () => {
+      });
     this.closed = true;
     this.open = false;
     this.stopHeartbeat();

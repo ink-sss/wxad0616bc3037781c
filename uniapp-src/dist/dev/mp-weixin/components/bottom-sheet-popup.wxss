@@ -1,27 +1,6 @@
-page.data-v-ef5aa7db {
-  min-height: 100%;
-  background-color: #f5f5f5;
-  color: #333333;
-  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, sans-serif;
-}
-view.data-v-ef5aa7db,
-text.data-v-ef5aa7db,
-button.data-v-ef5aa7db,
-input.data-v-ef5aa7db,
-textarea.data-v-ef5aa7db {
-  box-sizing: border-box;
-}
-image.data-v-ef5aa7db {
-  display: block;
-}
-.sheet-overlay.data-v-ef5aa7db,
-.sheet-root.data-v-ef5aa7db {
-  position: fixed;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-}
+/* uni-app automatically injects uni.scss into every component style block.
+   Keep this file for variables/mixins only; global CSS rules live in
+   app-global.scss so they do not become invalid component WXSS selectors. */
 .sheet-mask.data-v-ef5aa7db {
   width: 100%;
   height: 100%;
@@ -38,7 +17,6 @@ image.data-v-ef5aa7db {
   background: linear-gradient(178.56deg, #ffffff 3.09%, #fff0e9 56.44%);
   position: relative;
   padding-bottom: env(safe-area-inset-bottom);
-  animation: sheet-slide-up 260ms ease-out;
 }
 .sheet-close.data-v-ef5aa7db {
   position: absolute;
@@ -56,27 +34,24 @@ image.data-v-ef5aa7db {
   height: 28rpx;
   opacity: 0.4;
 }
-page.data-v-ef5aa7db {
-  min-height: 100%;
-  background-color: #f5f5f5;
-  color: #333333;
-  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, sans-serif;
+/* uni-app automatically injects uni.scss into every component style block.
+   Keep this file for variables/mixins only; global CSS rules live in
+   app-global.scss so they do not become invalid component WXSS selectors. */
+.sheet-popup-enter.data-v-ef5aa7db {
+  transform: translateY(100%) !important;
 }
-view.data-v-ef5aa7db,
-text.data-v-ef5aa7db,
-button.data-v-ef5aa7db,
-input.data-v-ef5aa7db,
-textarea.data-v-ef5aa7db {
-  box-sizing: border-box;
+.sheet-popup-enter-active.data-v-ef5aa7db {
+  transition: transform 500ms ease-out !important;
 }
-image.data-v-ef5aa7db {
-  display: block;
+.sheet-popup-enter-to.data-v-ef5aa7db {
+  transform: translateY(0) !important;
 }
-@keyframes sheet-slide-up-ef5aa7db {
-from {
-    transform: translateY(100%);
+.sheet-popup-leave.data-v-ef5aa7db {
+  transform: translateY(0) !important;
 }
-to {
-    transform: translateY(0);
+.sheet-popup-leave-active.data-v-ef5aa7db {
+  transition: transform 400ms ease-in !important;
 }
+.sheet-popup-leave-to.data-v-ef5aa7db {
+  transform: translateY(100%) !important;
 }

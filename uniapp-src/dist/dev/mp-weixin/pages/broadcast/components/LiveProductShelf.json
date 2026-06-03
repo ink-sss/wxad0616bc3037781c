@@ -1,0 +1,9 @@
+{
+  "component": true,
+  "usingComponents": {
+    "wd-overlay": "../../../node-modules/wot-design-uni/components/wd-overlay/wd-overlay",
+    "wd-transition": "../../../node-modules/wot-design-uni/components/wd-transition/wd-transition",
+    "product-card": "../../../components/product-card",
+    "product-list": "../../../components/product-list"
+  }
+}

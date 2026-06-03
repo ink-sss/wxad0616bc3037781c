@@ -1,2 +1,52 @@
-.redirect-page.data-v-7be81911 { display: flex; align-items: center; justify-content: center; min-height: 100vh; color: #666; font-size: 28rpx;
+/* uni-app automatically injects uni.scss into every component style block.
+   Keep this file for variables/mixins only; global CSS rules live in
+   app-global.scss so they do not become invalid component WXSS selectors. */
+.center-page.data-v-7be81911 {
+  min-height: 100vh;
+  background: linear-gradient(178.72deg, #fff0e9 1.09%, #ffffff 18.82%);
+  padding: 26rpx 20rpx 60rpx;
+  box-sizing: border-box;
+}
+.center-main.data-v-7be81911 {
+  padding-top: 26rpx;
+}
+.profile-row.data-v-7be81911 {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 12rpx 34rpx;
+}
+.profile-avatar.data-v-7be81911 {
+  width: 84rpx;
+  height: 84rpx;
+  border-radius: 50%;
+  background: #f0f0f0;
+  flex-shrink: 0;
+}
+.profile-name.data-v-7be81911 {
+  margin-left: 20rpx;
+  font-size: 40rpx;
+  line-height: 56rpx;
+  color: #333;
+  font-weight: 500;
+}
+.profile-more-card.data-v-7be81911 {
+  margin-top: 18rpx;
+}
+.back-pill.data-v-7be81911 {
+  margin-top: 220rpx;
+  margin-left: -20rpx;
+  width: 120rpx;
+  height: 64rpx;
+  border-radius: 0 32rpx 32rpx 0;
+  background: #fff;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4rpx;
+}
+.back-arrow.data-v-7be81911,
+.back-text.data-v-7be81911 {
+  font-size: 24rpx;
+  color: #ff6b2e;
 }

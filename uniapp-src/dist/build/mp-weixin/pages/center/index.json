@@ -1,5 +1,8 @@
 {
   "navigationBarTitleText": "个人中心",
   "enablePullDownRefresh": false,
-  "usingComponents": {}
+  "usingComponents": {
+    "center-section-card": "../../components/center-section-card",
+    "live-mini-window": "../../components/live-mini-window"
+  }
 }

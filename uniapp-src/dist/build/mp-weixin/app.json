@@ -14,6 +14,8 @@
     "pages/broadcast/replay",
     "pages/prize-record/index",
     "pages/invitation-record/index",
+    "pages/invitation/index",
+    "pages/report/index",
     "pages/report/report-home",
     "pages/report/report-type",
     "pages/report/report-form",
@@ -21,9 +23,33 @@
     "pages/report/report-list",
     "pages/report/report-detail",
     "pages/address/index",
+    "pages/address/list",
     "pages/address/edit",
     "pages/address/wxPick",
     "pages/center/index",
+    "pages/live/live-vertical",
+    "pages/live/live-horizontal",
+    "pages/agent/shareLive/shareLive",
+    "pages/agent/shareLive/live-detail",
+    "pages/order/confirm",
+    "pages/order/list",
+    "pages/order/detail",
+    "pages/order/pay",
+    "pages/order/receipt",
+    "pages/order/refund",
+    "pages/order/refund-list",
+    "pages/order/refund-detail",
+    "pages/order/refund/index/index",
+    "pages/order/refund/apply/apply",
+    "pages/order/refund/detail/detail",
+    "pages/order/confirm-order",
+    "pages/order/order-detail",
+    "pages/order/myorder",
+    "pages/order/cashier",
+    "pages/order/pay-success/pay-success",
+    "pages/order/pay-h5/pay-h5",
+    "pages/order/alipay-h5/alipay-h5",
+    "pages/order/deposit-pay",
     "pages/user/my-wallet/my-wallet",
     "pages/user/my-wallet/my-balance",
     "pages/user/address/add/add",
@@ -284,7 +310,12 @@
       }
     ]
   },
-  "plugins": {},
+  "plugins": {
+    "wx43134e071b752953": {
+      "version": "1.0.0",
+      "provider": "wx43134e071b752953"
+    }
+  },
   "entryPagePath": "pages/index/index",
   "permission": {
     "scope.userLocation": {

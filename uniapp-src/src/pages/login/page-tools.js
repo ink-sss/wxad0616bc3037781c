@@ -5,6 +5,7 @@ import {
   getCurrentPageUrl,
   hasH5Token,
   redirectAfterH5Login,
+  redirectAfterH5LoginSkipped,
   saveH5AuthContext,
   syncH5AuthSession,
 } from '../../services/h5-auth-context.js'
@@ -26,6 +27,8 @@ export function getCurrentRedirect(defaultUrl = '/pages/user/index/index') {
 }
 
 export function saveLoginSession(data = {}) {
+  syncH5AuthSession(data)
+
   if (data.token) uni.setStorageSync('token', data.token)
   if (data.user_id) uni.setStorageSync('user_id', data.user_id)
   if (data.shop_supplier_id) uni.setStorageSync('shop_supplier_id', data.shop_supplier_id)
@@ -40,6 +43,54 @@ export function saveLoginSession(data = {}) {
   if (app && typeof app.imLogin === 'function') app.imLogin()
 }
 
+export function pluginUserInfo(event = {}) {
+  return (
+    event?.detail?.detail?.userInfo ||
+    event?.detail?.userInfo ||
+    event?.userInfo ||
+    {}
+  )
+}
+
+export function loginWithWechatPluginProfile(vm, event = {}) {
+  if (!vm || typeof vm._post !== 'function') {
+    return Promise.reject(new Error('登录组件未初始化'))
+  }
+
+  const userInfo = pluginUserInfo(event)
+
+  return loginCode().then((code) => new Promise((resolve, reject) => {
+    const app = getApp()
+    let settled = false
+    vm._post(
+      'user.user/userLogin',
+      {
+        code,
+        shop_supplier_id: app?.globalData?.shop_supplier_id || uni.getStorageSync('shop_supplier_id') || '',
+        nickName: userInfo.nickName || userInfo.nickname || '',
+        avatarUrl: userInfo.avatarUrl || userInfo.avatar || '',
+      },
+      (res) => {
+        settled = true
+        const data = res?.data || {}
+        if (!data.token) {
+          reject(new Error('登录接口未返回 token'))
+          return
+        }
+        saveLoginSession(data)
+        resolve(data)
+      },
+      (error) => {
+        settled = true
+        reject(error)
+      },
+      () => {
+        if (!settled) reject(new Error('授权失败，请重新登录'))
+      },
+    )
+  }))
+}
+
 export function buildLoginContext(query = {}, fallback = '/pages/center/index') {
   const redirect = query.redirect || getCurrentRedirect(fallback) || getCurrentPageUrl(fallback)
   return saveH5AuthContext(buildH5AuthContext({ ...query, redirect }))
@@ -51,6 +102,10 @@ export function alreadyH5LoggedIn() {
 
 export function redirectAfterExistingH5Login(context = {}) {
   redirectAfterH5Login(context)
+}
+
+export function redirectAfterSkippedH5Login(context = {}) {
+  redirectAfterH5LoginSkipped(context)
 }
 
 export function saveH5LoginSession(data = {}) {

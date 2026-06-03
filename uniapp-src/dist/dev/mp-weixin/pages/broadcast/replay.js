@@ -1,18 +1,29 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
 const utils_liveRoute = require("../../utils/live-route.js");
-const services_h5AuthContext = require("../../services/h5-auth-context.js");
 const _sfc_main = {
-  onLoad(query = {}) {
-    const options = utils_liveRoute.normalizeLiveRouteOptions({ ...query, replay: "1", mode: query.mode || "replay" });
-    const url = utils_liveRoute.buildBroadcastEntryUrl(options);
-    if (!services_h5AuthContext.ensureH5Authenticated({ ...query, ...options, redirect: url }))
-      return;
-    common_vendor.index.redirectTo({ url });
+  __name: "replay",
+  setup(__props) {
+    common_vendor.onLoad((options) => {
+      const resolved = utils_liveRoute.normalizeLiveRouteOptions(options || {});
+      const url = utils_liveRoute.buildBroadcastEntryUrl({
+        ...resolved,
+        replay: "1",
+        liveType: "replay",
+        mode: resolved.mode || "landscape",
+        tenantId: (options == null ? void 0 : options.tenantId) || "",
+        liveName: (options == null ? void 0 : options.liveName) || "",
+        cover: (options == null ? void 0 : options.cover) || "",
+        liveCover: (options == null ? void 0 : options.liveCover) || "",
+        _tc: (options == null ? void 0 : options._tc) || "",
+        wx_token: (options == null ? void 0 : options.wx_token) || ""
+      });
+      common_vendor.index.redirectTo({ url });
+    });
+    return (_ctx, _cache) => {
+      return {};
+    };
   }
 };
-function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
-  return {};
-}
-const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-1fa4bff9"]]);
+const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["__scopeId", "data-v-1fa4bff9"]]);
 wx.createPage(MiniProgramPage);

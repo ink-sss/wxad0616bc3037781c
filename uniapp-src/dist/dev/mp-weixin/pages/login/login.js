@@ -28,6 +28,7 @@ const _sfc_main = {
     this.invitation_id = common_vendor.index.getStorageSync("invitation_id") || 0;
     this.loginContext = pages_login_pageTools.buildLoginContext(query, "/pages/center/index");
     this.getCodeType();
+    this.loadWechatLoginStatus();
     this.redirectWhenAlreadyLoggedIn();
   },
   methods: {
@@ -42,6 +43,32 @@ const _sfc_main = {
         this.setting = Object.assign(this.setting, res.data.setting || {});
       });
     },
+    loadWechatLoginStatus() {
+      this.loading = true;
+      pages_login_pageTools.loginCode().then((code) => new Promise((resolve) => {
+        this._post(
+          "user.user/login",
+          {
+            code,
+            source: "wx",
+            invitation_id: this.invitation_id,
+            referee_id: common_vendor.index.getStorageSync("referee_id") || ""
+          },
+          (res) => {
+            const data = (res == null ? void 0 : res.data) || {};
+            this.user_id = data.user_id || "";
+            this.mobile = data.mobile !== void 0 ? data.mobile : true;
+            this.is_login = !!data.is_login;
+            resolve();
+          },
+          () => resolve(),
+          () => resolve()
+        );
+      })).catch(() => {
+      }).finally(() => {
+        this.loading = false;
+      });
+    },
     redirectWhenAlreadyLoggedIn() {
       if (!pages_login_pageTools.alreadyH5LoggedIn())
         return;
@@ -53,6 +80,28 @@ const _sfc_main = {
         common_vendor.index.setStorageSync("wx_phone_compulsory", this.setting.wx_phone_compulsory);
       }
       pages_login_pageTools.redirectAfterExistingH5Login(this.loginContext);
+    },
+    async loginSuccess(event) {
+      if (!this.ensureRead() || this.submitting)
+        return;
+      this.submitting = true;
+      common_vendor.index.showLoading({ title: "正在处理", mask: true });
+      try {
+        const data = await pages_login_pageTools.loginWithWechatPluginProfile(this, event);
+        this.afterLogin(data);
+      } catch (error) {
+        const message = (error == null ? void 0 : error.message) || (error == null ? void 0 : error.msg) || "授权失败，请重新登录";
+        pages_login_pageTools.toast(message);
+      } finally {
+        this.submitting = false;
+        common_vendor.index.hideLoading();
+      }
+    },
+    loginFail() {
+      pages_login_pageTools.toast("授权失败，请重新登录");
+    },
+    loginCancel() {
+      pages_login_pageTools.toast("授权失败，请重新登录");
     },
     async userLogin() {
       if (!this.ensureRead() || this.submitting)
@@ -76,10 +125,14 @@ const _sfc_main = {
       this.gotoPage("/pages/webview/ue?type=" + type);
     },
     onNotLogin() {
-      this.gotoPage("/pages/index/index");
+      pages_login_pageTools.redirectAfterSkippedH5Login(this.loginContext);
     }
   }
 };
+if (!Array) {
+  const _component_wechat_login = common_vendor.resolveComponent("wechat-login");
+  _component_wechat_login();
+}
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return common_vendor.e({
     a: $data.setting.login_logo || _ctx.config.pic_url + "/static/live/default_logo.jpeg",
@@ -88,14 +141,15 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   }, $data.setting.login_desc ? {
     d: common_vendor.t($data.setting.login_desc)
   } : {}, {
-    e: $data.submitting,
-    f: common_vendor.o((...args) => $options.userLogin && $options.userLogin(...args), "55"),
-    g: common_vendor.o((...args) => $options.onNotLogin && $options.onNotLogin(...args), "3c"),
-    h: $data.isRead ? 1 : "",
-    i: common_vendor.o(($event) => $options.xieyi("service"), "80"),
-    j: common_vendor.o(($event) => $options.xieyi("privacy"), "8e"),
-    k: common_vendor.o(($event) => $data.isRead = !$data.isRead, "8d"),
-    l: _ctx.theme && _ctx.theme()
+    e: common_vendor.o($options.loginSuccess, "2d"),
+    f: common_vendor.o($options.loginFail, "87"),
+    g: common_vendor.o($options.loginCancel, "20"),
+    h: common_vendor.o((...args) => $options.onNotLogin && $options.onNotLogin(...args), "b1"),
+    i: $data.isRead ? 1 : "",
+    j: common_vendor.o(($event) => $options.xieyi("service"), "44"),
+    k: common_vendor.o(($event) => $options.xieyi("privacy"), "a7"),
+    l: common_vendor.o(($event) => $data.isRead = !$data.isRead, "54"),
+    m: _ctx.theme && _ctx.theme()
   });
 }
 const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-cdfe2409"]]);

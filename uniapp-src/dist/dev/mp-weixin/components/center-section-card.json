@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "wd-badge": "../node-modules/wot-design-uni/components/wd-badge/wd-badge"
+  }
+}

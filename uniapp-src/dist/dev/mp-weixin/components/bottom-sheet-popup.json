@@ -1,4 +1,7 @@
 {
   "component": true,
-  "usingComponents": {}
+  "usingComponents": {
+    "wd-overlay": "../node-modules/wot-design-uni/components/wd-overlay/wd-overlay",
+    "wd-transition": "../node-modules/wot-design-uni/components/wd-transition/wd-transition"
+  }
 }

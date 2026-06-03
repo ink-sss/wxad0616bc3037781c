@@ -107,6 +107,7 @@ import { getPrizeRecordList } from "@/api/live";
 import { ensureH5PageAuth } from "@/services/h5-auth-context";
 import { resolveLiveRoomCode } from "@/utils/live-room-context";
 import { returnToLiveRoom } from "@/utils/live-room-navigation";
+import { navigateWithH5Fallback, normalizeAppRoute } from "@/utils/route-navigation";
 import LiveMiniWindow from "@/components/live-mini-window.vue";
 
 const typeOptions = [
@@ -154,18 +155,90 @@ function formatMonthLabel(value) {
   return `${parts[0]}年${parts[1]}月`;
 }
 
+function firstValue(source = {}, ...keys) {
+  for (const key of keys) {
+    const value = source?.[key];
+    if (value !== undefined && value !== null && value !== "") return value;
+  }
+  return undefined;
+}
+
+function toNumber(value, fallback = 0) {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : fallback;
+}
+
+function toFlag(value) {
+  if (value === true || value === 1 || value === "1" || value === "true") return true;
+  return false;
+}
+
+function appendQuery(route, params = {}) {
+  const entries = Object.entries(params).filter(([, value]) => value !== undefined && value !== null && value !== "");
+  if (!route || !entries.length) return route;
+  const query = entries
+    .filter(([key]) => !new RegExp(`[?&]${key}=`).test(route))
+    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+    .join("&");
+  if (!query) return route;
+  return `${route}${route.includes("?") ? "&" : "?"}${query}`;
+}
+
+function normalizePrizeRecord(record = {}, index = 0) {
+  const orderId = firstValue(record, "orderId", "order_id");
+  const orderNo = firstValue(record, "orderNo", "order_no", "outTradeNo", "out_trade_no");
+  const roomCode = firstValue(record, "roomCode", "room_code", "liveRoomCode", "live_room_code", "_roomCode");
+  const rewardName = firstValue(record, "rewardName", "reward_name", "prizeName", "prize_name", "productName", "product_name", "name");
+  const winType = toNumber(firstValue(record, "winType", "win_type", "activityType", "activity_type"), 1);
+  const rewardType = toNumber(firstValue(record, "rewardType", "reward_type"));
+  return {
+    ...record,
+    recordId: firstValue(record, "recordId", "record_id", "winnerRecordId", "winner_record_id", "id") || `record-${index}`,
+    winType,
+    winTypeText: firstValue(record, "winTypeText", "win_type_text", "activityTypeText", "activity_type_text") || typeOptions.find((item) => item.value === winType)?.label || "中奖",
+    rewardType,
+    rewardName: rewardName || "奖品",
+    roomName: firstValue(record, "roomName", "room_name", "liveRoomName", "live_room_name") || "",
+    winTime: firstValue(record, "winTime", "win_time", "createdAt", "created_at", "createTime", "create_time") || "",
+    roomEnded: toFlag(firstValue(record, "roomEnded", "room_ended", "isRoomEnded", "is_room_ended")),
+    orderId,
+    orderNo,
+    orderDetailUrl: firstValue(record, "orderDetailUrl", "order_detail_url", "orderUrl", "order_url", "detailUrl", "detail_url"),
+    roomCode,
+  };
+}
+
 function recordIcon(record) {
   const iconType = Number(record?.winType) === 3 ? 4 : Number(record?.winType || 1);
   return recordIconMap[iconType] || recordIconMap[1];
 }
 
+function getOrderTarget(record) {
+  const roomCode = record?.roomCode || liveRoomCode.value;
+  const rawDetailUrl = record?.orderDetailUrl || "";
+  if (rawDetailUrl) {
+    const detailUrl = normalizeAppRoute(rawDetailUrl);
+    if (!/^https?:\/\//i.test(detailUrl)) {
+      return appendQuery(detailUrl, { roomCode });
+    }
+    if (!record?.orderId && !record?.orderNo) return detailUrl;
+  }
+  if (record?.orderId) {
+    return appendQuery("/pages/order/detail", { id: record.orderId, roomCode });
+  }
+  if (record?.orderNo) {
+    return appendQuery("/pages/order/list", { orderNo: record.orderNo, roomCode });
+  }
+  return "";
+}
+
 function showRecordAction(record) {
-  if (Number(record?.rewardType) === 1) return true;
+  if (Number(record?.rewardType) === 1 || getOrderTarget(record)) return true;
   return Number(record?.rewardType) === 2 && !record?.roomEnded;
 }
 
 function actionText(record) {
-  return Number(record?.rewardType) === 1 ? "查看详情" : "立即使用";
+  return Number(record?.rewardType) === 1 || getOrderTarget(record) ? "查看详情" : "立即使用";
 }
 
 async function loadRecords(reset = false) {
@@ -184,8 +257,9 @@ async function loadRecords(reset = false) {
       winType: selectedWinType.value,
       month: selectedMonth.value,
     });
-    const list = Array.isArray(data?.list) ? data.list : [];
-    total.value = Number(data?.total || 0);
+    const rawList = firstValue(data, "list", "records", "recordList", "record_list") || [];
+    const list = Array.isArray(rawList) ? rawList.map(normalizePrizeRecord) : [];
+    total.value = Number(firstValue(data, "total", "totalCount", "total_count", "count") || 0);
     records.value = reset ? list : records.value.concat(list);
     finished.value = records.value.length >= total.value || list.length < pageSize;
     if (!finished.value) {
@@ -220,12 +294,13 @@ function confirmFilter() {
 }
 
 function handleRecordAction(record) {
-  if (Number(record?.rewardType) === 1) {
-    if (!record?.orderId) {
+  const orderTarget = getOrderTarget(record);
+  if (Number(record?.rewardType) === 1 || orderTarget) {
+    if (!orderTarget) {
       uni.showToast({ title: "暂无关联订单", icon: "none" });
       return;
     }
-    uni.navigateTo({ url: `/pages/order/detail?id=${record.orderId}` });
+    navigateWithH5Fallback(orderTarget);
     return;
   }
 
@@ -238,7 +313,7 @@ function handleRecordAction(record) {
 }
 
 onLoad((options) => {
-  liveRoomCode.value = resolveLiveRoomCode(options?.roomCode);
+  liveRoomCode.value = resolveLiveRoomCode(options?.roomCode || options?.room_code);
   if (!ensureH5PageAuth(options)) return;
   loadRecords(true);
 });

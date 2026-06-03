@@ -73,6 +73,10 @@ const _sfc_main = {
       shop_supplier_id: "",
       serverList: "",
       room_id: "",
+      room_code: "",
+      term_id: "",
+      tenant_id: "",
+      share_code: "",
       isAppShare: false,
       appParams: { title: "", summary: "", path: "" },
       service_type: 0,
@@ -115,8 +119,12 @@ const _sfc_main = {
     this.GetStatusBarHeight();
     const sceneData = getSceneData(query);
     this.user_id = common_vendor.index.getStorageSync("user_id");
-    this.room_id = query.room_id;
-    this.product_id = query.product_id ? query.product_id : sceneData.gid;
+    this.room_id = query.room_id || query.roomId || query.liveRoomId || query.live_room_id || query.liveId || query.live_id || "";
+    this.room_code = query.roomCode || query.room_code || "";
+    this.term_id = query.termId || query.term_id || query.liveTermId || query.live_term_id || "";
+    this.tenant_id = query.tenantId || query.tenant_id || "";
+    this.share_code = query.shareCode || query.share_code || "";
+    this.product_id = query.product_id || query.productId || query.goodsId || query.goods_id || sceneData.gid;
     if (query.referee_id)
       common_vendor.index.setStorageSync("referee_id", query.referee_id);
     this.referee_id = common_vendor.index.getStorageSync("referee_id") || "";
@@ -546,7 +554,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     V: common_vendor.t($data.detail[$data.activeName][$data.skuName][0][$data.activePrice])
   } : {}, {
     W: common_vendor.t($data.activeText),
-    X: common_assets._imports_0$4,
+    X: common_assets._imports_0$6,
     Y: common_vendor.sr("countdown", "489b8bc3-1"),
     Z: common_vendor.o($options.returnValFunc, "e0"),
     aa: common_vendor.p({
@@ -604,10 +612,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   }, $data.detail.spec_type === 20 && $data.detail.product_sku.product_price !== $data.detail.product_max_price ? {
     aw: common_vendor.t($data.detail.product_max_price)
   } : {}, {
-    ax: common_assets._imports_1$3,
+    ax: common_assets._imports_1$2,
     ay: common_vendor.o((...args) => $options.showShare && $options.showShare(...args), "ea"),
     az: !$data.is_fav ? 1 : "",
-    aA: common_assets._imports_2$2,
+    aA: common_assets._imports_2$1,
     aB: common_vendor.o((...args) => $options.favorite && $options.favorite(...args), "5f"),
     aC: $data.detail.product_sku && $data.detail.product_sku.line_price > 0
   }, $data.detail.product_sku && $data.detail.product_sku.line_price > 0 ? {
@@ -773,37 +781,41 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   } : {}, {
     cb: common_vendor.o(($event) => $options.openPopup("deposit"), "f8")
   })), {
-    cc: common_vendor.o($options.closePopup, "10"),
+    cc: common_vendor.o($options.closePopup, "d6"),
     cd: common_vendor.p({
       ["spec-disabled"]: $data.specDisabled,
       ["is-popup"]: $data.isPopup,
       ["product-model"]: $data.productModel,
-      room_id: $data.room_id
+      room_id: $data.room_id,
+      ["room-code"]: $data.room_code,
+      ["term-id"]: $data.term_id,
+      ["tenant-id"]: $data.tenant_id,
+      ["share-code"]: $data.share_code
     }),
-    ce: common_vendor.o($options.closeBottmpanel, "ec"),
+    ce: common_vendor.o($options.closeBottmpanel, "a2"),
     cf: common_vendor.p({
       isbottmpanel: $data.isbottmpanel,
       product_id: $data.product_id
     }),
-    cg: common_vendor.o($options.closeGuarantee, "1b"),
+    cg: common_vendor.o($options.closeGuarantee, "87"),
     ch: common_vendor.p({
       isguarantee: $data.isguarantee,
       server: $data.detail.server
     }),
-    ci: common_vendor.o($options.closeAppShare, "b1"),
+    ci: common_vendor.o($options.closeAppShare, "b7"),
     cj: common_vendor.p({
       ["is-app-share"]: $data.isAppShare,
       ["app-params"]: $data.appParams
     }),
     ck: $data.poster_img,
-    cl: common_vendor.o((...args) => $options.savePosterImg && $options.savePosterImg(...args), "89"),
-    cm: common_vendor.o($options.hidePopupFunc, "e3"),
+    cl: common_vendor.o((...args) => $options.savePosterImg && $options.savePosterImg(...args), "2c"),
+    cm: common_vendor.o($options.hidePopupFunc, "2f"),
     cn: common_vendor.p({
       show: $data.isCreatedImg,
       type: "middle",
       height: "auto"
     }),
-    co: common_vendor.o($options.closeCouponFunc, "4f"),
+    co: common_vendor.o($options.closeCouponFunc, "04"),
     cp: common_vendor.p({
       ["is-coupon"]: $data.isCoupon,
       discount: $data.discount,
@@ -812,7 +824,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     cq: $data.chatSetting !== null
   }, $data.chatSetting !== null ? {
     cr: $data.chatSetting.pic,
-    cs: common_vendor.o($options.hideKefuPop, "4e"),
+    cs: common_vendor.o($options.hideKefuPop, "0b"),
     ct: common_vendor.p({
       show: $data.isKefuPop,
       type: "middle"

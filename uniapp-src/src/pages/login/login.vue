@@ -7,7 +7,19 @@
     </view>
 
     <view class="actions">
+      <!-- #ifdef MP-WEIXIN -->
+      <wechat-login
+        bottom-text="立即登录"
+        class="wechat-login-button"
+        style-con="color: #ffffff;background-color: #19ad57;border-radius: 8rpx;font-size: 30rpx;"
+        @loginSuccess="loginSuccess"
+        @loginFail="loginFail"
+        @loginCancel="loginCancel"
+      />
+      <!-- #endif -->
+      <!-- #ifndef MP-WEIXIN -->
       <button class="primary" :loading="submitting" @tap="userLogin">微信一键登录</button>
+      <!-- #endif -->
       <button class="ghost" @tap="onNotLogin">暂不登录</button>
     </view>
 
@@ -26,7 +38,10 @@ import {
   alreadyH5LoggedIn,
   buildLoginContext,
   h5MiniWechatLogin,
+  loginCode,
+  loginWithWechatPluginProfile,
   redirectAfterExistingH5Login,
+  redirectAfterSkippedH5Login,
   toast,
 } from './page-tools.js'
 
@@ -46,7 +61,7 @@ export default {
         name: '',
         wx_get_nickname: true,
         wx_phone: false,
-      wx_phone_compulsory: false,
+        wx_phone_compulsory: false,
       },
       loginContext: {},
     }
@@ -56,6 +71,7 @@ export default {
     this.invitation_id = uni.getStorageSync('invitation_id') || 0
     this.loginContext = buildLoginContext(query, '/pages/center/index')
     this.getCodeType()
+    this.loadWechatLoginStatus()
     this.redirectWhenAlreadyLoggedIn()
   },
   methods: {
@@ -69,6 +85,34 @@ export default {
         this.setting = Object.assign(this.setting, res.data.setting || {})
       })
     },
+    loadWechatLoginStatus() {
+      this.loading = true
+      loginCode()
+        .then((code) => new Promise((resolve) => {
+          this._post(
+            'user.user/login',
+            {
+              code,
+              source: 'wx',
+              invitation_id: this.invitation_id,
+              referee_id: uni.getStorageSync('referee_id') || '',
+            },
+            (res) => {
+              const data = res?.data || {}
+              this.user_id = data.user_id || ''
+              this.mobile = data.mobile !== undefined ? data.mobile : true
+              this.is_login = !!data.is_login
+              resolve()
+            },
+            () => resolve(),
+            () => resolve(),
+          )
+        }))
+        .catch(() => {})
+        .finally(() => {
+          this.loading = false
+        })
+    },
     redirectWhenAlreadyLoggedIn() {
       if (!alreadyH5LoggedIn()) return
       redirectAfterExistingH5Login(this.loginContext)
@@ -79,6 +123,27 @@ export default {
         uni.setStorageSync('wx_phone_compulsory', this.setting.wx_phone_compulsory)
       }
       redirectAfterExistingH5Login(this.loginContext)
+    },
+    async loginSuccess(event) {
+      if (!this.ensureRead() || this.submitting) return
+      this.submitting = true
+      uni.showLoading({ title: '正在处理', mask: true })
+      try {
+        const data = await loginWithWechatPluginProfile(this, event)
+        this.afterLogin(data)
+      } catch (error) {
+        const message = error?.message || error?.msg || '授权失败，请重新登录'
+        toast(message)
+      } finally {
+        this.submitting = false
+        uni.hideLoading()
+      }
+    },
+    loginFail() {
+      toast('授权失败，请重新登录')
+    },
+    loginCancel() {
+      toast('授权失败，请重新登录')
     },
     async userLogin() {
       if (!this.ensureRead() || this.submitting) return
@@ -101,7 +166,7 @@ export default {
       this.gotoPage('/pages/webview/ue?type=' + type)
     },
     onNotLogin() {
-      this.gotoPage('/pages/index/index')
+      redirectAfterSkippedH5Login(this.loginContext)
     },
   },
 }

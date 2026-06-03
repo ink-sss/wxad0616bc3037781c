@@ -276,7 +276,17 @@
       </block>
     </view>
 
-    <spec :spec-disabled="specDisabled" :is-popup="isPopup" :product-model="productModel" :room_id="room_id" @close="closePopup" />
+    <spec
+      :spec-disabled="specDisabled"
+      :is-popup="isPopup"
+      :product-model="productModel"
+      :room_id="room_id"
+      :room-code="room_code"
+      :term-id="term_id"
+      :tenant-id="tenant_id"
+      :share-code="share_code"
+      @close="closePopup"
+    />
     <share :isbottmpanel="isbottmpanel" :product_id="product_id" @close="closeBottmpanel" />
     <guarantee :isguarantee="isguarantee" :server="detail.server" @close="closeGuarantee" />
     <app-share :is-app-share="isAppShare" :app-params="appParams" @close="closeAppShare" />
@@ -375,6 +385,10 @@ export default {
       shop_supplier_id: '',
       serverList: '',
       room_id: '',
+      room_code: '',
+      term_id: '',
+      tenant_id: '',
+      share_code: '',
       isAppShare: false,
       appParams: { title: '', summary: '', path: '' },
       service_type: 0,
@@ -417,8 +431,12 @@ export default {
     this.GetStatusBarHeight()
     const sceneData = getSceneData(query)
     this.user_id = uni.getStorageSync('user_id')
-    this.room_id = query.room_id
-    this.product_id = query.product_id ? query.product_id : sceneData.gid
+    this.room_id = query.room_id || query.roomId || query.liveRoomId || query.live_room_id || query.liveId || query.live_id || ''
+    this.room_code = query.roomCode || query.room_code || ''
+    this.term_id = query.termId || query.term_id || query.liveTermId || query.live_term_id || ''
+    this.tenant_id = query.tenantId || query.tenant_id || ''
+    this.share_code = query.shareCode || query.share_code || ''
+    this.product_id = query.product_id || query.productId || query.goodsId || query.goods_id || sceneData.gid
     if (query.referee_id) uni.setStorageSync('referee_id', query.referee_id)
     this.referee_id = uni.getStorageSync('referee_id') || ''
   },

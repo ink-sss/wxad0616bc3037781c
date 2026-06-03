@@ -111,12 +111,16 @@ const _sfc_main = {
       if (orderStatus === 2) {
         if (refundStatus === 0 && winSource === 0) {
           actions.push({ key: "refund", label: "申请退款" });
+        } else if (refundStatus > 0) {
+          actions.push({ key: "progress", label: "售后进度" });
         }
         actions.push({ key: "remind", label: "提醒发货", primary: true });
       }
       if (orderStatus === 3) {
         if (refundStatus === 0 && winSource === 0) {
           actions.push({ key: "refund", label: "申请售后" });
+        } else if (refundStatus > 0) {
+          actions.push({ key: "progress", label: "售后进度" });
         }
         actions.push({ key: "logistics", label: "查看物流" });
         actions.push({ key: "extend", label: "延长收货" });
@@ -125,6 +129,8 @@ const _sfc_main = {
       if (orderStatus === 4) {
         if (refundStatus === 0 && winSource === 0) {
           actions.push({ key: "refund", label: "申请售后" });
+        } else if (refundStatus > 0) {
+          actions.push({ key: "progress", label: "售后进度" });
         }
         if (refundStatus === 0) {
           actions.push({ key: "rebuy", label: "再次购买", primary: true });
@@ -184,7 +190,8 @@ const _sfc_main = {
         winSourceText: detail.winSourceText || "",
         canSelectAddress: Boolean(canSelectAddress),
         actions: buildActions(detail),
-        raw: detail
+        raw: detail,
+        refundId: Number(detail.refundId || detail.refund_id || detail.afterSaleId || detail.after_sale_id || 0)
       };
     }
     async function loadOrderDetail(orderId) {
@@ -265,16 +272,53 @@ const _sfc_main = {
       if (action === "extend")
         return handleExtendAction();
       if (action === "pay")
-        return common_vendor.index.showToast({ title: "拉起支付开发中", icon: "none" });
+        return navigatePay();
       if (action === "progress")
-        return common_vendor.index.showToast({ title: "售后进度开发中", icon: "none" });
+        return navigateRefundProgress();
       if (action === "rebuy")
         return navigateRebuy();
-      return common_vendor.index.showToast({ title: "功能开发中", icon: "none" });
+      return navigateOrderList();
     }
     function navigateRefund() {
       common_vendor.index.navigateTo({
         url: "/pages/order/refund?orderId=" + orderDetail.value.id
+      });
+    }
+    function getRoomCodeQuery() {
+      var _a;
+      const code = String(((_a = orderDetail.value) == null ? void 0 : _a.roomCode) || "").trim();
+      return code ? `&roomCode=${encodeURIComponent(code)}` : "";
+    }
+    function navigatePay() {
+      var _a;
+      const detail = orderDetail.value || {};
+      const orderNo = String(detail.orderNo || ((_a = detail.raw) == null ? void 0 : _a.orderNo) || "").trim();
+      if (!orderNo) {
+        common_vendor.index.showToast({ title: "订单号缺失，无法支付", icon: "none" });
+        return;
+      }
+      common_vendor.index.navigateTo({
+        url: `/pages/order/pay?orderNo=${encodeURIComponent(orderNo)}&id=${encodeURIComponent(detail.id || "")}${getRoomCodeQuery()}`
+      });
+    }
+    function navigateRefundProgress() {
+      var _a, _b, _c;
+      const detail = orderDetail.value || {};
+      const refundId = Number(detail.refundId || ((_a = detail.raw) == null ? void 0 : _a.refundId) || ((_b = detail.raw) == null ? void 0 : _b.refund_id) || ((_c = detail.raw) == null ? void 0 : _c.afterSaleId) || 0);
+      if (refundId) {
+        common_vendor.index.navigateTo({
+          url: `/pages/order/refund-detail?refundId=${encodeURIComponent(refundId)}&orderId=${encodeURIComponent(detail.id || "")}${getRoomCodeQuery()}`
+        });
+        return;
+      }
+      common_vendor.index.navigateTo({
+        url: `/pages/order/list?status=refund${getRoomCodeQuery()}`
+      });
+    }
+    function navigateOrderList() {
+      var _a;
+      common_vendor.index.navigateTo({
+        url: `/pages/order/list?status=${((_a = orderDetail.value) == null ? void 0 : _a.status) || "all"}${getRoomCodeQuery()}`
       });
     }
     async function handleCancelAction() {
@@ -364,7 +408,7 @@ const _sfc_main = {
         e: common_vendor.t(orderDetail.value.subtitle),
         f: orderDetail.value.heroImage,
         g: common_vendor.n(heroClass.value),
-        h: common_assets._imports_0$6,
+        h: common_assets._imports_0$3,
         i: orderDetail.value.address.fullAddress
       }, orderDetail.value.address.fullAddress ? {
         j: common_vendor.t(orderDetail.value.address.name),
@@ -390,7 +434,7 @@ const _sfc_main = {
         z: common_vendor.t(orderDetail.value.amount.freightAmount),
         A: common_vendor.t(orderDetail.value.amount.payAmount),
         B: common_vendor.t(orderDetail.value.orderNo),
-        C: common_assets._imports_0$7,
+        C: common_assets._imports_0$4,
         D: common_vendor.o(copyOrderNo, "54"),
         E: common_vendor.t(orderDetail.value.createTime),
         F: common_vendor.t(orderDetail.value.payType),

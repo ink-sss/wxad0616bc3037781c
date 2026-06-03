@@ -1,22 +1,285 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
+const api_order = require("../../api/order.js");
+const api_refund = require("../../api/refund.js");
+const api_user = require("../../api/user.js");
+const stores_user = require("../../stores/user.js");
+const services_logout = require("../../services/logout.js");
 const services_h5AuthContext = require("../../services/h5-auth-context.js");
-const utils_liveRoute = require("../../utils/live-route.js");
 const utils_liveRoomContext = require("../../utils/live-room-context.js");
+const utils_liveRoute = require("../../utils/live-route.js");
+const utils_liveRoomNavigation = require("../../utils/live-room-navigation.js");
+const utils_routeNavigation = require("../../utils/route-navigation.js");
+if (!Math) {
+  (CenterSectionCard + LiveMiniWindow)();
+}
+const CenterSectionCard = () => "../../components/center-section-card.js";
+const LiveMiniWindow = () => "../../components/live-mini-window.js";
+const DEFAULT_AVATAR = "/static/login-default.png";
+const iconBase = "/static/icons/";
 const _sfc_main = {
-  onLoad(query = {}) {
-    if (query.roomCode || query.roomId || query.liveId)
-      utils_liveRoomContext.saveLiveRoomContext(utils_liveRoute.normalizeLiveRouteOptions(query));
-    if (!services_h5AuthContext.ensureH5PageAuth(query, "/pages/center/index"))
-      return;
-    common_vendor.index.switchTab({
-      url: "/pages/user/index/index",
-      fail: () => common_vendor.index.redirectTo({ url: "/pages/user/index/index" })
+  __name: "index",
+  setup(__props) {
+    const name = common_vendor.ref("用户");
+    const avatar = common_vendor.ref(DEFAULT_AVATAR);
+    const liveRoomCode = common_vendor.ref("");
+    const liveRoomId = common_vendor.ref(0);
+    const isDistributor = common_vendor.ref(false);
+    const distributorStatus = common_vendor.ref(0);
+    const enableShare = common_vendor.ref(1);
+    const nameTapCount = common_vendor.ref(0);
+    let nameTapTimer = null;
+    let lastQuery = {};
+    const orderStats = common_vendor.ref({
+      waitPay: 0,
+      waitShip: 0,
+      waitReceive: 0,
+      waitReview: 0,
+      refunding: 0
     });
+    const orderItems = common_vendor.computed(() => [
+      {
+        key: "unpay",
+        label: "待付款",
+        icon: `${iconBase}order_0.png`,
+        badge: orderStats.value.waitPay || 0
+      },
+      {
+        key: "unsend",
+        label: "待发货",
+        icon: `${iconBase}order_1.png`,
+        badge: orderStats.value.waitShip || 0
+      },
+      {
+        key: "unreceive",
+        label: "待收货",
+        icon: `${iconBase}order_2.png`,
+        badge: orderStats.value.waitReceive || 0
+      },
+      {
+        key: "finished",
+        label: "已完成",
+        icon: `${iconBase}order_3.png`,
+        badge: orderStats.value.waitReview || 0
+      },
+      {
+        key: "refund",
+        label: "退款/售后",
+        icon: `${iconBase}order_4.png`,
+        badge: orderStats.value.refunding || 0
+      }
+    ]);
+    const moreItems = common_vendor.computed(() => {
+      const items = [
+        {
+          key: "prizeRecord",
+          label: "中奖记录",
+          icon: `${iconBase}more1.png`
+        }
+      ];
+      if (enableShare.value !== 0 && isDistributor.value && distributorStatus.value === 1) {
+        items.push({
+          key: "invitationRecord",
+          label: "邀请记录",
+          icon: `${iconBase}more2.png`
+        });
+      }
+      items.push({ key: "address", label: "收货地址", icon: `${iconBase}more3.png` });
+      items.push({ key: "complaint", label: "投诉", icon: `${iconBase}more4.png` });
+      return items;
+    });
+    function normalizeCustomerName(customer = {}) {
+      return customer.nickname || customer.nickName || customer.userName || customer.username || customer.name || customer.mobile || customer.phone || "用户";
+    }
+    function normalizeCustomerAvatar(customer = {}) {
+      return customer.avatar || customer.avatarUrl || customer.headimgurl || customer.headImg || customer.head || DEFAULT_AVATAR;
+    }
+    function applyCustomer(customer = {}) {
+      if (!customer || typeof customer !== "object")
+        return;
+      name.value = normalizeCustomerName(customer);
+      avatar.value = normalizeCustomerAvatar(customer);
+    }
+    function applyCachedCustomer() {
+      const userStore = stores_user.useUserStore();
+      const cached = services_h5AuthContext.readCachedH5Customer() || userStore.userInfo || null;
+      if (cached)
+        applyCustomer(cached);
+    }
+    function resetNameTapState() {
+      nameTapCount.value = 0;
+      if (nameTapTimer) {
+        clearTimeout(nameTapTimer);
+        nameTapTimer = null;
+      }
+    }
+    function handleNameTap() {
+      nameTapCount.value += 1;
+      if (nameTapTimer) {
+        clearTimeout(nameTapTimer);
+      }
+      if (nameTapCount.value >= 10) {
+        resetNameTapState();
+        services_logout.logoutAndRedirect();
+        return;
+      }
+      nameTapTimer = setTimeout(() => {
+        resetNameTapState();
+      }, 3e3);
+    }
+    function normalizeStats(orderUnreadStats = {}, refundUnreadStats = {}) {
+      return {
+        waitPay: Number(orderUnreadStats.unpay || orderUnreadStats.waitPay || orderUnreadStats.wait_pay || 0),
+        waitShip: Number(orderUnreadStats.unsend || orderUnreadStats.waitShip || orderUnreadStats.wait_ship || 0),
+        waitReceive: Number(orderUnreadStats.unreceive || orderUnreadStats.waitReceive || orderUnreadStats.wait_receive || 0),
+        waitReview: Number(orderUnreadStats.finished || orderUnreadStats.waitReview || orderUnreadStats.wait_review || 0),
+        refunding: Number(refundUnreadStats.refund || refundUnreadStats.refunding || refundUnreadStats.refundCount || 0)
+      };
+    }
+    function applyCenterPayload(data = {}) {
+      const customer = data.customer || data.userInfo || data.user || {};
+      if (customer && Object.keys(customer).length > 0) {
+        applyCustomer(customer);
+        stores_user.useUserStore().setUserInfo(customer);
+      }
+      isDistributor.value = !!data.isDistributor || Number(data.distributorStatus || 0) === 1;
+      distributorStatus.value = Number(data.distributorStatus || data.distributor_status || (isDistributor.value ? 1 : 0) || 0);
+      enableShare.value = Number(data.enableShare ?? data.enable_share ?? enableShare.value);
+    }
+    async function loadCenter() {
+      applyCachedCustomer();
+      try {
+        const [data, orderUnreadStats, refundUnreadStats] = await Promise.all([
+          api_user.getCenter(),
+          api_order.getOrderUnreadStats(),
+          api_refund.getRefundUnreadStats()
+        ]);
+        applyCenterPayload(data || {});
+        orderStats.value = normalizeStats(orderUnreadStats || {}, refundUnreadStats || {});
+      } catch (err) {
+        if (!services_h5AuthContext.handleH5Unauthorized(err, { ...lastQuery, redirect: "/pages/center/index" })) {
+          console.error("[Center] loadCenter fail:", err);
+          applyCachedCustomer();
+        }
+      }
+    }
+    function syncLiveContext(options = {}) {
+      const normalized = utils_liveRoute.normalizeLiveRouteOptions(options || {});
+      if (normalized.roomCode || normalized.roomId || normalized.liveId) {
+        utils_liveRoomContext.saveLiveRoomContext(normalized);
+      }
+      liveRoomCode.value = utils_liveRoomContext.resolveLiveRoomCode(normalized.roomCode);
+      const ctx = utils_liveRoomContext.loadLiveRoomContext();
+      liveRoomId.value = Number(normalized.roomId || normalized.liveId || (ctx == null ? void 0 : ctx.liveId) || (ctx == null ? void 0 : ctx.roomId) || 0);
+      if (ctx) {
+        isDistributor.value = !!ctx.isDistributor && Number(ctx.distributorStatus || 0) === 1;
+        distributorStatus.value = Number(ctx.distributorStatus || (isDistributor.value ? 1 : 0) || 0);
+        enableShare.value = Number(ctx.enableShare ?? ctx.enable_share ?? enableShare.value);
+      }
+    }
+    common_vendor.onLoad((options = {}) => {
+      lastQuery = options || {};
+      syncLiveContext(options);
+      applyCachedCustomer();
+      if (!services_h5AuthContext.ensureH5PageAuth(options, "/pages/center/index"))
+        return;
+      loadCenter();
+    });
+    common_vendor.onShow(() => {
+      syncLiveContext(lastQuery);
+      loadCenter();
+    });
+    function onItemClick(item) {
+      onAction(item.key);
+    }
+    function withLiveRoomCode(prefix = "?") {
+      return liveRoomCode.value ? `${prefix}roomCode=${encodeURIComponent(liveRoomCode.value)}` : "";
+    }
+    function onAction(type) {
+      if (["orders", "unpay", "unsend", "unreceive", "finished", "refund"].includes(type)) {
+        if (type === "refund") {
+          const code2 = withLiveRoomCode("&");
+          common_vendor.index.navigateTo({ url: `/pages/order/list?status=refund${code2}` });
+          return;
+        }
+        const statusMap = {
+          orders: "all",
+          unpay: "unpay",
+          unsend: "unsend",
+          unreceive: "unreceive",
+          finished: "finished"
+        };
+        const code = withLiveRoomCode("&");
+        common_vendor.index.navigateTo({ url: `/pages/order/list?status=${statusMap[type]}${code}` });
+        return;
+      }
+      if (type === "complaint") {
+        const params = [
+          `fromPath=${encodeURIComponent("/pages/center/index")}`,
+          liveRoomCode.value ? `roomCode=${encodeURIComponent(liveRoomCode.value)}` : "",
+          liveRoomId.value ? `roomId=${encodeURIComponent(liveRoomId.value)}` : ""
+        ].filter(Boolean);
+        common_vendor.index.navigateTo({ url: `/pages/report/report-type?${params.join("&")}` });
+        return;
+      }
+      if (type === "prizeRecord") {
+        utils_routeNavigation.navigateToPrizeRecord(`/pages/prize-record/index${withLiveRoomCode("?")}`);
+        return;
+      }
+      if (type === "invitationRecord") {
+        if (!liveRoomId.value) {
+          common_vendor.index.showToast({ title: "请从直播间进入", icon: "none" });
+          return;
+        }
+        const code = withLiveRoomCode("&");
+        common_vendor.index.navigateTo({
+          url: `/pages/invitation-record/index?roomId=${liveRoomId.value}${code}`
+        });
+        return;
+      }
+      if (type === "address") {
+        const code = withLiveRoomCode("?");
+        common_vendor.index.navigateTo({ url: `/pages/address/index${code}` });
+      }
+    }
+    function goBack() {
+      if (liveRoomCode.value) {
+        utils_liveRoomNavigation.returnToLiveRoom(liveRoomCode.value);
+        return;
+      }
+      common_vendor.index.navigateBack({
+        fail: () => common_vendor.index.reLaunch({ url: "/pages/broadcast/entry" })
+      });
+    }
+    return (_ctx, _cache) => {
+      return {
+        a: avatar.value,
+        b: common_vendor.t(name.value),
+        c: common_vendor.o(handleNameTap, "0a"),
+        d: common_vendor.o(($event) => onAction("orders"), "12"),
+        e: common_vendor.o(onItemClick, "f9"),
+        f: common_vendor.p({
+          title: "我的订单",
+          items: orderItems.value,
+          mode: "grid",
+          variant: "order",
+          ["show-link"]: true
+        }),
+        g: common_vendor.o(onItemClick, "05"),
+        h: common_vendor.p({
+          title: "更多功能",
+          items: moreItems.value,
+          mode: "grid",
+          variant: "more"
+        }),
+        i: common_vendor.o(goBack, "9c"),
+        j: common_vendor.p({
+          ["room-code"]: liveRoomCode.value,
+          ["bottom-offset"]: 140
+        })
+      };
+    };
   }
 };
-function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
-  return {};
-}
-const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-7be81911"]]);
+const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["__scopeId", "data-v-7be81911"]]);
 wx.createPage(MiniProgramPage);

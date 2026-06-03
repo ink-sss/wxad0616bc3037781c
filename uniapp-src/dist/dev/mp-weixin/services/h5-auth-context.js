@@ -2,6 +2,7 @@
 const common_vendor = require("../common/vendor.js");
 const utils_liveRoute = require("../utils/live-route.js");
 const utils_liveRoomContext = require("../utils/live-room-context.js");
+const stores_user = require("../stores/user.js");
 const AUTH_CONTEXT_KEY = "mp_h5_auth_context_v1";
 const AUTH_CONTEXT_TTL_MS = 30 * 60 * 1e3;
 const BIND_ID_KEY = "currentBindId";
@@ -327,6 +328,16 @@ function extractAuthPayload(payload = {}) {
     return data;
   return payload;
 }
+function syncRuntimeUserStore({ token = "", customer = null } = {}) {
+  try {
+    const userStore = stores_user.useUserStore();
+    if (token)
+      userStore.setToken(token);
+    if (customer)
+      userStore.setUserInfo(customer);
+  } catch (error) {
+  }
+}
 function getH5Token() {
   for (const key of TOKEN_KEYS) {
     const token = readStorage(key, "");
@@ -366,6 +377,7 @@ function syncH5AuthSession(payload = {}) {
   if (customer) {
     CUSTOMER_KEYS.forEach((key) => writeStorage(key, customer));
   }
+  syncRuntimeUserStore({ token, customer });
   try {
     const app = getApp();
     if (app && app.globalData)
@@ -377,6 +389,10 @@ function syncH5AuthSession(payload = {}) {
 function clearH5AuthSession() {
   TOKEN_KEYS.forEach(removeStorage);
   CUSTOMER_KEYS.forEach(removeStorage);
+  try {
+    stores_user.useUserStore().clearAuth();
+  } catch (error) {
+  }
 }
 function normalizeRedirectUrl(rawUrl = "", fallback = "/pages/center/index") {
   if (!rawUrl)
@@ -568,6 +584,31 @@ function redirectAfterH5Login(input = {}) {
     }
   });
 }
+function redirectAfterH5LoginSkipped(input = {}) {
+  const context = mergeContext(loadH5AuthContext(), buildH5AuthContext(input));
+  const target = buildRedirectFromH5AuthContext(context);
+  clearH5AuthContext();
+  if (/^\/pages\/broadcast\/(entry|replay)\b/.test(target)) {
+    common_vendor.index.reLaunch({
+      url: appendQuery(target, { loginSkipped: 1 }),
+      fail() {
+        common_vendor.index.redirectTo({ url: appendQuery(target, { loginSkipped: 1 }) });
+      }
+    });
+    return;
+  }
+  common_vendor.index.reLaunch({
+    url: "/pages/index/index?loginSkipped=1",
+    fail() {
+      common_vendor.index.switchTab({
+        url: "/pages/user/index/index",
+        fail() {
+          common_vendor.index.reLaunch({ url: "/pages/index/index" });
+        }
+      });
+    }
+  });
+}
 function ensureH5Authenticated(input = {}) {
   syncH5AuthSession(input);
   if (hasH5Token()) {
@@ -597,14 +638,16 @@ function handleH5Unauthorized(error = {}, input = {}) {
   return true;
 }
 exports.buildH5AuthContext = buildH5AuthContext;
-exports.ensureH5Authenticated = ensureH5Authenticated;
 exports.ensureH5PageAuth = ensureH5PageAuth;
 exports.getCurrentPageUrl = getCurrentPageUrl;
 exports.getH5Token = getH5Token;
 exports.handleH5Unauthorized = handleH5Unauthorized;
 exports.hasH5Token = hasH5Token;
+exports.persistBindId = persistBindId;
+exports.readBindId = readBindId;
 exports.readCachedH5Customer = readCachedH5Customer;
 exports.redirectAfterH5Login = redirectAfterH5Login;
+exports.redirectAfterH5LoginSkipped = redirectAfterH5LoginSkipped;
 exports.redirectToH5Login = redirectToH5Login;
 exports.saveH5AuthContext = saveH5AuthContext;
 exports.syncH5AuthSession = syncH5AuthSession;

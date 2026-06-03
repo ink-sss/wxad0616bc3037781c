@@ -5,6 +5,7 @@ const api_live = require("../../api/live.js");
 const services_h5AuthContext = require("../../services/h5-auth-context.js");
 const utils_liveRoomContext = require("../../utils/live-room-context.js");
 const utils_liveRoomNavigation = require("../../utils/live-room-navigation.js");
+const utils_routeNavigation = require("../../utils/route-navigation.js");
 if (!Math) {
   LiveMiniWindow();
 }
@@ -55,17 +56,86 @@ const _sfc_main = {
         return "全部";
       return `${parts[0]}年${parts[1]}月`;
     }
+    function firstValue(source = {}, ...keys) {
+      for (const key of keys) {
+        const value = source == null ? void 0 : source[key];
+        if (value !== void 0 && value !== null && value !== "")
+          return value;
+      }
+      return void 0;
+    }
+    function toNumber(value, fallback = 0) {
+      const n = Number(value);
+      return Number.isFinite(n) ? n : fallback;
+    }
+    function toFlag(value) {
+      if (value === true || value === 1 || value === "1" || value === "true")
+        return true;
+      return false;
+    }
+    function appendQuery(route, params = {}) {
+      const entries = Object.entries(params).filter(([, value]) => value !== void 0 && value !== null && value !== "");
+      if (!route || !entries.length)
+        return route;
+      const query = entries.filter(([key]) => !new RegExp(`[?&]${key}=`).test(route)).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join("&");
+      if (!query)
+        return route;
+      return `${route}${route.includes("?") ? "&" : "?"}${query}`;
+    }
+    function normalizePrizeRecord(record = {}, index = 0) {
+      var _a;
+      const orderId = firstValue(record, "orderId", "order_id");
+      const orderNo = firstValue(record, "orderNo", "order_no", "outTradeNo", "out_trade_no");
+      const roomCode = firstValue(record, "roomCode", "room_code", "liveRoomCode", "live_room_code", "_roomCode");
+      const rewardName = firstValue(record, "rewardName", "reward_name", "prizeName", "prize_name", "productName", "product_name", "name");
+      const winType = toNumber(firstValue(record, "winType", "win_type", "activityType", "activity_type"), 1);
+      const rewardType = toNumber(firstValue(record, "rewardType", "reward_type"));
+      return {
+        ...record,
+        recordId: firstValue(record, "recordId", "record_id", "winnerRecordId", "winner_record_id", "id") || `record-${index}`,
+        winType,
+        winTypeText: firstValue(record, "winTypeText", "win_type_text", "activityTypeText", "activity_type_text") || ((_a = typeOptions.find((item) => item.value === winType)) == null ? void 0 : _a.label) || "中奖",
+        rewardType,
+        rewardName: rewardName || "奖品",
+        roomName: firstValue(record, "roomName", "room_name", "liveRoomName", "live_room_name") || "",
+        winTime: firstValue(record, "winTime", "win_time", "createdAt", "created_at", "createTime", "create_time") || "",
+        roomEnded: toFlag(firstValue(record, "roomEnded", "room_ended", "isRoomEnded", "is_room_ended")),
+        orderId,
+        orderNo,
+        orderDetailUrl: firstValue(record, "orderDetailUrl", "order_detail_url", "orderUrl", "order_url", "detailUrl", "detail_url"),
+        roomCode
+      };
+    }
     function recordIcon(record) {
       const iconType = Number(record == null ? void 0 : record.winType) === 3 ? 4 : Number((record == null ? void 0 : record.winType) || 1);
       return recordIconMap[iconType] || recordIconMap[1];
     }
+    function getOrderTarget(record) {
+      const roomCode = (record == null ? void 0 : record.roomCode) || liveRoomCode.value;
+      const rawDetailUrl = (record == null ? void 0 : record.orderDetailUrl) || "";
+      if (rawDetailUrl) {
+        const detailUrl = utils_routeNavigation.normalizeAppRoute(rawDetailUrl);
+        if (!/^https?:\/\//i.test(detailUrl)) {
+          return appendQuery(detailUrl, { roomCode });
+        }
+        if (!(record == null ? void 0 : record.orderId) && !(record == null ? void 0 : record.orderNo))
+          return detailUrl;
+      }
+      if (record == null ? void 0 : record.orderId) {
+        return appendQuery("/pages/order/detail", { id: record.orderId, roomCode });
+      }
+      if (record == null ? void 0 : record.orderNo) {
+        return appendQuery("/pages/order/list", { orderNo: record.orderNo, roomCode });
+      }
+      return "";
+    }
     function showRecordAction(record) {
-      if (Number(record == null ? void 0 : record.rewardType) === 1)
+      if (Number(record == null ? void 0 : record.rewardType) === 1 || getOrderTarget(record))
         return true;
       return Number(record == null ? void 0 : record.rewardType) === 2 && !(record == null ? void 0 : record.roomEnded);
     }
     function actionText(record) {
-      return Number(record == null ? void 0 : record.rewardType) === 1 ? "查看详情" : "立即使用";
+      return Number(record == null ? void 0 : record.rewardType) === 1 || getOrderTarget(record) ? "查看详情" : "立即使用";
     }
     async function loadRecords(reset = false) {
       if (loading.value)
@@ -85,8 +155,9 @@ const _sfc_main = {
           winType: selectedWinType.value,
           month: selectedMonth.value
         });
-        const list = Array.isArray(data == null ? void 0 : data.list) ? data.list : [];
-        total.value = Number((data == null ? void 0 : data.total) || 0);
+        const rawList = firstValue(data, "list", "records", "recordList", "record_list") || [];
+        const list = Array.isArray(rawList) ? rawList.map(normalizePrizeRecord) : [];
+        total.value = Number(firstValue(data, "total", "totalCount", "total_count", "count") || 0);
         records.value = reset ? list : records.value.concat(list);
         finished.value = records.value.length >= total.value || list.length < pageSize;
         if (!finished.value) {
@@ -117,12 +188,13 @@ const _sfc_main = {
       loadRecords(true);
     }
     function handleRecordAction(record) {
-      if (Number(record == null ? void 0 : record.rewardType) === 1) {
-        if (!(record == null ? void 0 : record.orderId)) {
+      const orderTarget = getOrderTarget(record);
+      if (Number(record == null ? void 0 : record.rewardType) === 1 || orderTarget) {
+        if (!orderTarget) {
           common_vendor.index.showToast({ title: "暂无关联订单", icon: "none" });
           return;
         }
-        common_vendor.index.navigateTo({ url: `/pages/order/detail?id=${record.orderId}` });
+        utils_routeNavigation.navigateWithH5Fallback(orderTarget);
         return;
       }
       const roomCode = (record == null ? void 0 : record.roomCode) || liveRoomCode.value;
@@ -133,7 +205,7 @@ const _sfc_main = {
       utils_liveRoomNavigation.returnToLiveRoom(roomCode);
     }
     common_vendor.onLoad((options) => {
-      liveRoomCode.value = utils_liveRoomContext.resolveLiveRoomCode(options == null ? void 0 : options.roomCode);
+      liveRoomCode.value = utils_liveRoomContext.resolveLiveRoomCode((options == null ? void 0 : options.roomCode) || (options == null ? void 0 : options.room_code));
       if (!services_h5AuthContext.ensureH5PageAuth(options))
         return;
       loadRecords(true);
@@ -155,7 +227,7 @@ const _sfc_main = {
         c: common_vendor.t(selectedMonthLabel.value)
       } : {}, {
         d: common_vendor.t(selectedTypeLabel.value),
-        e: common_assets._imports_0$2,
+        e: common_assets._imports_0$1,
         f: common_vendor.o(openFilter, "78"),
         g: records.value.length
       }, records.value.length ? {
@@ -175,7 +247,7 @@ const _sfc_main = {
           });
         })
       } : !loading.value ? {
-        j: common_assets._imports_1$2
+        j: common_assets._imports_1$1
       } : {}, {
         i: !loading.value,
         k: loading.value

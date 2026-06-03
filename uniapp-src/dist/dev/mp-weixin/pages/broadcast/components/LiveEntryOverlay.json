@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "wd-overlay": "../../../node-modules/wot-design-uni/components/wd-overlay/wd-overlay"
+  }
+}

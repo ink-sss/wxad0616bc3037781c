@@ -30,4 +30,4 @@ export default {
 }
 </script>
 
-<style src="./uni.scss" lang="scss"></style>
+<style src="./app-global.scss" lang="scss"></style>

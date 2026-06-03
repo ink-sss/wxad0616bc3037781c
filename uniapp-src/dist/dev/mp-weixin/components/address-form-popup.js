@@ -2,8 +2,13 @@
 const common_vendor = require("../common/vendor.js");
 const services_addressForm = require("../services/address-form.js");
 const area = require("../area.js");
+if (!Array) {
+  const _easycom_wd_picker2 = common_vendor.resolveComponent("wd-picker");
+  _easycom_wd_picker2();
+}
+const _easycom_wd_picker = () => "../node-modules/wot-design-uni/components/wd-picker/wd-picker.js";
 if (!Math) {
-  BottomSheetPopup();
+  (_easycom_wd_picker + BottomSheetPopup)();
 }
 const BottomSheetPopup = () => "./bottom-sheet-popup.js";
 const _sfc_main = {
@@ -64,31 +69,17 @@ const _sfc_main = {
     }
     const regionValue = common_vendor.ref([]);
     const regionColumns = common_vendor.ref([]);
-    const regionIndexes = common_vendor.ref([0, 0, 0]);
-    const regionPickerRange = common_vendor.computed(
-      () => regionColumns.value.map((column) => column.map((item) => item.label))
-    );
-    function indexOfCode(options = [], code = "") {
-      const index = options.findIndex((item) => item.value === code);
-      return index >= 0 ? index : 0;
-    }
     function setRegionColumns(codes = []) {
-      var _a, _b, _c, _d;
+      var _a, _b;
       const provinceList = getProvinceList();
       const provinceCode = codes[0] || ((_a = provinceList[0]) == null ? void 0 : _a.code) || "";
       const cityList = getCityList(provinceCode);
       const cityCode = codes[1] || ((_b = cityList[0]) == null ? void 0 : _b.code) || "";
       const districtList = getDistrictList(provinceCode, cityCode);
-      const columns = [
+      regionColumns.value = [
         mapAreaOptions(provinceList),
         mapAreaOptions(cityList),
         mapAreaOptions(districtList)
-      ];
-      regionColumns.value = columns;
-      regionIndexes.value = [
-        indexOfCode(columns[0], provinceCode),
-        indexOfCode(columns[1], cityCode),
-        indexOfCode(columns[2], codes[2] || ((_d = (_c = columns[2]) == null ? void 0 : _c[0]) == null ? void 0 : _d.value) || "")
       ];
     }
     function syncRegionByCodes(codes = []) {
@@ -144,37 +135,32 @@ const _sfc_main = {
         }
       }
     );
-    function onRegionColumnChange(event) {
-      var _a, _b, _c, _d;
-      const columnIndex = Number(event.detail.column || 0);
-      const selectedIndex = Number(event.detail.value || 0);
-      const nextIndexes = [...regionIndexes.value];
-      nextIndexes[columnIndex] = selectedIndex;
-      if (columnIndex === 0) {
-        const province = (_a = regionColumns.value[0]) == null ? void 0 : _a[selectedIndex];
-        const cityList = mapAreaOptions(getCityList(province == null ? void 0 : province.value));
-        const firstCityCode = ((_b = cityList[0]) == null ? void 0 : _b.value) || "";
-        const districtList = mapAreaOptions(getDistrictList(province == null ? void 0 : province.value, firstCityCode));
-        regionColumns.value = [regionColumns.value[0], cityList, districtList];
-        nextIndexes[1] = 0;
-        nextIndexes[2] = 0;
-      } else if (columnIndex === 1) {
-        const province = (_c = regionColumns.value[0]) == null ? void 0 : _c[nextIndexes[0]];
-        const city = (_d = regionColumns.value[1]) == null ? void 0 : _d[selectedIndex];
-        const districtList = mapAreaOptions(getDistrictList(province == null ? void 0 : province.value, city == null ? void 0 : city.value));
-        regionColumns.value = [regionColumns.value[0], regionColumns.value[1], districtList];
-        nextIndexes[2] = 0;
+    function onRegionColumnChange(pickerView, value, columnIndex, resolve) {
+      var _a, _b;
+      const item = value[columnIndex];
+      if (!item) {
+        resolve();
+        return;
       }
-      regionIndexes.value = nextIndexes;
+      if (columnIndex === 0) {
+        const cityList = mapAreaOptions(getCityList(item.value));
+        const firstCityCode = ((_a = cityList[0]) == null ? void 0 : _a.value) || "";
+        const districtList = mapAreaOptions(
+          getDistrictList(item.value, firstCityCode)
+        );
+        pickerView.setColumnData(1, cityList);
+        pickerView.setColumnData(2, districtList);
+      } else if (columnIndex === 1) {
+        const provinceCode = ((_b = value[0]) == null ? void 0 : _b.value) || regionValue.value[0] || "";
+        const districtList = mapAreaOptions(
+          getDistrictList(provinceCode, item.value)
+        );
+        pickerView.setColumnData(2, districtList);
+      }
+      resolve();
     }
-    function onRegionConfirm(event) {
-      var _a, _b, _c, _d;
-      const indexes = ((_a = event == null ? void 0 : event.detail) == null ? void 0 : _a.value) || regionIndexes.value;
-      regionIndexes.value = indexes;
-      const province = (_b = regionColumns.value[0]) == null ? void 0 : _b[indexes[0]];
-      const city = (_c = regionColumns.value[1]) == null ? void 0 : _c[indexes[1]];
-      const district = (_d = regionColumns.value[2]) == null ? void 0 : _d[indexes[2]];
-      syncRegionByCodes([province == null ? void 0 : province.value, city == null ? void 0 : city.value, district == null ? void 0 : district.value].filter(Boolean));
+    function onRegionConfirm() {
+      syncRegionByCodes(regionValue.value);
     }
     async function onSave() {
       if (!form.name.trim()) {
@@ -219,17 +205,21 @@ const _sfc_main = {
         e: common_vendor.o(($event) => form.mobile = $event.detail.value, "63"),
         f: common_vendor.t(regionText.value || "请选择所在地区"),
         g: common_vendor.n(regionText.value ? "row-value-text" : ""),
-        h: regionPickerRange.value,
-        i: regionIndexes.value,
-        j: common_vendor.o(onRegionColumnChange, "e7"),
-        k: common_vendor.o(onRegionConfirm, "ca"),
-        l: form.detail,
-        m: common_vendor.o(($event) => form.detail = $event.detail.value, "e2"),
-        n: form.isDefault,
-        o: common_vendor.o(($event) => form.isDefault = !!$event.detail.value, "b9"),
-        p: common_vendor.o(onSave, "9a"),
-        q: common_vendor.o(($event) => emit("close"), "38"),
-        r: common_vendor.p({
+        h: common_vendor.o(onRegionConfirm, "9f"),
+        i: common_vendor.o(($event) => regionValue.value = $event, "1b"),
+        j: common_vendor.p({
+          columns: regionColumns.value,
+          ["column-change"]: onRegionColumnChange,
+          ["use-default-slot"]: true,
+          modelValue: regionValue.value
+        }),
+        k: form.detail,
+        l: common_vendor.o(($event) => form.detail = $event.detail.value, "4c"),
+        m: form.isDefault,
+        n: common_vendor.o(($event) => form.isDefault = !!$event.detail.value, "c2"),
+        o: common_vendor.o(onSave, "a8"),
+        p: common_vendor.o(($event) => emit("close"), "38"),
+        q: common_vendor.p({
           visible: __props.visible,
           height: __props.popupHeight,
           radius: "24rpx 24rpx 0 0",

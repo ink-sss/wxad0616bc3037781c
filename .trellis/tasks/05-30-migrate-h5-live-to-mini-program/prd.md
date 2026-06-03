@@ -2,13 +2,49 @@
 
 ## Goal
 
-Fully migrate the H5 viewer-side live commerce loop into `uniapp-src/` for
-WeChat Mini Program. Success means a viewer can enter live/replay, interact,
-buy, pay, manage orders/refunds/addresses/complaints, review prizes/invitations,
-and return to live without landing on migration placeholders.
+Fully migrate the H5 viewer-side live room loop into `uniapp-src/` for WeChat
+Mini Program. Success means a viewer can enter live/replay, play media, send and
+view comments, like, use the product shelf entry, sign in, join lotteries, claim
+watch rewards, report, share, review viewer records, and return to live without
+landing on migration placeholders. Payment is explicitly outside this round's
+usable-completion claim.
 
 The target is not just “main live page compiles.” The viewer closed loop must be
 usable after WeChat Developer Tools and real-device validation.
+
+## Pixel 1:1 Live Room Target
+
+The current objective is a pixel-level, source-faithful migration of
+`live_h5/src/pages/broadcast/` into the Mini Program. The Mini Program live room
+must use the H5 broadcast implementation as the source of truth for page
+structure, component boundaries, class names, SCSS hierarchy, spacing, colors,
+overlays, popups, and interaction placement.
+
+Implementation should not redesign or approximate the H5 live room. Any Mini
+Program differences must be limited to platform runtime replacements:
+
+- H5 media runtime, `hls.js`, `flv.js`, and DOM-inserted players become native
+  Mini Program `live-player` / `video`.
+- Browser globals, storage, clipboard, share, address, payment, upload, and
+  WebSocket usage become Mini Program adapters.
+- H5-only APIs with no Mini Program equivalent must be marked as unsupported
+  with the reason, not silently replaced by a visually different flow.
+
+Completion target:
+
+- Live portrait and live landscape match the H5 broadcast room visually and
+  behaviorally.
+- Replay portrait and replay landscape match the H5 replay room visually and
+  behaviorally.
+- Live video playback works with a currently live room and a Mini
+  Program-playable pull URL.
+- Replay playback works with a valid replay room/video.
+- Barrage/comments can be sent and displayed.
+- Likes, product shelf/current product, sign-in, normal lottery, comment
+  lottery, watch-duration reward, report, share, center entry, and return-to-live
+  are functional.
+- Payment success is excluded. Product/order/payment entry may exist, but a
+  successful payment transaction is not part of this goal's completion claim.
 
 ## Scope
 
@@ -17,7 +53,9 @@ Included viewer-side flows:
 - Live and replay viewing.
 - Personal center entries for viewer modules.
 - Product shelf, current teaching product, product detail entry, order confirm,
-  order creation, payment, payment result, order list, and order detail.
+  order creation, payment entry handoff, payment result display, order list, and
+  order detail. Actual payment completion is outside this round's live-room
+  usability acceptance.
 - Refund apply, refund list, refund detail, refund cancel, and return logistics.
 - Address list, add, edit, set default, delete, and WeChat address import.
 - Complaint submit, complaint images, complaint list/detail.
@@ -27,7 +65,7 @@ Included viewer-side flows:
 Excluded flows:
 
 - Anchor pushing, live management, merchant backend, agent backend,
-  `massHelper`, and enterprise WeChat sidebar features.
+  `massHelper`, enterprise WeChat sidebar features, and payment completion.
 - Old paths for excluded flows should remain compile-safe and may thinly
   redirect or show a clear unavailable state, but they are not part of the
   migrated viewer loop.
@@ -51,9 +89,10 @@ Excluded flows:
    `/h5/live/wsSignKey` returns `signKey`, Mini Program signing must avoid
    browser crypto; if a runtime cannot perform a signed path, the downgrade must
    be explicit in code comments.
-6. Viewer transaction pages must use `/h5/order/*`, `/h5/pay/*`, and
-   `uni.requestPayment` through the platform wrapper. H5 Yeepay/browser redirect
-   payment is not acceptable for the mini-program viewer loop.
+6. Viewer transaction pages that are reachable from the live room must use
+   `/h5/order/*` for order data and must not land on empty placeholders. Payment
+   completion is not required in this round; any retained payment entry must use
+   the Mini Program payment wrapper rather than H5 Yeepay/browser redirects.
 7. Address management must be real mini-program pages using `/h5/address/*`.
    WeChat address import must use `uni.chooseAddress` through a platform wrapper.
 8. Complaint and refund image upload must not use H5 `fetch`,
@@ -97,6 +136,20 @@ Excluded flows:
 ## Acceptance Criteria
 
 - `npm run build:mp-weixin` passes from `uniapp-src/`.
+- Broadcast source coverage check confirms every runtime `.vue`, `.js`, and
+  `.scss` file under `live_h5/src/pages/broadcast/` has a corresponding
+  Mini Program implementation or an explicit unsupported note with a Mini
+  Program platform reason.
+- Broadcast visual coverage check confirms key H5 class names and component
+  boundaries remain in `uniapp-src/src/pages/broadcast/` and copied shared
+  components. Large new replacement class trees are not accepted unless they are
+  native-player wrappers.
+- Screenshot comparison is required for four states before declaring visual
+  completion:
+  - live portrait
+  - live landscape
+  - replay portrait
+  - replay landscape
 - Static scan of viewer-loop source finds no unguarded `window`, `document`,
   `localStorage`, `sessionStorage`, or `navigator`, and no `hls.js`, `flv.js`,
   `weixin-js-sdk`, `@dcloudio/uni-h5`, or browser Agora DOM dependency.
@@ -121,14 +174,39 @@ Excluded flows:
 - Mini Program login and H5 401 handling route through the native H5 auth
   adapter and preserve H5 redirect semantics for broadcast, center, order,
   refund, address, prize, invitation, and complaint/report pages.
-- Payment code uses mini-program payment APIs, not H5 browser payment redirects.
+- Retained payment entry code uses mini-program payment APIs, not H5 browser
+  payment redirects, but successful payment is not part of this round's
+  completion claim.
 - Real usability is not accepted until WeChat Developer Tools plus real-device
-  validation covers live-player playback, replay playback/progress, WebSocket
-  events/reconnect, payment, image upload, address import, share, and navigation
-  back to live.
+  validation covers:
+  - live-player playback for a currently live room
+  - replay playback/progress for a valid replay
+  - WebSocket connect, H5 envelope unpacking, ping/reconnect, and event
+    normalization
+  - barrage/comment sending and display
+  - likes and viewer-count updates
+  - product shelf/current product entry
+  - sign-in
+  - normal lottery
+  - comment lottery
+  - watch-duration reward
+  - report
+  - share
+  - center entry and return-to-live navigation
+  - failure states with user-readable messages
 
 ## Manual Validation Required
 
 This coding session can build and statically scan the mini-program source, but
 it cannot claim real-device success unless the workflow is actually run in
 WeChat Developer Tools and on a physical WeChat device.
+
+Manual validation requires:
+
+- At least one currently live `roomCode` / `liveId` whose backend returns
+  `pushStatus: 1` and a Mini Program-playable RTMP/FLV/HLS pull URL.
+- At least one valid replay room/video.
+- A test account authorized for comments, sign-in, lottery/reward, reporting,
+  and product shelf access.
+- WeChat Mini Program request, socket, upload, download, and `live-player`
+  domain/permission configuration for the test backend.

@@ -1,9 +1,6 @@
 "use strict";
 const common_vendor = require("../common/vendor.js");
-const api_live = require("../api/live.js");
-const utils_liveRoomContext = require("../utils/live-room-context.js");
-const utils_liveRoute = require("../utils/live-route.js");
-const utils_liveRoomNavigation = require("../utils/live-room-navigation.js");
+const composables_useLiveMiniWindow = require("../composables/useLiveMiniWindow.js");
 const _sfc_main = {
   __name: "live-mini-window",
   props: {
@@ -26,158 +23,51 @@ const _sfc_main = {
   },
   setup(__props) {
     const props = __props;
-    const closed = common_vendor.ref(false);
-    const poster = common_vendor.ref("");
-    const playUrl = common_vendor.ref("");
-    const roomCodeValue = common_vendor.ref("");
-    const position = common_vendor.ref({ left: 0, top: 0 });
-    let dragStart = null;
-    let hasMoved = false;
-    const visible = common_vendor.computed(() => props.enabled && !closed.value && !!roomCodeValue.value);
-    const miniStyle = common_vendor.computed(() => ({
-      left: `${position.value.left}px`,
-      top: `${position.value.top}px`
-    }));
-    function rpxToPx(value) {
-      try {
-        const sys = common_vendor.index.getSystemInfoSync();
-        return Number(value) / 750 * Number(sys.windowWidth || 375);
-      } catch (error) {
-        return Number(value) / 2;
-      }
-    }
-    function getWindowSize() {
-      try {
-        const sys = common_vendor.index.getSystemInfoSync();
-        return {
-          width: Number(sys.windowWidth || 375),
-          height: Number(sys.windowHeight || 667)
-        };
-      } catch (error) {
-        return { width: 375, height: 667 };
-      }
-    }
-    function clampPosition(left, top) {
-      const win = getWindowSize();
-      const width = rpxToPx(224);
-      const height = rpxToPx(316);
-      const margin = rpxToPx(16);
-      return {
-        left: Math.min(Math.max(left, margin), Math.max(margin, win.width - width - margin)),
-        top: Math.min(Math.max(top, margin), Math.max(margin, win.height - height - margin))
-      };
-    }
-    function initPosition() {
-      const win = getWindowSize();
-      const width = rpxToPx(224);
-      const height = rpxToPx(316);
-      position.value = clampPosition(
-        win.width - width - rpxToPx(24),
-        win.height - height - rpxToPx(props.bottomOffset)
-      );
-    }
-    function resolveRoomCode() {
-      var _a;
-      const propCode = String(props.roomCode || "").trim();
-      if (propCode)
-        return propCode;
-      return String(((_a = utils_liveRoomContext.loadLiveRoomContext()) == null ? void 0 : _a.roomCode) || "").trim();
-    }
-    function getCurrentRoute() {
-      var _a;
-      try {
-        const pages = getCurrentPages() || [];
-        return String(((_a = pages[pages.length - 1]) == null ? void 0 : _a.route) || "").replace(/^\/+/, "");
-      } catch (error) {
-        return "";
-      }
-    }
-    async function loadMini() {
-      const code = resolveRoomCode();
-      roomCodeValue.value = code;
-      if (!code || getCurrentRoute().startsWith("pages/broadcast/"))
-        return;
-      const cached = utils_liveRoomContext.loadLiveRoomContext() || {};
-      poster.value = cached.cover || cached.coverImage || cached.poster || "";
-      playUrl.value = cached.playUrl || "";
-      try {
-        const raw = await api_live.getLiveDetail({ roomCode: code });
-        const detail = utils_liveRoute.normalizeRoomDetail(raw, { roomCode: code });
-        poster.value = detail.coverImage || poster.value;
-        playUrl.value = utils_liveRoute.getBestLiveUrl(detail) || utils_liveRoute.getBestReplayUrl(detail) || playUrl.value;
-      } catch (error) {
-      }
-    }
-    function closeMini() {
-      closed.value = true;
-    }
-    function restoreLive() {
-      if (hasMoved)
-        return;
-      const code = roomCodeValue.value || resolveRoomCode();
-      if (code)
-        utils_liveRoomNavigation.returnToLiveRoom(code);
-    }
-    function onDragStart(event) {
-      var _a;
-      const touch = (_a = event.touches) == null ? void 0 : _a[0];
-      if (!touch)
-        return;
-      hasMoved = false;
-      dragStart = {
-        x: touch.clientX,
-        y: touch.clientY,
-        left: position.value.left,
-        top: position.value.top
-      };
-    }
-    function onDragMove(event) {
-      var _a;
-      if (!dragStart)
-        return;
-      const touch = (_a = event.touches) == null ? void 0 : _a[0];
-      if (!touch)
-        return;
-      const dx = touch.clientX - dragStart.x;
-      const dy = touch.clientY - dragStart.y;
-      if (Math.abs(dx) > 4 || Math.abs(dy) > 4)
-        hasMoved = true;
-      position.value = clampPosition(dragStart.left + dx, dragStart.top + dy);
-    }
-    function onDragEnd() {
-      dragStart = null;
-      setTimeout(() => {
-        hasMoved = false;
-      }, 50);
-    }
-    common_vendor.watch(
-      () => [props.roomCode, props.enabled],
-      () => {
-        closed.value = false;
-        loadMini();
-      }
-    );
-    initPosition();
-    common_vendor.onShow(loadMini);
+    const {
+      visible,
+      poster,
+      playUrl,
+      hasPlayableSource,
+      muted,
+      isPlaying,
+      miniStyle,
+      closeMini,
+      restoreLive,
+      playMini,
+      onDragStart,
+      onDragMove,
+      onDragEnd
+    } = composables_useLiveMiniWindow.useLiveMiniWindow(props);
     return (_ctx, _cache) => {
       return common_vendor.e({
-        a: visible.value
-      }, visible.value ? common_vendor.e({
-        b: playUrl.value
-      }, playUrl.value ? {
-        c: playUrl.value,
-        d: poster.value
-      } : poster.value ? {
-        f: poster.value
+        a: common_vendor.unref(visible)
+      }, common_vendor.unref(visible) ? common_vendor.e({
+        b: common_vendor.unref(hasPlayableSource)
+      }, common_vendor.unref(hasPlayableSource) ? {
+        c: common_vendor.unref(playUrl),
+        d: common_vendor.unref(poster),
+        e: common_vendor.unref(muted),
+        f: common_vendor.o(($event) => isPlaying.value = true, "cd"),
+        g: common_vendor.o(($event) => isPlaying.value = false, "1b")
       } : {}, {
-        e: poster.value,
-        g: common_vendor.o(restoreLive, "bc"),
-        h: common_vendor.o(closeMini, "e6"),
-        i: common_vendor.o(restoreLive, "3b"),
-        j: common_vendor.s(miniStyle.value),
-        k: common_vendor.o(onDragStart, "fb"),
-        l: common_vendor.o(onDragMove, "2d"),
-        m: common_vendor.o(onDragEnd, "ae")
+        h: common_vendor.unref(hasPlayableSource) && common_vendor.unref(poster) && !common_vendor.unref(isPlaying)
+      }, common_vendor.unref(hasPlayableSource) && common_vendor.unref(poster) && !common_vendor.unref(isPlaying) ? {
+        i: common_vendor.unref(poster)
+      } : common_vendor.unref(poster) ? {
+        k: common_vendor.unref(poster)
+      } : {}, {
+        j: common_vendor.unref(poster),
+        l: common_vendor.o((...args) => common_vendor.unref(restoreLive) && common_vendor.unref(restoreLive)(...args), "58"),
+        m: common_vendor.o((...args) => common_vendor.unref(closeMini) && common_vendor.unref(closeMini)(...args), "76"),
+        n: common_vendor.unref(hasPlayableSource) && !common_vendor.unref(isPlaying)
+      }, common_vendor.unref(hasPlayableSource) && !common_vendor.unref(isPlaying) ? {
+        o: common_vendor.o((...args) => common_vendor.unref(playMini) && common_vendor.unref(playMini)(...args), "f4")
+      } : {}, {
+        p: common_vendor.o((...args) => common_vendor.unref(restoreLive) && common_vendor.unref(restoreLive)(...args), "0a"),
+        q: common_vendor.s(common_vendor.unref(miniStyle)),
+        r: common_vendor.o((...args) => common_vendor.unref(onDragStart) && common_vendor.unref(onDragStart)(...args), "25"),
+        s: common_vendor.o((...args) => common_vendor.unref(onDragMove) && common_vendor.unref(onDragMove)(...args), "1c"),
+        t: common_vendor.o((...args) => common_vendor.unref(onDragEnd) && common_vendor.unref(onDragEnd)(...args), "37")
       }) : {});
     };
   }

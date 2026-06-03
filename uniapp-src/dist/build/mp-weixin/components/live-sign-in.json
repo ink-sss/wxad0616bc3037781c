@@ -1,0 +1,8 @@
+{
+  "component": true,
+  "usingComponents": {
+    "wd-radio": "../node-modules/wot-design-uni/components/wd-radio/wd-radio",
+    "wd-radio-group": "../node-modules/wot-design-uni/components/wd-radio-group/wd-radio-group",
+    "wd-picker": "../node-modules/wot-design-uni/components/wd-picker/wd-picker"
+  }
+}

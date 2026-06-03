@@ -28,6 +28,36 @@ function isMissingControllerResponse(body) {
   return !body.data && /controller\s+not\s+exists/i.test(message)
 }
 
+function isHtmlResponse(body) {
+  if (typeof body !== 'string') return false
+  const text = body.trim().slice(0, 256).toLowerCase()
+  return text.startsWith('<!doctype html') || text.startsWith('<html') || text.includes('<body')
+}
+
+function normalizeH5Error(raw, fallbackMessage = '请求失败') {
+  if (raw instanceof Error) return raw
+  const body = raw && typeof raw === 'object' ? raw : {}
+  const message = body.msg || body.message || body.errMsg || body.data?.msg || fallbackMessage
+  const error = new Error(message)
+  error.response = body
+  error.data = body.data !== undefined ? body.data : body
+  error.code = body.code
+  error.statusCode = body.statusCode
+  error.raw = raw
+  return error
+}
+
+function isSuccessfulH5Response(body = {}) {
+  if (body.success === true) return true
+  const code = body.code
+  if (code === 0 || code === 200) return true
+  if (typeof code === 'string') {
+    const normalizedCode = code.trim()
+    return normalizedCode === '0' || normalizedCode === '200'
+  }
+  return false
+}
+
 export function getH5Token() {
   return getStorageToken()
 }
@@ -64,38 +94,47 @@ export function h5Request(options = {}) {
       header: finalHeader,
       success(response) {
         const body = response.data
+        if (isHtmlResponse(body)) {
+          reject(normalizeH5Error({
+            statusCode: response.statusCode,
+            msg: 'H5 API返回了页面HTML，请检查h5_api_url是否指向后端/api',
+            data: String(body).slice(0, 256),
+            url: normalizeUrl(url),
+          }, '接口地址配置错误'))
+          return
+        }
         if (response.statusCode < 200 || response.statusCode >= 300) {
           if (authRedirect && handleH5Unauthorized({ ...body, statusCode: response.statusCode })) {
-            reject(body || response)
+            reject(normalizeH5Error(body || response, '登录已失效'))
             return
           }
-          reject(body || response)
+          reject(normalizeH5Error({ ...(body || {}), statusCode: response.statusCode }, '请求失败'))
           return
         }
         if (body && typeof body === 'object' && 'code' in body) {
           if (isMissingControllerResponse(body)) {
-            reject(body)
+            reject(normalizeH5Error(body))
             return
           }
-          if (Number(body.code) === 0 || Number(body.code) === 200 || body.success === true) {
+          if (isSuccessfulH5Response(body)) {
             resolve(body.data !== undefined ? body.data : body)
             return
           }
           if (authRedirect && handleH5Unauthorized(body)) {
-            reject(body)
+            reject(normalizeH5Error(body, '登录已失效'))
             return
           }
-          reject(body)
+          reject(normalizeH5Error(body))
           return
         }
         resolve(body)
       },
       fail(error) {
         if (authRedirect && handleH5Unauthorized(error)) {
-          reject(error)
+          reject(normalizeH5Error(error, '登录已失效'))
           return
         }
-        reject(error)
+        reject(normalizeH5Error(error, '网络异常，请稍后重试'))
       },
     })
   })

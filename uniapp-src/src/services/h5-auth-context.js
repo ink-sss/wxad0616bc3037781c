@@ -1,5 +1,6 @@
 import { buildBroadcastEntryUrl, normalizeLiveRouteOptions } from "@/utils/live-route";
 import { saveLiveRoomContext } from "@/utils/live-room-context";
+import { useUserStore } from "@/stores/user";
 
 const AUTH_CONTEXT_KEY = "mp_h5_auth_context_v1";
 const AUTH_CONTEXT_TTL_MS = 30 * 60 * 1000;
@@ -338,6 +339,14 @@ function extractAuthPayload(payload = {}) {
   return payload;
 }
 
+function syncRuntimeUserStore({ token = "", customer = null } = {}) {
+  try {
+    const userStore = useUserStore();
+    if (token) userStore.setToken(token);
+    if (customer) userStore.setUserInfo(customer);
+  } catch (error) {}
+}
+
 export function getH5Token() {
   for (const key of TOKEN_KEYS) {
     const token = readStorage(key, "");
@@ -376,6 +385,7 @@ export function syncH5AuthSession(payload = {}) {
   if (customer) {
     CUSTOMER_KEYS.forEach((key) => writeStorage(key, customer));
   }
+  syncRuntimeUserStore({ token, customer });
 
   try {
     const app = getApp();
@@ -388,6 +398,9 @@ export function syncH5AuthSession(payload = {}) {
 export function clearH5AuthSession() {
   TOKEN_KEYS.forEach(removeStorage);
   CUSTOMER_KEYS.forEach(removeStorage);
+  try {
+    useUserStore().clearAuth();
+  } catch (error) {}
 }
 
 export function normalizeRedirectUrl(rawUrl = "", fallback = "/pages/center/index") {
@@ -578,6 +591,34 @@ export function redirectAfterH5Login(input = {}) {
         url,
         fail() {
           uni.navigateTo({ url });
+        },
+      });
+    },
+  });
+}
+
+export function redirectAfterH5LoginSkipped(input = {}) {
+  const context = mergeContext(loadH5AuthContext(), buildH5AuthContext(input));
+  const target = buildRedirectFromH5AuthContext(context);
+  clearH5AuthContext();
+
+  if (/^\/pages\/broadcast\/(entry|replay)\b/.test(target)) {
+    uni.reLaunch({
+      url: appendQuery(target, { loginSkipped: 1 }),
+      fail() {
+        uni.redirectTo({ url: appendQuery(target, { loginSkipped: 1 }) });
+      },
+    });
+    return;
+  }
+
+  uni.reLaunch({
+    url: "/pages/index/index?loginSkipped=1",
+    fail() {
+      uni.switchTab({
+        url: "/pages/user/index/index",
+        fail() {
+          uni.reLaunch({ url: "/pages/index/index" });
         },
       });
     },

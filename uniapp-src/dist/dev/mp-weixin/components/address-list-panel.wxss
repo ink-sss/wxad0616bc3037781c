@@ -1,19 +1,6 @@
-page.data-v-decb1bb7 {
-  min-height: 100%;
-  background-color: #f5f5f5;
-  color: #333333;
-  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, sans-serif;
-}
-view.data-v-decb1bb7,
-text.data-v-decb1bb7,
-button.data-v-decb1bb7,
-input.data-v-decb1bb7,
-textarea.data-v-decb1bb7 {
-  box-sizing: border-box;
-}
-image.data-v-decb1bb7 {
-  display: block;
-}
+/* uni-app automatically injects uni.scss into every component style block.
+   Keep this file for variables/mixins only; global CSS rules live in
+   app-global.scss so they do not become invalid component WXSS selectors. */
 .address-panel.data-v-decb1bb7 {
   width: 750rpx;
   height: 100%;

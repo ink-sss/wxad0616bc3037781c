@@ -9,7 +9,8 @@
   >
     <view class="live-mini__video-wrap" @click.stop="restoreLive">
       <video
-        v-if="playUrl"
+        v-if="hasPlayableSource"
+        id="liveMiniVideo"
         class="live-mini__video"
         :src="playUrl"
         :poster="poster"
@@ -19,8 +20,21 @@
         :show-fullscreen-btn="false"
         :enable-progress-gesture="false"
         object-fit="cover"
-        :muted="true"
+        :muted="muted"
         :autoplay="true"
+        playsinline
+        webkit-playsinline
+        x5-playsinline
+        x5-video-player-type="h5"
+        x5-video-player-fullscreen="false"
+        @play="isPlaying = true"
+        @pause="isPlaying = false"
+      />
+      <image
+        v-if="hasPlayableSource && poster && !isPlaying"
+        class="live-mini__poster live-mini__poster--cover"
+        :src="poster"
+        mode="aspectFill"
       />
       <image
         v-else-if="poster"
@@ -36,17 +50,19 @@
         <text class="live-mini__badge-text">返回直播</text>
       </view>
       <view class="live-mini__close" @click.stop="closeMini">×</view>
+      <view class="live-mini__play-state" v-if="hasPlayableSource && !isPlaying" @click.stop="playMini">
+        <text class="live-mini__play-text">▶</text>
+      </view>
     </view>
+    <!-- <view class="live-mini__footer" @click.stop="restoreLive">
+      <text class="live-mini__title">{{ displayTitle }}</text>
+      <text class="live-mini__restore">返回直播</text>
+    </view> -->
   </view>
 </template>
 
 <script setup>
-import { computed, ref, watch } from "vue";
-import { onShow } from "@dcloudio/uni-app";
-import { getLiveDetail } from "@/api/live";
-import { loadLiveRoomContext } from "@/utils/live-room-context";
-import { getBestLiveUrl, getBestReplayUrl, normalizeRoomDetail } from "@/utils/live-route";
-import { returnToLiveRoom } from "@/utils/live-room-navigation";
+import { useLiveMiniWindow } from "@/composables/useLiveMiniWindow";
 
 const props = defineProps({
   roomCode: {
@@ -67,144 +83,23 @@ const props = defineProps({
   },
 });
 
-const closed = ref(false);
-const poster = ref("");
-const playUrl = ref("");
-const roomCodeValue = ref("");
-const position = ref({ left: 0, top: 0 });
-let dragStart = null;
-let hasMoved = false;
-
-const visible = computed(() => props.enabled && !closed.value && !!roomCodeValue.value);
-const miniStyle = computed(() => ({
-  left: `${position.value.left}px`,
-  top: `${position.value.top}px`,
-}));
-
-function rpxToPx(value) {
-  try {
-    const sys = uni.getSystemInfoSync();
-    return (Number(value) / 750) * Number(sys.windowWidth || 375);
-  } catch (error) {
-    return Number(value) / 2;
-  }
-}
-
-function getWindowSize() {
-  try {
-    const sys = uni.getSystemInfoSync();
-    return {
-      width: Number(sys.windowWidth || 375),
-      height: Number(sys.windowHeight || 667),
-    };
-  } catch (error) {
-    return { width: 375, height: 667 };
-  }
-}
-
-function clampPosition(left, top) {
-  const win = getWindowSize();
-  const width = rpxToPx(224);
-  const height = rpxToPx(316);
-  const margin = rpxToPx(16);
-  return {
-    left: Math.min(Math.max(left, margin), Math.max(margin, win.width - width - margin)),
-    top: Math.min(Math.max(top, margin), Math.max(margin, win.height - height - margin)),
-  };
-}
-
-function initPosition() {
-  const win = getWindowSize();
-  const width = rpxToPx(224);
-  const height = rpxToPx(316);
-  position.value = clampPosition(
-    win.width - width - rpxToPx(24),
-    win.height - height - rpxToPx(props.bottomOffset),
-  );
-}
-
-function resolveRoomCode() {
-  const propCode = String(props.roomCode || "").trim();
-  if (propCode) return propCode;
-  return String(loadLiveRoomContext()?.roomCode || "").trim();
-}
-
-function getCurrentRoute() {
-  try {
-    const pages = getCurrentPages() || [];
-    return String(pages[pages.length - 1]?.route || "").replace(/^\/+/, "");
-  } catch (error) {
-    return "";
-  }
-}
-
-async function loadMini() {
-  const code = resolveRoomCode();
-  roomCodeValue.value = code;
-  if (!code || getCurrentRoute().startsWith("pages/broadcast/")) return;
-
-  const cached = loadLiveRoomContext() || {};
-  poster.value = cached.cover || cached.coverImage || cached.poster || "";
-  playUrl.value = cached.playUrl || "";
-
-  try {
-    const raw = await getLiveDetail({ roomCode: code });
-    const detail = normalizeRoomDetail(raw, { roomCode: code });
-    poster.value = detail.coverImage || poster.value;
-    playUrl.value = getBestLiveUrl(detail) || getBestReplayUrl(detail) || playUrl.value;
-  } catch (error) {
-  }
-}
-
-function closeMini() {
-  closed.value = true;
-}
-
-function restoreLive() {
-  if (hasMoved) return;
-  const code = roomCodeValue.value || resolveRoomCode();
-  if (code) returnToLiveRoom(code);
-}
-
-function onDragStart(event) {
-  const touch = event.touches?.[0];
-  if (!touch) return;
-  hasMoved = false;
-  dragStart = {
-    x: touch.clientX,
-    y: touch.clientY,
-    left: position.value.left,
-    top: position.value.top,
-  };
-}
-
-function onDragMove(event) {
-  if (!dragStart) return;
-  const touch = event.touches?.[0];
-  if (!touch) return;
-  const dx = touch.clientX - dragStart.x;
-  const dy = touch.clientY - dragStart.y;
-  if (Math.abs(dx) > 4 || Math.abs(dy) > 4) hasMoved = true;
-  position.value = clampPosition(dragStart.left + dx, dragStart.top + dy);
-}
-
-function onDragEnd() {
-  dragStart = null;
-  setTimeout(() => {
-    hasMoved = false;
-  }, 50);
-}
-
-watch(
-  () => [props.roomCode, props.enabled],
-  () => {
-    closed.value = false;
-    loadMini();
-  },
-);
-
-initPosition();
-onShow(loadMini);
+const {
+  visible,
+  poster,
+  playUrl,
+  hasPlayableSource,
+  muted,
+  isPlaying,
+  displayTitle,
+  statusText,
+  miniStyle,
+  closeMini,
+  restoreLive,
+  playMini,
+  onDragStart,
+  onDragMove,
+  onDragEnd,
+} = useLiveMiniWindow(props);
 </script>
 
 <style lang="scss" scoped>
@@ -236,6 +131,13 @@ onShow(loadMini);
   z-index: 0;
 }
 
+.live-mini__poster--cover {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1;
+}
+
 .live-mini__empty {
   display: flex;
   align-items: center;
@@ -258,6 +160,14 @@ onShow(loadMini);
   background: rgba(0, 0, 0, 0.48);
   display: flex;
   align-items: center;
+  gap: 6rpx;
+}
+
+.live-mini__dot {
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: 50%;
+  background: #ff2f4f;
 }
 
 .live-mini__badge-text {
@@ -280,5 +190,58 @@ onShow(loadMini);
   background: rgba(0, 0, 0, 0.5);
   color: #fff;
   font-size: 28rpx;
+}
+
+.live-mini__play-state {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+  width: 54rpx;
+  height: 54rpx;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.live-mini__play-text {
+  color: #fff;
+  font-size: 28rpx;
+  margin-left: 4rpx;
+}
+
+.live-mini__footer {
+  min-height: 60rpx;
+  padding: 8rpx 10rpx;
+  box-sizing: border-box;
+  background: rgba(20, 20, 20, 0.96);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8rpx;
+}
+
+.live-mini__title {
+  flex: 1;
+  min-width: 0;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 20rpx;
+  line-height: 28rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.live-mini__restore {
+  flex-shrink: 0;
+  color: #fff;
+  font-size: 20rpx;
+  line-height: 32rpx;
+  padding: 0 10rpx;
+  border-radius: 16rpx;
+  background: #ff5a2e;
 }
 </style>

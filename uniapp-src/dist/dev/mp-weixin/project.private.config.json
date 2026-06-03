@@ -7,7 +7,7 @@
         {
           "name": "pages/broadcast/entry",
           "pathName": "pages/broadcast/entry",
-          "query": "roomCode=typuugqzhkf9&tenantId=15&liveType=live&_tc=xthxirwe9f&wx_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b21lcklkIjoxNTMsInRlbmFudElkIjoxNSwib3BlbklkIjoib2U3XzAyLWZ4eXNGLUpOLURKUEd6ZENRZmxiayIsInVuaW9uSWQiOiJvTXgxVTJXT0taZ3RDWnVTOFIyX1BxZEt5bGswIiwicGhvbmUiOiIiLCJuaWNrbmFtZSI6IuaZtOWkqSIsImJ1ZmZlclRpbWUiOjg2NDAwLCJpc3MiOiJxbVBsdXMiLCJhdWQiOlsiSDUiXSwiZXhwIjoxNzgwODg4NTA1LCJuYmYiOjE3ODAyODM3MDV9.b03lkk9aesF0Z84np1gGAQl6O-TlsJz6PM67bgjhYJo",
+          "query": "",
           "scene": null,
           "launchMode": "default"
         }

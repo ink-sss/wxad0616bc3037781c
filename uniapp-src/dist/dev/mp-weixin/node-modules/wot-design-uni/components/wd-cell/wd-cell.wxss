@@ -1,0 +1,353 @@
+/* uni-app automatically injects uni.scss into every component style block.
+   Keep this file for variables/mixins only; global CSS rules live in
+   app-global.scss so they do not become invalid component WXSS selectors. */
+/**
+ * 辅助函数
+ */
+/**
+ * SCSS 配置项：命名空间以及BEM
+ */
+/* 转换成字符串 */
+/* 判断是否存在 Modifier */
+/* 判断是否存在伪类 */
+/**
+ * 主题色切换
+ * @params $theme-color 主题色
+ * @params $type 变暗’dark‘ 变亮 'light'
+ * @params $mix-color 自己设置的混色
+ */
+/**
+ * 颜色结果切换， 如果开启线性渐变色 使用渐变色，如果没有开启，那么使用主题色
+ * @params $open-linear 是否开启线性渐变色
+ * @params $deg 渐变色角度
+ * @params $theme-color 当前配色
+ * @params [Array] $set 主题色明暗设置，与 $color-list 数量对应
+ * @params [Array] $color-list 渐变色顺序， $color-list 和 $per-list 数量相同
+ * @params [Array] $per-list 渐变色比例
+ */
+/**
+ * UI规范基础变量
+ */
+/*----------------------------------------- Theme color. start ----------------------------------------*/
+/* 主题颜色 */
+/* 辅助色 */
+/* 文字颜色（默认浅色背景下 */
+/* 暗黑模式 */
+/* 图形颜色 */
+/*----------------------------------------- Theme color. end -------------------------------------------*/
+/*-------------------------------- Theme color application size.  start --------------------------------*/
+/* 文字字号 */
+/* 文字字重 */
+/* 尺寸 */
+/*-------------------------------- Theme color application size.  end --------------------------------*/
+/* component var */
+/* action-sheet */
+/* badge */
+/* button */
+/* cell */
+/* calendar */
+/* checkbox */
+/* collapse */
+/* divider */
+/* drop-menu */
+/* input-number */
+/* input */
+/* textarea */
+/* loadmore */
+/* message-box */
+/* notice-bar */
+/* pagination */
+/* picker */
+/* col-picker */
+/* overlay */
+/* popup */
+/* progress */
+/* radio */
+/* search */
+/* slider */
+/* sort-button */
+/* steps */
+/* switch */
+/* tabs */
+/* tag */
+/* toast */
+/* loading */
+/* tooltip */
+/* popover */
+/* grid-item */
+/* statustip */
+/* card */
+/* upload */
+/* curtain */
+/* notify */
+/* skeleton */
+/* circle */
+/* swiper */
+/* swiper-nav */
+/* segmented */
+/* tabbar */
+/* tabbar-item */
+/* navbar */
+/* navbar-capsule */
+/* table */
+/* sidebar */
+/* sidebar-item */
+/* fab */
+/* count-down */
+/* keyboard */
+/* number-keyboard */
+/* passwod-input */
+/* form-item */
+/* backtop */
+/* index-bar */
+/* text */
+/* video-preview */
+/* img-cropper */
+/* floating-panel */
+/* signature */
+/* tour */
+/* avatar */
+/* avatar-group */
+/* slide-verify */
+/**
+ * 混合宏
+ */
+/**
+ * SCSS 配置项：命名空间以及BEM
+ */
+/**
+ * 辅助函数
+ */
+/**
+ * SCSS 配置项：命名空间以及BEM
+ */
+/* 转换成字符串 */
+/* 判断是否存在 Modifier */
+/* 判断是否存在伪类 */
+/**
+ * 主题色切换
+ * @params $theme-color 主题色
+ * @params $type 变暗’dark‘ 变亮 'light'
+ * @params $mix-color 自己设置的混色
+ */
+/**
+ * 颜色结果切换， 如果开启线性渐变色 使用渐变色，如果没有开启，那么使用主题色
+ * @params $open-linear 是否开启线性渐变色
+ * @params $deg 渐变色角度
+ * @params $theme-color 当前配色
+ * @params [Array] $set 主题色明暗设置，与 $color-list 数量对应
+ * @params [Array] $color-list 渐变色顺序， $color-list 和 $per-list 数量相同
+ * @params [Array] $per-list 渐变色比例
+ */
+/**
+  * BEM，定义块（b)
+  */
+/* 定义元素（e），对于伪类，会自动将 e 嵌套在 伪类 底下 */
+/* 此方法用于生成穿透样式 */
+/* 定义元素（e），对于伪类，会自动将 e 嵌套在 伪类 底下 */
+/* 定义状态（m） */
+/* 定义状态（m） */
+/* 对于需要需要嵌套在 m 底下的 e，调用这个混合宏，一般在切换整个组件的状态，如切换颜色的时候 */
+/* 状态，生成 is-$state 类名 */
+/**
+  * 常用混合宏
+  */
+/* 单行超出隐藏 */
+/* 多行超出隐藏 */
+/* 清除浮动 */
+/* 0.5px 边框 指定方向*/
+/* 0.5px 边框 环绕 */
+/**
+  * 三角形实现尖角样式，适用于背景透明情况
+  * @param $size 三角形高，底边为 $size * 2
+  * @param $bg 三角形背景颜色
+  */
+/**
+  * 正方形实现尖角样式，适用于背景不透明情况
+  * @param $size 正方形边长
+  * @param $bg 正方形背景颜色
+  * @param $z-index z-index属性值，不得大于外部包裹器
+  * @param $box-shadow 阴影
+*/
+.wot-theme-dark .wd-cell.data-v-a65b3963 {
+  background-color: var(--wot-dark-background2, #1b1b1b);
+  color: var(--wot-dark-color, var(--wot-color-white, rgb(255, 255, 255)));
+}
+.wot-theme-dark .wd-cell__value.data-v-a65b3963 {
+  color: var(--wot-dark-color, var(--wot-color-white, rgb(255, 255, 255)));
+}
+.wot-theme-dark .wd-cell__label.data-v-a65b3963 {
+  color: var(--wot-dark-color3, rgba(232, 230, 227, 0.8));
+}
+.wot-theme-dark .wd-cell.is-hover.data-v-a65b3963 {
+  background-color: var(--wot-dark-background4, #323233);
+}
+.wot-theme-dark .wd-cell.is-border .wd-cell__wrapper.data-v-a65b3963 {
+  position: relative;
+}
+.wot-theme-dark .wd-cell.is-border .wd-cell__wrapper.data-v-a65b3963::after {
+  position: absolute;
+  display: block;
+  content: "";
+  width: 100%;
+  height: 1px;
+  left: 0;
+  top: 0;
+  transform: scaleY(0.5);
+  background: var(--wot-dark-border-color, #3a3a3c);
+}
+.wot-theme-dark .wd-cell.data-v-a65b3963 .wd-cell__arrow-right {
+  color: var(--wot-dark-color, var(--wot-color-white, rgb(255, 255, 255)));
+}
+.wd-cell.data-v-a65b3963 {
+  position: relative;
+  padding-left: var(--wot-cell-padding, var(--wot-size-side-padding, 15px));
+  background-color: var(--wot-color-white, rgb(255, 255, 255));
+  text-decoration: none;
+  color: var(--wot-cell-title-color, rgba(0, 0, 0, 0.85));
+  line-height: var(--wot-cell-line-height, 24px);
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+  width: 100%;
+  overflow: hidden;
+}
+.wd-cell.is-border .wd-cell__wrapper.data-v-a65b3963 {
+  position: relative;
+}
+.wd-cell.is-border .wd-cell__wrapper.data-v-a65b3963::after {
+  position: absolute;
+  display: block;
+  content: "";
+  width: 100%;
+  height: 1px;
+  left: 0;
+  top: 0;
+  transform: scaleY(0.5);
+  background: var(--wot-color-border-light, #e8e8e8);
+}
+.wd-cell__wrapper.data-v-a65b3963 {
+  position: relative;
+  display: flex;
+  padding: var(--wot-cell-wrapper-padding, 10px) var(--wot-cell-padding, var(--wot-size-side-padding, 15px)) var(--wot-cell-wrapper-padding, 10px) 0;
+  justify-content: space-between;
+  align-items: flex-start;
+  overflow: hidden;
+}
+.wd-cell__wrapper.is-vertical.data-v-a65b3963 {
+  display: block;
+}
+.wd-cell__wrapper.is-vertical .wd-cell__right.data-v-a65b3963 {
+  margin-top: var(--wot-cell-vertical-top, 16px);
+}
+.wd-cell__wrapper.is-vertical .wd-cell__value.data-v-a65b3963 {
+  text-align: left;
+}
+.wd-cell__wrapper.is-vertical .wd-cell__left.data-v-a65b3963 {
+  margin-right: 0;
+}
+.wd-cell__wrapper.is-label.data-v-a65b3963 {
+  padding: var(--wot-cell-wrapper-padding-with-label, 16px) var(--wot-cell-padding, var(--wot-size-side-padding, 15px)) var(--wot-cell-wrapper-padding-with-label, 16px) 0;
+}
+.wd-cell__left.data-v-a65b3963 {
+  position: relative;
+  flex: 1;
+  display: flex;
+  text-align: left;
+  font-size: var(--wot-cell-title-fs, 14px);
+  box-sizing: border-box;
+  margin-right: var(--wot-cell-padding, var(--wot-size-side-padding, 15px));
+}
+.wd-cell__right.data-v-a65b3963 {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+.wd-cell__title.data-v-a65b3963 {
+  font-size: var(--wot-cell-title-fs, 14px);
+}
+.wd-cell__required.data-v-a65b3963 {
+  font-size: var(--wot-cell-required-size, 18px);
+  color: var(--wot-cell-required-color, var(--wot-color-danger, #fa4350));
+  margin-left: var(--wot-cell-required-margin, 4px);
+}
+.wd-cell__required--left.data-v-a65b3963 {
+  margin-left: 0;
+  margin-right: var(--wot-cell-required-margin, 4px);
+}
+.wd-cell__label.data-v-a65b3963 {
+  margin-top: 2px;
+  font-size: var(--wot-cell-label-fs, 12px);
+  color: var(--wot-cell-label-color, rgba(0, 0, 0, 0.45));
+}
+.data-v-a65b3963  .wd-cell__icon {
+  display: block;
+  position: relative;
+  margin-right: var(--wot-cell-icon-right, 4px);
+  font-size: var(--wot-cell-icon-size, 16px);
+  height: var(--wot-cell-line-height, 24px);
+  line-height: var(--wot-cell-line-height, 24px);
+}
+.wd-cell__body.data-v-a65b3963 {
+  display: flex;
+  min-width: 0;
+}
+.wd-cell__value.data-v-a65b3963 {
+  position: relative;
+  flex: 1;
+  font-size: var(--wot-cell-value-fs, 14px);
+  color: var(--wot-cell-value-color, rgba(0, 0, 0, 0.85));
+  vertical-align: middle;
+}
+.wd-cell__value--left.data-v-a65b3963 {
+  text-align: left;
+}
+.wd-cell__value--right.data-v-a65b3963 {
+  text-align: right;
+}
+.wd-cell__value--ellipsis.data-v-a65b3963 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.data-v-a65b3963  .wd-cell__arrow-right {
+  display: block;
+  margin-left: 8px;
+  width: var(--wot-cell-arrow-size, 18px);
+  font-size: var(--wot-cell-arrow-size, 18px);
+  color: var(--wot-cell-arrow-color, rgba(0, 0, 0, 0.25));
+  height: var(--wot-cell-line-height, 24px);
+  line-height: var(--wot-cell-line-height, 24px);
+}
+.wd-cell__error-message.data-v-a65b3963 {
+  color: var(--wot-form-item-error-message-color, var(--wot-color-danger, #fa4350));
+  font-size: var(--wot-form-item-error-message-font-size, var(--wot-fs-secondary, 12px));
+  line-height: var(--wot-form-item-error-message-line-height, 24px);
+  text-align: left;
+  vertical-align: middle;
+}
+.wd-cell.is-link.data-v-a65b3963 {
+  -webkit-tap-highlight-color: var(--wot-cell-tap-bg, rgba(0, 0, 0, 0.06));
+}
+.wd-cell.is-hover.data-v-a65b3963 {
+  background-color: var(--wot-cell-tap-bg, rgba(0, 0, 0, 0.06));
+}
+.wd-cell.is-large .wd-cell__title.data-v-a65b3963 {
+  font-size: var(--wot-cell-title-fs-large, 16px);
+}
+.wd-cell.is-large .wd-cell__wrapper.data-v-a65b3963 {
+  padding-top: var(--wot-cell-wrapper-padding-large, 12px);
+  padding-bottom: var(--wot-cell-wrapper-padding-large, 12px);
+}
+.wd-cell.is-large .wd-cell__label.data-v-a65b3963 {
+  font-size: var(--wot-cell-label-fs-large, 14px);
+}
+.wd-cell.is-large .wd-cell__value.data-v-a65b3963 {
+  font-size: var(--wot-cell-value-fs-large, 16px);
+}
+.wd-cell.is-large.data-v-a65b3963 .wd-cell__icon {
+  font-size: var(--wot-cell-icon-size-large, 18px);
+}
+.wd-cell.is-center .wd-cell__wrapper.data-v-a65b3963 {
+  align-items: center;
+}

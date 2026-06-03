@@ -1,19 +1,6 @@
-page.data-v-84a35452 {
-  min-height: 100%;
-  background-color: #f5f5f5;
-  color: #333333;
-  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, sans-serif;
-}
-view.data-v-84a35452,
-text.data-v-84a35452,
-button.data-v-84a35452,
-input.data-v-84a35452,
-textarea.data-v-84a35452 {
-  box-sizing: border-box;
-}
-image.data-v-84a35452 {
-  display: block;
-}
+/* uni-app automatically injects uni.scss into every component style block.
+   Keep this file for variables/mixins only; global CSS rules live in
+   app-global.scss so they do not become invalid component WXSS selectors. */
 .live-mini.data-v-84a35452 {
   position: fixed;
   width: 224rpx;
@@ -39,6 +26,12 @@ image.data-v-84a35452 {
   position: relative;
   z-index: 0;
 }
+.live-mini__poster--cover.data-v-84a35452 {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1;
+}
 .live-mini__empty.data-v-84a35452 {
   display: flex;
   align-items: center;
@@ -59,6 +52,13 @@ image.data-v-84a35452 {
   background: rgba(0, 0, 0, 0.48);
   display: flex;
   align-items: center;
+  gap: 6rpx;
+}
+.live-mini__dot.data-v-84a35452 {
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: 50%;
+  background: #ff2f4f;
 }
 .live-mini__badge-text.data-v-84a35452 {
   color: #fff;
@@ -79,4 +79,52 @@ image.data-v-84a35452 {
   background: rgba(0, 0, 0, 0.5);
   color: #fff;
   font-size: 28rpx;
+}
+.live-mini__play-state.data-v-84a35452 {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+  width: 54rpx;
+  height: 54rpx;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.live-mini__play-text.data-v-84a35452 {
+  color: #fff;
+  font-size: 28rpx;
+  margin-left: 4rpx;
+}
+.live-mini__footer.data-v-84a35452 {
+  min-height: 60rpx;
+  padding: 8rpx 10rpx;
+  box-sizing: border-box;
+  background: rgba(20, 20, 20, 0.96);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8rpx;
+}
+.live-mini__title.data-v-84a35452 {
+  flex: 1;
+  min-width: 0;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 20rpx;
+  line-height: 28rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.live-mini__restore.data-v-84a35452 {
+  flex-shrink: 0;
+  color: #fff;
+  font-size: 20rpx;
+  line-height: 32rpx;
+  padding: 0 10rpx;
+  border-radius: 16rpx;
+  background: #ff5a2e;
 }

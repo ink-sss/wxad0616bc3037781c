@@ -1,0 +1,1 @@
+<view wx:if="{{a}}" class="{{['data-v-2c25887e', b]}}" style="{{c}}" bindtransitionend="{{d}}" bindtap="{{e}}" catchtouchmove="{{f}}"><slot/></view><view wx:elif="{{g}}" class="{{['data-v-2c25887e', h]}}" style="{{i}}" bindtransitionend="{{j}}" bindtap="{{k}}"><slot/></view>

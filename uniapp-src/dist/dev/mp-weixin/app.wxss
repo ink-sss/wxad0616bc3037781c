@@ -1,19 +1,6 @@
-page {
-  min-height: 100%;
-  background-color: #f5f5f5;
-  color: #333333;
-  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, sans-serif;
-}
-view,
-text,
-button,
-input,
-textarea {
-  box-sizing: border-box;
-}
-image {
-  display: block;
-}
+/* uni-app automatically injects uni.scss into every component style block.
+   Keep this file for variables/mixins only; global CSS rules live in
+   app-global.scss so they do not become invalid component WXSS selectors. */
 page {
   min-height: 100%;
   background-color: #f5f5f5;

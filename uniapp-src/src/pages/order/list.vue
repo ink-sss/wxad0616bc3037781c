@@ -120,7 +120,11 @@
     </view>
     <view v-else class="order-empty">
       <text class="order-empty-text">{{
-        activeTab === "refund" ? "暂无退款/售后记录" : "暂无订单"
+        activeTab === "refund"
+          ? "暂无退款/售后记录"
+          : queryOrderNo
+            ? "未找到关联订单"
+            : "暂无订单"
       }}</text>
     </view>
     <live-mini-window :room-code="liveRoomCode" />
@@ -226,6 +230,7 @@ const page = ref(1);
 const total = ref(0);
 const loadingMore = ref(false);
 const liveRoomCode = ref("");
+const queryOrderNo = ref("");
 
 function onTabChange({ name }) {
   activeTab.value = name;
@@ -407,8 +412,12 @@ async function loadOrders(reset = false) {
       page: page.value,
       pageSize: 10,
       orderStatus: tab?.status ?? 0,
+      orderNo: queryOrderNo.value,
     });
-    const list = (data?.list || []).map(mapOrder);
+    const mappedList = (data?.list || []).map(mapOrder);
+    const list = queryOrderNo.value
+      ? mappedList.filter((item) => String(item.orderNo || "").trim() === queryOrderNo.value)
+      : mappedList;
     if (!liveRoomCode.value) {
       const matchedOrder = list.find((item) => item.roomCode);
       if (matchedOrder?.roomCode) {
@@ -435,6 +444,7 @@ watch(activeTab, () => {
 onLoad((options) => {
   if (!ensureH5PageAuth(options)) return;
   liveRoomCode.value = resolveLiveRoomCode(options?.roomCode);
+  queryOrderNo.value = String(options?.orderNo || options?.order_no || options?.outTradeNo || options?.out_trade_no || "").trim();
   if (options?.status) {
     const target = tabs.find((item) => item.key === options.status);
     if (target) activeTab.value = target.key;

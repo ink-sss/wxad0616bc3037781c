@@ -1,0 +1,241 @@
+/* ========== 底部视频控制栏（DPlayer 风格） ========== */
+.live-room--live.live-landscape.live-landscape--live .video-controls {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 80rpx;
+  padding: 0 24rpx;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.4) 100%);
+  pointer-events: auto;
+}
+
+.live-room--live.live-landscape.live-landscape--live .video-controls__left,
+.live-room--live.live-landscape.live-landscape--live .video-controls__right {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+/* 右侧按钮组：去掉整体胶囊背景，每个按钮单独加圆形背景 */
+.live-room--live.live-landscape.live-landscape--live .video-controls__right {
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  gap: 12rpx;
+}
+
+.live-room--live.live-landscape.live-landscape--live .video-controls__right .video-controls__btn {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 50%;
+  width: 56rpx;
+  height: 56rpx;
+}
+
+.live-room--live.live-landscape.live-landscape--live .video-controls__btn {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.live-room--live.live-landscape.live-landscape--live .video-controls__icon {
+  width: 40rpx;
+  height: 40rpx;
+}
+
+.live-room--live.live-landscape.live-landscape--live .video-controls__live-tag {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-left: 4rpx;
+}
+
+.live-room--live.live-landscape.live-landscape--live .video-controls__live-dot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  background: #0bd465;
+}
+
+.live-room--live.live-landscape.live-landscape--live .video-controls__live-text {
+  color: #fff;
+  font-size: 24rpx;
+  font-weight: 700;
+  line-height: 32rpx;
+}
+
+/* ========== 折叠状态：下方内容区扩全屏（视频隐藏） ========== */
+.live-room--live.live-landscape.live-landscape--live.live-landscape--stage-collapsed {
+  padding-bottom: 0;
+}
+
+/* 折叠态：视频区域改成右下角浮动小窗（参考竞品图5），保留 video 实例避免重连 */
+.live-room--live.live-landscape.live-landscape--live.live-landscape--stage-collapsed .video-section {
+  position: fixed;
+  right: 24rpx;
+  bottom: calc(140rpx + env(safe-area-inset-bottom));
+  width: 280rpx;
+  height: 158rpx; /* 16:9 */
+  min-height: 0;
+  border-radius: 16rpx;
+  overflow: hidden;
+  z-index: 60;
+  background: #000;
+  box-shadow: 0 6rpx 24rpx rgba(0, 0, 0, 0.35);
+}
+
+/* 折叠态：小窗内 video 填满 */
+.live-room--live.live-landscape.live-landscape--live.live-landscape--stage-collapsed .video-section .replay-video {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* 折叠态：隐藏小窗内除 video 与 mini-controls 外的子元素（控制条/封面/营销浮层等） */
+.live-room--live.live-landscape.live-landscape--live.live-landscape--stage-collapsed .video-section .video-controls,
+.live-room--live.live-landscape.live-landscape--live.live-landscape--stage-collapsed .video-section .live-landscape-preview,
+.live-room--live.live-landscape.live-landscape--live.live-landscape--stage-collapsed .video-section .live-landscape-reward,
+.live-room--live.live-landscape.live-landscape--live.live-landscape--stage-collapsed .video-section .replay-video--poster {
+  display: none !important;
+}
+
+/* 折叠小窗浮控：右上 × 关闭(恢复)、右下静音切换 */
+.live-room--live.live-landscape.live-landscape--live .video-mini-controls {
+  display: none;
+}
+.live-room--live.live-landscape.live-landscape--live.live-landscape--stage-collapsed .video-mini-controls {
+  display: block;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+.live-room--live.live-landscape.live-landscape--live.live-landscape--stage-collapsed .video-mini-controls__close {
+  position: absolute;
+  top: 4rpx;
+  right: 8rpx;
+  width: 40rpx;
+  height: 40rpx;
+  line-height: 36rpx;
+  text-align: center;
+  color: #fff;
+  font-size: 38rpx;
+  pointer-events: auto;
+}
+.live-room--live.live-landscape.live-landscape--live.live-landscape--stage-collapsed .video-mini-controls__mute {
+  position: absolute;
+  right: 8rpx;
+  bottom: 8rpx;
+  width: 36rpx;
+  height: 36rpx;
+  pointer-events: auto;
+}
+.live-room--live.live-landscape.live-landscape--live.live-landscape--stage-collapsed .video-mini-controls__icon {
+  width: 100%;
+  height: 100%;
+}
+
+.live-room--live.live-landscape.live-landscape--live.live-landscape--stage-collapsed .landscape-tab-bar {
+  margin-top: 0;
+}
+
+.live-room--live.live-landscape.live-landscape--live.live-landscape--stage-collapsed .interact-content,
+.live-room--live.live-landscape.live-landscape--live.live-landscape--stage-collapsed .sign-content,
+.live-room--live.live-landscape.live-landscape--live.live-landscape--stage-collapsed .products-content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* 折叠态顶部栏：渐变背景 + 火焰热度 + ∨收回按钮（参考诺云图3） */
+.live-room--live.live-landscape.live-landscape--live .live-landscape-collapsed-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 80rpx;
+  padding: 0 24rpx;
+  background: linear-gradient(135deg, #1a0533 0%, #3d1a6e 50%, #6b21a8 100%);
+  box-sizing: border-box;
+}
+
+.live-room--live.live-landscape.live-landscape--live .live-landscape-collapsed-header__left {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.live-room--live.live-landscape.live-landscape--live .live-landscape-collapsed-header__fire {
+  width: 36rpx;
+  height: 36rpx;
+}
+
+.live-room--live.live-landscape.live-landscape--live .live-landscape-collapsed-header__count {
+  color: #fff;
+  font-size: 26rpx;
+  font-weight: 600;
+}
+
+.live-room--live.live-landscape.live-landscape--live .live-landscape-collapsed-header__restore {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* 折叠小窗独立关闭：仅隐藏小窗本身，不收起折叠态。
+   用 visibility 而非 display:none，避免 video 被某些浏览器停止播放导致 HLS 直播流断开 */
+.live-room--live.live-landscape.live-landscape--live.live-landscape--stage-collapsed .video-section.video-section--mini-hidden {
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* 折叠态：小窗可拖拽，touch-action 设为 none 避免页面默认手势干扰 */
+.live-room--live.live-landscape.live-landscape--live.live-landscape--stage-collapsed .video-section {
+  touch-action: none;
+}
+
+/* ============== 横屏视频伪全屏：占满 viewport，跨平台稳定 ============== */
+/* 微信开发者工具 / Qoder 模拟器 / iOS 真机微信 / Android Chrome 全部生效 */
+/* 选择伪全屏而非原生 Fullscreen API：原生 API 在桌面模拟器里只全屏到模拟器窗口，视觉无效；iOS webkitEnterFullscreen 会丢营销浮层 */
+/* 提升优先级覆盖默认 .video-section 与 stage-collapsed 下的尺寸/位置规则 */
+.live-room--live.live-landscape.live-landscape--live .video-section.video-section--fullscreen,
+.live-room--live.live-landscape.live-landscape--live.live-landscape--stage-collapsed .video-section.video-section--fullscreen {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  min-height: 100vh !important;
+  max-width: none !important;
+  max-height: none !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  z-index: 9999 !important;
+  background: #000 !important;
+  transform: none !important;
+}
+/* 全屏态：内部 video 铺满 */
+.live-room--live.live-landscape.live-landscape--live .video-section.video-section--fullscreen .replay-video {
+  width: 100% !important;
+  height: 100% !important;
+}
+/* 全屏态：折叠小窗专用的 mini-controls 不显示 */
+.live-room--live.live-landscape.live-landscape--live .video-section.video-section--fullscreen .video-mini-controls {
+  display: none !important;
+}
+/* 全屏态强制可见，避免 mini-hidden 类残留导致 visibility:hidden */
+.live-room--live.live-landscape.live-landscape--live .video-section.video-section--fullscreen.video-section--mini-hidden {
+  visibility: visible !important;
+  pointer-events: auto !important;
+}

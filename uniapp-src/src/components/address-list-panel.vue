@@ -10,7 +10,7 @@
       <view class="address-empty-body">
         <image
           class="address-empty-icon"
-          src="/static/icons/empty-address.png"
+          src="./static/icons/empty-address.png"
           mode="aspectFit"
         />
         <text class="address-empty-title">暂无收货地址</text>
@@ -70,7 +70,7 @@
               <image
                 v-if="selectedId === item.id"
                 class="address-radio-icon"
-                src="/static/icons/check.svg"
+                src="./static/icons/check.svg"
                 mode="aspectFit"
               />
             </view>

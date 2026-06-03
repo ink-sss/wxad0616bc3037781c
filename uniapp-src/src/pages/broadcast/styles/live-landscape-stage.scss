@@ -1,0 +1,233 @@
+@import "../styles/entry.scss";
+
+.landscape-lottery-tools {
+  /* 从视频内挪到视频外：tab 栏下方一定距离（视频 422rpx + tab栏 88rpx + 26rpx 间距） */
+  top: 536rpx;
+  z-index: 5;
+}
+
+.live-room--live.live-landscape.live-landscape--live .video-section.video-section--playing {
+  background: #000;
+}
+
+.live-room--live.live-landscape.live-landscape--live .video-section.video-section--playing .replay-video {
+  background-image: none !important;
+}
+
+.live-room--live.live-landscape.live-landscape--live .video-section :deep(.uni-video-container),
+.live-room--live.live-landscape.live-landscape--live .video-section :deep(.uni-video-video) {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.live-room--live.live-landscape.live-landscape--live .video-section :deep(.uni-video-video) {
+  object-fit: cover;
+  background: #000;
+}
+
+/*
+ * ⚠️ 请勿轻易删除！
+ * ===========================================================================
+ * 横屏 stage 浮屏胶囊样式补齐（注意：这里的“横屏”是 H5 内 mode='landscape'的 stage，
+ * 与设备旋转无关。验证方式：页面根节点存在 `.live-landscape` 即当前仅 stage。
+ *
+ * 背景：entry-live.scss 中三类浮屏样式被 `.live-room--live.live-portrait` 限定为竖屏专属，
+ *      横屏根容器是 `.live-landscape` 不命中任何规则，导致横屏（无论直播还是录播）
+ *      横屏 stage 下都看不到浮屏胶囊。本文件提供横屏专用的样式。
+ * 修复：用 `.live-landscape` 作为作用域限定（本组件根容器固定带该类），
+ *      使横屏下 fixed 定位 + 胶囊外观都生效。
+ *      横屏屏高较小，浮屏错落于底部左侧 100/180/280rpx 避免覆盖视频主体。
+ * 验证：横屏 stage 录播/直播推虚拟下单 IM，应看到粉色胶囊从左侧滑入。
+ * ===========================================================================
+ */
+.live-landscape {
+  .enter-notice {
+    position: fixed;
+    left: 0;
+    top: 8%;
+    z-index: 59;
+    width: 522rpx;
+    height: 48rpx;
+    padding-left: 20rpx;
+    box-sizing: border-box;
+    pointer-events: none;
+    animation: liveEnterNoticeIn 0.3s ease-in-out 1;
+  }
+  .enter-notice--leave {
+    animation: liveEnterNoticeOut 0.5s ease 1 forwards;
+  }
+  .enter-notice__content {
+    display: flex;
+    align-items: center;
+    width: 500rpx;
+    height: 48rpx;
+    padding-left: 22rpx;
+    border-radius: 24rpx;
+    background: linear-gradient(270deg, rgba(250, 173, 20, 0) 10%, rgba(250, 173, 20, 0.9) 75%);
+    box-sizing: border-box;
+    color: #fff;
+    font-size: 28rpx;
+    line-height: 48rpx;
+    white-space: nowrap;
+  }
+  .enter-notice__text {
+    color: #fff;
+    font-size: 28rpx;
+    line-height: 48rpx;
+  }
+  .enter-notice__nick {
+    display: block;
+    max-width: 160rpx;
+    padding: 0 6rpx;
+    overflow: hidden;
+    color: #fff;
+    font-size: 28rpx;
+    font-weight: 700;
+    line-height: 48rpx;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .buying-notice {
+    position: fixed;
+    left: 0;
+    top: 14%;
+    z-index: 3;
+    width: auto;
+    max-width: 520rpx;
+    padding-left: 20rpx;
+    box-sizing: border-box;
+    pointer-events: none;
+    transition: top 0.3s ease;
+    animation: liveBuyingNoticeIn 0.3s ease-in-out 1;
+  }
+  .buying-notice--leave {
+    animation: liveBuyingNoticeOut 0.5s ease 1 forwards;
+  }
+  .buying-notice__content {
+    display: flex;
+    align-items: center;
+    color: #fff;
+    background: linear-gradient(90deg, rgba(255, 91, 133, 0.9) 75%, rgba(255, 91, 133, 0) 100%);
+    border-radius: 24rpx 0 0 24rpx;
+    height: 48rpx;
+    line-height: 48rpx;
+    padding: 0 22rpx;
+    padding-right: 50rpx;
+    white-space: nowrap;
+    font-size: 28rpx;
+  }
+  .buying-notice__icon {
+    width: 36rpx;
+    height: 36rpx;
+    flex-shrink: 0;
+  }
+  .buying-notice__nick {
+    display: block;
+    max-width: 160rpx;
+    margin: 0 10rpx;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .buying-notice__text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .go-shopping-notice {
+    position: fixed;
+    left: 0;
+    top: 20%;
+    z-index: 59;
+    width: 2000rpx;
+    box-sizing: border-box;
+    pointer-events: none;
+    transition: top 0.3s ease;
+    animation: leftChangeZero 0.3s ease-in-out 1;
+  }
+  .go-shopping-notice--leave {
+    animation: leftChange 0.5s ease 1 forwards;
+  }
+  .go-shopping-notice .goods-shopping-li {
+    position: absolute;
+    bottom: 0;
+    z-index: 999;
+    display: flex;
+    padding-left: 20rpx;
+    color: #fff;
+    pointer-events: auto;
+  }
+  .go-shopping-notice .toShopping {
+    display: flex;
+    align-items: center;
+    height: 96rpx;
+    padding-right: 16rpx;
+    border-radius: 8rpx;
+    background-color: rgba(255, 14, 76, 0.3);
+    color: #fff;
+    font-size: 28rpx;
+  }
+  .go-shopping-notice .goods-thumb {
+    position: relative;
+  }
+  .go-shopping-notice .goodsPic {
+    display: block;
+    width: 96rpx;
+    height: 96rpx;
+    margin-right: 12rpx;
+    border-bottom-left-radius: 8rpx;
+    border-top-left-radius: 8rpx;
+    background-color: #007aff;
+    overflow: hidden;
+  }
+  .go-shopping-notice .shoppingText {
+    margin-top: 10rpx;
+    margin-right: 8rpx;
+    color: #fff;
+    font-weight: 500;
+  }
+  .go-shopping-notice .shoppingTextName {
+    display: flex;
+    align-items: center;
+    max-width: 272rpx;
+    color: #fff;
+    font-size: 28rpx;
+    line-height: 34rpx;
+    white-space: nowrap;
+  }
+  .go-shopping-notice .glad {
+    max-width: 150rpx;
+    margin-right: 8rpx;
+    overflow: hidden;
+    color: #ffe2a7;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .go-shopping-notice .goodsName {
+    display: block;
+    width: 272rpx;
+    overflow: hidden;
+    color: #fff;
+    font-size: 22rpx;
+    line-height: 28rpx;
+    opacity: 0.7;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .go-shopping-notice .goodsBuy {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 104rpx;
+    height: 48rpx;
+    margin-top: 24rpx;
+    border-radius: 32rpx;
+    background: linear-gradient(117deg, #ff7fa0 0%, #ff0e4c 100%);
+    color: #fff;
+    font-size: 24rpx;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+}

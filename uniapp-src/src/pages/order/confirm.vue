@@ -152,6 +152,41 @@ const editAddressData = ref(null);
 const addressList = ref([]);
 const selectedAddressId = ref(null);
 
+function firstValue(source = {}, ...keys) {
+  for (const key of keys) {
+    const value = source?.[key];
+    if (value !== undefined && value !== null && value !== "") return value;
+  }
+  return undefined;
+}
+
+function toPositiveNumber(value, fallback = 0) {
+  const n = Number(value);
+  return Number.isFinite(n) && n > 0 ? n : fallback;
+}
+
+function applyOrderQuery(source = {}) {
+  productId.value = toPositiveNumber(firstValue(source, "productId", "product_id", "goodsId", "goods_id"), productId.value);
+  skuId.value = toPositiveNumber(firstValue(source, "skuId", "sku_id", "productSkuId", "product_sku_id", "specSkuId", "spec_sku_id"), skuId.value);
+  quantity.value = toPositiveNumber(firstValue(source, "quantity", "product_num", "totalNum", "total_num"), quantity.value || 1);
+  liveRoomId.value = toPositiveNumber(firstValue(source, "roomId", "room_id", "liveRoomId", "live_room_id", "liveId", "live_id"), liveRoomId.value);
+  liveTermId.value = toPositiveNumber(firstValue(source, "termId", "term_id", "liveTermId", "live_term_id"), liveTermId.value);
+  liveRoomCode.value = resolveLiveRoomCode(firstValue(source, "roomCode", "room_code") || liveRoomCode.value);
+  tenantId.value = toPositiveNumber(firstValue(source, "tenantId", "tenant_id"), tenantId.value);
+  if (source.addressId || source.address_id) {
+    address.value = { id: toPositiveNumber(firstValue(source, "addressId", "address_id"), 0) };
+  }
+  if (source.title || source.productName || source.product_name) {
+    product.value.title = firstValue(source, "title", "productName", "product_name");
+  }
+  if (source.image || source.productImage || source.product_image) {
+    product.value.image = firstValue(source, "image", "productImage", "product_image");
+  }
+  if (source.price || source.productPrice || source.product_price) {
+    product.value.price = String(firstValue(source, "price", "productPrice", "product_price"));
+  }
+}
+
 const totalPrice = computed(() => {
   if (confirmData.value) return confirmData.value.payAmount || "0.00";
   const total = Number(product.value.price || 0) * quantity.value;
@@ -218,21 +253,10 @@ async function loadDefaultAddress() {
 
 onLoad((options) => {
   if (!ensureH5PageAuth(options)) return;
+  applyOrderQuery(options || {});
   if (options?.payload) {
     const parsed = JSON.parse(decodeURIComponent(options.payload));
-    productId.value = parsed.productId || 0;
-    skuId.value = parsed.skuId || 0;
-    quantity.value = parsed.quantity || 1;
-    liveRoomId.value = parsed.roomId || 0;
-    liveTermId.value = parsed.termId || 0;
-    liveRoomCode.value = resolveLiveRoomCode(parsed.roomCode || options?.roomCode);
-    tenantId.value = parsed.tenantId || 0;
-    if (parsed.addressId) {
-      address.value = { id: parsed.addressId };
-    }
-    if (parsed.title) product.value.title = parsed.title;
-    if (parsed.image) product.value.image = parsed.image;
-    if (parsed.price) product.value.price = String(parsed.price);
+    applyOrderQuery({ ...(options || {}), ...parsed });
   }
   // 从授权域名wxPick页回来，刷新地址列表获取新导入的地址
   if (options?.wxAddrDone === "1") {

@@ -275,12 +275,16 @@ function buildActions(detail) {
   if (orderStatus === 2) {
     if (refundStatus === 0 && winSource === 0) {
       actions.push({ key: "refund", label: "申请退款" });
+    } else if (refundStatus > 0) {
+      actions.push({ key: "progress", label: "售后进度" });
     }
     actions.push({ key: "remind", label: "提醒发货", primary: true });
   }
   if (orderStatus === 3) {
     if (refundStatus === 0 && winSource === 0) {
       actions.push({ key: "refund", label: "申请售后" });
+    } else if (refundStatus > 0) {
+      actions.push({ key: "progress", label: "售后进度" });
     }
     actions.push({ key: "logistics", label: "查看物流" });
     actions.push({ key: "extend", label: "延长收货" });
@@ -289,6 +293,8 @@ function buildActions(detail) {
   if (orderStatus === 4) {
     if (refundStatus === 0 && winSource === 0) {
       actions.push({ key: "refund", label: "申请售后" });
+    } else if (refundStatus > 0) {
+      actions.push({ key: "progress", label: "售后进度" });
     }
     if (refundStatus === 0) {
       actions.push({ key: "rebuy", label: "再次购买", primary: true });
@@ -353,6 +359,7 @@ function mapOrderDetail(detail = {}) {
     canSelectAddress: Boolean(canSelectAddress),
     actions: buildActions(detail),
     raw: detail,
+    refundId: Number(detail.refundId || detail.refund_id || detail.afterSaleId || detail.after_sale_id || 0),
   };
 }
 
@@ -423,15 +430,52 @@ async function handleAction(action) {
   if (action === "logistics") return handleLogisticsAction();
   if (action === "remind") return uni.showToast({ title: "已提醒发货", icon: "success" });
   if (action === "extend") return handleExtendAction();
-  if (action === "pay") return uni.showToast({ title: "拉起支付开发中", icon: "none" });
-  if (action === "progress") return uni.showToast({ title: "售后进度开发中", icon: "none" });
+  if (action === "pay") return navigatePay();
+  if (action === "progress") return navigateRefundProgress();
   if (action === "rebuy") return navigateRebuy();
-  return uni.showToast({ title: "功能开发中", icon: "none" });
+  return navigateOrderList();
 }
 
 function navigateRefund() {
   uni.navigateTo({
     url: "/pages/order/refund?orderId=" + orderDetail.value.id,
+  });
+}
+
+function getRoomCodeQuery() {
+  const code = String(orderDetail.value?.roomCode || "").trim();
+  return code ? `&roomCode=${encodeURIComponent(code)}` : "";
+}
+
+function navigatePay() {
+  const detail = orderDetail.value || {};
+  const orderNo = String(detail.orderNo || detail.raw?.orderNo || "").trim();
+  if (!orderNo) {
+    uni.showToast({ title: "订单号缺失，无法支付", icon: "none" });
+    return;
+  }
+  uni.navigateTo({
+    url: `/pages/order/pay?orderNo=${encodeURIComponent(orderNo)}&id=${encodeURIComponent(detail.id || "")}${getRoomCodeQuery()}`,
+  });
+}
+
+function navigateRefundProgress() {
+  const detail = orderDetail.value || {};
+  const refundId = Number(detail.refundId || detail.raw?.refundId || detail.raw?.refund_id || detail.raw?.afterSaleId || 0);
+  if (refundId) {
+    uni.navigateTo({
+      url: `/pages/order/refund-detail?refundId=${encodeURIComponent(refundId)}&orderId=${encodeURIComponent(detail.id || "")}${getRoomCodeQuery()}`,
+    });
+    return;
+  }
+  uni.navigateTo({
+    url: `/pages/order/list?status=refund${getRoomCodeQuery()}`,
+  });
+}
+
+function navigateOrderList() {
+  uni.navigateTo({
+    url: `/pages/order/list?status=${orderDetail.value?.status || "all"}${getRoomCodeQuery()}`,
   });
 }
 

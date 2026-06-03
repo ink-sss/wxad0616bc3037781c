@@ -2,5 +2,8 @@
   "navigationBarTitleText": "直播间",
   "navigationStyle": "custom",
   "enablePullDownRefresh": false,
-  "usingComponents": {}
+  "usingComponents": {
+    "live-broadcast-stage-host": "./components/LiveBroadcastStageHost",
+    "live-playback-debug-float": "./components/LivePlaybackDebugFloat"
+  }
 }

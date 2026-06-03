@@ -1,0 +1,1 @@
+<view class="viewer-limit data-v-b8c49414"><image class="viewer-limit__image data-v-b8c49414" src="{{a}}" mode="aspectFill"/><text class="viewer-limit__text data-v-b8c49414">{{b}}</text></view>

@@ -8,13 +8,15 @@
     "build:mp-weixin": "uni build -p mp-weixin"
   },
   "dependencies": {
-    "@tencentcloud/chat": "3.5.7",
     "@dcloudio/uni-app": "3.0.0-alpha-5010120260525001",
     "@dcloudio/uni-mp-weixin": "3.0.0-alpha-5010120260525001",
+    "@tencentcloud/chat": "3.5.7",
     "pinia": "2.1.7",
+    "qrcode": "^1.5.4",
     "tim-upload-plugin": "1.4.2",
+    "vue": "3.4.21",
     "vuex": "4.1.0",
-    "vue": "3.4.21"
+    "wot-design-uni": "^1.14.0"
   },
   "devDependencies": {
     "@dcloudio/types": "3.4.31",

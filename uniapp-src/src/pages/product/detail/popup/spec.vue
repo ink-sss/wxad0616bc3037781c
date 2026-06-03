@@ -85,6 +85,22 @@ export default {
       type: [String, Number],
       default: ''
     },
+    roomCode: {
+      type: [String, Number],
+      default: ''
+    },
+    termId: {
+      type: [String, Number],
+      default: ''
+    },
+    tenantId: {
+      type: [String, Number],
+      default: ''
+    },
+    shareCode: {
+      type: [String, Number],
+      default: ''
+    },
     specDisabled: Boolean,
     isCategory: Boolean
   },
@@ -229,6 +245,37 @@ export default {
     closePopup() {
       this.$emit('close', this.form.specData, null)
     },
+    buildLiveQuery() {
+      const params = []
+      if (this.room_id !== 0 && this.room_id !== '') {
+        params.push(['roomId', this.room_id])
+        params.push(['room_id', this.room_id])
+        params.push(['liveRoomId', this.room_id])
+        params.push(['live_room_id', this.room_id])
+      }
+      if (this.roomCode !== '') {
+        params.push(['roomCode', this.roomCode])
+        params.push(['room_code', this.roomCode])
+      }
+      if (this.termId !== 0 && this.termId !== '') {
+        params.push(['termId', this.termId])
+        params.push(['term_id', this.termId])
+        params.push(['liveTermId', this.termId])
+        params.push(['live_term_id', this.termId])
+      }
+      if (this.tenantId !== 0 && this.tenantId !== '') {
+        params.push(['tenantId', this.tenantId])
+        params.push(['tenant_id', this.tenantId])
+      }
+      if (this.shareCode !== '') {
+        params.push(['shareCode', this.shareCode])
+        params.push(['share_code', this.shareCode])
+      }
+      return params
+        .filter(([, value]) => value !== undefined && value !== null && value !== '')
+        .map(([key, value]) => `${key}=${encodeURIComponent(String(value))}`)
+        .join('&')
+    },
     confirmFunc() {
       if (this.form.specData != null) {
         for (let index = 0; index < this.form.productSpecArr.length; index++) {
@@ -262,17 +309,17 @@ export default {
       const productId = this.form.detail.product_id
       const totalNum = this.form.show_sku.sum
       const specSkuId = this.form.show_sku.spec_sku_id
-      let room = ''
-      if (this.room_id !== 0 && this.room_id !== '') room = '&room_id=' + this.room_id
-      let url = `/pages/order/confirm?product_id=${productId}&product_num=${totalNum}&product_sku_id=${specSkuId}&order_type=buy${room}`
+      const liveQuery = this.buildLiveQuery()
+      const livePart = liveQuery ? `&${liveQuery}` : ''
+      let url = `/pages/order/confirm?product_id=${productId}&productId=${productId}&product_num=${totalNum}&quantity=${totalNum}&product_sku_id=${specSkuId}&skuId=${specSkuId}&order_type=buy${livePart}`
       if (this.form.type === 'deposit') {
         if (this.form.plus_name === 'advance') {
           const advanceSku = this.form.detail.advance.sku.find((item) => item.productSku.spec_sku_id === specSkuId)
-          url = `/pages/order/confirm?product_id=${productId}&product_num=${totalNum}&product_sku_id=${specSkuId}&advance_product_sku_id=${advanceSku.advance_product_sku_id}&advance_product_id=${advanceSku.advance_product_id}&order_type=deposit`
+          url = `/pages/order/confirm?product_id=${productId}&productId=${productId}&product_num=${totalNum}&quantity=${totalNum}&product_sku_id=${specSkuId}&skuId=${specSkuId}&advance_product_sku_id=${advanceSku.advance_product_sku_id}&advance_product_id=${advanceSku.advance_product_id}&order_type=deposit${livePart}`
         }
         if (this.form.plus_name === 'seckill') {
           const seckillSku = this.form.plus_sku.find((item) => item.productSku.spec_sku_id === specSkuId)
-          url = `/pages/order/confirm?seckill_product_id=${seckillSku.seckill_product_id}&product_num=${totalNum}&time_id=${this.form.time_id}&product_sku_id=${seckillSku.productSku.spec_sku_id}&seckill_product_sku_id=${seckillSku.seckill_product_sku_id}&order_type=seckill`
+          url = `/pages/order/confirm?seckill_product_id=${seckillSku.seckill_product_id}&product_num=${totalNum}&quantity=${totalNum}&time_id=${this.form.time_id}&product_sku_id=${seckillSku.productSku.spec_sku_id}&skuId=${seckillSku.productSku.spec_sku_id}&seckill_product_sku_id=${seckillSku.seckill_product_sku_id}&order_type=seckill${livePart}`
         }
       }
       this.gotoPage(url)

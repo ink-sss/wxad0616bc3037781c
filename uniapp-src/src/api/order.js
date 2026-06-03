@@ -9,11 +9,14 @@ export function createOrder(data = {}) {
 }
 
 export function getOrderList(params = {}) {
-  return h5Get('/h5/order/list', {
+  const data = {
     page: params.page || 1,
     pageSize: params.pageSize || 10,
     orderStatus: params.orderStatus ?? 0,
-  })
+  }
+  const orderNo = params.orderNo || params.order_no || params.outTradeNo || params.out_trade_no || ''
+  if (orderNo) data.orderNo = orderNo
+  return h5Get('/h5/order/list', data)
 }
 
 export function markOrderUnread(orderId) {

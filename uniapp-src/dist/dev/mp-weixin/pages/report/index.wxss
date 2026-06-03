@@ -1,0 +1,11 @@
+.report-index.data-v-804f1809 {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f6f8;
+}
+.report-index__text.data-v-804f1809 {
+  font-size: 28rpx;
+  color: #666;
+}
