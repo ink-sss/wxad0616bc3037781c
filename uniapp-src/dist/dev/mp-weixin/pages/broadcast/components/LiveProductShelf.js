@@ -1,6 +1,5 @@
 "use strict";
 const common_vendor = require("../../../common/vendor.js");
-const common_assets = require("../../../common/assets.js");
 if (!Array) {
   const _easycom_wd_overlay2 = common_vendor.resolveComponent("wd-overlay");
   const _easycom_wd_transition2 = common_vendor.resolveComponent("wd-transition");
@@ -153,34 +152,32 @@ const _sfc_main = {
         k: common_vendor.t(successNoticeSort.value)
       } : {}, {
         l: __props.successNotice.productImage
-      }) : {
-        m: common_assets._imports_0$12
-      }, {
-        n: common_vendor.t(successNoticeTitle.value),
-        o: __props.successNotice.productName
+      }) : {}, {
+        m: common_vendor.t(successNoticeTitle.value),
+        n: __props.successNotice.productName
       }, __props.successNotice.productName ? {
-        p: common_vendor.t(successNoticeProductLabel.value)
+        o: common_vendor.t(successNoticeProductLabel.value)
       } : {}, {
-        q: common_vendor.o(openSuccessNoticeProduct, "70"),
-        r: common_vendor.n(__props.successNotice.phase || "entering"),
-        s: __props.successNotice.key,
-        t: common_vendor.o(() => {
+        p: common_vendor.o(openSuccessNoticeProduct, "14"),
+        q: common_vendor.n(__props.successNotice.phase || "entering"),
+        r: __props.successNotice.key,
+        s: common_vendor.o(() => {
         }, "35")
       }) : {}, {
-        v: common_vendor.t(displayProductTotal.value),
-        w: common_vendor.o(($event) => emit("buy", $event), "41"),
-        x: common_vendor.o(($event) => emit("buy", $event), "6f"),
-        y: common_vendor.o(($event) => emit("loadmore"), "ce"),
-        z: common_vendor.p({
+        t: common_vendor.t(displayProductTotal.value),
+        v: common_vendor.o(($event) => emit("buy", $event), "46"),
+        w: common_vendor.o(($event) => emit("buy", $event), "88"),
+        x: common_vendor.o(($event) => emit("loadmore"), "6b"),
+        y: common_vendor.p({
           variant: "popup",
           list: __props.productList,
           loading: __props.productLoading,
           finished: __props.productFinished
         }),
-        A: common_vendor.o(() => {
-        }, "44"),
-        B: common_vendor.o(($event) => emit("update:showProductList", false), "35"),
-        C: common_vendor.p({
+        z: common_vendor.o(() => {
+        }, "3a"),
+        A: common_vendor.o(($event) => emit("update:showProductList", false), "35"),
+        B: common_vendor.p({
           show: __props.showProductList,
           duration: 500,
           ["enter-class"]: "plist-popup-enter",
@@ -192,33 +189,33 @@ const _sfc_main = {
           ["custom-style"]: "position:fixed;left:0;top:0;right:0;bottom:0;z-index:61;"
         })
       }) : __props.mode === "landscape-list" ? {
-        E: common_vendor.o(($event) => emit("buy", $event), "56"),
-        F: common_vendor.o(($event) => emit("detail", $event), "8a"),
-        G: common_vendor.o(($event) => emit("loadmore"), "79"),
-        H: common_vendor.p({
+        D: common_vendor.o(($event) => emit("buy", $event), "91"),
+        E: common_vendor.o(($event) => emit("detail", $event), "29"),
+        F: common_vendor.o(($event) => emit("loadmore"), "69"),
+        G: common_vendor.p({
           list: __props.productList,
           loading: __props.productLoading,
           finished: __props.productFinished
         })
       } : __props.mode === "landscape-anchor" && __props.showProduct ? {
-        J: common_vendor.o(($event) => emit("update:showProduct", false), "ac"),
-        K: common_vendor.o(($event) => emit("product-card-change", $event), "1e"),
-        L: common_vendor.o((p) => emit("buy", {
+        I: common_vendor.o(($event) => emit("update:showProduct", false), "fa"),
+        J: common_vendor.o(($event) => emit("product-card-change", $event), "e1"),
+        K: common_vendor.o((p) => emit("buy", {
           item: p
-        }), "4a"),
-        M: common_vendor.p({
+        }), "1a"),
+        L: common_vendor.p({
           visible: true,
           product: __props.currentProduct,
           products: __props.productCardItems,
           ["active-index"]: __props.productCardActiveIndex,
           ["show-hot-sale"]: __props.showHotSale
         }),
-        N: common_vendor.o(() => {
-        }, "23"),
-        O: common_vendor.o(($event) => emit("update:showProduct", false), "f1")
+        M: common_vendor.o(() => {
+        }, "9a"),
+        N: common_vendor.o(($event) => emit("update:showProduct", false), "0c")
       } : {}, {
-        D: __props.mode === "landscape-list",
-        I: __props.mode === "landscape-anchor" && __props.showProduct
+        C: __props.mode === "landscape-list",
+        H: __props.mode === "landscape-anchor" && __props.showProduct
       });
     };
   }

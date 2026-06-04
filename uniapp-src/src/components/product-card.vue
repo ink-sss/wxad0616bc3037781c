@@ -2,7 +2,7 @@
   <view v-if="visible" class="product-wrap explain-goods-box-content">
     <!-- 热卖徽章：位于卡片上方，火焰图标悬浮溢出 -->
     <view v-if="showHotSale && displayHotSales(activeItem) > 0" class="hot-goods-box">
-      <image class="hot-icon" src="./static/icons/hot-fire.gif" mode="aspectFit" />
+      <image class="hot-icon" src="https://man.lqjy.cc/static/icons/hot-fire.gif" mode="aspectFit" />
       <view class="hot-goods">
         <text class="hot-goods-text">热卖</text>
         <text class="hot-goods-times hot-goods-digit">x</text>
@@ -41,7 +41,7 @@
               <view class="explain-goods-tip">
                 <image
                   class="explain-icon"
-                  src="./static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-recommend-tip-9e14e49e.gif"
+                  src="https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-recommend-tip-9e14e49e.gif"
                   mode="aspectFit"
                 />
                 <text class="explain-text">讲解中</text>
@@ -66,7 +66,7 @@
               >
                 <image
                   class="grab-img"
-                  src="./static/remote-icons/nyfs-oss-bcvdata-com-wechat-assets-grab-5x-693793a1.png"
+                  src="https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-wechat-assets-grab-5x-693793a1.png"
                   mode="aspectFill"
                 />
               </view>
@@ -78,7 +78,7 @@
       <view class="close-explain" @click.stop="close">
         <image
           class="close-explain-img"
-          src="./static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-recommend-close-b846ab82.png"
+          src="https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-recommend-close-b846ab82.png"
           mode="aspectFit"
         />
       </view>
@@ -102,7 +102,7 @@ const props = defineProps({
     type: Object,
     default: () => ({
       image:
-        "./static/remote-icons/figma-product-placeholder.png",
+        "https://man.lqjy.cc/static/remote-icons/figma-product-placeholder.png",
       title: "女神节激光节女神节激光节节激光...",
       price: "888",
     }),

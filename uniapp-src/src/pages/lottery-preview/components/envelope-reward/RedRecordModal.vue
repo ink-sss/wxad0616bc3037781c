@@ -41,7 +41,7 @@ defineProps({
 const emit = defineEmits(["close"]);
 
 const image = {
-  back: "./static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-look-luck-title-left-8282db91.png"
+  back: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-look-luck-title-left-8282db91.png"
 };
 </script>
 

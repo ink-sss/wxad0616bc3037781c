@@ -91,9 +91,9 @@ const props = defineProps({
 const emit = defineEmits(["close"]);
 
 const image = {
-  avatar: "/static/remote-icons/nyfs-oss-bcvdata-com-uploads-consolewechat-1681-rtf-20260430144045241662-91b0e034.jpg",
-  close: "/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-watch-luckydraw-floorclose-c8b795b1.png",
-  gift: "/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-sign-gift-5def5533.png"
+  avatar: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-uploads-consolewechat-1681-rtf-20260430144045241662-91b0e034.jpg",
+  close: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-watch-luckydraw-floorclose-c8b795b1.png",
+  gift: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-sign-gift-5def5533.png"
 };
 
 const prizeName = computed(() => props.prize.name || props.prize.title || "抽奖奖品");

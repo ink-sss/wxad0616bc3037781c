@@ -58,15 +58,15 @@ const props = defineProps({
 
 const emit = defineEmits(["close"]);
 
-const base = "https://nyfs-oss.bcvdata.com/Public/Home/Images";
+const base = "https://man.lqjy.cc/static/Public/Home/Images";
 const image = {
-  avatar: "/static/remote-icons/nyfs-oss-bcvdata-com-uploads-consolewechat-1681-rtf-20260430144045241662-91b0e034.jpg",
+  avatar: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-uploads-consolewechat-1681-rtf-20260430144045241662-91b0e034.jpg",
   awardsTitle: `${base}/Watch/luckydraw/luckydrawAwards2.png`,
   lotteryTop: `${base}/Watch/luckydraw/lotteryTop3.png`,
   lotteryFloor: `${base}/Watch/luckydraw/lotteryFloor.png`,
   lotteryLine: `${base}/Watch/luckydraw/lotteryFloorLine.png`,
   floorClose: `${base}/Watch/luckydraw/floorClose.png`,
-  element: "/static/remote-icons/nyfs-oss-bcvdata-com-public-pkenvelope-element3-b60b22b7.png"
+  element: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-pkenvelope-element3-b60b22b7.png"
 };
 
 const isVisible = computed(() => (
@@ -118,7 +118,7 @@ const displayWinners = computed(() => {
   width: 606rpx;
   margin: 0 auto;
   border-radius: 40rpx;
-  background-image: url("/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-watch-luckydraw-lottery-2d8f96df.png");
+  background-image: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-watch-luckydraw-lottery-2d8f96df.png");
   background-size: 100% 100%;
   box-shadow: 0 0 40rpx 0 #ffd48b;
   animation: sourceAwardsFadeInOut 2s infinite;

@@ -1,4 +1,5 @@
 import { computed } from "vue";
+import { isMpWeixinRuntime } from "@/platform/weixin/runtime";
 import { hasWechatSubscribeConfig } from "@/utils/wechat-subscribe";
 import { defaultAvatar, formatPlayTime } from "../utils/entry-format.js";
 
@@ -66,6 +67,7 @@ export function useLiveDisplayState(ctx) {
   const shouldShowEntryOverlay = computed(() => {
     return (
       !isWeChatIOSH5 &&
+      !isMpWeixinRuntime() &&
       showEntryOverlay.value &&
       !accessDenied.value &&
       pushStatus.value !== 2
@@ -187,7 +189,7 @@ export function useLiveDisplayState(ctx) {
       : "直播未开始",
   );
 
-  const DEFAULT_CHAT_BG = '/static/invitation/cover-mobile.jpg';
+  const DEFAULT_CHAT_BG = 'https://man.lqjy.cc/static/invitation/cover-mobile.jpg';
   
   const chatBgStyle = computed(() => {
     // 仅竖屏模式在未上传背景时使用默认图；横屏模式不加默认背景

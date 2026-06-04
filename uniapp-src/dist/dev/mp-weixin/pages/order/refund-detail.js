@@ -1,7 +1,6 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
 const api_refund = require("../../api/refund.js");
-const services_h5AuthContext = require("../../services/h5-auth-context.js");
 if (!Math) {
   BottomSheetPopup();
 }
@@ -146,8 +145,6 @@ const _sfc_main = {
       }
     }
     common_vendor.onLoad((options) => {
-      if (!services_h5AuthContext.ensureH5PageAuth(options))
-        return;
       loadRefundDetail(options == null ? void 0 : options.refundId);
     });
     return (_ctx, _cache) => {

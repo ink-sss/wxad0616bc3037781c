@@ -1,5 +1,7 @@
 .product-detail.data-v-489b8bc3 { min-height: 100vh; background: #f7f7f7; padding-bottom: 120rpx;
 }
+.disabled-buy.data-v-489b8bc3 { opacity: .55;
+}
 .header.data-v-489b8bc3 { position: fixed; left: 0; right: 0; top: 0; z-index: 30; pointer-events: none;
 }
 .header image.data-v-489b8bc3 { width: 48rpx; height: 48rpx;

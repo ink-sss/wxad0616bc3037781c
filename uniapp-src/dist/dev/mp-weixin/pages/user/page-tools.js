@@ -2,6 +2,7 @@
 const common_vendor = require("../../common/vendor.js");
 const platform_weixin_auth = require("../../platform/weixin/auth.js");
 const platform_weixin_payment = require("../../platform/weixin/payment.js");
+const api_miniprogramLogin = require("../../api/miniprogram-login.js");
 function toast(title) {
   common_vendor.index.showToast({ title, icon: "none" });
 }
@@ -18,6 +19,17 @@ function phonePayload(event) {
     iv: phone.iv,
     code: phone.code
   };
+}
+function bindMiniProgramMobile(userId, event) {
+  if (!userId)
+    return Promise.reject(new Error("缺少用户 ID，请重新登录"));
+  const detail = phonePayload(event);
+  return loginCode().then((code) => api_miniprogramLogin.bindMobileMiniProgram({
+    code,
+    user_id: userId,
+    encrypted_data: detail.encrypted_data,
+    iv: detail.iv
+  }));
 }
 function requestTransfer(params) {
   return platform_weixin_payment.requestMerchantTransfer(params);
@@ -41,10 +53,9 @@ function dateText(value) {
   const text = String(value || "").trim();
   return text.length >= 10 ? text.slice(0, 10) : text;
 }
+exports.bindMiniProgramMobile = bindMiniProgramMobile;
 exports.dateText = dateText;
-exports.loginCode = loginCode;
 exports.mobileValid = mobileValid;
 exports.normalizeListPage = normalizeListPage;
-exports.phonePayload = phonePayload;
 exports.requestTransfer = requestTransfer;
 exports.toast = toast;

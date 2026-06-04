@@ -38,7 +38,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["close", "send-comment"]);
-const closeIcon = "./static/remote-icons/nyfs-oss-bcvdata-com-frontend-mobile-commons-close-icon-75e80e51.png";
+const closeIcon = "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-frontend-mobile-commons-close-icon-75e80e51.png";
 const displayPasswordText = computed(() => String(props.passwordText || "").trim() || "好运连连");
 const remainSeconds = ref(props.countdown);
 let timer = null;
@@ -92,7 +92,7 @@ onBeforeUnmount(clearAutoCloseTimer);
   width: 606rpx;
   height: 632rpx;
   border-radius: 48rpx;
-  background-image: url("../static/remote-icons/nyfs-oss-bcvdata-com-frontend-mobile-live-lapse-small-bg-new-8d7430b4.png");
+  background-image: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-frontend-mobile-live-lapse-small-bg-new-8d7430b4.png");
   background-size: 100% 100%;
   transform: translate(-50%, -50%);
 }

@@ -36,7 +36,7 @@
         </view>
 
         <view v-if="listData.length === 0 && !loading" class="empty">
-          <image class="list-null-image" lazy-load :src="config.pic_url + '/static/list-null.png'" />
+          <image class="list-null-image" lazy-load :src="config.pic_url + '/list-null.png'" />
           <text class="cont">暂无相关订单</text>
         </view>
         <uni-load-more v-else :status="loadMoreStatus" />

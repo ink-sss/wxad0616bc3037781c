@@ -153,7 +153,6 @@ import {
 } from "@/api/order";
 import { getRefundList } from "@/api/refund";
 import { executeYeepayPayment } from "@/services/payment-action";
-import { ensureH5PageAuth } from "@/services/h5-auth-context";
 import { resolveLiveRoomCode } from "@/utils/live-room-context";
 import OrderLogisticsSheet from "./components/order-logistics-sheet.vue";
 import LiveMiniWindow from "@/components/live-mini-window.vue";
@@ -442,7 +441,6 @@ watch(activeTab, () => {
 });
 
 onLoad((options) => {
-  if (!ensureH5PageAuth(options)) return;
   liveRoomCode.value = resolveLiveRoomCode(options?.roomCode);
   queryOrderNo.value = String(options?.orderNo || options?.order_no || options?.outTradeNo || options?.out_trade_no || "").trim();
   if (options?.status) {
@@ -454,7 +452,6 @@ onLoad((options) => {
 });
 
 onShow(() => {
-  if (!ensureH5PageAuth()) return;
   loadOrders(true);
 });
 

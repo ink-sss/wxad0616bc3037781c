@@ -97,6 +97,7 @@ function useLiveSoundIntent(ctx) {
       }
     } else {
       _pendingUnmute = true;
+      resumeVideoPlayback();
     }
   }
   function manualPlayVideo() {

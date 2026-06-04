@@ -1,15 +1,13 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
-const common_assets = require("../../common/assets.js");
 const api_order = require("../../api/order.js");
 const api_refund = require("../../api/refund.js");
-const services_h5AuthContext = require("../../services/h5-auth-context.js");
 const platform_weixin_file = require("../../platform/weixin/file.js");
 if (!Math) {
   BottomSheetPopup();
 }
 const BottomSheetPopup = () => "../../components/bottom-sheet-popup.js";
-const defaultImage = "/static/remote-icons/figma-product-placeholder.png";
+const defaultImage = "https://man.lqjy.cc/static/remote-icons/figma-product-placeholder.png";
 const _sfc_main = {
   __name: "refund",
   setup(__props) {
@@ -63,8 +61,6 @@ const _sfc_main = {
       }
     }
     common_vendor.onLoad((options) => {
-      if (!services_h5AuthContext.ensureH5PageAuth(options))
-        return;
       if (options == null ? void 0 : options.orderId) {
         orderId.value = Number(options.orderId);
         loadOrderInfo(orderId.value);
@@ -248,15 +244,13 @@ const _sfc_main = {
           return common_vendor.e({
             a: common_vendor.t(reason),
             b: tempReason.value === reason
-          }, tempReason.value === reason ? {
-            c: common_assets._imports_0$5
-          } : {}, {
-            d: common_vendor.n(tempReason.value === reason ? "reason-radio-active" : ""),
-            e: reason,
-            f: common_vendor.o(($event) => tempReason.value = reason, reason)
+          }, tempReason.value === reason ? {} : {}, {
+            c: common_vendor.n(tempReason.value === reason ? "reason-radio-active" : ""),
+            d: reason,
+            e: common_vendor.o(($event) => tempReason.value = reason, reason)
           });
         }),
-        x: common_vendor.o(confirmReason, "c3"),
+        x: common_vendor.o(confirmReason, "bc"),
         y: common_vendor.o(($event) => showReasonPopup.value = false, "a4"),
         z: common_vendor.p({
           visible: showReasonPopup.value,

@@ -20,7 +20,7 @@
         </view>
         <view class="search-trigger" @click="openFilter">
           <text class="search-type">{{ selectedTypeLabel }}</text>
-          <image class="search-ico" src="/static/remote-icons/s-nuoyun-deepicon-filter.png" mode="aspectFit" />
+          <image class="search-ico" src="https://man.lqjy.cc/static/remote-icons/s-nuoyun-deepicon-filter.png" mode="aspectFit" />
         </view>
       </view>
 
@@ -45,7 +45,7 @@
       </view>
 
       <view v-else-if="!loading" class="no-data">
-        <image src="/static/remote-icons/s-nuoyun-income-nodata.png" mode="aspectFit" />
+        <image src="https://man.lqjy.cc/static/remote-icons/s-nuoyun-income-nodata.png" mode="aspectFit" />
       </view>
 
       <view v-if="loading" class="loading-text">加载中...</view>
@@ -104,7 +104,6 @@
 import { computed, ref } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
 import { getPrizeRecordList } from "@/api/live";
-import { ensureH5PageAuth } from "@/services/h5-auth-context";
 import { resolveLiveRoomCode } from "@/utils/live-room-context";
 import { returnToLiveRoom } from "@/utils/live-room-navigation";
 import { navigateWithH5Fallback, normalizeAppRoute } from "@/utils/route-navigation";
@@ -130,10 +129,10 @@ const selectedWinType = ref(0);
 const pendingWinType = ref(0);
 const liveRoomCode = ref("");
 const recordIconMap = {
-  1: "/static/remote-icons/s-nuoyun-income-prize-1.png",
-  2: "/static/remote-icons/s-nuoyun-income-prize-2.png",
-  3: "/static/remote-icons/s-nuoyun-income-prize-3.png",
-  4: "/static/remote-icons/s-nuoyun-income-prize-4.png",
+  1: "https://man.lqjy.cc/static/remote-icons/s-nuoyun-income-prize-1.png",
+  2: "https://man.lqjy.cc/static/remote-icons/s-nuoyun-income-prize-2.png",
+  3: "https://man.lqjy.cc/static/remote-icons/s-nuoyun-income-prize-3.png",
+  4: "https://man.lqjy.cc/static/remote-icons/s-nuoyun-income-prize-4.png",
 };
 
 const currentMonth = computed(() => {
@@ -314,7 +313,6 @@ function handleRecordAction(record) {
 
 onLoad((options) => {
   liveRoomCode.value = resolveLiveRoomCode(options?.roomCode || options?.room_code);
-  if (!ensureH5PageAuth(options)) return;
   loadRecords(true);
 });
 
@@ -380,7 +378,7 @@ function goBack() {
   right: 0;
   width: 180rpx;
   height: 180rpx;
-  background-image: url("/static/remote-icons/s-nuoyun-luckydraw-header-img.png");
+  background-image: url("https://man.lqjy.cc/static/remote-icons/s-nuoyun-luckydraw-header-img.png");
   background-repeat: no-repeat;
   background-size: contain;
 }

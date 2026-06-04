@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
 const common_vendor = require("../../common/vendor.js");
+const services_localCart = require("../../services/local-cart.js");
 const _sfc_main = {
   props: {
     dataList: {
@@ -28,33 +29,14 @@ const _sfc_main = {
       this.show = false;
     },
     addFunc(item) {
-      common_vendor.index.showLoading({ title: "加载中" });
-      this._post("order.cart/add", {
-        product_id: item.product_id,
-        spec_sku_id: item.spec_sku_id,
-        total_num: 1
-      }, () => {
-        common_vendor.index.hideLoading();
-        this.loadding = false;
-        this.$emit("get-shopping-num");
-      }, () => {
-        this.loadding = false;
-      });
+      services_localCart.incrementLocalCartItem(item);
+      this.$emit("get-shopping-num");
     },
     reduceFunc(item) {
-      if (item.totalNum <= 1)
+      if (item.total_num <= 1)
         return;
-      common_vendor.index.showLoading({ title: "加载中" });
-      this._post("order.cart/sub", {
-        product_id: item.product_id,
-        spec_sku_id: item.spec_sku_id
-      }, () => {
-        this.loadding = false;
-        common_vendor.index.hideLoading();
-        this.$emit("get-shopping-num");
-      }, () => {
-        this.loadding = false;
-      });
+      services_localCart.decrementLocalCartItem(item);
+      this.$emit("get-shopping-num");
     },
     clickDel(item) {
       common_vendor.index.showModal({
@@ -62,9 +44,8 @@ const _sfc_main = {
         content: "您确定要移除该商品吗?",
         success: (modal) => {
           if (modal.confirm) {
-            this._post("order.cart/delete", { cart_id: item.cart_id }, () => {
-              this.$emit("get-shopping-num");
-            });
+            services_localCart.removeLocalCartItems([item.local_cart_id || item.cart_id]);
+            this.$emit("get-shopping-num");
           }
         }
       });
@@ -73,7 +54,7 @@ const _sfc_main = {
       const ids = [];
       if (this.dataList) {
         this.dataList.forEach((item) => {
-          ids.push(item.cart_id);
+          ids.push(item.local_cart_id || item.cart_id);
         });
       }
       return ids;
@@ -89,9 +70,8 @@ const _sfc_main = {
         content: "您确定要清空购物车吗?",
         success: (modal) => {
           if (modal.confirm) {
-            this._post("order.cart/delete", { cart_id: ids.join() }, () => {
-              this.$emit("get-shopping-num");
-            });
+            services_localCart.clearLocalCartItems();
+            this.$emit("get-shopping-num");
           }
         }
       });
@@ -113,14 +93,14 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         d: common_vendor.t(item.product_attr)
       } : {}, {
         e: common_vendor.t(item.product_price),
-        f: common_vendor.o(($event) => $options.reduceFunc(item), item.cart_id),
+        f: common_vendor.o(($event) => $options.reduceFunc(item), item.local_cart_id || item.cart_id),
         g: common_vendor.t(item.total_num),
-        h: common_vendor.o(($event) => $options.addFunc(item), item.cart_id),
-        i: common_vendor.o(($event) => $options.clickDel(item), item.cart_id),
-        j: item.cart_id
+        h: common_vendor.o(($event) => $options.addFunc(item), item.local_cart_id || item.cart_id),
+        i: common_vendor.o(($event) => $options.clickDel(item), item.local_cart_id || item.cart_id),
+        j: item.local_cart_id || item.cart_id
       });
     }),
-    e: common_vendor.o((...args) => $options.closeMask && $options.closeMask(...args), "3d")
+    e: common_vendor.o((...args) => $options.closeMask && $options.closeMask(...args), "91")
   } : {});
 }
 const categoryMask = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-f253aae3"]]);

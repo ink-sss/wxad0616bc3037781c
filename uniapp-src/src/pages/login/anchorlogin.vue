@@ -1,6 +1,6 @@
 <template>
   <view class="anchor-page" :data-theme="theme && theme()">
-    <image class="logo" mode="aspectFit" :src="setting.login_logo || config.pic_url + '/static/live/default_logo.jpeg'" />
+    <image class="logo" mode="aspectFit" :src="setting.login_logo || config.pic_url + '/live/default_logo.jpeg'" />
     <view class="name">{{ setting.name || '主播登录' }}</view>
     <input v-model="formData.mobile" class="input" type="number" maxlength="11" placeholder="请输入手机号" />
     <input v-model="formData.password" class="input" type="password" placeholder="请输入密码" />

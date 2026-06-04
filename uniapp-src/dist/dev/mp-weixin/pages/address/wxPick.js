@@ -1,7 +1,6 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
 const services_wechatAddress = require("../../services/wechat-address.js");
-const services_h5AuthContext = require("../../services/h5-auth-context.js");
 const _sfc_main = {
   __name: "wxPick",
   setup(__props) {
@@ -46,8 +45,6 @@ const _sfc_main = {
       const from = options.from || options.redirect || "";
       if (from)
         redirectUrl.value = decodeURIComponent(from);
-      if (!services_h5AuthContext.ensureH5PageAuth(options, redirectUrl.value))
-        return;
       startPick();
     });
     return (_ctx, _cache) => {

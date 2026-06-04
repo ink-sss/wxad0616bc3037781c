@@ -19,7 +19,7 @@ const RESULT_AUTO_CLOSE_DELAY = 1600;
 const WIN_DELAY = 1000;
 const LOSE_DELAY = 2000;
 const QUICK_COMMENT_SEND_THROTTLE_MS = 1500;
-const DEFAULT_AVATAR = "/static/remote-icons/nyfs-oss-bcvdata-com-uploads-consolewechat-1681-rtf-20260430144045241662-91b0e034.jpg";
+const DEFAULT_AVATAR = "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-uploads-consolewechat-1681-rtf-20260430144045241662-91b0e034.jpg";
 const DEFAULT_TIP_TEXT = "发送指定评论参与抽奖";
 const NO_COMMENT_LOTTERY_TEXT = "此直播间无抽奖活动";
 

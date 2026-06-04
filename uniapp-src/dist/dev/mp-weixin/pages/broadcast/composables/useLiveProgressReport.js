@@ -11,7 +11,12 @@ function useLiveProgressReport(ctx) {
     getSeekTarget,
     setLastSavedProgress,
     replayVideosList,
-    replayCurrentIndex
+    replayCurrentIndex,
+    roomCode,
+    liveTenantId,
+    shareCode,
+    liveBindId,
+    myUserId
   } = ctx;
   function persistReplayProgress(forceSeconds) {
     if (!isReplay.value || !liveId.value || !replayCurrentVideoId.value) {
@@ -74,6 +79,20 @@ function useLiveProgressReport(ctx) {
       return;
     api_live.reportViewProgress({
       roomId: Number(liveId.value),
+      roomCode: (roomCode == null ? void 0 : roomCode.value) || "",
+      room_code: (roomCode == null ? void 0 : roomCode.value) || "",
+      tenantId: (liveTenantId == null ? void 0 : liveTenantId.value) || "",
+      tenant_id: (liveTenantId == null ? void 0 : liveTenantId.value) || "",
+      shareCode: (shareCode == null ? void 0 : shareCode.value) || "",
+      share_code: (shareCode == null ? void 0 : shareCode.value) || "",
+      bindId: (liveBindId == null ? void 0 : liveBindId.value) || "",
+      bind_id: (liveBindId == null ? void 0 : liveBindId.value) || "",
+      liveType: "replay",
+      live_type: "replay",
+      customerId: (myUserId == null ? void 0 : myUserId.value) || "",
+      customer_id: (myUserId == null ? void 0 : myUserId.value) || "",
+      userId: (myUserId == null ? void 0 : myUserId.value) || "",
+      user_id: (myUserId == null ? void 0 : myUserId.value) || "",
       termId: Number(currentVideo.termId),
       videoId: Number(replayCurrentVideoId.value),
       lastPosition: replayLastTime.value || 0,

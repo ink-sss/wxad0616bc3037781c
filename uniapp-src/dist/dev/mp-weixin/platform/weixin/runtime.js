@@ -25,6 +25,22 @@ function getWeixinApi(methodName, options = {}) {
 function hasWeixinApi(methodName, options = {}) {
   return !!getWeixinApi(methodName, options);
 }
+function isMpWeixinRuntime() {
+  const wxApi = getGlobalWx();
+  if (!wxApi) {
+    return false;
+  }
+  const uniApi = getGlobalUni();
+  if (!uniApi || typeof uniApi.getSystemInfoSync !== "function") {
+    return true;
+  }
+  try {
+    const systemInfo = uniApi.getSystemInfoSync();
+    return systemInfo.uniPlatform === "mp-weixin" || systemInfo.platform === "devtools";
+  } catch (error) {
+    return true;
+  }
+}
 function unsupportedError(apiName) {
   const error = new Error(`${apiName} is only available in mp-weixin runtime`);
   error.code = UNSUPPORTED_CODE;
@@ -79,5 +95,6 @@ exports.canIUse = canIUse;
 exports.getGlobalUni = getGlobalUni;
 exports.getWeixinApi = getWeixinApi;
 exports.hasWeixinApi = hasWeixinApi;
+exports.isMpWeixinRuntime = isMpWeixinRuntime;
 exports.promisifyApi = promisifyApi;
 exports.unsupportedError = unsupportedError;

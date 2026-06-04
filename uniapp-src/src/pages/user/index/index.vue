@@ -1,13 +1,20 @@
 <template>
   <view :class="themeClass" :data-theme="themeClass">
     <view class="top-view" :style="`background:${bgColor};`"></view>
-    <view class="h5-profile-card" @tap="openProfileOrLogin">
-      <image class="h5-profile-avatar" :src="profileAvatar" mode="aspectFill" />
-      <view class="h5-profile-main">
-        <text class="h5-profile-name">{{ profileName }}</text>
-        <text class="h5-profile-sub">{{ profileSubtitle }}</text>
+    <view class="profile-hero">
+      <view class="profile-bg-base" :style="`background:${bgColor};`"></view>
+      <view class="profile-hero-row" @tap="openProfileOrLogin">
+        <image class="profile-hero-avatar" :src="profileAvatar" mode="aspectFill" />
+        <view class="profile-hero-content">
+          <view class="profile-hero-main">
+            <view class="profile-name-line">
+              <text class="profile-hero-name">{{ profileName }}</text>
+              <text v-if="profileGradeName" class="profile-hero-grade">{{ profileGradeName }}</text>
+            </view>
+          </view>
+          <text class="profile-hero-id">{{ profileSubtitle }}</text>
+        </view>
       </view>
-      <text class="h5-profile-action">{{ profileActionText }}</text>
     </view>
     <view v-if="getPhone" class="bind_phone">
       <view class="bind_content">
@@ -17,14 +24,6 @@
       </view>
     </view>
     <view class="h5-center-modules">
-      <view v-if="liveRoomContext.roomCode || liveRoomContext.roomId" class="live-return-card" @tap="gotoH5CenterModule('returnLive')">
-        <view>
-          <text class="live-return-title">继续观看直播</text>
-          <text class="live-return-sub">{{ liveRoomContext.liveName || '返回最近直播间' }}</text>
-        </view>
-        <text class="live-return-arrow">进入</text>
-      </view>
-
       <view class="module-card">
         <view class="module-head">
           <text class="module-title">我的订单</text>
@@ -61,13 +60,12 @@
 </template>
 
 <script>
-import { loginCode, phonePayload } from '../page-tools.js'
+import { bindMiniProgramMobile } from '../page-tools.js'
 import { getOrderUnreadStats } from '../../../api/order.js'
 import { getRefundUnreadStats } from '../../../api/refund.js'
 import { getCenter } from '../../../api/user.js'
-import { ensureH5PageAuth } from '../../../services/h5-auth-context.js'
-import { buildBroadcastEntryUrl, normalizeLiveRouteOptions } from '../../../utils/live-route.js'
-import { loadLiveRoomContext, saveLiveRoomContext } from '../../../utils/live-room-context.js'
+import { normalizeLiveRouteOptions } from '../../../utils/live-route.js'
+import { appendLiveRoomQuery, loadLiveRoomContext, mergeLiveRoomContext, saveLiveRoomContext } from '../../../utils/live-room-context.js'
 import RequestLoading from '../../../components/liveloading.vue'
 import LiveTab from '../../../components/liveTab.vue'
 import TabBar from '../../../components/tabbar/footTabbar.vue'
@@ -163,7 +161,6 @@ export default {
       isloadding: true,
       detail: defaultDetail(),
       orderCount: {},
-      sessionKey: '',
       wxBinding: false,
       getPhone: false,
       isLoggedIn: false,
@@ -177,26 +174,26 @@ export default {
     },
     h5OrderItems() {
       return [
-        { type: 'unpay', text: '待付款', count: this.orderCount?.unpay || 0, icon: '/static/icon/pay.png' },
-        { type: 'unsend', text: '待发货', count: this.orderCount?.unsend || 0, icon: '/static/icon/daifahuo.png' },
-        { type: 'unreceive', text: '待收货', count: this.orderCount?.unreceive || 0, icon: '/static/icon/daishouhuo.png' },
-        { type: 'finished', text: '已完成', count: this.orderCount?.finished || 0, icon: '/static/order/1-3.png' },
-        { type: 'refund', text: '退款/售后', count: this.orderCount?.refund || 0, icon: '/static/icon/icon-tuikuan.png' },
+        { type: 'unpay', text: '待付款', count: this.orderCount?.unpay || 0, icon: 'https://man.lqjy.cc/static/icon/pay.png' },
+        { type: 'unsend', text: '待发货', count: this.orderCount?.unsend || 0, icon: 'https://man.lqjy.cc/static/icon/daifahuo.png' },
+        { type: 'unreceive', text: '待收货', count: this.orderCount?.unreceive || 0, icon: 'https://man.lqjy.cc/static/icon/daishouhuo.png' },
+        { type: 'finished', text: '已完成', count: this.orderCount?.finished || 0, icon: 'https://man.lqjy.cc/static/order/1-3.png' },
+        { type: 'refund', text: '退款/售后', count: this.orderCount?.refund || 0, icon: 'https://man.lqjy.cc/static/icon/icon-tuikuan.png' },
       ]
     },
     h5ServiceItems() {
       return [
-        { type: 'prizeRecord', text: '中奖记录', icon: '/static/icon/lottery-points.png' },
-        { type: 'invitationRecord', text: '邀请记录', icon: '/static/icon/icon-tuandui.png' },
-        { type: 'complaint', text: '投诉', icon: '/static/icon/chat.png' },
-        { type: 'address', text: '收货地址', icon: '/static/icon/address_icon.png' },
+        { type: 'prizeRecord', text: '中奖记录', icon: 'https://man.lqjy.cc/static/icon/lottery-points.png' },
+        { type: 'invitationRecord', text: '邀请记录', icon: 'https://man.lqjy.cc/static/icon/icon-tuandui.png' },
+        { type: 'complaint', text: '投诉', icon: 'https://man.lqjy.cc/static/icon/chat.png' },
+        { type: 'address', text: '收货地址', icon: 'https://man.lqjy.cc/static/icon/address_icon.png' },
       ]
     },
     hasProfile() {
       return !!(this.detail && (this.detail.nickName || this.detail.nickname || this.detail.userName || this.detail.user_id || this.detail.userId))
     },
     profileAvatar() {
-      return this.detail?.avatarUrl || this.detail?.avatar || '/static/login-default.png'
+      return this.detail?.avatarUrl || this.detail?.avatar || 'https://man.lqjy.cc/static/login-default.png'
     },
     profileName() {
       if (this.hasProfile) {
@@ -207,10 +204,13 @@ export default {
     profileSubtitle() {
       if (!this.isLoggedIn) return '未登录，点击登录'
       const id = this.detail?.user_id || this.detail?.userId
-      return id ? `ID：${id}` : '已登录'
+      return id ? `ID:${id}` : 'ID:--'
     },
-    profileActionText() {
-      return this.isLoggedIn ? '设置' : '登录'
+    profileGradeName() {
+      if (!this.isLoggedIn) return ''
+      const grade = this.detail?.grade
+      if (typeof grade === 'string' && grade) return grade
+      return grade?.name || this.detail?.gradeName || this.detail?.grade_name || '普通会员'
     },
   },
   onReady() {
@@ -220,21 +220,12 @@ export default {
     this.wxBinding = uni.getStorageSync('wxBinding')
     if (query && query.referee_id) uni.setStorageSync('referee_id', query.referee_id)
     if (query?.roomCode || query?.roomId || query?.liveId) saveLiveRoomContext(normalizeLiveRouteOptions(query))
-    if (!ensureH5PageAuth(query, '/pages/center/index')) {
-      this.isloadding = false
-      return
-    }
     this.syncAuthFromStorage()
     this.applyCachedProfile()
     this.syncLiveContext()
-    this.getSession()
     uni.setNavigationBarColor({ frontColor: '#ffffff', backgroundColor: '#ffffff' })
   },
   onShow() {
-    if (!ensureH5PageAuth({}, '/pages/center/index')) {
-      this.isloadding = false
-      return
-    }
     this.syncLiveContext()
     this.getData()
   },
@@ -242,14 +233,6 @@ export default {
     this.getData()
   },
   methods: {
-    getSession() {
-      if (!this.isLoggedIn) return
-      loginCode().then((code) => {
-        this._post('user.user/getSession', { code }, (res) => {
-          this.sessionKey = res.data.session_key
-        })
-      })
-    },
     async getData() {
       this.isloadding = true
       uni.showLoading({ title: '加载中' })
@@ -313,7 +296,7 @@ export default {
     },
     openProfileOrLogin() {
       if (!this.isLoggedIn) {
-        ensureH5PageAuth({}, '/pages/center/index')
+        if (typeof this.doLogin === 'function') this.doLogin()
         return
       }
       this.gotoPage('/pages/user/set/set')
@@ -323,59 +306,37 @@ export default {
     },
     getPhoneNumber(event) {
       if (event?.detail?.errMsg && event.detail.errMsg !== 'getPhoneNumber:ok') return false
-      let detail
-      try {
-        detail = phonePayload(event)
-      } catch (error) {
-        return false
-      }
       uni.showLoading({ title: '加载中' })
-      this._post(
-        'user.user/bindMobile',
-        {
-          session_key: this.sessionKey,
-          encrypted_data: detail.encrypted_data,
-          iv: detail.iv,
-        },
-        (res) => {
+      const userId = this.detail?.user_id || this.detail?.userId || uni.getStorageSync('user_id')
+      bindMiniProgramMobile(userId, event)
+        .then((data = {}) => {
           uni.showToast({ title: '绑定成功' })
-          this.detail.mobile = res.data.mobile
-        },
-        false,
-        () => uni.hideLoading(),
-      )
+          this.detail.mobile = data.mobile
+          if (data.user_id) uni.setStorageSync('user_id', data.user_id)
+        })
+        .catch((error) => {
+          uni.showToast({ title: error?.message || error?.msg || '授权失败，请重新授权', icon: 'none' })
+        })
+        .finally(() => uni.hideLoading())
     },
     syncLiveContext() {
-      this.liveRoomContext = loadLiveRoomContext()
+      this.liveRoomContext = mergeLiveRoomContext(loadLiveRoomContext() || {})
     },
-    liveQuery() {
-      const context = this.liveRoomContext || {}
-      const params = []
-      if (context.roomCode) params.push(`roomCode=${encodeURIComponent(context.roomCode)}`)
-      if (context.roomId || context.liveId) params.push(`roomId=${encodeURIComponent(context.roomId || context.liveId)}`)
-      return params.length ? `?${params.join('&')}` : ''
+    withLiveQuery(url) {
+      return appendLiveRoomQuery(url, this.liveRoomContext || {})
     },
     gotoH5CenterModule(type) {
-      const query = this.liveQuery()
       const roomId = this.liveRoomContext?.roomId || this.liveRoomContext?.liveId || ''
-      const withLiveQuery = (url) => {
-        if (!query) return url
-        return `${url}${url.includes('?') ? '&' : '?'}${query.slice(1)}`
-      }
       const routes = {
-        orders: withLiveQuery('/pages/order/list?status=all'),
-        unpay: withLiveQuery('/pages/order/list?status=unpay'),
-        unsend: withLiveQuery('/pages/order/list?status=unsend'),
-        unreceive: withLiveQuery('/pages/order/list?status=unreceive'),
-        refund: withLiveQuery('/pages/order/refund-list'),
-        prizeRecord: `/pages/prize-record/index${query}`,
-        invitationRecord: withLiveQuery(`/pages/invitation-record/index?roomId=${encodeURIComponent(roomId)}`),
-        complaint: withLiveQuery('/pages/report/report-type?fromPath=%2Fpages%2Fcenter%2Findex'),
-        address: withLiveQuery('/pages/address/index'),
-      }
-      if (type === 'returnLive') {
-        uni.navigateTo({ url: buildBroadcastEntryUrl(this.liveRoomContext || {}) })
-        return
+        orders: this.withLiveQuery('/pages/order/list?status=all'),
+        unpay: this.withLiveQuery('/pages/order/list?status=unpay'),
+        unsend: this.withLiveQuery('/pages/order/list?status=unsend'),
+        unreceive: this.withLiveQuery('/pages/order/list?status=unreceive'),
+        refund: this.withLiveQuery('/pages/order/refund-list'),
+        prizeRecord: this.withLiveQuery('/pages/prize-record/index'),
+        invitationRecord: this.withLiveQuery(`/pages/invitation-record/index?roomId=${encodeURIComponent(roomId)}`),
+        complaint: this.withLiveQuery('/pages/report/report-type?fromPath=%2Fpages%2Fcenter%2Findex'),
+        address: this.withLiveQuery('/pages/address/index'),
       }
       const url = routes[type]
       if (url) uni.navigateTo({ url })
@@ -419,100 +380,115 @@ export default {
   width: 100%;
 }
 
-.h5-profile-card {
-  align-items: center;
-  background: #fff;
-  border-radius: 20rpx;
-  box-shadow: 0 8rpx 28rpx rgba(0, 0, 0, .06);
-  display: flex;
-  margin: -66rpx 24rpx 20rpx;
-  padding: 28rpx 26rpx;
+.profile-hero {
+  box-sizing: border-box;
+  height: 370rpx;
+  overflow: hidden;
   position: relative;
-  z-index: 2;
+  width: 100%;
 }
 
-.h5-profile-avatar {
-  background: #f0f0f0;
+.profile-bg-base {
+  height: 330rpx;
+  left: 0;
+  margin: auto;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.profile-hero-row {
+  align-items: center;
+  display: flex;
+  margin-left: 20rpx;
+  margin-right: 20rpx;
+  margin-top: 80rpx;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+.profile-hero-avatar {
+  background: #fff;
   border-radius: 50%;
-  height: 96rpx;
-  width: 96rpx;
+  display: block;
+  flex-shrink: 0;
+  height: 102rpx;
+  margin-right: 20rpx;
+  overflow: hidden;
+  width: 102rpx;
 }
 
-.h5-profile-main {
+.profile-hero-content {
+  box-sizing: border-box;
+  display: flex;
   flex: 1;
-  margin-left: 22rpx;
+  flex-direction: column;
+  height: 102rpx;
+  justify-content: space-between;
   min-width: 0;
 }
 
-.h5-profile-name {
-  color: #222;
-  display: block;
-  font-size: 34rpx;
+.profile-hero-main {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.profile-name-line {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  min-width: 0;
+}
+
+.profile-hero-name {
+  color: #fff;
+  font-size: 32rpx;
   font-weight: 700;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.h5-profile-sub {
-  color: #888;
-  display: block;
-  font-size: 24rpx;
-  margin-top: 8rpx;
+.profile-hero-grade {
+  background-color: rgba(0, 0, 0, .1);
+  border-radius: 40rpx;
+  color: #fff;
+  flex-shrink: 0;
+  font-size: 22rpx;
+  line-height: 36rpx;
+  margin-left: 20rpx;
+  padding: 0 16rpx;
 }
 
-.h5-profile-action {
-  background: #fff1e8;
-  border-radius: 999rpx;
-  color: #f05a24;
-  font-size: 24rpx;
-  padding: 10rpx 20rpx;
+.profile-hero-id {
+  color: #fff;
+  display: block;
+  font-size: 28rpx;
+  line-height: 36rpx;
 }
 
 .h5-center-modules {
-  background: #f5f6f8;
+  background: linear-gradient(to bottom, #ff5704 0, #ff5704 130rpx, #f5f6f8 130rpx, #f5f6f8 100%);
+  margin-top: -170rpx;
   padding: 0 24rpx 160rpx;
 }
 
-.live-return-card,
 .module-card {
   background: #fff;
   border-radius: 16rpx;
   margin-top: 20rpx;
+  position: relative;
 }
 
-.live-return-card {
-  align-items: center;
-  display: flex;
-  justify-content: space-between;
-  padding: 26rpx 28rpx;
-}
-
-.live-return-title,
 .module-title {
   color: #222;
   display: block;
   font-size: 30rpx;
   font-weight: 700;
-}
-
-.live-return-sub {
-  color: #888;
-  display: block;
-  font-size: 24rpx;
-  margin-top: 8rpx;
-  max-width: 460rpx;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.live-return-arrow {
-  background: #f03b2f;
-  border-radius: 28rpx;
-  color: #fff;
-  font-size: 24rpx;
-  padding: 12rpx 24rpx;
 }
 
 .module-card {

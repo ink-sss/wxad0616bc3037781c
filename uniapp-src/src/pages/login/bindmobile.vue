@@ -8,51 +8,36 @@
 </template>
 
 <script>
-import { loginCode, phonePayload, toast } from './page-tools.js'
+import { bindMiniProgramMobile, toast } from './page-tools.js'
 
 export default {
   data() {
     return {
-      sessionKey: '',
+      userId: '',
       submitting: false,
     }
   },
   onLoad() {
-    this.loadSession()
+    this.userId = uni.getStorageSync('user_id') || ''
   },
   methods: {
-    loadSession() {
-      loginCode().then((code) => {
-        this._post('user.user/getSession', { code }, (res) => {
-          this.sessionKey = res.data.session_key
-        })
-      })
-    },
     getPhoneNumber(event) {
       if (this.submitting) return
-      let detail
-      try {
-        detail = phonePayload(event)
-      } catch (error) {
-        toast('授权失败，请重新授权')
-        return
-      }
       this.submitting = true
       uni.showLoading({ title: '正在处理', mask: true })
-      this._post(
-        'user.user/bindMobile',
-        {
-          session_key: this.sessionKey,
-          encrypted_data: detail.encrypted_data,
-          iv: detail.iv,
-        },
-        () => uni.navigateBack(),
-        false,
-        () => {
+      bindMiniProgramMobile(this.userId, event)
+        .then((data = {}) => {
+          if (data.user_id) uni.setStorageSync('user_id', data.user_id)
+          uni.showToast({ title: '绑定成功' })
+          uni.navigateBack()
+        })
+        .catch((error) => {
+          toast(error?.message || error?.msg || '授权失败，请重新授权')
+        })
+        .finally(() => {
           this.submitting = false
           uni.hideLoading()
-        },
-      )
+        })
     },
     onNotLogin() {
       this.gotoPage('/pages/index/index')

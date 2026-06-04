@@ -70,7 +70,7 @@ const secondRewardAmounts = ["20", "50", "100"];
 .reward-style .modal-content {
   position: relative;
   height: 100%;
-  background: url("../static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-watch-reward-header-f783e06d.png") no-repeat;
+  background: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-watch-reward-header-f783e06d.png") no-repeat;
   background-size: 100% 100%;
 }
 
@@ -80,7 +80,7 @@ const secondRewardAmounts = ["20", "50", "100"];
   right: 32rpx;
   width: 24rpx;
   height: 24rpx;
-  background: url("../static/remote-icons/i-nuoyun-reward-close.png") center / contain no-repeat;
+  background: url("https://man.lqjy.cc/static/remote-icons/i-nuoyun-reward-close.png") center / contain no-repeat;
 }
 
 .reward-style .modal-body {

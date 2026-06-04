@@ -5,12 +5,29 @@ const common_gotopage = require("../common/gotopage.js");
 const common_onfire = require("../common/onfire.js");
 const utils_request = require("./request.js");
 const utils_validator = require("./validator.js");
+function defaultTabBar(theme = 2) {
+  return {
+    backgroundColor: "#FFFFFF",
+    is_auto: "0",
+    textColor: "#000000",
+    textHoverColor: "#ffcc00",
+    type: "0",
+    list: [
+      { iconPath: "https://man.lqjy.cc/static/tabbar/home.png", link_url: "/pages/index/index", selectedIconPath: `https://man.lqjy.cc/static/tabbar/home_${theme}.png`, text: "首页" },
+      { iconPath: "https://man.lqjy.cc/static/tabbar/category.png", link_url: "/pages/product/category", selectedIconPath: `https://man.lqjy.cc/static/tabbar/category_${theme}.png`, text: "分类" },
+      { iconPath: "https://man.lqjy.cc/static/tabbar/shop.png", is_show: false, link_url: "/pages/shop/shop_list", selectedIconPath: `https://man.lqjy.cc/static/tabbar/shop_${theme}.png`, text: "商户" },
+      { iconPath: "https://man.lqjy.cc/static/tabbar/cart.png", is_show: true, link_url: "/pages/cart/cart", selectedIconPath: `https://man.lqjy.cc/static/tabbar/cart_${theme}.png`, text: "购物车" },
+      { iconPath: "https://man.lqjy.cc/static/tabbar/user.png", is_show: true, link_url: "/pages/user/index/index", selectedIconPath: `https://man.lqjy.cc/static/tabbar/user_${theme}.png`, text: "我的" }
+    ]
+  };
+}
 function installSharedRuntime(app, options = {}) {
   app.config.globalProperties.$fire = options.eventBus || new common_onfire.OnFire();
   app.config.globalProperties.config = options.config || env_config.config;
   app.config.globalProperties.websiteUrl = app.config.globalProperties.config.app_url;
   app.config.globalProperties.app_id = app.config.globalProperties.config.app_id;
   app.config.globalProperties.gotoPage = options.gotoPage || common_gotopage.gotopage;
+  app.config.globalProperties.static_url = app.config.globalProperties.config.static_url;
   app.config.globalProperties.font_url = app.config.globalProperties.config.font_url;
   if (options.store) {
     app.config.globalProperties.$store = options.store;
@@ -38,23 +55,14 @@ function installSharedRuntime(app, options = {}) {
       this.setTabBarLinks(tabBar, theme);
       return;
     }
-    common_vendor.index.request({
-      url: `${this.config.app_url}/index.php/api/index/nav`,
-      data: {
-        app_id: this.config.app_id,
-        appid: this.config.appid
-      },
-      success: (response) => {
-        const data = response.data.data.vars.data;
-        const nextTheme = response.data.data.theme.theme;
-        if (this.$store)
-          this.$store.commit("changeTheme", nextTheme);
-        common_vendor.index.setStorageSync("theme", nextTheme);
-        common_vendor.index.setStorageSync("TabBar", data);
-        common_vendor.index.setStorageSync("tabInited", data.is_auto);
-        this.setTabBarLinks(data, nextTheme);
-      }
-    });
+    const nextTheme = 2;
+    const data = defaultTabBar(nextTheme);
+    if (this.$store)
+      this.$store.commit("changeTheme", nextTheme);
+    common_vendor.index.setStorageSync("theme", nextTheme);
+    common_vendor.index.setStorageSync("TabBar", data);
+    common_vendor.index.setStorageSync("tabInited", data.is_auto);
+    this.setTabBarLinks(data, nextTheme);
   };
   app.config.globalProperties.setTabBarLinks = function setTabBarLinks(tabBar) {
     tabBar.list = [];

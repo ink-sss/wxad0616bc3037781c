@@ -27,7 +27,7 @@
           <view class="address-head">
             <image
               class="address-icon"
-              src="/static/icons/address.svg"
+              src="https://man.lqjy.cc/static/icons/address.svg"
               mode="aspectFit"
             />
             <view class="address-main">
@@ -105,7 +105,7 @@
                 <text class="info-value">{{ orderDetail.orderNo }}</text>
                 <image
                   class="copy-icon"
-                  src="/static/icons/copy.svg"
+                  src="https://man.lqjy.cc/static/icons/copy.svg"
                   mode="aspectFit"
                 />
               </view>
@@ -172,7 +172,6 @@ import {
   getOrderDetail,
   updatePrizeOrderAddress,
 } from "@/api/order";
-import { ensureH5PageAuth } from "@/services/h5-auth-context";
 import { resolveLiveRoomCode } from "@/utils/live-room-context";
 import OrderLogisticsSheet from "./components/order-logistics-sheet.vue";
 import LiveMiniWindow from "@/components/live-mini-window.vue";
@@ -188,35 +187,35 @@ const ORDER_STATUS_META = {
     status: "unpay",
     statusTitle: "待付款",
     subtitle: "请尽快完成支付",
-    heroImage: "/static/icons/order1.png",
+    heroImage: "https://man.lqjy.cc/static/icons/order1.png",
     heroClass: "status-hero-unpay",
   },
   2: {
     status: "unsend",
     statusTitle: "待发货",
     subtitle: "商家正在备货中，请耐心等待发货",
-    heroImage: "/static/icons/order2.png",
+    heroImage: "https://man.lqjy.cc/static/icons/order2.png",
     heroClass: "status-hero-unsend",
   },
   3: {
     status: "unreceive",
     statusTitle: "待收货",
     subtitle: "您的包裹正在运输中，请保持电话畅通",
-    heroImage: "/static/icons/order2.png",
+    heroImage: "https://man.lqjy.cc/static/icons/order2.png",
     heroClass: "status-hero-unreceive",
   },
   4: {
     status: "finished",
     statusTitle: "已完成",
     subtitle: "订单已完成，感谢您的购买",
-    heroImage: "/static/icons/order2.png",
+    heroImage: "https://man.lqjy.cc/static/icons/order2.png",
     heroClass: "status-hero-finished",
   },
   5: {
     status: "cancelled",
     statusTitle: "已取消",
     subtitle: "订单已取消",
-    heroImage: "/static/icons/order2.png",
+    heroImage: "https://man.lqjy.cc/static/icons/order2.png",
     heroClass: "status-hero-unsend",
   },
 };
@@ -314,7 +313,7 @@ function mapOrderDetail(detail = {}) {
       status: "refund_success",
       statusTitle: "退款成功",
       subtitle: "退款金额已原路返回，请注意查收",
-      heroImage: "/static/icons/order3.png",
+      heroImage: "https://man.lqjy.cc/static/icons/order3.png",
       heroClass: "status-hero-refund",
     };
   }
@@ -544,7 +543,6 @@ function navigateRebuy() {
 }
 
 onLoad((options) => {
-  if (!ensureH5PageAuth(options)) return;
   uni.$off("address-selected", onAddressSelected);
   uni.$on("address-selected", onAddressSelected);
   const routeRoomCode = resolveLiveRoomCode(options?.roomCode);

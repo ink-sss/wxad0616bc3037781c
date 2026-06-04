@@ -40,7 +40,7 @@
 
         <view v-if="tableData.length === 0 && !loading" class="d-c-c p30">
           <view class="none-data-box">
-            <image mode="widthFix" :src="config.pic_url + '/static/live/none.png'" />
+            <image mode="widthFix" :src="config.pic_url + '/live/none.png'" />
             <text>亲，暂无相关记录哦</text>
           </view>
         </view>

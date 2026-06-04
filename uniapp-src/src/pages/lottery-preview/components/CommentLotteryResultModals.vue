@@ -68,11 +68,11 @@ const props = defineProps({
 const emit = defineEmits(["close"]);
 
 const image = {
-  gift: "./static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-sign-gift-5def5533.png",
-  closeIcon: "./static/remote-icons/nyfs-oss-bcvdata-com-frontend-mobile-commons-close-icon-75e80e51.png",
-  star: "./static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-star-icon-288074ca.webp",
-  winningAward: "./static/remote-icons/nyfs-oss-bcvdata-com-frontend-mobile-live-winning-award-d13632f4.png",
-  pop: "./static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-untitledanimation-25b60726.webp"
+  gift: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-sign-gift-5def5533.png",
+  closeIcon: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-frontend-mobile-commons-close-icon-75e80e51.png",
+  star: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-star-icon-288074ca.webp",
+  winningAward: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-frontend-mobile-live-winning-award-d13632f4.png",
+  pop: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-untitledanimation-25b60726.webp"
 };
 
 const prizeName = computed(() => props.winRecord?.rewardName || props.prize?.prizeName || props.prize?.productName || "评论抽奖奖品");
@@ -128,7 +128,7 @@ function openPrizeRecord() {
   top: 50%;
   width: 1200rpx;
   height: 1200rpx;
-  background: url("../static/remote-icons/nyfs-oss-bcvdata-com-frontend-mobile-live-sunlight-circle-bg-9d128783.png") no-repeat center;
+  background: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-frontend-mobile-live-sunlight-circle-bg-9d128783.png") no-repeat center;
   background-size: contain;
   transform: translate(-50%, -50%);
   transform-origin: center center;
@@ -151,7 +151,7 @@ function openPrizeRecord() {
   width: 646rpx;
   height: 806rpx;
   max-width: 92vw;
-  background-image: url("../static/remote-icons/nyfs-oss-bcvdata-com-frontend-mobile-live-prize-bg-7c92e47e.png");
+  background-image: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-frontend-mobile-live-prize-bg-7c92e47e.png");
   background-size: 100% 100%;
   transform: translate(-50%, -50%);
 }
@@ -236,7 +236,7 @@ function openPrizeRecord() {
   height: 98rpx;
   margin-left: -212rpx;
   cursor: pointer;
-  background: url("../static/remote-icons/nyfs-oss-bcvdata-com-frontend-mobile-live-award-btn-98d71572.png") no-repeat;
+  background: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-frontend-mobile-live-award-btn-98d71572.png") no-repeat;
   background-size: cover;
 }
 
@@ -289,7 +289,7 @@ function openPrizeRecord() {
   height: 528rpx;
   box-sizing: border-box;
   border-radius: 48rpx;
-  background: url("../static/remote-icons/nyfs-oss-bcvdata-com-frontend-mobile-live-lose-prize-icon-c9e67e0a.png") no-repeat;
+  background: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-frontend-mobile-live-lose-prize-icon-c9e67e0a.png") no-repeat;
   background-size: cover;
   transform: translate(-50%, -50%);
 }

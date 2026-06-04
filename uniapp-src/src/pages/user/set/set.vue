@@ -2,7 +2,7 @@
   <view class="set-page" :data-theme="theme && theme()">
     <view class="profile-card">
       <button class="avatar-button" open-type="chooseAvatar" @chooseavatar="onChooseAvatar">
-        <image class="avatar" :src="userInfo.avatarUrl || '/static/login-default.png'" />
+        <image class="avatar" :src="userInfo.avatarUrl || 'https://man.lqjy.cc/static/login-default.png'" />
       </button>
       <view class="id">用户ID：{{ userInfo.user_id || '--' }}</view>
     </view>

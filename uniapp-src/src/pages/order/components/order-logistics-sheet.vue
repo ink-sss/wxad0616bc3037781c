@@ -16,7 +16,7 @@
         </view>
         <view class="logistics-tracking-row" @click="$emit('copy')">
           <text class="logistics-tracking-no">{{ logisticsData.trackingNo || '--' }}</text>
-          <image class="copy-icon" src="/static/icons/copy.svg" mode="aspectFit" />
+          <image class="copy-icon" src="https://man.lqjy.cc/static/icons/copy.svg" mode="aspectFit" />
         </view>
       </view>
       <scroll-view class="logistics-timeline-scroll" scroll-y>

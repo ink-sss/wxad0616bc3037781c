@@ -123,7 +123,6 @@ import { ref, computed } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
 import { getOrderDetail, markOrderUnread } from "@/api/order";
 import { executeYeepayPayment } from "@/services/payment-action";
-import { ensureH5PageAuth } from "@/services/h5-auth-context";
 import { resolveLiveRoomCode } from "@/utils/live-room-context";
 import { returnToLiveRoom } from "@/utils/live-room-navigation";
 import LiveMiniWindow from "@/components/live-mini-window.vue";
@@ -231,7 +230,6 @@ function goBackLiveRoom() {
 }
 
 onLoad(async (query) => {
-  if (!ensureH5PageAuth(query)) return;
   orderNo.value = query?.orderNo || "";
   orderId.value = Number(query?.orderId || query?.id) || 0;
   liveRoomCode.value = resolveLiveRoomCode(query?.roomCode);

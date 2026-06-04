@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
 const common_vendor = require("../../../../common/vendor.js");
+const services_localCart = require("../../../../services/local-cart.js");
 function cloneFallbackModel() {
   return {
     detail: { image: [{ file_path: "" }], product_stock: 0, product_price: 0, line_price: 0 },
@@ -239,14 +240,19 @@ const _sfc_main = {
         common_vendor.index.showToast({ title: "请选择属性", icon: "none", duration: 2e3 });
         return false;
       }
-      this._post("order.cart/add", {
+      const summary = services_localCart.addLocalCartItem({
+        ...this.form.detail,
         product_id: productId,
-        total_num: totalNum,
-        spec_sku_id: specSkuId
-      }, (res) => {
-        common_vendor.index.showToast({ title: res.msg, duration: 2e3 });
-        this.$emit("close", null, res.data.cart_total_num);
-      });
+        product_name: this.form.detail.product_name,
+        product_image: this.form.show_sku.sku_image,
+        product_price: this.form.show_sku.product_price,
+        line_price: this.form.show_sku.line_price,
+        stock_num: this.form.show_sku.stock_num,
+        spec_sku_id: specSkuId,
+        product_attr: this.selectSpec.replace(/^已选:\s*/, "")
+      }, totalNum);
+      common_vendor.index.showToast({ title: "已加入购物车", duration: 2e3 });
+      this.$emit("close", null, summary.totalNum);
     },
     createdOrder() {
       const productId = this.form.detail.product_id;

@@ -16,7 +16,7 @@
           <view class="share-icon invitation-bg">
             <image
               class="icon-svg"
-              src="./static/icons/invitation.svg"
+              src="https://man.lqjy.cc/static/icons/invitation.svg"
               mode="aspectFit"
             />
           </view>
@@ -31,7 +31,7 @@
           <view class="share-icon wechat-bg">
             <image
               class="icon-svg"
-              src="./static/icons/Frame_114.svg"
+              src="https://man.lqjy.cc/static/icons/Frame_114.svg"
               mode="aspectFit"
             />
           </view>
@@ -41,7 +41,7 @@
           <view class="share-icon wechat-bg">
             <image
               class="icon-svg"
-              src="./static/icons/Frame_114.svg"
+              src="https://man.lqjy.cc/static/icons/Frame_114.svg"
               mode="aspectFit"
             />
           </view>
@@ -51,7 +51,7 @@
           <view class="share-icon link-bg">
             <image
               class="icon-svg"
-              src="./static/icons/Frame_115.svg"
+              src="https://man.lqjy.cc/static/icons/Frame_115.svg"
               mode="aspectFit"
             />
           </view>
@@ -61,7 +61,7 @@
           <view class="share-icon qrcode-bg">
             <image
               class="icon-svg"
-              src="./static/icons/Frame_116.svg"
+              src="https://man.lqjy.cc/static/icons/Frame_116.svg"
               mode="aspectFit"
             />
           </view>

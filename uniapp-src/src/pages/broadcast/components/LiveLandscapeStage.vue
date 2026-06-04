@@ -134,7 +134,7 @@
       >
         <image
           class="live-landscape-reward__image"
-          src="/static/icons/competitor-live/watch_reward-new.png"
+          src="https://man.lqjy.cc/static/icons/competitor-live/watch_reward-new.png"
           mode="aspectFit"
         />
         <!-- 文案与竖屏一致：watchRewardEntryLabel 在有进行中任务时返回 MM:SS 倒计时；可领取或异常空串时回落"领取" -->
@@ -152,7 +152,7 @@
           <view class="video-controls__btn" @click.stop="toggleFullscreen">
             <image
               class="video-controls__icon"
-              src="/static/icons/competitor-live/icon-fullscreen.svg"
+              src="https://man.lqjy.cc/static/icons/competitor-live/icon-fullscreen.svg"
               mode="aspectFit"
             />
           </view>
@@ -161,7 +161,7 @@
             <image
               class="live-landscape-collapse__image"
               :class="{ 'live-landscape-collapse__image--flipped': stageCollapsed }"
-              src="/static/icons/competitor-live/hall-room-up.png"
+              src="https://man.lqjy.cc/static/icons/competitor-live/hall-room-up.png"
               mode="aspectFit"
             />
           </view>
@@ -173,7 +173,7 @@
         <view class="video-mini-controls__mute" @click.stop="toggleMute" @touchstart.stop>
           <image
             class="video-mini-controls__icon"
-            :src="isMuted ? '/static/icons/competitor-live/icon-volume-off.svg' : '/static/icons/competitor-live/icon-volume-on.svg'"
+            :src="isMuted ? 'https://man.lqjy.cc/static/icons/competitor-live/icon-volume-off.svg' : 'https://man.lqjy.cc/static/icons/competitor-live/icon-volume-on.svg'"
             mode="aspectFit"
           />
         </view>
@@ -192,15 +192,7 @@
           </view>
           <view class="anchor-meta">
             <text class="anchor-name">{{ anchorName }}</text>
-            <view class="anchor-likes">
-              <image
-                v-if="isLiveLandscapeStyle"
-                class="anchor-likes__fire"
-                src="/static/icons/competitor-live/fire.png"
-                mode="aspectFit"
-              />
-              <text class="anchor-likes__text">{{ displayViewerCount }}</text>
-            </view>
+            <text class="anchor-likes">{{ displayViewerCount }}</text>
           </view>
         </view>
         <view v-if="roomGroupType !== 1 && roomSetting.showStatus !== 0" class="live-status-badge live-status-badge--inline" :class="liveStatusClass">
@@ -212,14 +204,14 @@
         <view class="live-landscape-report" @click.stop="goReport">
           <image
             class="live-landscape-report__image"
-            src="/static/icons/competitor-live/complaint-text-2.png"
+            src="https://man.lqjy.cc/static/icons/competitor-live/complaint-text-2.png"
             mode="aspectFit"
           />
         </view>
         <view class="live-landscape-round-tool live-landscape-round-tool--ghost" @click.stop="toggleCenter">
           <image
             class="live-landscape-round-tool__image"
-            src="/static/icons/competitor-live/portal-icon_light.png"
+            src="https://man.lqjy.cc/static/icons/competitor-live/portal-icon_light.png"
             mode="aspectFit"
           />
         </view>
@@ -227,7 +219,7 @@
         <view v-if="roomSetting.showViewerData !== 0" class="live-landscape-fire-count">
           <image
             class="live-landscape-fire-count__icon"
-            src="/static/icons/competitor-live/fire.png"
+            src="https://man.lqjy.cc/static/icons/competitor-live/fire.png"
             mode="aspectFit"
           />
           <text
@@ -241,26 +233,20 @@
         <view v-if="roomSetting.showViewerData !== 0" class="viewer-badge">
           <image
             class="viewer-icon"
-            src="/static/icons/eye.png"
+            src="https://man.lqjy.cc/static/icons/eye.png"
             mode="aspectFit"
           />
-          <view
+          <text
             class="viewer-num"
             :class="{ 'viewer-num-animate': viewerCountAnimating }"
           >
-            <image
-              v-if="isLiveLandscapeStyle"
-              class="viewer-num__fire"
-              src="/static/icons/competitor-live/fire.png"
-              mode="aspectFit"
-            />
-            <text class="viewer-num__text">{{ displayViewerCount }}</text>
-          </view>
+            {{ displayViewerCount }}
+          </text>
         </view>
         <view class="report-btn" @click="goReport">
           <image
             class="report-icon"
-            src="/static/icons/tousu2.png"
+            src="https://man.lqjy.cc/static/icons/tousu2.png"
             mode="aspectFit"
           />
           <text class="report-text">投诉</text>
@@ -293,7 +279,7 @@
         <view class="live-landscape-collapsed-header__left">
           <image
             class="live-landscape-collapsed-header__fire"
-            src="/static/icons/competitor-live/fire.png"
+            src="https://man.lqjy.cc/static/icons/competitor-live/fire.png"
             mode="aspectFit"
           />
           <text class="live-landscape-collapsed-header__count">{{ displayViewerCount }}</text>
@@ -301,7 +287,7 @@
         <view class="live-landscape-collapsed-header__restore" @click.stop="toggleCollapse">
           <image
             class="live-landscape-collapse__image live-landscape-collapse__image--flipped"
-            src="/static/icons/competitor-live/hall-room-up.png"
+            src="https://man.lqjy.cc/static/icons/competitor-live/hall-room-up.png"
             mode="aspectFit"
           />
         </view>
@@ -649,7 +635,7 @@
       :class="{ 'buying-notice--leave': buyingNotice.leaving }"
     >
       <view class="buying-notice__content">
-        <image class="buying-notice__icon" src="/static/icons/shopping-icon.png" mode="aspectFit" />
+        <image class="buying-notice__icon" src="https://man.lqjy.cc/static/icons/shopping-icon.png" mode="aspectFit" />
         <text class="buying-notice__nick">{{ buyingNotice.nick }}</text>
         <text v-if="buyingNotice.count > 1" class="buying-notice__text">等{{ buyingNotice.count }}人</text>
         <text class="buying-notice__text">{{ buyingNotice.noticeText || '正在去购买' }}</text>
@@ -665,7 +651,7 @@
       <view class="goods-shopping-li">
         <view class="toShopping">
           <view v-if="goShoppingNotice.productImage" class="goods-thumb">
-            <image class="goodsPic" :src="goShoppingNotice.productImage" mode="aspectFill" />
+            <image id="goodsPic" class="goodsPic" :src="goShoppingNotice.productImage" mode="aspectFill" />
           </view>
           <view class="shoppingText">
             <view class="shoppingTextName">
@@ -719,6 +705,7 @@ import LiveExternalLotteryTools from "./LiveExternalLotteryTools.vue";
 import LiveMarqueeAd from "./LiveMarqueeAd.vue";
 import LiveProductShelf from "./LiveProductShelf.vue";
 import { isLiveCoverOnlyStatusText } from "../utils/entry-format.js";
+import { LIVE_PLAYER_READY_CODES, hasLivePlayerNetActivity } from "../utils/live-player-status.js";
 import { isLivePlayerSource } from "@/utils/live-route.js";
 
 const props = defineProps({
@@ -727,33 +714,6 @@ const props = defineProps({
 });
 
 const BUY_POPUP_Z_INDEX = 100000000;
-const LIVE_PLAYER_READY_CODES = [2003, 2004, 2007, 2008];
-const LIVE_PLAYER_NET_ACTIVITY_FIELDS = [
-  ["videoBitrate", "videoKBitrate", "videoBitrateKbps", "VIDEO_BITRATE", "VIDEO_KBITRATE", "VIDEO_BITRATE_KBPS", "video_bitrate", "video_kbitrate", "video_bitrate_kbps"],
-  ["audioBitrate", "audioKBitrate", "audioBitrateKbps", "AUDIO_BITRATE", "AUDIO_KBITRATE", "AUDIO_BITRATE_KBPS", "audio_bitrate", "audio_kbitrate", "audio_bitrate_kbps"],
-  ["videoFPS", "fps", "VIDEO_FPS", "FPS", "video_fps"],
-  ["netSpeed", "netJitter", "NET_SPEED", "NET_JITTER", "net_speed", "net_jitter"],
-  ["videoWidth", "width", "VIDEO_WIDTH", "video_width"],
-  ["videoHeight", "height", "VIDEO_HEIGHT", "video_height"],
-];
-
-function firstNumericField(source, fields) {
-  if (!source) return 0;
-  for (const field of fields) {
-    const raw = source[field];
-    if (raw === undefined || raw === null || raw === "") continue;
-    const value = Number(raw);
-    if (Number.isFinite(value)) return value;
-    const parsed = Number.parseFloat(raw);
-    if (Number.isFinite(parsed)) return parsed;
-  }
-  return 0;
-}
-
-function hasLivePlayerNetActivity(info) {
-  return LIVE_PLAYER_NET_ACTIVITY_FIELDS.some((fields) => firstNumericField(info, fields) > 0);
-}
-
 const {
   mode, accessDenied, isWechatH5, isIOS, anchorName, anchorAvatar, likeCount, isWaitingSchedule,
   warmUpVideoUrl, roomSetting, viewerCountAnimating, displayViewerCount, displayVideoUrl, mediaSourceComponent, mediaSourceType, videoRenderKey, isReplay,

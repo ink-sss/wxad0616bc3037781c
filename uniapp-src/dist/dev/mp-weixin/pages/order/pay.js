@@ -2,7 +2,6 @@
 const common_vendor = require("../../common/vendor.js");
 const api_order = require("../../api/order.js");
 const services_paymentAction = require("../../services/payment-action.js");
-const services_h5AuthContext = require("../../services/h5-auth-context.js");
 const utils_liveRoomContext = require("../../utils/live-room-context.js");
 const utils_liveRoomNavigation = require("../../utils/live-room-navigation.js");
 if (!Math) {
@@ -113,8 +112,6 @@ const _sfc_main = {
       utils_liveRoomNavigation.returnToLiveRoom(code);
     }
     common_vendor.onLoad(async (query) => {
-      if (!services_h5AuthContext.ensureH5PageAuth(query))
-        return;
       orderNo.value = (query == null ? void 0 : query.orderNo) || "";
       orderId.value = Number((query == null ? void 0 : query.orderId) || (query == null ? void 0 : query.id)) || 0;
       liveRoomCode.value = utils_liveRoomContext.resolveLiveRoomCode(query == null ? void 0 : query.roomCode);

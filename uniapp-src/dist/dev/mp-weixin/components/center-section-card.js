@@ -1,6 +1,5 @@
 "use strict";
 const common_vendor = require("../common/vendor.js");
-const common_assets = require("../common/assets.js");
 if (!Array) {
   const _easycom_wd_badge2 = common_vendor.resolveComponent("wd-badge");
   _easycom_wd_badge2();
@@ -58,10 +57,9 @@ const _sfc_main = {
             d: common_vendor.n(index > 0 ? "list-item-border" : ""),
             e: common_vendor.o(($event) => emit("item-click", item), item.key)
           };
-        }),
-        h: common_assets._imports_1$3
+        })
       }, {
-        i: common_vendor.n(variantClass.value)
+        h: common_vendor.n(variantClass.value)
       });
     };
   }

@@ -35,7 +35,7 @@ const _sfc_main = {
       return this.loading ? "loading" : this.product_list.length && this.no_more ? "noMore" : "more";
     },
     defaultLogo() {
-      return (this.config && this.config.pic_url ? this.config.pic_url : "") + "/static/shop-default.png";
+      return (this.config && this.config.pic_url ? this.config.pic_url : "") + "/shop-default.png";
     }
   },
   onLoad(query = {}) {

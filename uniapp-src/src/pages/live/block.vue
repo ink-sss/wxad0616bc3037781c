@@ -1,6 +1,6 @@
 <template>
   <view class="blocked">
-    <image class="blocked-img" src="https://weilive.yukelive.com/static/addBlack.png" />
+    <image class="blocked-img" src="https://man.lqjy.cc/static/addBlack.png" />
     <view class="blocked-text">您当前已被拉黑</view>
     <button class="blocked-btn" type="warn" @tap="goIndex">知道了</button>
   </view>

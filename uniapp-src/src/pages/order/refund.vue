@@ -120,7 +120,7 @@
             <image
               v-if="tempReason === reason"
               class="reason-radio-icon"
-              src="/static/icons/check.svg"
+              src="https://man.lqjy.cc/static/icons/check.svg"
               mode="aspectFit"
             />
           </view>
@@ -139,11 +139,10 @@ import { onLoad } from "@dcloudio/uni-app";
 import BottomSheetPopup from "@/components/bottom-sheet-popup.vue";
 import { getOrderDetail } from "@/api/order";
 import { applyRefund, uploadRefundImage } from "@/api/refund";
-import { ensureH5PageAuth } from "@/services/h5-auth-context";
 import { chooseImage as chooseMpImage } from "@/platform/weixin/file";
 
 const defaultImage =
-  "/static/remote-icons/figma-product-placeholder.png";
+  "https://man.lqjy.cc/static/remote-icons/figma-product-placeholder.png";
 
 const orderId = ref(0);
 const orderItemId = ref(0);
@@ -196,7 +195,6 @@ async function loadOrderInfo(id) {
 }
 
 onLoad((options) => {
-  if (!ensureH5PageAuth(options)) return;
   if (options?.orderId) {
     orderId.value = Number(options.orderId);
     loadOrderInfo(orderId.value);

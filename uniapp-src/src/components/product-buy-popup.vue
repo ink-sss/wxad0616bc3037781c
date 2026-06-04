@@ -24,7 +24,7 @@
         <scroll-view class="popup-scroll" scroll-y :show-scrollbar="false">
           <view v-if="props.requireAddress !== 2" class="address-section" @click="emit('select-address')">
             <view class="address-card">
-              <image class="address-icon" src="./static/icons/address.svg" mode="aspectFit" />
+              <image class="address-icon" src="https://man.lqjy.cc/static/icons/address.svg" mode="aspectFit" />
               <view class="address-main">
                 <text class="address-text" :class="{ 'address-empty': !addressText }">
                   {{ addressDisplay.address || "请选择收货地址" }}
@@ -33,7 +33,7 @@
                   {{ addressDisplay.contact }}
                 </text>
               </view>
-              <image class="address-arrow" src="./static/icons/right.svg" mode="aspectFit" />
+              <image class="address-arrow" src="https://man.lqjy.cc/static/icons/right.svg" mode="aspectFit" />
             </view>
           </view>
 
@@ -89,7 +89,7 @@
               >
                 <image
                   class="qty-icon-img"
-                  src="./static/icons/minus.svg"
+                  src="https://man.lqjy.cc/static/icons/minus.svg"
                   mode="aspectFit"
                 />
               </view>
@@ -101,7 +101,7 @@
               >
                 <image
                   class="qty-icon-img"
-                  src="./static/icons/add.svg"
+                  src="https://man.lqjy.cc/static/icons/add.svg"
                   mode="aspectFit"
                 />
               </view>
@@ -132,7 +132,7 @@
               >
                 {{ couponDisplayText }}
               </text>
-              <image class="coupon-arrow" src="./static/icons/right.svg" mode="aspectFit" />
+              <image class="coupon-arrow" src="https://man.lqjy.cc/static/icons/right.svg" mode="aspectFit" />
             </view>
           </view>
 

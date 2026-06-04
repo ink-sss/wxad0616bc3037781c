@@ -5,7 +5,7 @@
         <view class="list column-5">
           <view v-for="(item, index) in orderItem" :key="item.pop" class="item" @tap="openLink(item.url)">
             <view class="item-image">
-              <image lazy-load mode="widthFix" :src="`/static/order/${styleType}-${index}.png`" />
+              <image lazy-load mode="widthFix" :src="`https://man.lqjy.cc/static/order/${styleType}-${index}.png`" />
               <block v-if="orderCount">
                 <text v-if="orderCount[item.pop] != null && Number(orderCount[item.pop]) > 0" class="dot">{{ orderCount[item.pop] }}</text>
               </block>

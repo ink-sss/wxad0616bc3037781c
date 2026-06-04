@@ -1,5 +1,6 @@
 "use strict";
 const common_vendor = require("../../../common/vendor.js");
+const services_miniprogramProducts = require("../../../services/miniprogram-products.js");
 const _sfc_main = {
   data() {
     return {
@@ -90,19 +91,23 @@ const _sfc_main = {
     },
     getData() {
       this.loading = true;
-      this._get("product.product/lists", {
+      services_miniprogramProducts.fetchProducts({
         page: this.page || 1,
-        category_id: this.category_id,
+        categoryId: this.category_id || "",
         search: this.search,
         sortType: this.sortType,
         sortPrice: this.sortPrice,
-        list_rows: this.list_rows
-      }, (res) => {
+        pageSize: this.list_rows
+      }).then((data) => {
+        const list = services_miniprogramProducts.normalizeProductList(data || {}, this.list_rows);
         this.loading = false;
-        this.listData = this.listData.concat(res.data.list.data);
-        this.last_page = res.data.list.last_page;
-        if (res.data.list.last_page <= 1)
+        this.listData = this.listData.concat(list.data);
+        this.last_page = list.last_page;
+        if (list.last_page <= 1 || this.page >= list.last_page)
           this.no_more = true;
+      }).catch(() => {
+        this.loading = false;
+        this.no_more = true;
       });
     },
     gotoList(productId) {

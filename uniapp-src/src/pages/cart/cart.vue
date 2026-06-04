@@ -44,12 +44,12 @@
                       <view class="price fb flex-1">¥<text class="num">{{ item.product_price }}</text></view>
                       <view class="num-wrap">
                         <view class="d-c-c" @tap.stop="reduceFunc(item)">
-                          <image v-if="item.total_num > 1" lazy-load class="reduce_icon" mode="" src="/static/icon/reduce.png" />
-                          <image v-else lazy-load class="reduce_icon" mode="" src="/static/icon/reduce-gray.png" />
+                          <image v-if="item.total_num > 1" lazy-load class="reduce_icon" mode="" src="https://man.lqjy.cc/static/icon/reduce.png" />
+                          <image v-else lazy-load class="reduce_icon" mode="" src="https://man.lqjy.cc/static/icon/reduce-gray.png" />
                         </view>
                         <view class="text-wrap">{{ item.total_num }}</view>
                         <view v-if="item.product_sku && item.total_num < item.product_sku.stock_num" class="d-c-c" @tap.stop="addFunc(item)">
-                          <image lazy-load class="add_icon" mode="" src="/static/icon/add.png" />
+                          <image lazy-load class="add_icon" mode="" src="https://man.lqjy.cc/static/icon/add.png" />
                         </view>
                       </view>
                     </view>
@@ -61,7 +61,7 @@
         </template>
 
         <view v-else class="none-data-box cart_none">
-          <image lazy-load class="cart_none_img" mode="widthFix" :src="config.pic_url + '/static/list-null.png'" />
+          <image lazy-load class="cart_none_img" mode="widthFix" :src="config.pic_url + '/list-null.png'" />
           <view class="f26 gray9 pt10">购物车为空</view>
           <view class="f26 gray9 pt10">赶紧去逛逛，购买心仪的商品吧</view>
           <button class="theme-btn mt30 none_btn" @tap="gotoShop">去逛逛</button>
@@ -78,7 +78,6 @@
               <text class="f28 gray3 w-nr">合计：</text>
               <view class="price fb f26">¥<text class="num f40">{{ totalPrice }}</text></view>
             </view>
-            <button class="buy-btn theme-btn" type="primary" @tap="Submit">去结算</button>
           </view>
           <view v-else class="pr20">
             <button class="delete-btn theme-btn mr20" type="primary" @tap="onDelete">删除</button>
@@ -98,6 +97,12 @@
 import RecommendProduct from '../../components/recommendProduct/recommendProduct.vue'
 import RequestLoading from '../../components/liveloading.vue'
 import TabBar from '../../components/tabbar/footTabbar.vue'
+import {
+  decrementLocalCartItem,
+  getLocalCartSummary,
+  incrementLocalCartItem,
+  removeLocalCartItems
+} from '../../services/local-cart.js'
 
 export default {
   components: {
@@ -128,19 +133,16 @@ export default {
   methods: {
     getData() {
       this.isloadding = true
-      this._get('order.cart/lists', {}, (res) => {
-        this.isloadding = false
-        this.tableData = res.data.productList || []
-        this.store_open = res.data.store_open
-        this.totalNum = res.data.totalNum
-        this.tableData.forEach((supplier) => {
-          supplier.checked = false
-        })
-        this.loadding = false
-        this._initGoodsChecked()
-      }, () => {
-        this.getData()
+      const summary = getLocalCartSummary()
+      this.isloadding = false
+      this.tableData = summary.productList || []
+      this.store_open = 0
+      this.totalNum = summary.totalNum
+      this.tableData.forEach((supplier) => {
+        supplier.checked = false
       })
+      this.loadding = false
+      this._initGoodsChecked()
     },
     _initGoodsChecked() {
       const checkedIds = this.getCheckedData()
@@ -214,40 +216,16 @@ export default {
       this.totalPrice = total.toFixed(2)
     },
     Submit() {
-      const ids = this.getCheckedIds()
-      if (ids.length === 0) {
-        uni.showToast({ title: '请选择商品', icon: 'none' })
-        return false
-      }
-      this.gotoPage('/pages/order/confirm-order?order_type=cart&cart_ids=' + ids)
+      uni.showToast({ title: '购物车暂不支持结算', icon: 'none' })
     },
     addFunc(item) {
-      uni.showLoading({ title: '加载中' })
-      this._post('order.cart/add', {
-        product_id: item.product_id,
-        spec_sku_id: item.spec_sku_id,
-        total_num: 1
-      }, () => {
-        uni.hideLoading()
-        this.loadding = false
-        this.getData()
-      }, () => {
-        this.loadding = false
-      })
+      incrementLocalCartItem(item)
+      this.getData()
     },
     reduceFunc(item) {
       if (item.total_num <= 1) return
-      uni.showLoading({ title: '加载中' })
-      this._post('order.cart/sub', {
-        product_id: item.product_id,
-        spec_sku_id: item.spec_sku_id
-      }, () => {
-        this.loadding = false
-        uni.hideLoading()
-        this.getData()
-      }, () => {
-        this.loadding = false
-      })
+      decrementLocalCartItem(item)
+      this.getData()
     },
     onDelete() {
       const ids = this.getCheckedIds()
@@ -260,10 +238,8 @@ export default {
         content: '您确定要移除选择的商品吗?',
         success: (modal) => {
           if (modal.confirm) {
-            this._post('order.cart/delete', { cart_id: ids.join() }, () => {
-              this.getData()
-              this.onDeleteEvent(ids)
-            })
+            removeLocalCartItems(ids)
+            this.getData()
           }
         }
       })

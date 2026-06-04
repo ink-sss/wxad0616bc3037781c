@@ -15,7 +15,7 @@ export default {
   },
   computed: {
     avatar() {
-      return this.detail.author_avatarUrl || this.detail.avatar || this.detail.logo || 'https://weilive.yukelive.com/static/live/default_logo.jpeg'
+      return this.detail.author_avatarUrl || this.detail.avatar || this.detail.logo || 'https://man.lqjy.cc/static/live/default_logo.jpeg'
     },
   },
 }

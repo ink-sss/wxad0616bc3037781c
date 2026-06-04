@@ -45,6 +45,57 @@ import LiveTab from '../../components/liveTab.vue'
 import TabBar from '../../components/tabbar/footTabbar.vue'
 import { scanQrCode } from '../../platform/weixin/scan'
 
+function defaultHomeItems() {
+  return [
+    {
+      type: 'search',
+      params: {
+        title_type: 'text',
+        title: '首页',
+        searchText: '搜索商品'
+      },
+      style: {
+        background: '#ffcc00',
+        searchBackGround: '#ffffff',
+        searchColor: '#999999',
+        titleTextColor: '#333333',
+        paddingLeft: 0,
+        paddingTop: 0,
+        paddingBottom: 0
+      }
+    },
+    {
+      type: 'product',
+      data: [],
+      params: {
+        column: 2,
+        productName: true,
+        productPrice: true,
+        linePrice: true,
+        productSales: true,
+        comment: false,
+        showCart: 0
+      },
+      style: {
+        background: '#f7f7f7',
+        bgcolor_color1: '#ffffff',
+        bgcolor_color2: '#ffffff',
+        product_name_color: '#333333',
+        product_price_color: '#ff5704',
+        line_price_color: '#999999',
+        product_sales_color: '#999999',
+        paddingLeft: 10,
+        paddingTop: 10,
+        paddingBottom: 20,
+        topRadio: 8,
+        bottomRadio: 8,
+        productTopRadio: 8,
+        productBottomRadio: 0
+      }
+    }
+  ]
+}
+
 export default {
   components: {
     Diy,
@@ -136,44 +187,28 @@ export default {
       uni.hideLoading()
       uni.stopPullDownRefresh()
     },
+    applyDefaultTheme() {
+      uni.setStorageSync('theme', 2)
+      if (this.$store?.commit) this.$store.commit('changeTheme', 2)
+    },
     getData() {
-      if (typeof this._get !== 'function') {
-        this.finishLoading('页面初始化失败，请稍后重试')
-        return
-      }
       this.loadError = ''
       uni.showLoading({ title: '加载中' })
-      this._get('index/index', { url: this.url }, (res) => {
-        const data = res.data || {}
-        this.items = data.items || []
-        this.homeShare = (data.page && data.page.params) || {}
-        if (data.page) this.setPage(data.page)
-        const setting = data.setting || {}
-        if (uni.getStorageSync('isFirst') === '' && setting.collection && setting.collection.status === '1') {
-          this.is_collection = true
-          uni.setStorageSync('isFirst', 1)
-        }
-        this.is_follow = setting.officia ? setting.officia.status : '0'
-        const homepushName = uni.getStorageSync('homepush_name')
-        if (setting.homepush && setting.homepush.is_open && homepushName !== setting.homepush.name) {
-          this.homepush_data = setting.homepush
-          this.is_homepush = true
-        }
-        this.finishLoading()
-      }, () => {
-        this.finishLoading('首页加载失败，点击重试')
-      }, (result = {}) => {
-        if (this.loading && (!result.data || result.data.code !== 1)) {
-          this.finishLoading('首页加载失败，点击重试')
-        }
-      })
+      this.applyDefaultTheme()
+      this.items = defaultHomeItems()
+      this.homeShare = { share_title: '首页', share_img: '' }
+      this.is_collection = false
+      this.is_follow = '0'
+      this.is_homepush = false
+      this.setPage({ params: { name: '首页' } })
+      this.finishLoading()
     },
     setPage(page) {
       const params = page.params || {}
       uni.setNavigationBarTitle({ title: params.name || '首页' })
       uni.setNavigationBarColor({
-        frontColor: '#ffffff',
-        backgroundColor: '#ffffff'
+        frontColor: '#000000',
+        backgroundColor: '#ffcc00'
       })
     },
     toggleInit() {

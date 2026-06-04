@@ -50,13 +50,13 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return common_vendor.e({
     a: $data.wechat_share
   }, $data.wechat_share ? {
-    b: _ctx.config.pic_url + "/static/share.png"
+    b: _ctx.config.pic_url + "/share.png"
   } : {}, {
-    c: common_vendor.o((...args) => $options.share && $options.share(...args), "85"),
-    d: common_vendor.o((...args) => $options.genePoster && $options.genePoster(...args), "b3"),
-    e: common_vendor.o(($event) => $options.closePopup(1), "b0"),
+    c: common_vendor.o((...args) => $options.share && $options.share(...args), "90"),
+    d: common_vendor.o((...args) => $options.genePoster && $options.genePoster(...args), "79"),
+    e: common_vendor.o(($event) => $options.closePopup(1), "e8"),
     f: common_vendor.o(() => {
-    }, "8f"),
+    }, "40"),
     g: common_vendor.n($data.Visible ? "open" : "close"),
     h: common_vendor.o((...args) => $options.closePopup && $options.closePopup(...args), "09")
   });

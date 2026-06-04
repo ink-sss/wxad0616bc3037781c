@@ -3,14 +3,9 @@ const common_vendor = require("../../../common/vendor.js");
 const pages_broadcast_composables_useLivePurchase = require("./useLivePurchase.js");
 const utils_liveRoute = require("../../../utils/live-route.js");
 const services_bindid = require("../../../services/bindid.js");
+const services_h5AuthContext = require("../../../services/h5-auth-context.js");
+const utils_liveRoomContext = require("../../../utils/live-room-context.js");
 const PRELOAD_DETAIL_TTL_MS = 3e4;
-const DEFAULT_DEBUG_LIVE_ENTRY = {
-  roomCode: "wusrc6dh3wxd",
-  tenantId: "15",
-  liveType: "live",
-  _tc: "xthxirwe9f",
-  wx_token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b21lcklkIjoxNTMsInRlbmFudElkIjoxNSwib3BlbklkIjoib2U3XzAyLWZ4eXNGLUpOLURKUEd6ZENRZmxiayIsInVuaW9uSWQiOiJvTXgxVTJXT0taZ3RDWnVTOFIyX1BxZEt5bGswIiwicGhvbmUiOiIiLCJuaWNrbmFtZSI6IuaZtOWkqSIsImJ1ZmZlclRpbWUiOjg2NDAwLCJpc3MiOiJxbVBsdXMiLCJhdWQiOlsiSDUiXSwiZXhwIjoxNzgwOTk1MjQwLCJuYmYiOjE3ODAzOTA0NDB9.zcKD3cXW7aXZc8Opwwygo2kZLj6f54KcPuwRNtn2bBU"
-};
 let moduleLevelPreloadedDetail = null;
 function consumePreloadedLiveDetail(roomCode) {
   if (!moduleLevelPreloadedDetail)
@@ -41,22 +36,81 @@ function isTestLiveEntryRequested(options = {}) {
 function getDebugLiveEntryConfig() {
   try {
     return {
-      roomCode: String(common_vendor.index.getStorageSync("debug_live_room_code") || DEFAULT_DEBUG_LIVE_ENTRY.roomCode || "").trim(),
-      tenantId: String(common_vendor.index.getStorageSync("debug_live_tenant_id") || DEFAULT_DEBUG_LIVE_ENTRY.tenantId || "").trim(),
-      liveType: String(common_vendor.index.getStorageSync("debug_live_type") || DEFAULT_DEBUG_LIVE_ENTRY.liveType || "live").trim(),
-      _tc: String(common_vendor.index.getStorageSync("debug_live_tc") || DEFAULT_DEBUG_LIVE_ENTRY._tc || "").trim(),
-      wx_token: String(common_vendor.index.getStorageSync("debug_live_wx_token") || DEFAULT_DEBUG_LIVE_ENTRY.wx_token || "").trim()
+      roomCode: String(common_vendor.index.getStorageSync("debug_live_room_code") || "").trim(),
+      tenantId: String(common_vendor.index.getStorageSync("debug_live_tenant_id") || "").trim(),
+      liveType: String(common_vendor.index.getStorageSync("debug_live_type") || "").trim(),
+      _tc: String(common_vendor.index.getStorageSync("debug_live_tc") || "").trim(),
+      wx_token: String(common_vendor.index.getStorageSync("debug_live_wx_token") || "").trim()
     };
   } catch (e) {
-    return { ...DEFAULT_DEBUG_LIVE_ENTRY };
+    return { roomCode: "", tenantId: "", liveType: "", _tc: "", wx_token: "" };
   }
 }
+function getQueryToken(options = {}) {
+  return options.wx_token || options.wxToken || options.h5_token || options.h5Token || options.token || "";
+}
+function buildLiveEntryContext(options = {}) {
+  const roomCode = options.roomCode || options.code || options.room_code || "";
+  const liveId = options.liveId || options.live_id || options.roomId || options.room_id || options.id || "";
+  const roomId = options.roomId || options.room_id || liveId || "";
+  const cover = options.cover || options.liveCover || "";
+  const context = {
+    ...options,
+    roomCode,
+    room_code: roomCode,
+    liveId,
+    live_id: liveId,
+    roomId,
+    room_id: roomId,
+    tenantId: options.tenantId || options.tenant_id || "",
+    tenant_id: options.tenantId || options.tenant_id || "",
+    liveType: options.liveType || options.live_type || "",
+    live_type: options.liveType || options.live_type || "",
+    _tc: options._tc || options.tc || "",
+    cover,
+    liveCover: options.liveCover || cover
+  };
+  stripRuntimeOnlyParams(context, [
+    "scene",
+    "wx_token",
+    "wxToken",
+    "h5_token",
+    "h5Token",
+    "token",
+    "accessToken",
+    "access_token",
+    "authToken",
+    "jwt",
+    "jwtToken",
+    "authorization",
+    "Authorization",
+    "X-Token",
+    "x-token",
+    "xToken",
+    "wx_expires"
+  ]);
+  return context;
+}
+function hasLiveEntryContext(options = {}) {
+  const context = buildLiveEntryContext(options);
+  return !!(context.roomCode || context.liveId || context.tenantId || context._tc || context.liveType || context.cover);
+}
 function persistQueryToken(options, ctx) {
-  const token = (options == null ? void 0 : options.wx_token) || (options == null ? void 0 : options.token) || "";
+  const token = getQueryToken(options);
   if (!token)
     return;
-  ctx.userStore.setToken(token);
-  stripRuntimeOnlyParams(options, ["wx_token", "wx_expires"]);
+  const result = services_h5AuthContext.syncH5AuthSession({ ...options, wx_token: token, token });
+  if (!ctx.userStore.token) {
+    ctx.userStore.setToken((result == null ? void 0 : result.token) || token);
+  }
+}
+function persistLiveEntryContext(options) {
+  if (!hasLiveEntryContext(options))
+    return null;
+  const context = buildLiveEntryContext(options);
+  const saved = services_h5AuthContext.saveH5AuthContext(context);
+  utils_liveRoomContext.saveLiveRoomContext(context);
+  return saved;
 }
 function handleWxAddressReturn(options, ctx) {
   const wxAddrDoneRaw = options.wxAddrDone;
@@ -97,8 +151,12 @@ async function handleUrlBindId(options, ctx) {
   if (!urlBindId)
     return;
   persistUrlBindId(urlBindId);
-  if (options.wx_token && !ctx.userStore.token) {
-    ctx.userStore.setToken(options.wx_token);
+  const token = getQueryToken(options);
+  if (token && !ctx.userStore.token) {
+    const result = services_h5AuthContext.syncH5AuthSession({ ...options, wx_token: token, token });
+    if (!ctx.userStore.token) {
+      ctx.userStore.setToken((result == null ? void 0 : result.token) || token);
+    }
   }
   if (!ctx.userStore.token) {
     try {
@@ -107,7 +165,7 @@ async function handleUrlBindId(options, ctx) {
     } catch (e) {
     }
   }
-  stripRuntimeOnlyParams(options, ["bindId", "bind_id", "wx_token", "wx_expires"]);
+  stripRuntimeOnlyParams(options, ["bindId", "bind_id"]);
 }
 async function preloadLiveTenant(options, getLiveDetail) {
   let preloadTenantId = 0;
@@ -189,22 +247,26 @@ function applyDebugLiveEntryOptions(options, ctx) {
     ...options,
     roomCode,
     tenantId: options.tenantId || debugEntry.tenantId,
-    liveType: options.liveType || debugEntry.liveType || "live",
-    _tc: options._tc || debugEntry._tc,
-    wx_token: options.wx_token || debugEntry.wx_token
+    liveType: options.liveType || debugEntry.liveType,
+    _tc: options._tc || debugEntry._tc
   };
+  const debugToken = options.wx_token || options.wxToken || debugEntry.wx_token;
+  if (debugToken)
+    nextOptions.wx_token = debugToken;
   if (nextOptions.wx_token) {
-    ctx.userStore.setToken(nextOptions.wx_token);
+    services_h5AuthContext.syncH5AuthSession({ ...nextOptions, wx_token: nextOptions.wx_token, token: nextOptions.wx_token });
   }
   return nextOptions;
 }
 async function runLiveEntryBootstrap(options, ctx) {
   options = utils_liveRoute.normalizeLiveRouteOptions({ ...options || {} });
-  options = applyDebugLiveEntryOptions(options, ctx);
-  persistQueryToken(options, ctx);
+  options = applyDebugLiveEntryOptions(options);
   handleWxAddressReturn(options, ctx);
   handleSubscribeBack(options, ctx);
   await handleUrlBindId(options, ctx);
+  persistQueryToken(options, ctx);
+  persistLiveEntryContext(options);
+  stripRuntimeOnlyParams(options, ["wx_token", "wxToken", "h5_token", "h5Token", "wx_expires"]);
   if (await redirectToLoginIfNeeded(options, ctx))
     return;
   setupViewportState(ctx);

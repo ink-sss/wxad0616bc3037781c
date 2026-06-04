@@ -103,12 +103,12 @@ const props = defineProps({
 const emit = defineEmits(["close"]);
 
 const image = {
-  countDown: "./static/remote-icons/i-nuoyun-shake-countdown-10.png",
-  gesture: "./static/remote-icons/i-nuoyun-shake-gesture.png",
-  startBottom: "./static/remote-icons/i-nuoyun-shake-start-bottom.png",
-  iconClose: "./static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-icon-close-0cb4224d.png",
-  gift: "./static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-sign-gift-5def5533.png",
-  receive: "./static/remote-icons/i-nuoyun-shake-receive.png"
+  countDown: "https://man.lqjy.cc/static/remote-icons/i-nuoyun-shake-countdown-10.png",
+  gesture: "https://man.lqjy.cc/static/remote-icons/i-nuoyun-shake-gesture.png",
+  startBottom: "https://man.lqjy.cc/static/remote-icons/i-nuoyun-shake-start-bottom.png",
+  iconClose: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-icon-close-0cb4224d.png",
+  gift: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-sign-gift-5def5533.png",
+  receive: "https://man.lqjy.cc/static/remote-icons/i-nuoyun-shake-receive.png"
 };
 
 function openPrizeRecord() {
@@ -142,7 +142,7 @@ function openPrizeRecord() {
   margin: 0 auto 30rpx;
   padding-top: 290rpx;
   box-sizing: border-box;
-  background: url("../static/remote-icons/i-nuoyun-shake-success.png") no-repeat;
+  background: url("https://man.lqjy.cc/static/remote-icons/i-nuoyun-shake-success.png") no-repeat;
   background-size: 100% 100%;
 }
 
@@ -196,7 +196,7 @@ function openPrizeRecord() {
   width: 470rpx;
   height: 518rpx;
   margin: 0 auto 48rpx;
-  background: url("../static/remote-icons/i-nuoyun-shake-fail.png") no-repeat;
+  background: url("https://man.lqjy.cc/static/remote-icons/i-nuoyun-shake-fail.png") no-repeat;
   background-size: 100% 100%;
 }
 
@@ -213,7 +213,7 @@ function openPrizeRecord() {
   margin: 0 auto;
   padding-top: 60rpx;
   box-sizing: border-box;
-  background: url("../static/remote-icons/i-nuoyun-shake-start-bc.png") no-repeat;
+  background: url("https://man.lqjy.cc/static/remote-icons/i-nuoyun-shake-start-bc.png") no-repeat;
   background-size: 100% 100%;
 }
 
@@ -298,7 +298,7 @@ function openPrizeRecord() {
   height: 88rpx;
   font-size: 32rpx;
   font-weight: 500;
-  background: url("../static/remote-icons/i-nuoyun-shake-explain-bc.png") no-repeat;
+  background: url("https://man.lqjy.cc/static/remote-icons/i-nuoyun-shake-explain-bc.png") no-repeat;
   background-size: 100% 100%;
 }
 
@@ -387,7 +387,7 @@ function openPrizeRecord() {
 .shakePerfectCenter {
   padding-bottom: 68rpx;
   border-radius: 48rpx;
-  background: url("../static/remote-icons/nyfs-oss-bcvdata-com-wechat-live-themenew-shakeperfectcenterbg-8f8ff185.png") no-repeat;
+  background: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-wechat-live-themenew-shakeperfectcenterbg-8f8ff185.png") no-repeat;
   background-size: cover;
 }
 

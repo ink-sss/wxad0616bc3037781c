@@ -19,7 +19,7 @@
         <view class="center-entry" @click="onAction('profile')">
           <image
             class="entry-icon"
-            src="./static/icons/center.svg"
+            src="https://man.lqjy.cc/static/icons/center.svg"
             mode="aspectFit"
           />
           <text class="entry-text">个人中心</text>
@@ -76,39 +76,39 @@ const orderItems = computed(() => [
   {
     key: "unpay",
     label: "待付款",
-    icon: "./static/icons/order_0.png",
+    icon: "https://man.lqjy.cc/static/icons/order_0.png",
     badge: Number(props.orderStats?.waitPay || 0),
   },
   {
     key: "unsend",
     label: "待发货",
-    icon: "./static/icons/order_1.png",
+    icon: "https://man.lqjy.cc/static/icons/order_1.png",
     badge: Number(props.orderStats?.waitShip || 0),
   },
   {
     key: "unreceive",
     label: "待收货",
-    icon: "./static/icons/order_2.png",
+    icon: "https://man.lqjy.cc/static/icons/order_2.png",
     badge: Number(props.orderStats?.waitReceive || 0),
   },
-  { key: "finished", label: "已完成", icon: "./static/icons/order_3.png" },
+  { key: "finished", label: "已完成", icon: "https://man.lqjy.cc/static/icons/order_3.png" },
   {
     key: "refund",
     label: "退款/售后",
-    icon: "./static/icons/order_4.png",
+    icon: "https://man.lqjy.cc/static/icons/order_4.png",
     badge: Number(props.orderStats?.refunding || 0),
   },
 ]);
 
 const moreItems = computed(() => {
   const items = [
-    { key: "prizeRecord", label: "中奖记录", icon: "./static/icons/more1.png" },
+    { key: "prizeRecord", label: "中奖记录", icon: "https://man.lqjy.cc/static/icons/more1.png" },
   ];
    if (props.enableShare !== 0 && props.isDistributor && props.distributorStatus === 1) {
-    items.push({ key: "invitationRecord", label: "邀请记录", icon: "./static/icons/more2.png" });
+    items.push({ key: "invitationRecord", label: "邀请记录", icon: "https://man.lqjy.cc/static/icons/more2.png" });
   }
-  items.push({ key: "address", label: "收货地址", icon: "./static/icons/more3.png" });
-  items.push({ key: "complaint", label: "投诉", icon: "./static/icons/more4.png" });
+  items.push({ key: "address", label: "收货地址", icon: "https://man.lqjy.cc/static/icons/more3.png" });
+  items.push({ key: "complaint", label: "投诉", icon: "https://man.lqjy.cc/static/icons/more4.png" });
   return items;
 });
 

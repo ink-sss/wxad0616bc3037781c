@@ -1,6 +1,7 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
 const platform_weixin_auth = require("../../platform/weixin/auth.js");
+const api_miniprogramLogin = require("../../api/miniprogram-login.js");
 const services_h5Auth = require("../../services/h5-auth.js");
 const services_h5AuthContext = require("../../services/h5-auth-context.js");
 function toast(title) {
@@ -36,42 +37,24 @@ function pluginUserInfo(event = {}) {
   return ((_b = (_a = event == null ? void 0 : event.detail) == null ? void 0 : _a.detail) == null ? void 0 : _b.userInfo) || ((_c = event == null ? void 0 : event.detail) == null ? void 0 : _c.userInfo) || (event == null ? void 0 : event.userInfo) || {};
 }
 function loginWithWechatPluginProfile(vm, event = {}) {
-  if (!vm || typeof vm._post !== "function") {
-    return Promise.reject(new Error("登录组件未初始化"));
-  }
   const userInfo = pluginUserInfo(event);
-  return loginCode().then((code) => new Promise((resolve, reject) => {
-    var _a;
-    const app = getApp();
-    let settled = false;
-    vm._post(
-      "user.user/userLogin",
-      {
-        code,
-        shop_supplier_id: ((_a = app == null ? void 0 : app.globalData) == null ? void 0 : _a.shop_supplier_id) || common_vendor.index.getStorageSync("shop_supplier_id") || "",
-        nickName: userInfo.nickName || userInfo.nickname || "",
-        avatarUrl: userInfo.avatarUrl || userInfo.avatar || ""
-      },
-      (res) => {
-        settled = true;
-        const data = (res == null ? void 0 : res.data) || {};
-        if (!data.token) {
-          reject(new Error("登录接口未返回 token"));
-          return;
-        }
-        saveLoginSession(data);
-        resolve(data);
-      },
-      (error) => {
-        settled = true;
-        reject(error);
-      },
-      () => {
-        if (!settled)
-          reject(new Error("授权失败，请重新登录"));
-      }
-    );
-  }));
+  const profile = {
+    nickName: userInfo.nickName || userInfo.nickname || "",
+    nickname: userInfo.nickname || userInfo.nickName || "",
+    avatarUrl: userInfo.avatarUrl || userInfo.avatar || "",
+    avatar: userInfo.avatar || userInfo.avatarUrl || ""
+  };
+  return loginCode().then((code) => api_miniprogramLogin.loginMiniProgram({
+    code,
+    nickName: profile.nickName,
+    avatarUrl: profile.avatarUrl
+  })).then((data = {}) => {
+    if (!data.token)
+      throw new Error("登录接口未返回 token");
+    const session = { ...profile, ...data };
+    saveLoginSession(session);
+    return session;
+  });
 }
 function buildLoginContext(query = {}, fallback = "/pages/center/index") {
   const redirect = query.redirect || getCurrentRedirect(fallback) || services_h5AuthContext.getCurrentPageUrl(fallback);
@@ -81,7 +64,7 @@ function alreadyH5LoggedIn() {
   return services_h5AuthContext.hasH5Token();
 }
 function redirectAfterExistingH5Login(context = {}) {
-  services_h5AuthContext.redirectAfterH5Login(context);
+  services_h5AuthContext.redirectAfterNativeLogin();
 }
 function redirectAfterSkippedH5Login(context = {}) {
   services_h5AuthContext.redirectAfterH5LoginSkipped(context);
@@ -100,17 +83,28 @@ function phonePayload(event) {
     code: phone.code
   };
 }
+function bindMiniProgramMobile(userId, event) {
+  if (!userId)
+    return Promise.reject(new Error("缺少用户 ID，请重新登录"));
+  const detail = phonePayload(event);
+  return loginCode().then((code) => api_miniprogramLogin.bindMobileMiniProgram({
+    code,
+    user_id: userId,
+    encrypted_data: detail.encrypted_data,
+    iv: detail.iv
+  }));
+}
 function mobileValid(mobile) {
   return /^1(3|4|5|6|7|8|9)\d{9}$/.test(mobile || "");
 }
 exports.alreadyH5LoggedIn = alreadyH5LoggedIn;
+exports.bindMiniProgramMobile = bindMiniProgramMobile;
 exports.buildLoginContext = buildLoginContext;
 exports.getCurrentRedirect = getCurrentRedirect;
 exports.h5MiniWechatLogin = h5MiniWechatLogin;
 exports.loginCode = loginCode;
 exports.loginWithWechatPluginProfile = loginWithWechatPluginProfile;
 exports.mobileValid = mobileValid;
-exports.phonePayload = phonePayload;
 exports.redirectAfterExistingH5Login = redirectAfterExistingH5Login;
 exports.redirectAfterSkippedH5Login = redirectAfterSkippedH5Login;
 exports.saveLoginSession = saveLoginSession;

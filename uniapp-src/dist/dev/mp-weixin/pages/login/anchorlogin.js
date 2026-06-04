@@ -59,19 +59,19 @@ const _sfc_main = {
 };
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return common_vendor.e({
-    a: $data.setting.login_logo || _ctx.config.pic_url + "/static/live/default_logo.jpeg",
+    a: $data.setting.login_logo || _ctx.config.pic_url + "/live/default_logo.jpeg",
     b: common_vendor.t($data.setting.name || "主播登录"),
     c: $data.formData.mobile,
-    d: common_vendor.o(($event) => $data.formData.mobile = $event.detail.value, "09"),
+    d: common_vendor.o(($event) => $data.formData.mobile = $event.detail.value, "c1"),
     e: $data.formData.password,
-    f: common_vendor.o(($event) => $data.formData.password = $event.detail.value, "a5"),
+    f: common_vendor.o(($event) => $data.formData.password = $event.detail.value, "d7"),
     g: $data.submitting,
-    h: common_vendor.o((...args) => $options.formSubmit && $options.formSubmit(...args), "8c"),
+    h: common_vendor.o((...args) => $options.formSubmit && $options.formSubmit(...args), "64"),
     i: $data.isFromIndex
   }, $data.isFromIndex ? {
-    j: common_vendor.o((...args) => $options.createAccount && $options.createAccount(...args), "21")
+    j: common_vendor.o((...args) => $options.createAccount && $options.createAccount(...args), "c4")
   } : {}, {
-    k: common_vendor.o((...args) => $options.goLiveList && $options.goLiveList(...args), "86"),
+    k: common_vendor.o((...args) => $options.goLiveList && $options.goLiveList(...args), "b0"),
     l: _ctx.theme && _ctx.theme()
   });
 }

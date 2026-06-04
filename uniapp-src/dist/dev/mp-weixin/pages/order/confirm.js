@@ -4,7 +4,6 @@ const api_order = require("../../api/order.js");
 const services_paymentAction = require("../../services/payment-action.js");
 const api_address = require("../../api/address.js");
 const services_wechatAddress = require("../../services/wechat-address.js");
-const services_h5AuthContext = require("../../services/h5-auth-context.js");
 const api_product = require("../../api/product.js");
 const utils_liveRoomContext = require("../../utils/live-room-context.js");
 if (!Math) {
@@ -140,8 +139,6 @@ const _sfc_main = {
       }
     }
     common_vendor.onLoad((options) => {
-      if (!services_h5AuthContext.ensureH5PageAuth(options))
-        return;
       applyOrderQuery(options || {});
       if (options == null ? void 0 : options.payload) {
         const parsed = JSON.parse(decodeURIComponent(options.payload));
@@ -160,8 +157,6 @@ const _sfc_main = {
       });
     });
     common_vendor.onShow(async () => {
-      if (!services_h5AuthContext.ensureH5PageAuth())
-        return;
       loadConfirm();
       if (pendingOrderId.value) {
         try {

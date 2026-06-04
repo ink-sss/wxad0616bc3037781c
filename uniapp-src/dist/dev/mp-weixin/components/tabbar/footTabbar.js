@@ -29,9 +29,8 @@ const _sfc_main = {
         common_vendor.index.removeStorageSync("get_phone");
     },
     defaultNav() {
-      var _a, _b;
-      const theme = ((_b = (_a = this.$store) == null ? void 0 : _a.state) == null ? void 0 : _b.theme) || "red";
-      return { backgroundColor: "#FFFFFF", is_auto: "0", textColor: "#000000", textHoverColor: typeof this.getThemeColor === "function" ? this.getThemeColor() : "#f03b2f", type: "0", list: [{ iconPath: "/static/tabbar/home.png", link_url: "/pages/index/index", selectedIconPath: "/static/tabbar/home_" + theme + ".png", text: "首页" }, { iconPath: "/static/tabbar/category.png", link_url: "/pages/product/category", selectedIconPath: "/static/tabbar/category_" + theme + ".png", text: "分类" }, { iconPath: "/static/tabbar/shop.png", is_show: false, link_url: "/pages/shop/shop_list", selectedIconPath: "/static/tabbar/shop_" + theme + ".png", text: "商户" }, { iconPath: "/static/tabbar/cart.png", is_show: true, link_url: "/pages/cart/cart", selectedIconPath: "/static/tabbar/cart_" + theme + ".png", text: "购物车" }, { iconPath: "/static/tabbar/user.png", is_show: true, link_url: "/pages/user/index/index", selectedIconPath: "/static/tabbar/user_" + theme + ".png", text: "我的" }] };
+      const theme = 2;
+      return { backgroundColor: "#FFFFFF", is_auto: "0", textColor: "#000000", textHoverColor: "#ffcc00", type: "0", list: [{ iconPath: "https://man.lqjy.cc/static/tabbar/home.png", link_url: "/pages/index/index", selectedIconPath: "https://man.lqjy.cc/static/tabbar/home_" + theme + ".png", text: "首页" }, { iconPath: "https://man.lqjy.cc/static/tabbar/category.png", link_url: "/pages/product/category", selectedIconPath: "https://man.lqjy.cc/static/tabbar/category_" + theme + ".png", text: "分类" }, { iconPath: "https://man.lqjy.cc/static/tabbar/shop.png", is_show: false, link_url: "/pages/shop/shop_list", selectedIconPath: "https://man.lqjy.cc/static/tabbar/shop_" + theme + ".png", text: "商户" }, { iconPath: "https://man.lqjy.cc/static/tabbar/cart.png", is_show: true, link_url: "/pages/cart/cart", selectedIconPath: "https://man.lqjy.cc/static/tabbar/cart_" + theme + ".png", text: "购物车" }, { iconPath: "https://man.lqjy.cc/static/tabbar/user.png", is_show: true, link_url: "/pages/user/index/index", selectedIconPath: "https://man.lqjy.cc/static/tabbar/user_" + theme + ".png", text: "我的" }] };
     },
     isMerchantVisible(item) {
       return item.is_show === true || item.is_show === 1 || item.is_show === "1";
@@ -40,16 +39,8 @@ const _sfc_main = {
       return remote && String(remote.is_auto) !== "0";
     },
     getData() {
-      if (typeof this._get !== "function") {
-        this.detail = this.defaultNav();
-        return;
-      }
-      this._get("index/nav", {}, (res) => {
-        var _a, _b;
-        const remote = (_b = (_a = res == null ? void 0 : res.data) == null ? void 0 : _a.vars) == null ? void 0 : _b.data;
-        this.detail = this.shouldUseRemoteNav(remote) ? remote : this.defaultNav();
-        common_vendor.index.setStorageSync("TabBar", this.detail);
-      });
+      this.detail = this.defaultNav();
+      common_vendor.index.setStorageSync("TabBar", this.detail);
     },
     isActive(item) {
       return item.link_url === this.currentRoute;

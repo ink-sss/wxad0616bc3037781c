@@ -89,9 +89,9 @@ const props = defineProps({
 
 const emit = defineEmits(["close"]);
 
-const base = "https://nyfs-oss.bcvdata.com/Public/Home/Images";
+const base = "https://man.lqjy.cc/static/Public/Home/Images";
 const image = {
-  avatar: "/static/remote-icons/nyfs-oss-bcvdata-com-uploads-consolewechat-1681-rtf-20260430144045241662-91b0e034.jpg",
+  avatar: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-uploads-consolewechat-1681-rtf-20260430144045241662-91b0e034.jpg",
   redAnimation: `${base}/redRain/redAnimation.png`,
   rotate: `${base}/redRain/rotate.png`,
   circle: `${base}/redRain/circle.png`,
@@ -100,7 +100,7 @@ const image = {
   effectInfo: `${base}/Watch/luckydraw/effectInfo.png`,
   scrollCover: `${base}/Watch/luckydraw/luckScrollImg.png`,
   floorClose: `${base}/Watch/luckydraw/floorClose.png`,
-  element: "/static/remote-icons/nyfs-oss-bcvdata-com-public-pkenvelope-element3-b60b22b7.png"
+  element: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-pkenvelope-element3-b60b22b7.png"
 };
 
 const prizeName = computed(() => props.prize.name || props.prize.title || "抽奖奖品");
@@ -259,13 +259,13 @@ onBeforeUnmount(stopCountdown);
   top: 80rpx;
   bottom: auto;
   height: 240rpx;
-  background: url("/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-watch-luckydraw-luckydrawtitle-63b14cab.png") center / contain no-repeat;
+  background: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-watch-luckydraw-luckydrawtitle-63b14cab.png") center / contain no-repeat;
 }
 
 .luckydrawFooterBg {
   top: auto;
   height: 320rpx;
-  background: url("/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-watch-luckydraw-downbottombg-886421a4.png") center bottom / contain no-repeat;
+  background: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-watch-luckydraw-downbottombg-886421a4.png") center bottom / contain no-repeat;
 }
 
 .rotateLight,
@@ -303,15 +303,15 @@ onBeforeUnmount(stopCountdown);
 }
 
 .countdownBody.active3 {
-  background-image: url("/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-watch-luckydraw-downthree-3943c463.png");
+  background-image: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-watch-luckydraw-downthree-3943c463.png");
 }
 
 .countdownBody.active2 {
-  background-image: url("/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-watch-luckydraw-downtwo-6a7603ad.png");
+  background-image: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-watch-luckydraw-downtwo-6a7603ad.png");
 }
 
 .countdownBody.active1 {
-  background-image: url("/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-watch-luckydraw-downone-c2b06465.png");
+  background-image: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-watch-luckydraw-downone-c2b06465.png");
 }
 
 .countdownBodyScale {
@@ -415,7 +415,7 @@ onBeforeUnmount(stopCountdown);
   height: 940rpx;
   margin: 0 auto;
   text-align: center;
-  background-image: url("/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-watch-luckydraw-effectinfo-c7eeb3e4.png");
+  background-image: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-watch-luckydraw-effectinfo-c7eeb3e4.png");
   background-size: 100% 100%;
 }
 

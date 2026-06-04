@@ -1,4 +1,4 @@
-import { loadLiveRoomContext } from "@/utils/live-room-context";
+import { appendLiveRoomQuery, loadLiveRoomContext, mergeLiveRoomContext } from "@/utils/live-room-context";
 
 const LIVE_PAGE_ROUTES = ["pages/broadcast/entry", "pages/broadcast/replay"];
 
@@ -24,19 +24,9 @@ function findLivePageIndex(pages) {
 }
 
 export function buildLiveRoomUrl(roomCode = "", extraParams = {}) {
-  const code = String(roomCode || "").trim();
-  const params = [];
-  if (code) params.push(`roomCode=${encodeURIComponent(code)}`);
-  const merged = { ...(extraParams || {}) };
-  if (!merged.liveType) {
-    const cachedType = String(loadLiveRoomContext()?.liveType || "").trim();
-    if (cachedType) merged.liveType = cachedType;
-  }
-  Object.entries(merged).forEach(([key, value]) => {
-    if (value === undefined || value === null || value === "") return;
-    params.push(`${encodeURIComponent(key)}=${encodeURIComponent(value)}`);
-  });
-  return `/pages/broadcast/entry${params.length ? `?${params.join("&")}` : ""}`;
+  const cached = loadLiveRoomContext() || {};
+  const merged = mergeLiveRoomContext(cached, { roomCode }, extraParams || {});
+  return appendLiveRoomQuery("/pages/broadcast/entry", merged);
 }
 
 export function returnToLiveRoom(roomCode = "", extraParams = {}) {

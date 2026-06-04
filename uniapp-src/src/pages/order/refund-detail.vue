@@ -157,7 +157,6 @@
 import { ref } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
 import { getRefundDetail, submitLogistics } from "@/api/refund";
-import { ensureH5PageAuth } from "@/services/h5-auth-context";
 import BottomSheetPopup from "@/components/bottom-sheet-popup.vue";
 
 const refundDetail = ref(null);
@@ -305,7 +304,6 @@ async function onSubmitLogistics() {
 }
 
 onLoad((options) => {
-  if (!ensureH5PageAuth(options)) return;
   loadRefundDetail(options?.refundId);
 });
 </script>

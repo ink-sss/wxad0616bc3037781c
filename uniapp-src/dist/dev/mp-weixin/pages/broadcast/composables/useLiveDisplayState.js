@@ -1,5 +1,6 @@
 "use strict";
 const common_vendor = require("../../../common/vendor.js");
+const platform_weixin_runtime = require("../../../platform/weixin/runtime.js");
 const utils_wechatSubscribe = require("../../../utils/wechat-subscribe.js");
 const pages_broadcast_utils_entryFormat = require("../utils/entry-format.js");
 function useLiveDisplayState(ctx) {
@@ -49,7 +50,7 @@ function useLiveDisplayState(ctx) {
     return `UID:${accessDeniedUnionId.value || "--"}`;
   });
   const shouldShowEntryOverlay = common_vendor.computed(() => {
-    return !isWeChatIOSH5 && showEntryOverlay.value && !accessDenied.value && pushStatus.value !== 2;
+    return !isWeChatIOSH5 && !platform_weixin_runtime.isMpWeixinRuntime() && showEntryOverlay.value && !accessDenied.value && pushStatus.value !== 2;
   });
   const scheduleTargetTs = common_vendor.computed(() => {
     if (!scheduleTimeStr.value)
@@ -134,7 +135,7 @@ function useLiveDisplayState(ctx) {
   const liveOverlayTitle = common_vendor.computed(
     () => pushStatus.value === 2 && (roomGroupType == null ? void 0 : roomGroupType.value) === 1 ? "直播已结束" : "直播未开始"
   );
-  const DEFAULT_CHAT_BG = "/static/invitation/cover-mobile.jpg";
+  const DEFAULT_CHAT_BG = "https://man.lqjy.cc/static/invitation/cover-mobile.jpg";
   const chatBgStyle = common_vendor.computed(() => {
     const isPortrait = !mode || mode.value === "portrait";
     const bg = chatBgImage.value || (isPortrait ? DEFAULT_CHAT_BG : null);

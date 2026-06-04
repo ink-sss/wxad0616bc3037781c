@@ -9,7 +9,7 @@ const _sfc_main = {
   },
   computed: { shareImage() {
     var _a;
-    return (((_a = this.config) == null ? void 0 : _a.pic_url) || "") + "/static/share.png";
+    return (((_a = this.config) == null ? void 0 : _a.pic_url) || "") + "/share.png";
   } },
   watch: { isMpShare: { immediate: true, handler(value) {
     this.visible = !!value;

@@ -2,7 +2,6 @@
 const common_vendor = require("../../common/vendor.js");
 const api_complaint = require("../../api/complaint.js");
 const platform_weixin_file = require("../../platform/weixin/file.js");
-const services_h5AuthContext = require("../../services/h5-auth-context.js");
 const utils_liveRoomContext = require("../../utils/live-room-context.js");
 const pages_broadcast_utils_liveRouteContext = require("../broadcast/utils/live-route-context.js");
 const _sfc_main = {
@@ -235,8 +234,6 @@ const _sfc_main = {
       }
     }
     common_vendor.onLoad((options) => {
-      if (!services_h5AuthContext.ensureH5PageAuth(options))
-        return;
       type.value = options.type || "";
       typeLabel.value = options.typeLabel || "";
       liveId.value = options.liveId || "";

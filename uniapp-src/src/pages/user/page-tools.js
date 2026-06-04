@@ -1,4 +1,5 @@
 import { login as weixinLogin, normalizePhoneNumberEvent, requestMerchantTransfer } from '../../platform/weixin/index.js'
+import { bindMobileMiniProgram } from '../../api/miniprogram-login.js'
 
 export function toast(title) {
   uni.showToast({ title, icon: 'none' })
@@ -19,6 +20,18 @@ export function phonePayload(event) {
     iv: phone.iv,
     code: phone.code,
   }
+}
+
+export function bindMiniProgramMobile(userId, event) {
+  if (!userId) return Promise.reject(new Error('缺少用户 ID，请重新登录'))
+  const detail = phonePayload(event)
+
+  return loginCode().then((code) => bindMobileMiniProgram({
+    code,
+    user_id: userId,
+    encrypted_data: detail.encrypted_data,
+    iv: detail.iv,
+  }))
 }
 
 export function saveLoginSession(data = {}) {

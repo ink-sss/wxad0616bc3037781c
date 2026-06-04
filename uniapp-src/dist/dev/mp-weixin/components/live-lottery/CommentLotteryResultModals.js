@@ -26,11 +26,11 @@ const _sfc_main = {
     const props = __props;
     const emit = __emit;
     const image = {
-      gift: "/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-sign-gift-5def5533.png",
-      closeIcon: "/static/remote-icons/nyfs-oss-bcvdata-com-frontend-mobile-commons-close-icon-75e80e51.png",
-      star: "/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-star-icon-288074ca.webp",
-      winningAward: "/static/remote-icons/nyfs-oss-bcvdata-com-frontend-mobile-live-winning-award-d13632f4.png",
-      pop: "/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-untitledanimation-25b60726.webp"
+      gift: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-sign-gift-5def5533.png",
+      closeIcon: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-frontend-mobile-commons-close-icon-75e80e51.png",
+      star: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-star-icon-288074ca.webp",
+      winningAward: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-frontend-mobile-live-winning-award-d13632f4.png",
+      pop: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-untitledanimation-25b60726.webp"
     };
     const prizeName = common_vendor.computed(() => {
       var _a, _b, _c;

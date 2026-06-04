@@ -21,7 +21,6 @@ import { onLoad, onShow } from "@dcloudio/uni-app";
 import AddressListPanel from "@/components/address-list-panel.vue";
 import { getAddressList, deleteAddress } from "@/api/address";
 import { importWxAddress } from "@/services/wechat-address";
-import { ensureH5PageAuth } from "@/services/h5-auth-context";
 
 const addressList = ref([]);
 const selectedAddressId = ref(null);
@@ -62,7 +61,6 @@ async function loadAddresses() {
 }
 
 onLoad((options) => {
-  if (!ensureH5PageAuth(options)) return;
   if (options?.select === "1") {
     selectMode.value = true;
   }
@@ -77,7 +75,6 @@ onLoad((options) => {
 });
 
 onShow(() => {
-  if (!ensureH5PageAuth()) return;
   loadAddresses();
 });
 

@@ -1,5 +1,6 @@
 import { computed, ref } from "vue";
 import { navigateToPrizeRecord } from "../../../utils/route-navigation.js";
+import { appendLiveRoomQuery, mergeLiveRoomContext } from "../../../utils/live-room-context.js";
 
 /**
  * 直播侧边弹窗、个人中心、投诉和签到状态。
@@ -60,14 +61,18 @@ function normalizeSignCheckResult(result = {}) {
   };
 }
 
-export function resolveCenterAction(type, { roomCode = "", liveId = "", anchorName = "", anchorAvatar = "" } = {}) {
-  const roomCodeQuery = roomCode
-    ? `&roomCode=${encodeURIComponent(roomCode)}`
-    : "";
+export function resolveCenterAction(type, context = {}) {
+  const {
+    anchorName = "",
+    anchorAvatar = "",
+  } = context || {};
+  const liveContext = mergeLiveRoomContext(context || {});
+  const liveId = liveContext.liveId || liveContext.roomId || "";
+  const withLiveQuery = (url) => appendLiveRoomQuery(url, liveContext);
   if (type === "refund") {
     return {
       kind: "navigate",
-      url: `/pages/order/list?status=refund${roomCodeQuery}`,
+      url: withLiveQuery("/pages/order/list?status=refund"),
     };
   }
   const statusMap = {
@@ -80,7 +85,7 @@ export function resolveCenterAction(type, { roomCode = "", liveId = "", anchorNa
   if (statusMap[type]) {
     return {
       kind: "navigate",
-      url: `/pages/order/list?status=${statusMap[type]}${roomCodeQuery}`,
+      url: withLiveQuery(`/pages/order/list?status=${statusMap[type]}`),
     };
   }
   if (type === "profile") {
@@ -89,8 +94,8 @@ export function resolveCenterAction(type, { roomCode = "", liveId = "", anchorNa
       encodeURIComponent(anchorName || "") +
       "&avatar=" +
       encodeURIComponent(anchorAvatar || "") +
-      roomCodeQuery;
-    return { kind: "navigate", url: "/pages/center/index?" + q };
+      (withLiveQuery("").replace(/^\?/, "&"));
+    return { kind: "navigate", url: "/pages/center/index?" + q.replace(/^&/, "") };
   }
   if (type === "complaint") {
     return { kind: "complaint" };
@@ -99,21 +104,19 @@ export function resolveCenterAction(type, { roomCode = "", liveId = "", anchorNa
     return { kind: "address" };
   }
   if (type === "prizeRecord") {
-    const code = roomCode ? `?roomCode=${encodeURIComponent(roomCode)}` : "";
-    return { kind: "navigate", url: `/pages/prize-record/index${code}` };
+    return { kind: "navigate", url: withLiveQuery("/pages/prize-record/index") };
   }
   if (type === "invitationRecord") {
     if (!liveId) return { kind: "toast", title: "请从直播间进入" };
-    const code = roomCode ? `&roomCode=${encodeURIComponent(roomCode)}` : "";
-    return { kind: "navigate", url: `/pages/invitation-record/index?roomId=${liveId}${code}` };
+    return { kind: "navigate", url: withLiveQuery(`/pages/invitation-record/index?roomId=${liveId}`) };
   }
   const q =
     "name=" +
     encodeURIComponent(anchorName || "") +
     "&avatar=" +
     encodeURIComponent(anchorAvatar || "") +
-    roomCodeQuery;
-  return { kind: "navigate", url: `/pages/center/index?${q}` };
+    (withLiveQuery("").replace(/^\?/, "&"));
+  return { kind: "navigate", url: `/pages/center/index?${q.replace(/^&/, "")}` };
 }
 
 export function useLiveSidePanels({
@@ -125,6 +128,7 @@ export function useLiveSidePanels({
   shareCode,
   liveBindId,
   isReplay,
+  replayCurrentVideoId,
   anchorName,
   anchorAvatar,
   userStore,
@@ -212,7 +216,28 @@ export function useLiveSidePanels({
     showCenterPopup.value = false;
     const action = resolveCenterAction(type, {
       roomCode: roomCode.value,
+      room_code: roomCode.value,
       liveId: liveId.value,
+      live_id: liveId.value,
+      roomId: liveId.value,
+      room_id: liveId.value,
+      tenantId: liveTenantId?.value || "",
+      tenant_id: liveTenantId?.value || "",
+      shareCode: shareCode?.value || "",
+      share_code: shareCode?.value || "",
+      bindId: liveBindId?.value || "",
+      bind_id: liveBindId?.value || "",
+      termId: roomCurrentTermId?.value || "",
+      term_id: roomCurrentTermId?.value || "",
+      customerId: myUserId?.value || "",
+      customer_id: myUserId?.value || "",
+      replayVideoId: isReplay?.value ? replayCurrentVideoId?.value || "" : "",
+      replay_video_id: isReplay?.value ? replayCurrentVideoId?.value || "" : "",
+      videoId: isReplay?.value ? replayCurrentVideoId?.value || "" : "",
+      video_id: isReplay?.value ? replayCurrentVideoId?.value || "" : "",
+      liveType: isReplay?.value ? "replay" : "live",
+      live_type: isReplay?.value ? "replay" : "live",
+      replay: isReplay?.value ? "1" : "",
       anchorName: anchorName.value,
       anchorAvatar: anchorAvatar.value,
     });

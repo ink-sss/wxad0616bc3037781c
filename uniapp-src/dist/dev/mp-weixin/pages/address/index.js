@@ -2,7 +2,6 @@
 const common_vendor = require("../../common/vendor.js");
 const api_address = require("../../api/address.js");
 const services_wechatAddress = require("../../services/wechat-address.js");
-const services_h5AuthContext = require("../../services/h5-auth-context.js");
 if (!Math) {
   AddressListPanel();
 }
@@ -44,8 +43,6 @@ const _sfc_main = {
       }
     }
     common_vendor.onLoad((options) => {
-      if (!services_h5AuthContext.ensureH5PageAuth(options))
-        return;
       if ((options == null ? void 0 : options.select) === "1") {
         selectMode.value = true;
       }
@@ -58,8 +55,6 @@ const _sfc_main = {
       loadAddresses();
     });
     common_vendor.onShow(() => {
-      if (!services_h5AuthContext.ensureH5PageAuth())
-        return;
       loadAddresses();
     });
     function onSelect(id) {

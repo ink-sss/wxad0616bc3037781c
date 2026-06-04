@@ -84,7 +84,7 @@ export default {
       return this.styleConfig.type || 1
     },
     avatar() {
-      return (this.detail && this.detail.avatarUrl) || '/static/login-default.png'
+      return (this.detail && this.detail.avatarUrl) || 'https://man.lqjy.cc/static/login-default.png'
     },
     wrapStyle() {
       const style = this.styleConfig

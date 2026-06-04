@@ -18,10 +18,7 @@
       class="quick-reply-popover"
       :style="{ '--popover-left': popoverLeft, '--arrow-left': popoverArrowLeft }"
       @click.stop="onQuickReply(expandedQuickReply.content)"
-    >
-      <text class="quick-reply-popover__text">{{ expandedQuickReply.content }}</text>
-      <view class="quick-reply-popover__arrow"></view>
-    </view>
+    >{{ expandedQuickReply.content }}</view>
     <view class="bottom-bar-main">
       <!-- 快捷回复横滑条：聚焦时隐藏（用户自己打字，不需要占位） -->
       <scroll-view
@@ -95,20 +92,20 @@
     <view v-else class="toolbar-icons">
       <view
         v-if="roomSetting.showUserCenter !== 0"
-        class="tool-btn tool-btn-center"
+        class="tool-btn"
         @click="emit('center')"
         ><image
           class="tool-icon-img"
-          src="/static/icons/center.png"
+          src="https://man.lqjy.cc/static/icons/center.png"
           mode="aspectFit"
       /></view>
       <view
         v-if="!useLiveToolbar && variant === 'portrait' && roomSetting.showProduct !== 0"
-        class="tool-btn tool-btn-product"
+        class="tool-btn"
         @click="emit('product')"
         ><image
           class="tool-icon-img"
-          src="/static/icons/cart.png"
+          src="https://man.lqjy.cc/static/icons/cart.png"
           mode="aspectFit"
       /></view>
       <view
@@ -118,7 +115,7 @@
       >
         <image
           class="invite-icon-img"
-          src="/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-ebu-invite-86c59add.png"
+          src="https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-ebu-invite-86c59add.png"
           mode="aspectFit"
         />
       </view>
@@ -145,7 +142,7 @@
           <view class="sectionliImg like_container">
             <image
               class="clickXin tool-icon-img"
-              src="/static/zan/zan_1.png"
+              src="https://man.lqjy.cc/static/zan/zan_1.png"
               mode="aspectFit"
             />
           </view>
@@ -158,7 +155,7 @@
         >
           <image
             class="tool-icon-img"
-            src="/static/zan/zan_1.png"
+            src="https://man.lqjy.cc/static/zan/zan_1.png"
             mode="aspectFit"
           />
           <text v-if="variant === 'landscape'" class="like-number zanval">{{ likeCountText }}</text>
@@ -451,7 +448,8 @@ defineExpose({
   width: max-content;
   max-width: calc(100% - 48rpx);
 }
-.quick-reply-popover__arrow {
+.quick-reply-popover::after {
+  content: '';
   position: absolute;
   top: 100%;
   left: clamp(12rpx, var(--arrow-left, 50%), calc(100% - 12rpx));
@@ -617,7 +615,7 @@ defineExpose({
   height: 80rpx;
   margin-top: -12rpx;
   flex: 0 0 80rpx;
-  background-image: url("/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-gdl-icon-2-eeed29c4.png");
+  background-image: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-gdl-icon-2-eeed29c4.png");
   background-repeat: no-repeat;
   background-size: contain;
   color: #fff;

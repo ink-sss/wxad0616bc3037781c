@@ -70,7 +70,6 @@
 import { ref } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
 import { getOrderDetail, getReceiptDetail } from "@/api/order";
-import { ensureH5PageAuth } from "@/services/h5-auth-context";
 import { returnToLiveRoom } from "@/utils/live-room-navigation";
 import LiveMiniWindow from "@/components/live-mini-window.vue";
 
@@ -159,7 +158,6 @@ function goBackLive() {
 }
 
 onLoad((options = {}) => {
-  if (!ensureH5PageAuth(options)) return;
   const outTradeNo = String(
     options.out_trade_no || options.orderNo || options.outTradeNo || "",
   ).trim();

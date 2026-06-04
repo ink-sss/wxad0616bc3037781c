@@ -1,6 +1,7 @@
 "use strict";
 const common_vendor = require("../../../common/vendor.js");
 const utils_routeNavigation = require("../../../utils/route-navigation.js");
+const utils_liveRoomContext = require("../../../utils/live-room-context.js");
 function getUniApi(explicitUni) {
   if (explicitUni)
     return explicitUni;
@@ -35,12 +36,18 @@ function normalizeSignCheckResult(result = {}) {
     signed
   };
 }
-function resolveCenterAction(type, { roomCode = "", liveId = "", anchorName = "", anchorAvatar = "" } = {}) {
-  const roomCodeQuery = roomCode ? `&roomCode=${encodeURIComponent(roomCode)}` : "";
+function resolveCenterAction(type, context = {}) {
+  const {
+    anchorName = "",
+    anchorAvatar = ""
+  } = context || {};
+  const liveContext = utils_liveRoomContext.mergeLiveRoomContext(context || {});
+  const liveId = liveContext.liveId || liveContext.roomId || "";
+  const withLiveQuery = (url) => utils_liveRoomContext.appendLiveRoomQuery(url, liveContext);
   if (type === "refund") {
     return {
       kind: "navigate",
-      url: `/pages/order/list?status=refund${roomCodeQuery}`
+      url: withLiveQuery("/pages/order/list?status=refund")
     };
   }
   const statusMap = {
@@ -53,12 +60,12 @@ function resolveCenterAction(type, { roomCode = "", liveId = "", anchorName = ""
   if (statusMap[type]) {
     return {
       kind: "navigate",
-      url: `/pages/order/list?status=${statusMap[type]}${roomCodeQuery}`
+      url: withLiveQuery(`/pages/order/list?status=${statusMap[type]}`)
     };
   }
   if (type === "profile") {
-    const q2 = "name=" + encodeURIComponent(anchorName || "") + "&avatar=" + encodeURIComponent(anchorAvatar || "") + roomCodeQuery;
-    return { kind: "navigate", url: "/pages/center/index?" + q2 };
+    const q2 = "name=" + encodeURIComponent(anchorName || "") + "&avatar=" + encodeURIComponent(anchorAvatar || "") + withLiveQuery("").replace(/^\?/, "&");
+    return { kind: "navigate", url: "/pages/center/index?" + q2.replace(/^&/, "") };
   }
   if (type === "complaint") {
     return { kind: "complaint" };
@@ -67,17 +74,15 @@ function resolveCenterAction(type, { roomCode = "", liveId = "", anchorName = ""
     return { kind: "address" };
   }
   if (type === "prizeRecord") {
-    const code = roomCode ? `?roomCode=${encodeURIComponent(roomCode)}` : "";
-    return { kind: "navigate", url: `/pages/prize-record/index${code}` };
+    return { kind: "navigate", url: withLiveQuery("/pages/prize-record/index") };
   }
   if (type === "invitationRecord") {
     if (!liveId)
       return { kind: "toast", title: "请从直播间进入" };
-    const code = roomCode ? `&roomCode=${encodeURIComponent(roomCode)}` : "";
-    return { kind: "navigate", url: `/pages/invitation-record/index?roomId=${liveId}${code}` };
+    return { kind: "navigate", url: withLiveQuery(`/pages/invitation-record/index?roomId=${liveId}`) };
   }
-  const q = "name=" + encodeURIComponent(anchorName || "") + "&avatar=" + encodeURIComponent(anchorAvatar || "") + roomCodeQuery;
-  return { kind: "navigate", url: `/pages/center/index?${q}` };
+  const q = "name=" + encodeURIComponent(anchorName || "") + "&avatar=" + encodeURIComponent(anchorAvatar || "") + withLiveQuery("").replace(/^\?/, "&");
+  return { kind: "navigate", url: `/pages/center/index?${q.replace(/^&/, "")}` };
 }
 function useLiveSidePanels({
   liveId,
@@ -88,6 +93,7 @@ function useLiveSidePanels({
   shareCode,
   liveBindId,
   isReplay,
+  replayCurrentVideoId,
   anchorName,
   anchorAvatar,
   userStore,
@@ -165,7 +171,28 @@ function useLiveSidePanels({
     showCenterPopup.value = false;
     const action = resolveCenterAction(type, {
       roomCode: roomCode.value,
+      room_code: roomCode.value,
       liveId: liveId.value,
+      live_id: liveId.value,
+      roomId: liveId.value,
+      room_id: liveId.value,
+      tenantId: (liveTenantId == null ? void 0 : liveTenantId.value) || "",
+      tenant_id: (liveTenantId == null ? void 0 : liveTenantId.value) || "",
+      shareCode: (shareCode == null ? void 0 : shareCode.value) || "",
+      share_code: (shareCode == null ? void 0 : shareCode.value) || "",
+      bindId: (liveBindId == null ? void 0 : liveBindId.value) || "",
+      bind_id: (liveBindId == null ? void 0 : liveBindId.value) || "",
+      termId: (roomCurrentTermId == null ? void 0 : roomCurrentTermId.value) || "",
+      term_id: (roomCurrentTermId == null ? void 0 : roomCurrentTermId.value) || "",
+      customerId: (myUserId == null ? void 0 : myUserId.value) || "",
+      customer_id: (myUserId == null ? void 0 : myUserId.value) || "",
+      replayVideoId: (isReplay == null ? void 0 : isReplay.value) ? (replayCurrentVideoId == null ? void 0 : replayCurrentVideoId.value) || "" : "",
+      replay_video_id: (isReplay == null ? void 0 : isReplay.value) ? (replayCurrentVideoId == null ? void 0 : replayCurrentVideoId.value) || "" : "",
+      videoId: (isReplay == null ? void 0 : isReplay.value) ? (replayCurrentVideoId == null ? void 0 : replayCurrentVideoId.value) || "" : "",
+      video_id: (isReplay == null ? void 0 : isReplay.value) ? (replayCurrentVideoId == null ? void 0 : replayCurrentVideoId.value) || "" : "",
+      liveType: (isReplay == null ? void 0 : isReplay.value) ? "replay" : "live",
+      live_type: (isReplay == null ? void 0 : isReplay.value) ? "replay" : "live",
+      replay: (isReplay == null ? void 0 : isReplay.value) ? "1" : "",
       anchorName: anchorName.value,
       anchorAvatar: anchorAvatar.value
     });

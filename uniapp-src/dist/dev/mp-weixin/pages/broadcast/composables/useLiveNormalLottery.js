@@ -10,7 +10,7 @@ const MODAL_WIN = "wechatLotteryWin";
 const MODAL_LOSE = "wechatLotteryLose";
 const RESULT_DELAY = 3e3;
 const ROLLING_DURATION = 4500;
-const DEFAULT_AVATAR = "/static/remote-icons/nyfs-oss-bcvdata-com-uploads-consolewechat-1681-rtf-20260430144045241662-91b0e034.jpg";
+const DEFAULT_AVATAR = "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-uploads-consolewechat-1681-rtf-20260430144045241662-91b0e034.jpg";
 function toNumber(value, fallback = 0) {
   const n = Number(value);
   return Number.isFinite(n) ? n : fallback;

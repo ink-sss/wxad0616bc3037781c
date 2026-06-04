@@ -114,8 +114,8 @@ const closeCountdown = ref(AUTO_CLOSE_SECONDS);
 let closeTimer = null;
 
 const image = {
-  tip: "/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-goods-refund-tip-5eba5241.png",
-  add: "/static/remote-icons/nyfs-oss-bcvdata-com-public-mobile-images-add-icon-58e6dd01.png"
+  tip: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-goods-refund-tip-5eba5241.png",
+  add: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-mobile-images-add-icon-58e6dd01.png"
 };
 
 const isCenterCouponModal = computed(() => {
@@ -221,11 +221,11 @@ onBeforeUnmount(stopAutoCloseCountdown);
 }
 
 .center-watch-bg.enable-receive {
-  background-image: url("/static/remote-icons/s-nuoyun-center-watch-enable-receive-bg.png");
+  background-image: url("https://man.lqjy.cc/static/remote-icons/s-nuoyun-center-watch-enable-receive-bg.png");
 }
 
 .center-watch-bg.have-received {
-  background-image: url("/static/remote-icons/s-nuoyun-center-watch-have-received-bg.png");
+  background-image: url("https://man.lqjy.cc/static/remote-icons/s-nuoyun-center-watch-have-received-bg.png");
 }
 
 .source-coupon-content {
@@ -259,7 +259,7 @@ onBeforeUnmount(stopAutoCloseCountdown);
   height: 202rpx;
   padding: 24rpx 16rpx 24rpx 8rpx;
   box-sizing: border-box;
-  background: url("/static/remote-icons/s-nuoyun-center-watch-coupon-bg.png") center / 100% 100% no-repeat;
+  background: url("https://man.lqjy.cc/static/remote-icons/s-nuoyun-center-watch-coupon-bg.png") center / 100% 100% no-repeat;
 }
 
 .source-coupon-card-left {
@@ -399,7 +399,7 @@ onBeforeUnmount(stopAutoCloseCountdown);
 .source-coupon-close {
   width: 64rpx;
   height: 64rpx;
-  background: url("/static/remote-icons/s-nuoyun-icon-close.png") center / contain no-repeat;
+  background: url("https://man.lqjy.cc/static/remote-icons/s-nuoyun-icon-close.png") center / contain no-repeat;
 }
 
 .source-coupon-close-row {

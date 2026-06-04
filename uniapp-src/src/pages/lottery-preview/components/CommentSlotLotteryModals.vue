@@ -103,9 +103,9 @@ const emit = defineEmits(["close"]);
 const isRolling = computed(() => props.activeModal === "commentLotteryRunning" || props.activeModal === "commentLotterySlotRolling");
 
 const image = {
-  avatar: "./static/remote-icons/nyfs-oss-bcvdata-com-uploads-consolewechat-1681-rtf-20260430144045241662-91b0e034.jpg",
-  close: "./static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-icon-close-0cb4224d.png",
-  gift: "./static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-sign-gift-5def5533.png"
+  avatar: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-uploads-consolewechat-1681-rtf-20260430144045241662-91b0e034.jpg",
+  close: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-icon-close-0cb4224d.png",
+  gift: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-sign-gift-5def5533.png"
 };
 
 const columnClasses = ["lotteryFirst", "lotterySecond", "lotteryThird", "lotteryFourth"];
@@ -178,7 +178,7 @@ const rollingColumns = computed(() => columnClasses.map((className, columnIndex)
   height: 702rpx;
   max-width: 92vw;
   box-sizing: border-box;
-  background: url("../static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-comment-lottery-new-bc-4566d5c5.png") no-repeat center;
+  background: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-comment-lottery-new-bc-4566d5c5.png") no-repeat center;
   background-size: 100% 100%;
 }
 
@@ -381,7 +381,7 @@ const rollingColumns = computed(() => columnClasses.map((className, columnIndex)
 }
 
 .comment-slot-modal .commentLottery-box3 {
-  background-image: url("../static/remote-icons/nyfs-oss-bcvdata-com-frontend-mobile-live-open-more-prize-96ca7a91.png");
+  background-image: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-frontend-mobile-live-open-more-prize-96ca7a91.png");
 }
 
 .comment-slot-modal .commentLottery-ul {

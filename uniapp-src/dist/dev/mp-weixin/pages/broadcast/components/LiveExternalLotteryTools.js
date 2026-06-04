@@ -48,11 +48,11 @@ const _sfc_main = {
       }
     );
     const assets = {
-      commentLottery: "/static/remote-icons/comment-lotterys-new.png",
-      close: "/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-close4-7fa83bca.png",
-      tooltipClose: "/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-tooltipboxclose-e39b3a0d.png",
-      tooltipArrow: "/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-arrowtooltips-0dd003f2.png",
-      luckyBag: "/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-watch-rewardnone-new-ecf31362.png"
+      commentLottery: "https://man.lqjy.cc/static/remote-icons/comment-lotterys-new.png",
+      close: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-close4-7fa83bca.png",
+      tooltipClose: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-tooltipboxclose-e39b3a0d.png",
+      tooltipArrow: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-arrowtooltips-0dd003f2.png",
+      luckyBag: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-watch-rewardnone-new-ecf31362.png"
     };
     function hideCommentLotteryBubble() {
       showCommentLotteryBubble.value = false;

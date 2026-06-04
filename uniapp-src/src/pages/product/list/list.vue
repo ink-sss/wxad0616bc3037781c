@@ -109,6 +109,8 @@
 </template>
 
 <script>
+import { fetchProducts, normalizeProductList } from '../../../services/miniprogram-products.js'
+
 export default {
   data() {
     return {
@@ -196,18 +198,22 @@ export default {
     },
     getData() {
       this.loading = true
-      this._get('product.product/lists', {
+      fetchProducts({
         page: this.page || 1,
-        category_id: this.category_id,
+        categoryId: this.category_id || '',
         search: this.search,
         sortType: this.sortType,
         sortPrice: this.sortPrice,
-        list_rows: this.list_rows
-      }, (res) => {
+        pageSize: this.list_rows
+      }).then((data) => {
+        const list = normalizeProductList(data || {}, this.list_rows)
         this.loading = false
-        this.listData = this.listData.concat(res.data.list.data)
-        this.last_page = res.data.list.last_page
-        if (res.data.list.last_page <= 1) this.no_more = true
+        this.listData = this.listData.concat(list.data)
+        this.last_page = list.last_page
+        if (list.last_page <= 1 || this.page >= list.last_page) this.no_more = true
+      }).catch(() => {
+        this.loading = false
+        this.no_more = true
       })
     },
     gotoList(productId) {

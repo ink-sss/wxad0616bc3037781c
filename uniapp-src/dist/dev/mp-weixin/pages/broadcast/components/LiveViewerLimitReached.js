@@ -12,7 +12,7 @@ const _sfc_main = {
   setup(__props) {
     return (_ctx, _cache) => {
       return {
-        a: common_assets._imports_0$14,
+        a: common_assets._imports_0$1,
         b: common_vendor.t(__props.text || "观看人数已达上限")
       };
     };

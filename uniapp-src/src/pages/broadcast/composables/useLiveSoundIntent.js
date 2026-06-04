@@ -147,6 +147,12 @@ export function useLiveSoundIntent(ctx) {
       // VideoPlayer 还没初始化 → 在用户手势上下文内直接对 video DOM 有声 play，
       // 手势授权窗口极短(~1s)，不能等 videoPlayer 就绪再 unmute
       _pendingUnmute = true;
+      // #ifndef H5
+      // Mini Program has no DOM video element to grab here. Trigger the native
+      // live-player/video resume path immediately, then let the pending unmute
+      // retry apply once the player wrapper is created.
+      resumeVideoPlayback();
+      // #endif
       // #ifdef H5
       const el = (typeof getLiveVideoElement === "function" && getLiveVideoElement()) || null;
       if (el) {

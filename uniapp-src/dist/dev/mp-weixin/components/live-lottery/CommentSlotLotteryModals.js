@@ -26,9 +26,9 @@ const _sfc_main = {
     const emit = __emit;
     const isRolling = common_vendor.computed(() => props.activeModal === "commentLotteryRunning" || props.activeModal === "commentLotterySlotRolling");
     const image = {
-      avatar: "/static/remote-icons/nyfs-oss-bcvdata-com-uploads-consolewechat-1681-rtf-20260430144045241662-91b0e034.jpg",
-      close: "/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-icon-close-0cb4224d.png",
-      gift: "/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-sign-gift-5def5533.png"
+      avatar: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-uploads-consolewechat-1681-rtf-20260430144045241662-91b0e034.jpg",
+      close: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-icon-close-0cb4224d.png",
+      gift: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-sign-gift-5def5533.png"
     };
     const columnClasses = ["lotteryFirst", "lotterySecond", "lotteryThird", "lotteryFourth"];
     const fallbackRollingUsers = [

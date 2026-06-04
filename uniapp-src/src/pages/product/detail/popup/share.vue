@@ -2,7 +2,7 @@
   <view :class="['bottom-panel', Visible ? 'open' : 'close']" @tap="closePopup">
     <view class="popup-bg">
       <view v-if="wechat_share" class="wechat-box">
-        <image mode="widthFix" :src="config.pic_url + '/static/share.png'" />
+        <image mode="widthFix" :src="config.pic_url + '/share.png'" />
       </view>
     </view>
     <view class="content" @tap.stop>

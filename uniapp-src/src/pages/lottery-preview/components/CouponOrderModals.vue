@@ -81,10 +81,10 @@ defineProps({
 const emit = defineEmits(["close"]);
 
 const image = {
-  trueIcon: "./static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-num-coupon-true-563cf3df.png",
-  falseIcon: "./static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-num-coupon-false-10b47f4e.png",
-  close: "./static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-watch-closeicon-748fe1f2.png",
-  subscribeBg: "./static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-watch-subscribebg-15ba905b.png"
+  trueIcon: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-num-coupon-true-563cf3df.png",
+  falseIcon: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-num-coupon-false-10b47f4e.png",
+  close: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-watch-closeicon-748fe1f2.png",
+  subscribeBg: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-watch-subscribebg-15ba905b.png"
 };
 
 const coupons = [
@@ -294,7 +294,7 @@ const coupons = [
   max-height: 1104rpx;
   overflow: hidden;
   border-radius: 30rpx 30rpx 0 0;
-  background: url("../static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-gift-bg-17cc20d3.png") no-repeat;
+  background: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-gift-bg-17cc20d3.png") no-repeat;
   background-size: cover;
 }
 
@@ -326,7 +326,7 @@ const coupons = [
   max-width: calc(100vw - 40rpx);
   margin: 0 auto 20rpx;
   list-style: none;
-  background: url("../static/remote-icons/nyfs-oss-bcvdata-com-public-home-gift-namebg-234d8795.png") no-repeat;
+  background: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-gift-namebg-234d8795.png") no-repeat;
   background-size: 100% 100%;
 }
 

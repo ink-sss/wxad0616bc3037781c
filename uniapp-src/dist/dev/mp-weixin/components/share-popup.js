@@ -1,6 +1,5 @@
 "use strict";
 const common_vendor = require("../common/vendor.js");
-const common_assets = require("../common/assets.js");
 const services_liveShare = require("../services/live-share.js");
 const services_h5AuthContext = require("../services/h5-auth-context.js");
 const platform_weixin_file = require("../platform/weixin/file.js");
@@ -405,44 +404,39 @@ const _sfc_main = {
         b: activePanel.value === "main"
       }, activePanel.value === "main" ? common_vendor.e({
         c: common_vendor.o(close, "b2"),
-        d: common_assets._imports_0$15,
-        e: common_vendor.o(($event) => onShare("invitation"), "ef"),
-        f: !shareUrlLoading.value
+        d: common_vendor.o(($event) => onShare("invitation"), "ef"),
+        e: !shareUrlLoading.value
       }, !shareUrlLoading.value ? {
-        g: common_assets._imports_1$6,
-        h: common_vendor.o(onMiniProgramWechatShare, "72")
+        f: common_vendor.o(onMiniProgramWechatShare, "d0")
       } : {
-        i: common_assets._imports_1$6,
-        j: common_vendor.o(waitMiniProgramShareReady, "b7")
+        g: common_vendor.o(waitMiniProgramShareReady, "31")
       }, {
-        k: common_assets._imports_2$4,
-        l: common_vendor.o(($event) => onShare("link"), "74"),
-        m: common_assets._imports_3$2,
-        n: common_vendor.o(($event) => onShare("qrcode"), "b0"),
-        o: common_vendor.o(() => {
+        h: common_vendor.o(($event) => onShare("link"), "36"),
+        i: common_vendor.o(($event) => onShare("qrcode"), "be"),
+        j: common_vendor.o(() => {
         }, "52")
       }) : activePanel.value === "link" ? {
-        q: common_vendor.t(linkStatusText.value),
-        r: common_vendor.o(close, "88"),
-        s: common_vendor.t(currentLink.value),
-        t: common_vendor.o(copyCurrentLink, "0c"),
-        v: common_vendor.o(() => {
-        }, "88")
+        l: common_vendor.t(linkStatusText.value),
+        m: common_vendor.o(close, "32"),
+        n: common_vendor.t(currentLink.value),
+        o: common_vendor.o(copyCurrentLink, "f6"),
+        p: common_vendor.o(() => {
+        }, "d9")
       } : activePanel.value === "qrcode" ? {
-        x: common_vendor.o(close, "43"),
-        y: qrcodeSrc.value,
-        z: common_vendor.o(saveQrcode, "63"),
-        A: common_vendor.o(saveQrcode, "06"),
-        B: common_vendor.o(() => {
-        }, "b3")
+        r: common_vendor.o(close, "15"),
+        s: qrcodeSrc.value,
+        t: common_vendor.o(saveQrcode, "62"),
+        v: common_vendor.o(saveQrcode, "36"),
+        w: common_vendor.o(() => {
+        }, "72")
       } : activePanel.value === "wechat-guide" ? {
-        D: common_vendor.o(close, "a3")
+        y: common_vendor.o(close, "9e")
       } : {}, {
-        p: activePanel.value === "link",
-        w: activePanel.value === "qrcode",
-        C: activePanel.value === "wechat-guide",
-        E: common_vendor.n(activePanel.value === "qrcode" ? "mask-center" : ""),
-        F: common_vendor.o(close, "cc")
+        k: activePanel.value === "link",
+        q: activePanel.value === "qrcode",
+        x: activePanel.value === "wechat-guide",
+        z: common_vendor.n(activePanel.value === "qrcode" ? "mask-center" : ""),
+        A: common_vendor.o(close, "cc")
       }) : {});
     };
   }

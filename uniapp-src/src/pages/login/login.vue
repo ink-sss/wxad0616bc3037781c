@@ -1,7 +1,7 @@
 <template>
   <view class="login-page" :data-theme="theme && theme()">
     <view class="brand">
-      <image class="logo" mode="aspectFit" :src="setting.login_logo || config.pic_url + '/static/live/default_logo.jpeg'" />
+      <image class="logo" mode="aspectFit" :src="setting.login_logo || config.pic_url + '/live/default_logo.jpeg'" />
       <view class="name">{{ setting.name }}</view>
       <view v-if="setting.login_desc" class="desc">{{ setting.login_desc }}</view>
     </view>
@@ -44,6 +44,7 @@ import {
   redirectAfterSkippedH5Login,
   toast,
 } from './page-tools.js'
+import { preLoginMiniProgram } from '../../api/miniprogram-login.js'
 
 export default {
   data() {
@@ -88,26 +89,18 @@ export default {
     loadWechatLoginStatus() {
       this.loading = true
       loginCode()
-        .then((code) => new Promise((resolve) => {
-          this._post(
-            'user.user/login',
-            {
-              code,
-              source: 'wx',
-              invitation_id: this.invitation_id,
-              referee_id: uni.getStorageSync('referee_id') || '',
-            },
-            (res) => {
-              const data = res?.data || {}
-              this.user_id = data.user_id || ''
-              this.mobile = data.mobile !== undefined ? data.mobile : true
-              this.is_login = !!data.is_login
-              resolve()
-            },
-            () => resolve(),
-            () => resolve(),
-          )
+        .then((code) => preLoginMiniProgram({
+          code,
+          source: 'wx',
+          invitation_id: this.invitation_id,
+          referee_id: uni.getStorageSync('referee_id') || '',
         }))
+        .then((data = {}) => {
+          this.user_id = data.user_id || ''
+          this.mobile = data.mobile !== undefined ? data.mobile : true
+          this.is_login = !!data.is_login
+          if (data.user_id) uni.setStorageSync('user_id', data.user_id)
+        })
         .catch(() => {})
         .finally(() => {
           this.loading = false

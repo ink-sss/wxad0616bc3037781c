@@ -1,10 +1,16 @@
 "use strict";
-const common_assets = require("../../common/assets.js");
+const STATIC_URL = "https://man.lqjy.cc/static";
+const tpl601Bg = `${STATIC_URL}/invitation/tpl601.png`;
+const tpl602Bg = `${STATIC_URL}/invitation/tpl602.png`;
+const tpl603Bg = `${STATIC_URL}/invitation/tpl603.png`;
+const tpl604Bg = `${STATIC_URL}/invitation/tpl604.png`;
+const tpl605Bg = `${STATIC_URL}/invitation/tpl605.png`;
+const tpl606Bg = `${STATIC_URL}/invitation/tpl606.png`;
 const templates = [
   {
     id: "tpl601",
     name: "炫彩紫",
-    bgImg: common_assets.tpl601Bg,
+    bgImg: tpl601Bg,
     aspectRatio: 750 / 1624,
     slots: {
       avatar: { cx: 0.808, cy: 0.207, r: 0.146 },
@@ -17,7 +23,7 @@ const templates = [
   {
     id: "tpl602",
     name: "红运福利",
-    bgImg: common_assets.tpl602Bg,
+    bgImg: tpl602Bg,
     aspectRatio: 750 / 1624,
     slots: {
       avatar: { cx: 0.5, cy: 0.454, r: 0.14 },
@@ -30,7 +36,7 @@ const templates = [
   {
     id: "tpl603",
     name: "紫调简约",
-    bgImg: common_assets.tpl603Bg,
+    bgImg: tpl603Bg,
     aspectRatio: 750 / 1624,
     slots: {
       avatar: { cx: 0.507, cy: 0.438, r: 0.104 },
@@ -43,7 +49,7 @@ const templates = [
   {
     id: "tpl604",
     name: "简约邀请",
-    bgImg: common_assets.tpl604Bg,
+    bgImg: tpl604Bg,
     aspectRatio: 750 / 1334,
     slots: {
       avatar: { cx: 0.323, cy: 0.321, r: 0.07 },
@@ -56,7 +62,7 @@ const templates = [
   {
     id: "tpl605",
     name: "蓝调邀请",
-    bgImg: common_assets.tpl605Bg,
+    bgImg: tpl605Bg,
     aspectRatio: 750 / 1333,
     slots: {
       avatar: { cx: 0.188, cy: 0.307, r: 0.08 },
@@ -69,7 +75,7 @@ const templates = [
   {
     id: "tpl606",
     name: "自然风光",
-    bgImg: common_assets.tpl606Bg,
+    bgImg: tpl606Bg,
     aspectRatio: 750 / 1334,
     slots: {
       avatar: { cx: 0.129, cy: 0.859, r: 0.063 },

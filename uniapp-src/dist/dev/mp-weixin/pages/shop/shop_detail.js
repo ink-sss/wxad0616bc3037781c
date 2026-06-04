@@ -11,7 +11,7 @@ const _sfc_main = {
   },
   computed: {
     defaultLogo() {
-      return (this.config && this.config.pic_url ? this.config.pic_url : "") + "/static/shop-default.png";
+      return (this.config && this.config.pic_url ? this.config.pic_url : "") + "/shop-default.png";
     }
   },
   onLoad(query = {}) {

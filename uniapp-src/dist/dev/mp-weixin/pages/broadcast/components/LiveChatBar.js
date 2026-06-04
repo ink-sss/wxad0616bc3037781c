@@ -1,6 +1,5 @@
 "use strict";
 const common_vendor = require("../../../common/vendor.js");
-const common_assets = require("../../../common/assets.js");
 const pages_broadcast_utils_entryFormat = require("../utils/entry-format.js");
 if (!Array) {
   const _easycom_wd_icon2 = common_vendor.resolveComponent("wd-icon");
@@ -249,44 +248,41 @@ const _sfc_main = {
         i: useLiveToolbar.value && __props.variant === "portrait" && __props.roomSetting.showProduct !== 0 && !__props.focused
       }, useLiveToolbar.value && __props.variant === "portrait" && __props.roomSetting.showProduct !== 0 && !__props.focused ? {
         j: common_vendor.t(productCountText.value),
-        k: common_vendor.o(($event) => emit("product"), "f2")
+        k: common_vendor.o(($event) => emit("product"), "36")
       } : {}, {
         l: __props.modelValue,
         m: __props.disabledText || "说点什么吧~",
         n: placeholderStyle.value,
         o: !!__props.disabledText,
-        p: common_vendor.o(onInput, "ae"),
-        q: common_vendor.o(($event) => emit("focus", $event), "96"),
-        r: common_vendor.o(($event) => emit("confirm", $event), "82"),
-        s: common_vendor.o(($event) => emit("blur", $event), "27"),
+        p: common_vendor.o(onInput, "96"),
+        q: common_vendor.o(($event) => emit("focus", $event), "b8"),
+        r: common_vendor.o(($event) => emit("confirm", $event), "93"),
+        s: common_vendor.o(($event) => emit("blur", $event), "90"),
         t: __props.disabledText ? 1 : "",
-        v: common_vendor.o(($event) => emit("request-focus"), "08"),
-        w: common_vendor.o(($event) => emit("request-focus"), "b9"),
+        v: common_vendor.o(($event) => emit("request-focus"), "2f"),
+        w: common_vendor.o(($event) => emit("request-focus"), "42"),
         x: __props.focused
       }, __props.focused ? {
         y: common_vendor.o(() => {
-        }, "11"),
-        z: common_vendor.o(onSendTouchEnd, "63"),
-        A: common_vendor.o(onSendClick, "75")
+        }, "75"),
+        z: common_vendor.o(onSendTouchEnd, "03"),
+        A: common_vendor.o(onSendClick, "0c")
       } : common_vendor.e({
         B: __props.roomSetting.showUserCenter !== 0
       }, __props.roomSetting.showUserCenter !== 0 ? {
-        C: common_assets._imports_0$20,
-        D: common_vendor.o(($event) => emit("center"), "72")
+        C: common_vendor.o(($event) => emit("center"), "d6")
       } : {}, {
-        E: !useLiveToolbar.value && __props.variant === "portrait" && __props.roomSetting.showProduct !== 0
+        D: !useLiveToolbar.value && __props.variant === "portrait" && __props.roomSetting.showProduct !== 0
       }, !useLiveToolbar.value && __props.variant === "portrait" && __props.roomSetting.showProduct !== 0 ? {
-        F: common_assets._imports_1$8,
-        G: common_vendor.o(($event) => emit("product"), "37")
+        E: common_vendor.o(($event) => emit("product"), "13")
       } : {}, {
-        H: useLiveToolbar.value && __props.roomSetting.enableShare !== 0 && __props.isDistributor && __props.distributorStatus === 1
+        F: useLiveToolbar.value && __props.roomSetting.enableShare !== 0 && __props.isDistributor && __props.distributorStatus === 1
       }, useLiveToolbar.value && __props.roomSetting.enableShare !== 0 && __props.isDistributor && __props.distributorStatus === 1 ? {
-        I: common_assets._imports_2$6,
-        J: common_vendor.o(($event) => emit("share"), "36")
+        G: common_vendor.o(($event) => emit("share"), "d1")
       } : {}, {
-        K: __props.roomSetting.enableLike !== 0
+        H: __props.roomSetting.enableLike !== 0
       }, __props.roomSetting.enableLike !== 0 ? common_vendor.e({
-        L: common_vendor.f(__props.hearts, (heart, k0, i0) => {
+        I: common_vendor.f(__props.hearts, (heart, k0, i0) => {
           return {
             a: heart.img,
             b: heart.slotId + "-" + heart.runId,
@@ -295,25 +291,23 @@ const _sfc_main = {
             e: common_vendor.o(($event) => emit("heart-animation-end", heart.slotId, heart.runId), heart.slotId + "-" + heart.runId)
           };
         }),
-        M: useLiveToolbar.value
+        J: useLiveToolbar.value
       }, useLiveToolbar.value ? {
-        N: common_assets._imports_3$4,
-        O: common_vendor.t(likeCountText.value),
-        P: common_vendor.o(($event) => emit("like"), "8f")
+        K: common_vendor.t(likeCountText.value),
+        L: common_vendor.o(($event) => emit("like"), "f0")
       } : common_vendor.e({
-        Q: common_assets._imports_3$4,
-        R: __props.variant === "landscape"
+        M: __props.variant === "landscape"
       }, __props.variant === "landscape" ? {
-        S: common_vendor.t(likeCountText.value)
+        N: common_vendor.t(likeCountText.value)
       } : {}, {
-        T: common_vendor.o(($event) => emit("like"), "0b")
+        O: common_vendor.o(($event) => emit("like"), "50")
       })) : {}), {
-        U: __props.show,
-        V: common_vendor.n({
+        P: __props.show,
+        Q: common_vendor.n({
           "bottom-bar--focused": __props.focused
         }),
-        W: common_vendor.n(__props.variant === "landscape" ? "bottom-bar--landscape" : "bottom-bar--portrait"),
-        X: common_vendor.s(__props.bottomStyle)
+        R: common_vendor.n(__props.variant === "landscape" ? "bottom-bar--landscape" : "bottom-bar--portrait"),
+        S: common_vendor.s(__props.bottomStyle)
       }) : {});
     };
   }

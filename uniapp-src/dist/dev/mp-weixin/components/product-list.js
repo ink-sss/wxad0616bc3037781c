@@ -1,6 +1,5 @@
 "use strict";
 const common_vendor = require("../common/vendor.js");
-const common_assets = require("../common/assets.js");
 const composables_useVirtualProductList = require("../composables/useVirtualProductList.js");
 const utils_imageUrl = require("../utils/image-url.js");
 const DEFAULT_ITEM_HEIGHT_RPX = 229;
@@ -87,36 +86,34 @@ const _sfc_main = {
           }, item.soldOut ? {} : item.stock <= 0 ? {} : {}, {
             c: item.stock <= 0,
             d: item.isCurrent
-          }, item.isCurrent ? {
-            e: common_assets._imports_0$22
-          } : {}, __props.variant === "popup" ? {
-            f: common_vendor.t(displayIndex(item, index))
+          }, item.isCurrent ? {} : {}, __props.variant === "popup" ? {
+            e: common_vendor.t(displayIndex(item, index))
           } : item.isTop ? {} : {}, {
-            g: item.isTop,
-            h: common_vendor.t(item.title),
-            i: common_vendor.n(item.soldOut ? "title-soldout" : ""),
-            j: !item.soldOut && item.stock > 0
+            f: item.isTop,
+            g: common_vendor.t(item.title),
+            h: common_vendor.n(item.soldOut ? "title-soldout" : ""),
+            i: !item.soldOut && item.stock > 0
           }, !item.soldOut && item.stock > 0 ? {
-            k: common_vendor.t(item.stock)
+            j: common_vendor.t(item.stock)
           } : {}, {
-            l: common_vendor.n(item.soldOut ? "price-soldout" : ""),
-            m: common_vendor.t(item.price),
-            n: common_vendor.n(item.soldOut ? "price-soldout" : ""),
-            o: item.isMultiSpec
+            k: common_vendor.n(item.soldOut ? "price-soldout" : ""),
+            l: common_vendor.t(item.price),
+            m: common_vendor.n(item.soldOut ? "price-soldout" : ""),
+            n: item.isMultiSpec
           }, item.isMultiSpec ? {
-            p: common_vendor.n(item.soldOut ? "price-soldout" : "")
+            o: common_vendor.n(item.soldOut ? "price-soldout" : "")
           } : {}, {
-            q: item.originPrice
+            p: item.originPrice
           }, item.originPrice ? {
-            r: common_vendor.t(item.originPrice)
+            q: common_vendor.t(item.originPrice)
           } : {}, {
-            s: common_vendor.t(item.soldOut ? "立即购买" : "立即购买"),
-            t: common_vendor.n(item.soldOut ? "buy-btn-disabled seckill-end" : ""),
-            v: common_vendor.o(($event) => !item.soldOut && onBuy(item, index), item.id || index),
-            w: item.id || index,
-            x: common_vendor.n(item.isCurrent ? "goods-content-explain" : ""),
-            y: common_vendor.n(item.soldOut ? "product-item-soldout sellout" : ""),
-            z: common_vendor.o(($event) => onDetail(item, index), item.id || index)
+            r: common_vendor.t(item.soldOut ? "立即购买" : "立即购买"),
+            s: common_vendor.n(item.soldOut ? "buy-btn-disabled seckill-end" : ""),
+            t: common_vendor.o(($event) => !item.soldOut && onBuy(item, index), item.id || index),
+            v: item.id || index,
+            w: common_vendor.n(item.isCurrent ? "goods-content-explain" : ""),
+            x: common_vendor.n(item.soldOut ? "product-item-soldout sellout" : ""),
+            y: common_vendor.o(($event) => onDetail(item, index), item.id || index)
           });
         }),
         c: __props.variant === "popup",
@@ -127,7 +124,7 @@ const _sfc_main = {
       }, __props.list.length > 0 ? common_vendor.e({
         h: __props.loading
       }, __props.loading ? {} : __props.finished ? {} : {
-        j: common_vendor.o(onLoadMore, "0e")
+        j: common_vendor.o(onLoadMore, "51")
       }, {
         i: __props.finished
       }) : {}, {

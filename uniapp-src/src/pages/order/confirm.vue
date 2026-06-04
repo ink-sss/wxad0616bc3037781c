@@ -119,7 +119,6 @@ import { confirmOrder, createOrder, getOrderDetail } from "@/api/order";
 import { executeYeepayPayment } from "@/services/payment-action";
 import { getAddressList, deleteAddress } from "@/api/address";
 import { importWxAddress } from "@/services/wechat-address";
-import { ensureH5PageAuth } from "@/services/h5-auth-context";
 import { getSkuStock } from "@/api/product";
 import { resolveLiveRoomCode } from "@/utils/live-room-context";
 import BottomSheetPopup from "@/components/bottom-sheet-popup.vue";
@@ -252,7 +251,6 @@ async function loadDefaultAddress() {
 }
 
 onLoad((options) => {
-  if (!ensureH5PageAuth(options)) return;
   applyOrderQuery(options || {});
   if (options?.payload) {
     const parsed = JSON.parse(decodeURIComponent(options.payload));
@@ -273,7 +271,6 @@ onLoad((options) => {
 });
 
 onShow(async () => {
-  if (!ensureH5PageAuth()) return;
   loadConfirm();
   // 支付完成后可能回退到此页面，检查待支付订单是否已完成
   if (pendingOrderId.value) {

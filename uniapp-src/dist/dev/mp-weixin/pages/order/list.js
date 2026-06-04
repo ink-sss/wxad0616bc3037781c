@@ -3,7 +3,6 @@ const common_vendor = require("../../common/vendor.js");
 const api_order = require("../../api/order.js");
 const api_refund = require("../../api/refund.js");
 const services_paymentAction = require("../../services/payment-action.js");
-const services_h5AuthContext = require("../../services/h5-auth-context.js");
 const utils_liveRoomContext = require("../../utils/live-room-context.js");
 if (!Math) {
   (LiveMiniWindow + OrderLogisticsSheet)();
@@ -287,8 +286,6 @@ const _sfc_main = {
       loadOrders(true);
     });
     common_vendor.onLoad((options) => {
-      if (!services_h5AuthContext.ensureH5PageAuth(options))
-        return;
       liveRoomCode.value = utils_liveRoomContext.resolveLiveRoomCode(options == null ? void 0 : options.roomCode);
       queryOrderNo.value = String((options == null ? void 0 : options.orderNo) || (options == null ? void 0 : options.order_no) || (options == null ? void 0 : options.outTradeNo) || (options == null ? void 0 : options.out_trade_no) || "").trim();
       if (options == null ? void 0 : options.status) {
@@ -300,8 +297,6 @@ const _sfc_main = {
       scrollTabToCenter(activeTab.value);
     });
     common_vendor.onShow(() => {
-      if (!services_h5AuthContext.ensureH5PageAuth())
-        return;
       loadOrders(true);
     });
     const filteredOrders = common_vendor.computed(() => orderList.value);

@@ -4,6 +4,7 @@ const api_live = require("../../../api/live.js");
 const api_user = require("../../../api/user.js");
 const stores_index = require("../../../stores/index.js");
 const stores_domain = require("../../../stores/domain.js");
+const platform_weixin_runtime = require("../../../platform/weixin/runtime.js");
 const services_h5AuthContext = require("../../../services/h5-auth-context.js");
 const services_logout = require("../../../services/logout.js");
 const utils_liveRoomContext = require("../../../utils/live-room-context.js");
@@ -241,7 +242,7 @@ function useLiveEntryInitializer(ctx) {
       shareCode.value = resolvedOptions.shareCode || "";
     if (liveBindId)
       liveBindId.value = resolvedBindId || "";
-    showEntryOverlay.value = pendingRecoverBuyCtx.value || runtime.pendingSubscribeBack ? false : !isWeChatIOSH5;
+    showEntryOverlay.value = pendingRecoverBuyCtx.value || runtime.pendingSubscribeBack ? false : !isWeChatIOSH5 && !platform_weixin_runtime.isMpWeixinRuntime();
     applyRefreshSoundIntent(_roomCode);
     applyResolvedEntryOptions(resolvedOptions, entryLiveType);
     if (!_roomCode) {

@@ -1,6 +1,5 @@
 "use strict";
 const common_vendor = require("../common/vendor.js");
-const common_assets = require("../common/assets.js");
 const _sfc_main = {
   __name: "address-list-panel",
   props: {
@@ -73,11 +72,10 @@ const _sfc_main = {
       } : {}, {
         c: __props.list.length === 0
       }, __props.list.length === 0 ? {
-        d: common_assets._imports_0$7,
-        e: common_vendor.o(($event) => emit("add"), "7e"),
-        f: common_vendor.o(($event) => emit("import-wx"), "2a")
+        d: common_vendor.o(($event) => emit("add"), "9d"),
+        e: common_vendor.o(($event) => emit("import-wx"), "2e")
       } : __props.list.length > 0 ? common_vendor.e({
-        h: common_vendor.f(__props.list, (item, k0, i0) => {
+        g: common_vendor.f(__props.list, (item, k0, i0) => {
           return common_vendor.e({
             a: common_vendor.t(item.name),
             b: common_vendor.t(item.mobile),
@@ -93,16 +91,16 @@ const _sfc_main = {
             j: common_vendor.o(($event) => emit("select", item.id), item.id)
           });
         }),
-        i: __props.showFooter
+        h: __props.showFooter
       }, __props.showFooter ? {
-        j: common_vendor.t(__props.buttonText),
-        k: common_vendor.n(__props.buttonDisabled ? "address-save-btn-disabled" : ""),
-        l: common_vendor.o(onSave, "de"),
-        m: common_vendor.o(($event) => emit("import-wx"), "11"),
-        n: common_vendor.n(__props.pageMode ? "address-footer-page" : "")
+        i: common_vendor.t(__props.buttonText),
+        j: common_vendor.n(__props.buttonDisabled ? "address-save-btn-disabled" : ""),
+        k: common_vendor.o(onSave, "1e"),
+        l: common_vendor.o(($event) => emit("import-wx"), "fa"),
+        m: common_vendor.n(__props.pageMode ? "address-footer-page" : "")
       } : {}) : {}, {
-        g: __props.list.length > 0,
-        o: common_vendor.n(__props.pageMode ? "address-panel-page" : "")
+        f: __props.list.length > 0,
+        n: common_vendor.n(__props.pageMode ? "address-panel-page" : "")
       });
     };
   }

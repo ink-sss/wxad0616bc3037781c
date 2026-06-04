@@ -1,7 +1,7 @@
-$asset-live-fire: url('/static/icons/competitor-live/fire.png');
-$asset-live-complaint: url('/static/icons/competitor-live/complaint-text-2.png');
-$asset-live-add: url('/static/icons/competitor-live/oper_add.png');
-$asset-live-like: url('/static/zan/zan_1.png');
+$asset-live-fire: url('https://man.lqjy.cc/static/icons/competitor-live/fire.png');
+$asset-live-complaint: url('https://man.lqjy.cc/static/icons/competitor-live/complaint-text-2.png');
+$asset-live-add: url('https://man.lqjy.cc/static/icons/competitor-live/oper_add.png');
+$asset-live-like: url('https://man.lqjy.cc/static/zan/zan_1.png');
 
 /* ==================== 横屏直播专属样式 ==================== */
 .live-room--live.live-landscape.live-landscape--live {
@@ -102,11 +102,13 @@ $asset-live-like: url('/static/zan/zan_1.png');
   opacity: 1;
 }
 
-.live-room--live.live-landscape.live-landscape--live .anchor-likes__fire {
+.live-room--live.live-landscape.live-landscape--live .anchor-likes::before {
+  content: "";
   flex: 0 0 22rpx;
   width: 22rpx;
   height: 22rpx;
   margin-right: 4rpx;
+  background: $asset-live-fire center / 100% 100% no-repeat;
 }
 
 .live-room--live.live-landscape.live-landscape--live .live-status-badge {
@@ -218,15 +220,13 @@ $asset-live-like: url('/static/zan/zan_1.png');
   line-height: 24rpx;
 }
 
-.live-room--live.live-landscape.live-landscape--live .viewer-num__fire {
+.live-room--live.live-landscape.live-landscape--live .viewer-num::before {
+  content: "";
   flex: 0 0 26rpx;
   width: 26rpx;
   height: 26rpx;
   margin-right: 8rpx;
-}
-
-.live-room--live.live-landscape.live-landscape--live .viewer-num__text {
-  line-height: 24rpx;
+  background: $asset-live-fire center / 100% 100% no-repeat;
 }
 
 .live-room--live.live-landscape.live-landscape--live .report-btn {
@@ -465,7 +465,7 @@ $asset-live-like: url('/static/zan/zan_1.png');
   box-shadow: none;
 }
 
-.live-room--live.live-landscape.live-landscape--live :deep(.tool-btn-center) {
+.live-room--live.live-landscape.live-landscape--live :deep(.toolbar-icons > .tool-btn:nth-child(1)) {
   background-image: $asset-live-add;
 }
 

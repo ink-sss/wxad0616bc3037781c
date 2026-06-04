@@ -29,8 +29,8 @@ const _sfc_main = {
     const closeCountdown = common_vendor.ref(AUTO_CLOSE_SECONDS);
     let closeTimer = null;
     const image = {
-      tip: "/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-goods-refund-tip-5eba5241.png",
-      add: "/static/remote-icons/nyfs-oss-bcvdata-com-public-mobile-images-add-icon-58e6dd01.png"
+      tip: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-goods-refund-tip-5eba5241.png",
+      add: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-mobile-images-add-icon-58e6dd01.png"
     };
     const isCenterCouponModal = common_vendor.computed(() => {
       return props.activeModal === "couponReceive" || props.activeModal === "couponReceiveSuccess";

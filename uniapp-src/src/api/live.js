@@ -419,6 +419,7 @@ export function reportViewProgress(params = {}) {
     return Promise.resolve()
   }
   return h5Post('/h5/live/reportViewProgress', withLiveAliases({
+    ...params,
     roomId: Number(params.roomId || 0),
     termId: Number(params.termId || 0),
     videoId: Number(params.videoId || 0),
@@ -428,10 +429,21 @@ export function reportViewProgress(params = {}) {
   }))
 }
 
-export function getReplaySimMessages(videoId, startSec = 0, endSec = 0) {
-  const data = { videoId: Number(videoId || 0) }
-  if (Number(startSec || 0) > 0) data.startSec = Number(startSec)
-  if (Number(endSec || 0) > 0) data.endSec = Number(endSec)
+export function getReplaySimMessages(videoId, startSec = 0, endSec = 0, context = {}) {
+  context = context && typeof context === 'object' ? context : {}
+  const data = withLiveAliases({
+    ...context,
+    videoId: Number(videoId || 0),
+    liveType: context.liveType || context.live_type || 'replay',
+  })
+  if (Number(startSec || 0) > 0) {
+    data.startSec = Number(startSec)
+    data.start_sec = Number(startSec)
+  }
+  if (Number(endSec || 0) > 0) {
+    data.endSec = Number(endSec)
+    data.end_sec = Number(endSec)
+  }
   return h5Get('/h5/live/replaySimMessages', data)
 }
 

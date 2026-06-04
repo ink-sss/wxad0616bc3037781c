@@ -1,6 +1,5 @@
 "use strict";
 const common_vendor = require("../common/vendor.js");
-const common_assets = require("../common/assets.js");
 const services_liveSign = require("../services/live-sign.js");
 const area = require("../area.js");
 if (!Array) {
@@ -298,19 +297,16 @@ const _sfc_main = {
     return (_ctx, _cache) => {
       return common_vendor.e({
         a: hasSigned.value
-      }, hasSigned.value ? {
-        b: common_assets._imports_0$19,
-        c: common_assets._imports_1$7
-      } : common_vendor.e({
-        d: __props.config.coverImage
+      }, hasSigned.value ? {} : common_vendor.e({
+        b: __props.config.coverImage
       }, __props.config.coverImage ? {
-        e: __props.config.coverImage
+        c: __props.config.coverImage
       } : {}, {
-        f: __props.showWelcomeText && __props.config.welcomeText
+        d: __props.showWelcomeText && __props.config.welcomeText
       }, __props.showWelcomeText && __props.config.welcomeText ? {
-        g: common_vendor.t(__props.config.welcomeText)
+        e: common_vendor.t(__props.config.welcomeText)
       } : {}, {
-        h: common_vendor.f(__props.fields, (field, k0, i0) => {
+        f: common_vendor.f(__props.fields, (field, k0, i0) => {
           return common_vendor.e({
             a: common_vendor.t(field.label),
             b: field.required
@@ -398,13 +394,13 @@ const _sfc_main = {
             T: field.key
           });
         }),
-        i: __props.showSkip
+        g: __props.showSkip
       }, __props.showSkip ? {
-        j: common_vendor.o(onSkip, "cd")
+        h: common_vendor.o(onSkip, "34")
       } : {}, {
-        k: common_vendor.t(submitting.value ? "提交中..." : __props.submitText),
-        l: !__props.showSkip ? 1 : "",
-        m: common_vendor.o(onSubmit, "20")
+        i: common_vendor.t(submitting.value ? "提交中..." : __props.submitText),
+        j: !__props.showSkip ? 1 : "",
+        k: common_vendor.o(onSubmit, "ca")
       }));
     };
   }

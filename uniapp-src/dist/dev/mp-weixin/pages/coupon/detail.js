@@ -26,7 +26,7 @@ const _sfc_main = {
       return this.loading ? "loading" : this.no_more ? "noMore" : "more";
     },
     defaultProductImage() {
-      return (this.config && this.config.pic_url ? this.config.pic_url : "") + "/static/live/default_logo.jpeg";
+      return (this.config && this.config.pic_url ? this.config.pic_url : "") + "/live/default_logo.jpeg";
     }
   },
   onLoad(query = {}) {

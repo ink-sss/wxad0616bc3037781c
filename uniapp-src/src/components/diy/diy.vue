@@ -82,22 +82,33 @@ import DiyTitle from './title/title.vue';
 import DiyTopMerge from './topMerge/topMerge.vue';
 import DiyVideos from './videos/videos.vue';
 import DiyWindow from './window/window.vue';
+import { fetchProducts, normalizeProductList } from '../../services/miniprogram-products.js';
 export default {
   name: 'Diy',
   components: { DiyArticle, DiyAssembleProduct, DiyBanner, DiyBargainProduct, DiyBase, DiyBlank, DiyCoupon, DiyGuide, DiyImagesingle, DiyLive, DiyNavBar, DiyNotice, DiyOption, DiyOrder, DiyPreviewProduct, DiyProduct, DiyRichText, DiySearch, DiySeckillProduct, DiyService, DiyShipinLive, DiySpecial, DiyStore, DiySurface, DiyTitle, DiyTopMerge, DiyVideos, DiyWindow },
   props: ['diyItems', 'userInfo', 'serviceUserId', 'diytop', 'storeInfo'],
   emits: ['scanQrcode', 'stopPush', 'getData', 'bg', 'openSearch'],
-  data() { return { thisindex: 0, category_id: '', listData: [], page: 1, last_page: 0, no_more: false, loading: true }; },
+  data() { return { thisindex: 0, category_id: '', listData: [], page: 1, last_page: 0, no_more: false, loading: true, defaultProductsLoaded: false }; },
   computed: { loadingType() { return this.loading ? 1 : this.listData.length && this.no_more ? 2 : 0; }, scrolltop() { const value = 80 - 2 * (this.diytop || 0); return value <= 0 ? 0 : value; } },
+  watch: {
+    diyItems: {
+      handler() {
+        this.loadDefaultProducts();
+      },
+      immediate: true
+    }
+  },
   methods: {
     scanQrcode() { this.$emit('scanQrcode'); },
     loadinData() { this.$nextTick(() => { const ref = Array.isArray(this.$refs.shipinLiveRef) ? this.$refs.shipinLiveRef[0] : this.$refs.shipinLiveRef; if (ref?.getData) ref.getData(); }); },
     parentFunc(payload) { if (payload?.name) this.$emit(payload.name, payload.value); },
     setIndex(index, categoryId) { this.thisindex = index; const next = categoryId || 0; if (this.category_id !== next) { this.category_id = next; this.initProduct(); } },
-    getProduct() { if (typeof this._get !== 'function') { this.loading = false; this.$emit('stopPush'); return; } this.loading = true; this._get('product.product/lists', { page: this.page || 1, category_id: this.category_id, search: '', sortType: 'all', sortPrice: 0, list_rows: 20 }, (res) => { const list = res?.data?.list || {}; this.listData = this.listData.concat(list.data || []); this.last_page = list.last_page || 0; if (this.last_page <= 1 || this.page >= 9) this.no_more = true; }, () => {}, () => { this.loading = false; this.$emit('stopPush'); }); },
+    shouldLoadDefaultProducts() { return !this.defaultProductsLoaded && this.thisindex === 0 && Array.isArray(this.diyItems) && this.diyItems.some((item) => item && item.type === 'product' && Array.isArray(item.data) && item.data.length === 0); },
+    loadDefaultProducts() { if (!this.shouldLoadDefaultProducts()) return; this.defaultProductsLoaded = true; this.thisindex = 1; this.initProduct(); },
+    getProduct() { this.loading = true; fetchProducts({ page: this.page || 1, categoryId: this.category_id || '', search: '', sortType: 'all', sortPrice: 0, pageSize: 20 }).then((data) => { const list = normalizeProductList(data || {}, 20); this.listData = this.listData.concat(list.data || []); this.last_page = list.last_page || 0; if (this.last_page <= 1 || this.page >= 9 || this.page >= this.last_page) this.no_more = true; }).catch(() => { this.no_more = true; }).finally(() => { this.loading = false; this.$emit('stopPush'); }); },
     pullDown() { if (this.thisindex !== 0) this.initProduct(); else this.$emit('getData'); },
     initProduct() { if (this.thisindex === 0) return; this.listData = []; this.page = 1; this.no_more = false; this.getProduct(); },
-    scrolltolowerFunc() { if (this.thisindex === 0) return; if (this.page < this.last_page) { this.page += 1; this.getProduct(); } this.no_more = true; },
+    scrolltolowerFunc() { if (this.thisindex === 0 || this.no_more) return; if (this.page < this.last_page) { this.page += 1; this.getProduct(); return; } this.no_more = true; },
     bg(value) { this.$emit('bg', value); },
     gotoProduct(productId) { if (typeof this.gotoPage === 'function') this.gotoPage('pages/product/detail/detail?product_id=' + productId); }
   }

@@ -48,6 +48,7 @@ import { isTruthyFlag, useLiveSidePanels } from "./composables/useLiveSidePanels
 import { useUserStore } from "@/stores/user";
 import { pinia } from "@/stores";
 import { useDomainStore } from "@/stores/domain";
+import { getCustomNavBarHeightStyle } from "@/utils/navigation-bar";
 import { getApiBaseUrl, isLocalDevelopmentHost } from "@/utils/url-helpers";
 import { buildBroadcastReturnPath } from "./utils/live-route-context.js";
 import { useLiveChatInput } from "./composables/useLiveChatInput.js";
@@ -105,7 +106,8 @@ const replayCover = ref("");
 const chatBgImage = ref("");
 const liveDate = ref("");
 const anchorName = ref("官方直播间");
-const anchorAvatar = ref("/static/icons/default.png");
+const anchorAvatar = ref("https://man.lqjy.cc/static/icons/default.png");
+const broadcastNavHeight = ref(getCustomNavBarHeightStyle());
 const liveInitResolved = ref(false);
 const liveRedirecting = ref(false);
 const showEntryOverlay = ref(true);
@@ -388,7 +390,7 @@ const {
   showLiveReportPopup, showCenterPopup, centerPopupOrderStats, centerPopupName, centerPopupAvatar, signConfig, signFields, hasSigned,
   showSignPopup, toggleCenter, onCenterAction, goReport, onSignedDone, loadSignStatus,
 } = useLiveSidePanels({
-  liveId, roomCode, roomCurrentTermId, myUserId, liveTenantId, shareCode, liveBindId, isReplay, anchorName, anchorAvatar, userStore, getLiveRedirectUrl, isDebugLocalLogin,
+  liveId, roomCode, roomCurrentTermId, myUserId, liveTenantId, shareCode, liveBindId, isReplay, replayCurrentVideoId, anchorName, anchorAvatar, userStore, getLiveRedirectUrl, isDebugLocalLogin,
   ensureBuyAddressLoaded, addressPopupSource, showAddressPopup, getCenter, getOrderUnreadStats, getRefundUnreadStats, checkSigned,
 });
 const displayState = useLiveDisplayState({
@@ -634,7 +636,8 @@ const {
   isReplay, liveId, replayCurrentVideoId, replayLastTime, getLiveVideoElement,
   getSeekTarget: () => getSeekTarget(),
   setLastSavedProgress: (value) => setLastSavedProgress(value),
-  roomGroupType, replayVideosList, replayCurrentIndex, API_BASE,
+  roomGroupType, replayVideosList, replayCurrentIndex,
+  roomCode, liveTenantId, shareCode, liveBindId, myUserId,
 });
 const entryActions = useLiveEntryActions({
   mode, showProductList, productLoading, productList, loadProductList, activeTabIndex, activeTab, currentProduct,
@@ -655,6 +658,7 @@ const playbackWiring = useLivePlaybackWiring({
   getVideoPlayer: () => videoPlayer,
   setVideoPlayer: (value) => { videoPlayer = value; },
   getLiveVideoElement, loadCommentHistory, loadCurrentProduct, liveId, roomGroupType, roomWatchByDay, pushStatus, stopHeartbeat,
+  roomCode, liveTenantId, shareCode, liveBindId, myUserId,
   persistReplayProgress, roomCurrentTermId, syncLiveMiniWindowState, syncReplayCommentCursor, enqueueReplayComments, replayCommentCursor, replayCommentTimeline, replaceReplayMessagesAt,
   mapProductItem, syncProductCardIndex,
   incrementProductHotOrder: applyProductHotOrder,
@@ -937,6 +941,7 @@ useLiveEntryLifecycle({
 });
 const { stageState, stageActions } = useLiveStageBinding({
   mode, accessDenied, viewerLimitReached, liveInitResolved, anchorName, anchorAvatar, likeCount, isWaitingSchedule,
+  broadcastNavHeight,
   warmUpVideoUrl, roomSetting, viewerCountAnimating, displayViewerCount, displayVideoUrl, videoRenderKey, isReplay, replayCurrentVideoId, hasReplay, isLiveVisualMode, quickReplies, roomGroupType,
   mediaSourceComponent, mediaSourceType,
   liveStatusText,

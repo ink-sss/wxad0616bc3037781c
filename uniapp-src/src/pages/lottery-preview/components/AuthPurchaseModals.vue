@@ -211,7 +211,7 @@ const emit = defineEmits(["close"]);
   top: 30rpx;
   width: 30rpx;
   height: 30rpx;
-  background: url("../static/remote-icons/i-nuoyun-close2.png") center / contain no-repeat;
+  background: url("https://man.lqjy.cc/static/remote-icons/i-nuoyun-close2.png") center / contain no-repeat;
 }
 
 .goods-purchase-mini-link-img {
@@ -229,7 +229,7 @@ const emit = defineEmits(["close"]);
   font-size: 32rpx;
   font-weight: 700;
   line-height: 202rpx;
-  background: url("../static/remote-icons/i-nuoyun-goods-mini-bt.png") center / contain no-repeat;
+  background: url("https://man.lqjy.cc/static/remote-icons/i-nuoyun-goods-mini-bt.png") center / contain no-repeat;
 }
 
 .gameModal .info {

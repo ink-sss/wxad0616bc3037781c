@@ -41,7 +41,6 @@
 import { ref } from "vue";
 import { onLoad, onShow } from "@dcloudio/uni-app";
 import { getRefundList } from "@/api/refund";
-import { ensureH5PageAuth } from "@/services/h5-auth-context";
 
 const refundList = ref([]);
 
@@ -95,12 +94,10 @@ async function loadRefunds() {
 }
 
 onLoad((options) => {
-  if (!ensureH5PageAuth(options)) return;
   loadRefunds();
 });
 
 onShow(() => {
-  if (!ensureH5PageAuth()) return;
   loadRefunds();
 });
 </script>

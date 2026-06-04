@@ -1,7 +1,6 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
 const api_order = require("../../api/order.js");
-const services_h5AuthContext = require("../../services/h5-auth-context.js");
 const utils_liveRoomNavigation = require("../../utils/live-room-navigation.js");
 if (!Math) {
   LiveMiniWindow();
@@ -87,8 +86,6 @@ const _sfc_main = {
       utils_liveRoomNavigation.returnToLiveRoom(code, liveType ? { liveType } : {});
     }
     common_vendor.onLoad((options = {}) => {
-      if (!services_h5AuthContext.ensureH5PageAuth(options))
-        return;
       const outTradeNo = String(
         options.out_trade_no || options.orderNo || options.outTradeNo || ""
       ).trim();

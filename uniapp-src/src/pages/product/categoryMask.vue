@@ -7,7 +7,7 @@
         <text class="f26 gray9" @tap="onDelete">清空</text>
       </view>
       <scroll-view class="scroll-Y goods-scroll" scroll-y>
-        <view v-for="item in dataList" :key="item.cart_id" class="goods-item">
+        <view v-for="item in dataList" :key="item.local_cart_id || item.cart_id" class="goods-item">
           <image class="cover" mode="aspectFill" :src="item.product_image" />
           <view class="info">
             <view class="title text-ellipsis">{{ item.product_name }}</view>
@@ -30,6 +30,13 @@
 </template>
 
 <script>
+import {
+  clearLocalCartItems,
+  decrementLocalCartItem,
+  incrementLocalCartItem,
+  removeLocalCartItems
+} from '../../services/local-cart.js'
+
 export default {
   props: {
     dataList: {
@@ -55,32 +62,13 @@ export default {
       this.show = false
     },
     addFunc(item) {
-      uni.showLoading({ title: '加载中' })
-      this._post('order.cart/add', {
-        product_id: item.product_id,
-        spec_sku_id: item.spec_sku_id,
-        total_num: 1
-      }, () => {
-        uni.hideLoading()
-        this.loadding = false
-        this.$emit('get-shopping-num')
-      }, () => {
-        this.loadding = false
-      })
+      incrementLocalCartItem(item)
+      this.$emit('get-shopping-num')
     },
     reduceFunc(item) {
-      if (item.totalNum <= 1) return
-      uni.showLoading({ title: '加载中' })
-      this._post('order.cart/sub', {
-        product_id: item.product_id,
-        spec_sku_id: item.spec_sku_id
-      }, () => {
-        this.loadding = false
-        uni.hideLoading()
-        this.$emit('get-shopping-num')
-      }, () => {
-        this.loadding = false
-      })
+      if (item.total_num <= 1) return
+      decrementLocalCartItem(item)
+      this.$emit('get-shopping-num')
     },
     clickDel(item) {
       uni.showModal({
@@ -88,9 +76,8 @@ export default {
         content: '您确定要移除该商品吗?',
         success: (modal) => {
           if (modal.confirm) {
-            this._post('order.cart/delete', { cart_id: item.cart_id }, () => {
-              this.$emit('get-shopping-num')
-            })
+            removeLocalCartItems([item.local_cart_id || item.cart_id])
+            this.$emit('get-shopping-num')
           }
         }
       })
@@ -99,7 +86,7 @@ export default {
       const ids = []
       if (this.dataList) {
         this.dataList.forEach((item) => {
-          ids.push(item.cart_id)
+          ids.push(item.local_cart_id || item.cart_id)
         })
       }
       return ids
@@ -115,9 +102,8 @@ export default {
         content: '您确定要清空购物车吗?',
         success: (modal) => {
           if (modal.confirm) {
-            this._post('order.cart/delete', { cart_id: ids.join() }, () => {
-              this.$emit('get-shopping-num')
-            })
+            clearLocalCartItems()
+            this.$emit('get-shopping-num')
           }
         }
       })

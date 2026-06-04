@@ -28,6 +28,7 @@
         <view class="d-b-c" style="height:80rpx">
           <view class="flex-1 tc f30 gray3 top-scroll-nav-item" :class="{ active: Number(scrollId) + 1 < commentTop }" @tap="changeTopId(0)">商品</view>
           <view
+            v-if="showComments"
             class="flex-1 tc f30 gray3 top-scroll-nav-item"
             :class="{ active: Number(scrollId) + 1 < contentTop && Number(scrollId) + 1 > commentTop }"
             @tap="changeTopId(commentTop)"
@@ -73,7 +74,7 @@
           </text>
           <view class="right-time">
             <view class="d-e-c mb16">
-              {{ activeText }}<image class="jiantou" mode="aspectFit" src="/static/icon/jiantou-white.png" />
+              {{ activeText }}<image class="jiantou" mode="aspectFit" src="https://man.lqjy.cc/static/icon/jiantou-white.png" />
             </view>
             <countdown
               ref="countdown"
@@ -132,14 +133,14 @@
           </view>
           <view class="share-box">
             <button class="d-c d-c-c" @tap="showShare">
-              <image class="share_img" mode="aspectFit" src="/static/icon/fx.png" />
+              <image class="share_img" mode="aspectFit" src="https://man.lqjy.cc/static/icon/fx.png" />
             </button>
           </view>
-          <view class="sc-box">
-            <button class="d-c d-c-c" @tap="favorite">
-              <image class="share_img" :class="{ img_gray: !is_fav }" mode="aspectFit" src="/static/icon/sc.png" />
-            </button>
-          </view>
+            <view v-if="showFavorite" class="sc-box">
+              <button class="d-c d-c-c" @tap="favorite">
+                <image class="share_img" :class="{ img_gray: !is_fav }" mode="aspectFit" src="https://man.lqjy.cc/static/icon/sc.png" />
+              </button>
+            </view>
           <view class="gray9 f22 mt10">
             <text v-if="detail.product_sku && detail.product_sku.line_price > 0">原价<text class="old-price">¥{{ detail.product_sku.line_price }}</text><text class="mr10 ml10">|</text></text>
             <text>已售{{ detail.product_sales }}件</text>
@@ -197,7 +198,7 @@
         </view>
       </view>
 
-      <view id="product-comment" class="product-comment">
+      <view v-if="showComments" id="product-comment" class="product-comment">
         <view class="p-0-30 d-b-c">
           <view class="group-hd left"><text class="min-name f28">评价({{ detail.comment_data_count }})</text></view>
           <view class="right d-c-c" @tap="lookEvaluate(detail.product_id)"><text class="more mr10">查看全部</text><text class="icon iconfont icon-jiantou1"></text></view>
@@ -268,7 +269,7 @@
       <block v-else>
         <button v-if="!room_id && !is_virtual && !ispresale && !detail.custom_form" class="add-cart" @tap="openPopup('card')">加入购物车</button>
         <button v-else class="add-cart-no">加入购物车</button>
-        <button v-if="!ispresale" class="buy" @tap="openPopup('order')">立即购买</button>
+        <button v-if="!ispresale" class="buy disabled-buy" @tap="showPurchaseDisabled">立即购买</button>
         <button v-else class="buy ispresale" @tap="openPopup('deposit')">
           <block v-if="activeName === 'advance'"><view class="f28">支付定金</view><view class="f22">￥{{ detail[activeName].money }}</view></block>
           <block v-else>立即购买</block>
@@ -315,6 +316,7 @@ import coupon from './popup/coupon.vue'
 import previewProduct from './productinfo/previewProduct.vue'
 import countdown from '../../../components/countdown/countdown-presale.vue'
 import { openCustomerServiceChat } from '../../../platform/weixin/navigation.js'
+import { fetchProductDetail, normalizeProductDetail } from '../../../services/miniprogram-products.js'
 
 function sceneDecode(scene) {
   if (scene === undefined) return {}
@@ -350,7 +352,7 @@ export default {
       ispresale: false,
       statusBarHeight: 0,
       titleBarHeight: 0,
-      store_open: 1,
+      store_open: 0,
       phoneHeight: 0,
       scrollviewHigh: 0,
       loadding: true,
@@ -415,8 +417,10 @@ export default {
       specDisabled: false,
       referee_id: '',
       is_fav: false,
-      chatSetting: {},
-      isKefuPop: false
+      chatSetting: null,
+      isKefuPop: false,
+      showFavorite: false,
+      showComments: false
     }
   },
   computed: {
@@ -445,7 +449,6 @@ export default {
     this.getData()
   },
   onShareAppMessage() {
-    this.taskFunc()
     const params = this.getShareUrlParams({
       product_id: this.product_id,
       referee_id: this.getUserId()
@@ -490,13 +493,8 @@ export default {
     },
     getData() {
       uni.showLoading({ title: '加载中' })
-      this._get('product.product/detail', {
-        product_id: this.product_id,
-        url: this.url,
-        visitcode: this.getVisitcode(),
-        referee_id: this.referee_id
-      }, (res) => {
-        const data = res.data
+      fetchProductDetail(this.product_id).then((product) => {
+        const data = normalizeProductDetail(product || {})
         this.service_type = data.mp_service == null ? 10 : data.mp_service.service_type
         if (data.detail.is_preview === 1 && new Date().valueOf() / 1000 < data.detail.preview_time) {
           this.is_preview = data.detail.is_preview
@@ -516,14 +514,14 @@ export default {
           this.skuName = 'sku'
         }
         if (data.detail.secKill) this.skuName = 'seckill'
-        this.shop_supplier_id = data.detail.supplier.shop_supplier_id
-        this.shop_info = data.detail.supplier
-        this.isfollow = data.detail.isfollow
+        this.shop_supplier_id = data.detail.supplier ? data.detail.supplier.shop_supplier_id : 0
+        this.shop_info = data.detail.supplier || {}
+        this.isfollow = data.detail.isfollow || 0
         this.is_virtual = data.detail.is_virtual
-        this.is_fav = data.is_fav
-        this.couponList = data.couponList
-        this.cart_total_num = data.cart_total_num
-        this.store_open = data.store_open
+        this.is_fav = false
+        this.couponList = []
+        this.cart_total_num = data.cart_total_num || 0
+        this.store_open = 0
         data.detail.content = formatContent(data.detail.content)
         if (this.activeName && this.activeName !== 'advance' && this.activeName !== 'preview') {
           if (data.detail[this.activeName].specData) this.initSpecData(data.detail[this.activeName].specData)
@@ -531,15 +529,21 @@ export default {
           this.initSpecData(data.specData)
         }
         this.detail = data.detail
-        this.show_discount = data.show_discount
-        this.discount = data.discount
+        this.show_discount = false
+        this.discount = { product_coupon: [], product_reduce: [], give_points: 0 }
+        this.showFavorite = false
+        this.showComments = false
         this.getServer()
-        this.getChatInfo()
+        this.chatSetting = null
         this.loadding = false
         uni.hideLoading()
         this.$nextTick(() => {
           this.initScroll()
         })
+      }).catch(() => {
+        this.loadding = false
+        uni.hideLoading()
+        uni.showToast({ title: '商品加载失败', icon: 'none' })
       })
     },
     getServer() {
@@ -655,7 +659,9 @@ export default {
     },
     showShare() {
       this.isbottmpanel = true
-      this.taskFunc()
+    },
+    showPurchaseDisabled() {
+      uni.showToast({ title: '暂不支持直接购买', icon: 'none' })
     },
     closeAppShare() {
       this.isAppShare = false
@@ -697,25 +703,14 @@ export default {
       this.gotoPage('/pages/shop/shop?shop_supplier_id=' + this.shop_supplier_id)
     },
     favorite() {
-      this._post('user.Favorite/add', {
-        pid: this.product_id,
-        type: 20
-      }, () => {
-        if (this.isfollow === 0) {
-          uni.showToast({ icon: 'none', title: '收藏成功，请到“我的->我的收藏”查看和管理哦' })
-          this.isfollow = 1
-        } else if (this.isfollow === 1) {
-          this.isfollow = 0
-          uni.showToast({ icon: 'none', title: '取消成功' })
-        }
-      })
+      return false
     },
     changeSwiper() {
       this.isVideoPlay = false
     },
     returnValFunc() {},
     taskFunc() {
-      this._post('plus.task.Task/dayTask', { task_type: 'product' }, () => {})
+      return false
     },
     sendFunc(type) {
       this[type]()
@@ -730,12 +725,7 @@ export default {
       }
     },
     getChatInfo() {
-      this._post('live.roomNew/getChatSetting', {
-        app_id: this.getAppId(),
-        supplier_id: this.shop_supplier_id
-      }, (res) => {
-        if (res.code === 1) this.chatSetting = res.data
-      })
+      this.chatSetting = null
     },
     contackBack() {},
     onKefuClick() {
@@ -761,6 +751,7 @@ export default {
 
 <style scoped>
 .product-detail { min-height: 100vh; background: #f7f7f7; padding-bottom: 120rpx; }
+.disabled-buy { opacity: .55; }
 .header { position: fixed; left: 0; right: 0; top: 0; z-index: 30; pointer-events: none; }
 .header image { width: 48rpx; height: 48rpx; }
 .reg180 { display: flex; align-items: center; justify-content: center; width: 88rpx; pointer-events: auto; }

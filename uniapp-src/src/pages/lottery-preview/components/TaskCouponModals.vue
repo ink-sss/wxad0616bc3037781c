@@ -107,15 +107,15 @@ defineProps({
 const emit = defineEmits(["close"]);
 
 const image = {
-  collection: "./static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-num-taskcollection-icon-c6bfd903.png",
-  taskClose: "./static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-num-taskclose-168e48f0.png",
-  subscribing: "./static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-subscribing-fcd5c5e0.png",
-  succBg: "./static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-num-task-coupon-succ-bg-86670f96.png",
-  closeIcon: "./static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-num-close-icon-2cdee8d1.png",
-  shareArrow: "./static/remote-icons/i-nuoyun-task-coupon-share-arrow.png",
-  icon1: "./static/remote-icons/nyfs-oss-bcvdata-com-public-mobile-images-icon-1-ff1d58ca.png",
-  icon2: "./static/remote-icons/nyfs-oss-bcvdata-com-public-mobile-images-icon-2-e1e9b114.png",
-  subsChecked: "./static/remote-icons/i-nuoyun-task-coupon-subs-checked.png"
+  collection: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-num-taskcollection-icon-c6bfd903.png",
+  taskClose: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-num-taskclose-168e48f0.png",
+  subscribing: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-subscribing-fcd5c5e0.png",
+  succBg: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-num-task-coupon-succ-bg-86670f96.png",
+  closeIcon: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-num-close-icon-2cdee8d1.png",
+  shareArrow: "https://man.lqjy.cc/static/remote-icons/i-nuoyun-task-coupon-share-arrow.png",
+  icon1: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-mobile-images-icon-1-ff1d58ca.png",
+  icon2: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-mobile-images-icon-2-e1e9b114.png",
+  subsChecked: "https://man.lqjy.cc/static/remote-icons/i-nuoyun-task-coupon-subs-checked.png"
 };
 </script>
 

@@ -82,7 +82,7 @@ const emit = defineEmits(["close"]);
 .common-close-icon {
   width: 64rpx;
   height: 64rpx;
-  background-image: url("../static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-icon-close-0cb4224d.png");
+  background-image: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-icon-close-0cb4224d.png");
   background-size: contain;
   background-repeat: no-repeat;
 }

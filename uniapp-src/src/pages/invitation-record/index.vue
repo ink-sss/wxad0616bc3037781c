@@ -12,7 +12,7 @@
         />
         <image
           class="search-icon"
-          src="/static/remote-icons/s-nuoyun-deepicon-search.svg"
+          src="https://man.lqjy.cc/static/remote-icons/s-nuoyun-deepicon-search.svg"
           mode="aspectFit"
           @click="onSearch"
         />
@@ -70,7 +70,7 @@
       </view>
 
       <view v-else-if="!loading" class="no-data">
-        <image src="/static/remote-icons/s-nuoyun-income-nodata.png" mode="aspectFit" />
+        <image src="https://man.lqjy.cc/static/remote-icons/s-nuoyun-income-nodata.png" mode="aspectFit" />
         <text class="no-data-text">暂无邀请记录</text>
       </view>
 
@@ -84,7 +84,6 @@
 import { computed, ref } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
 import { getDistributorInvitedUsers } from "@/api/live";
-import { ensureH5PageAuth } from "@/services/h5-auth-context";
 import { loadLiveRoomContext } from "@/utils/live-room-context";
 
 const statusOptions = [
@@ -93,7 +92,7 @@ const statusOptions = [
   { label: "离线", value: 2 },
 ];
 
-const defaultAvatar = "/static/remote-icons/s-nuoyun-avatar-default.png";
+const defaultAvatar = "https://man.lqjy.cc/static/remote-icons/s-nuoyun-avatar-default.png";
 const pageSize = 10;
 const retryTimes = 3;
 const retryDelay = 500;
@@ -215,7 +214,6 @@ async function ensureDistributorAndLoad() {
 }
 
 onLoad((options) => {
-  if (!ensureH5PageAuth(options)) return;
   const optionRoomId = Number(options?.roomId || 0);
   if (optionRoomId > 0) {
     roomId.value = optionRoomId;

@@ -3,7 +3,7 @@
    app-global.scss so they do not become invalid component WXSS selectors. */
 .external-lottery-tools.data-v-dd297cce {
   position: absolute;
-  top: 96rpx;
+  top: calc(96rpx + var(--broadcast-nav-height, 0px));
   right: 16rpx;
   z-index: 4;
   width: 96rpx;

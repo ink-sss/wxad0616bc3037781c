@@ -75,10 +75,10 @@ defineProps({
 const emit = defineEmits(["close"]);
 
 const image = {
-  empty: "./static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-coupon-push-coupon-no-data-682f4f4d.png",
-  noCheck: "./static/remote-icons/nyfs-oss-bcvdata-com-public-mobile-images-order-no-check-9ad3ef03.png",
-  left: "./static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-pay-left-834aed5e.png",
-  tip: "./static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-goods-refund-tip-5eba5241.png"
+  empty: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-coupon-push-coupon-no-data-682f4f4d.png",
+  noCheck: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-mobile-images-order-no-check-9ad3ef03.png",
+  left: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-pay-left-834aed5e.png",
+  tip: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-goods-refund-tip-5eba5241.png"
 };
 
 const coupons = [
@@ -159,7 +159,7 @@ const coupons = [
   height: 176rpx;
   padding: 24rpx 32rpx;
   box-sizing: border-box;
-  background: url("../static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-push-coupon-45774041.png") center / 100% 100% no-repeat;
+  background: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-push-coupon-45774041.png") center / 100% 100% no-repeat;
 }
 
 .coupon-info {

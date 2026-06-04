@@ -1,6 +1,6 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
-const base = "https://nyfs-oss.bcvdata.com/Public/Home/Images";
+const base = "https://man.lqjy.cc/static/Public/Home/Images";
 const _sfc_main = {
   __name: "WechatLotteryModals",
   props: {
@@ -22,7 +22,7 @@ const _sfc_main = {
     const props = __props;
     const emit = __emit;
     const image = {
-      avatar: "/static/remote-icons/nyfs-oss-bcvdata-com-uploads-consolewechat-1681-rtf-20260430144045241662-91b0e034.jpg",
+      avatar: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-uploads-consolewechat-1681-rtf-20260430144045241662-91b0e034.jpg",
       redAnimation: `${base}/redRain/redAnimation.png`,
       rotate: `${base}/redRain/rotate.png`,
       circle: `${base}/redRain/circle.png`,
@@ -30,7 +30,7 @@ const _sfc_main = {
       effectTop: `${base}/Watch/luckydraw/effectViewTopBg.png`,
       scrollCover: `${base}/Watch/luckydraw/luckScrollImg.png`,
       floorClose: `${base}/Watch/luckydraw/floorClose.png`,
-      element: "/static/remote-icons/nyfs-oss-bcvdata-com-public-pkenvelope-element3-b60b22b7.png"
+      element: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-pkenvelope-element3-b60b22b7.png"
     };
     const prizeName = common_vendor.computed(() => props.prize.name || props.prize.title || "抽奖奖品");
     const prizeTitle = common_vendor.computed(() => prizeName.value);

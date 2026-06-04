@@ -11,7 +11,7 @@ export default {
   props: { isMpShare: Boolean },
   emits: ['close'],
   data() { return { visible: false }; },
-  computed: { shareImage() { return (this.config?.pic_url || '') + '/static/share.png'; } },
+  computed: { shareImage() { return (this.config?.pic_url || '') + '/share.png'; } },
   watch: { isMpShare: { immediate: true, handler(value) { this.visible = !!value; } } },
   methods: { closePopup() { this.visible = false; this.$emit('close'); } }
 };

@@ -1,6 +1,5 @@
 "use strict";
 const common_vendor = require("../common/vendor.js");
-const common_assets = require("../common/assets.js");
 const utils_imageUrl = require("../utils/image-url.js");
 const SWIPER_WINDOW_RADIUS = 2;
 const _sfc_main = {
@@ -13,7 +12,7 @@ const _sfc_main = {
     product: {
       type: Object,
       default: () => ({
-        image: "./static/remote-icons/figma-product-placeholder.png",
+        image: "https://man.lqjy.cc/static/remote-icons/figma-product-placeholder.png",
         title: "女神节激光节女神节激光节节激光...",
         price: "888"
       })
@@ -115,10 +114,9 @@ const _sfc_main = {
       }, __props.visible ? common_vendor.e({
         b: __props.showHotSale && displayHotSales(activeItem.value) > 0
       }, __props.showHotSale && displayHotSales(activeItem.value) > 0 ? {
-        c: common_assets._imports_0$21,
-        d: common_vendor.t(displayHotSales(activeItem.value))
+        c: common_vendor.t(displayHotSales(activeItem.value))
       } : {}, {
-        e: common_vendor.f(visibleProductItems.value, (entry, k0, i0) => {
+        d: common_vendor.f(visibleProductItems.value, (entry, k0, i0) => {
           return {
             a: productImage(entry.item),
             b: common_vendor.t(entry.index + 1),
@@ -131,13 +129,10 @@ const _sfc_main = {
             i: entry.item.id || entry.index
           };
         }),
-        f: common_assets._imports_0$22,
-        g: common_vendor.t(productItems.value.length),
-        h: common_assets._imports_2$7,
-        i: visibleActiveIndex.value,
-        j: common_vendor.o(onSwiperChange, "fe"),
-        k: common_assets._imports_3$5,
-        l: common_vendor.o(close, "ec")
+        e: common_vendor.t(productItems.value.length),
+        f: visibleActiveIndex.value,
+        g: common_vendor.o(onSwiperChange, "41"),
+        h: common_vendor.o(close, "fb")
       }) : {});
     };
   }

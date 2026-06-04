@@ -3,6 +3,7 @@ import { enterLiveRoom, getLiveDetail, getReplayFirstVideo, reportViewProgress, 
 import { getProfile } from "@/api/user";
 import { pinia } from "@/stores";
 import { useDomainStore } from "@/stores/domain";
+import { isMpWeixinRuntime } from "@/platform/weixin/runtime";
 import { readBindId } from "@/services/h5-auth-context";
 import { logoutAndRedirect } from "@/services/logout";
 import { saveLiveRoomContext, loadLiveRoomContext } from "@/utils/live-room-context";
@@ -173,7 +174,9 @@ export function useLiveEntryInitializer(ctx) {
     roomCode.value = _roomCode;
     if (shareCode) shareCode.value = resolvedOptions.shareCode || "";
     if (liveBindId) liveBindId.value = resolvedBindId || "";
-    showEntryOverlay.value = (pendingRecoverBuyCtx.value || runtime.pendingSubscribeBack) ? false : !isWeChatIOSH5;
+    showEntryOverlay.value = (pendingRecoverBuyCtx.value || runtime.pendingSubscribeBack)
+      ? false
+      : (!isWeChatIOSH5 && !isMpWeixinRuntime());
     applyRefreshSoundIntent(_roomCode);
     applyResolvedEntryOptions(resolvedOptions, entryLiveType);
     if (!_roomCode) {

@@ -1,12 +1,12 @@
 "use strict";
 const ZAN_IMAGES = [
-  "/static/zan/zan_1.png",
-  "/static/zan/zan_2.png",
-  "/static/zan/zan_3.png",
-  "/static/zan/zan_4.png",
-  "/static/zan/zan_5.png"
+  "https://man.lqjy.cc/static/zan/zan_1.png",
+  "https://man.lqjy.cc/static/zan/zan_2.png",
+  "https://man.lqjy.cc/static/zan/zan_3.png",
+  "https://man.lqjy.cc/static/zan/zan_4.png",
+  "https://man.lqjy.cc/static/zan/zan_5.png"
 ];
-const defaultAvatar = "/static/remote-icons/nyfs-oss-bcvdata-com-uploads-consolewechat-1681-rtf-20260430144045241662-91b0e034.jpg";
+const defaultAvatar = "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-uploads-consolewechat-1681-rtf-20260430144045241662-91b0e034.jpg";
 function formatPlayTime(seconds) {
   if (seconds < 0 || !Number.isFinite(seconds))
     return "--:--";

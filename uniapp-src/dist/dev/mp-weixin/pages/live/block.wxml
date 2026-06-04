@@ -1,1 +1,1 @@
-<view class="blocked data-v-9f875802"><image class="blocked-img data-v-9f875802" src="https://weilive.yukelive.com/static/addBlack.png"/><view class="blocked-text data-v-9f875802">您当前已被拉黑</view><button class="blocked-btn data-v-9f875802" type="warn" bindtap="{{a}}">知道了</button></view>
+<view class="blocked data-v-9f875802"><image class="blocked-img data-v-9f875802" src="https://man.lqjy.cc/static/addBlack.png"/><view class="blocked-text data-v-9f875802">您当前已被拉黑</view><button class="blocked-btn data-v-9f875802" type="warn" bindtap="{{a}}">知道了</button></view>

@@ -95,7 +95,7 @@
           <view class="watch_reward-eb-con">
             <image
               class="watch_reward_img"
-              src="/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-num-watch-reward-icon-422b8d60.png"
+              src="https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-num-watch-reward-icon-422b8d60.png"
               mode="aspectFill"
             />
             <text class="watch_reward_name">{{ watchRewardBroadcast.nickname }}</text>

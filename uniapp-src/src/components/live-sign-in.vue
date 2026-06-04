@@ -4,12 +4,12 @@
     <view v-if="hasSigned" class="signed-done">
       <image
         class="signed-backdrop"
-        src="./static/icons/sign-back.png"
+        src="https://man.lqjy.cc/static/icons/sign-back.png"
         mode="aspectFill"
       />
       <image
         class="signed-success-image"
-        src="./static/icons/sign-success.png"
+        src="https://man.lqjy.cc/static/icons/sign-success.png"
         mode="widthFix"
       />
     </view>

@@ -82,7 +82,6 @@ import { ref } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
 import { createComplaint, uploadComplaintImage } from "@/api/complaint";
 import { chooseImage as chooseMpImage } from "@/platform/weixin/file";
-import { ensureH5PageAuth } from "@/services/h5-auth-context";
 import { loadLiveRoomContext } from "@/utils/live-room-context";
 import { buildBroadcastReturnPath } from "@/pages/broadcast/utils/live-route-context.js";
 
@@ -333,7 +332,6 @@ async function submit() {
 }
 
 onLoad((options) => {
-  if (!ensureH5PageAuth(options)) return;
   type.value = options.type || "";
   typeLabel.value = options.typeLabel || "";
   liveId.value = options.liveId || "";

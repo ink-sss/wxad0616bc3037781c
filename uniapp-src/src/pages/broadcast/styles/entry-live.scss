@@ -1,8 +1,8 @@
-$asset-fire: url("/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-fire-6f37634f.png");
-$asset-mini-app: url("/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-mini-appicon-light-694542ae.png");
-$asset-complaint: url("/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-complaint-text-52b0a134.png");
-$asset-add: url("/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-ebu-add-86ea0992.png");
-$asset-like: url("/static/zan/zan_1.png");
+$asset-fire: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-fire-6f37634f.png");
+$asset-mini-app: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-mini-appicon-light-694542ae.png");
+$asset-complaint: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-complaint-text-52b0a134.png");
+$asset-add: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-ebu-add-86ea0992.png");
+$asset-like: url("https://man.lqjy.cc/static/zan/zan_1.png");
 
 /* ==================== 直播专属样式 ==================== */
 .live-room--live.live-portrait {
@@ -12,7 +12,7 @@ $asset-like: url("/static/zan/zan_1.png");
 
 .live-room--live.live-portrait .anchor-row {
   position: absolute;
-  top: 20rpx;
+  top: calc( var(--broadcast-nav-height, 0px));
   left: 0;
   right: 0;
   z-index: 1000;
@@ -87,11 +87,13 @@ $asset-like: url("/static/zan/zan_1.png");
   white-space: nowrap;
 }
 
-.live-room--live.live-portrait .anchor-likes__fire {
+.live-room--live.live-portrait .anchor-likes::before {
+  content: "";
   flex: 0 0 22rpx;
   width: 22rpx;
   height: 22rpx;
   margin-right: 4rpx;
+  background: $asset-fire center / 100% 100% no-repeat;
 }
 
 .live-room--live.live-portrait .live-status-badge {
@@ -155,7 +157,7 @@ $asset-like: url("/static/zan/zan_1.png");
 }
 
 .live-room--live.live-portrait :deep(.external-lottery-tools) {
-  top: 106rpx;
+  top: calc(106rpx + var(--broadcast-nav-height, 0px));
   right: 18rpx;
   z-index: 1001;
   width: 96rpx;
@@ -431,6 +433,7 @@ $asset-like: url("/static/zan/zan_1.png");
   position: relative;
 }
 
+.live-room--live.live-portrait .go-shopping-notice #goodsPic,
 .live-room--live.live-portrait .go-shopping-notice .goodsPic {
   display: block;
   width: 96rpx;
@@ -596,7 +599,7 @@ $asset-like: url("/static/zan/zan_1.png");
   backdrop-filter: none;
 }
 
-.live-room--live.live-portrait :deep(.tool-btn-center) {
+.live-room--live.live-portrait :deep(.toolbar-icons > .tool-btn:nth-child(1)) {
   background-image: $asset-add;
 }
 

@@ -1,6 +1,5 @@
 "use strict";
 const common_vendor = require("../../../common/vendor.js");
-const common_assets = require("../../../common/assets.js");
 const components_liveLottery_modalData = require("../../../components/live-lottery/modal-data.js");
 if (!Math) {
   (CommentPrizeRuleModal + CommentPrizeConfirmModal + CommentSlotLotteryModals + CommentLotteryResultModals + CommentLotteryPasswordModal + WechatLotteryModals + SlotLotteryModals + WechatLotteryAwardsUserModal + WechatLotteryResultModals + WatchDurationRewardModal + CouponReceiveModals)();
@@ -209,12 +208,11 @@ const _sfc_main = {
       } : {}, {
         L: __props.watchRewardBroadcast
       }, __props.watchRewardBroadcast ? {
-        M: common_assets._imports_0$10,
-        N: common_vendor.t(__props.watchRewardBroadcast.nickname),
-        O: common_vendor.t(__props.watchRewardBroadcast.rewardName),
-        P: common_vendor.t(__props.watchRewardBroadcast.rewardQuantity || 1),
-        Q: common_vendor.t(__props.watchRewardBroadcast.unit),
-        R: __props.watchRewardBroadcastKey
+        M: common_vendor.t(__props.watchRewardBroadcast.nickname),
+        N: common_vendor.t(__props.watchRewardBroadcast.rewardName),
+        O: common_vendor.t(__props.watchRewardBroadcast.rewardQuantity || 1),
+        P: common_vendor.t(__props.watchRewardBroadcast.unit),
+        Q: __props.watchRewardBroadcastKey
       } : {});
     };
   }

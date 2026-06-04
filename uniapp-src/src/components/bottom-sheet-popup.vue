@@ -25,7 +25,7 @@
         <view v-if="showClose" class="sheet-close" @click="emit('close')">
           <image
             class="sheet-close-icon"
-            src="./static/icons/close.svg"
+            src="https://man.lqjy.cc/static/icons/close.svg"
             mode="aspectFit"
           />
         </view>

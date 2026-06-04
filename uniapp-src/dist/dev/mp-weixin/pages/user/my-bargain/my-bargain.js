@@ -155,7 +155,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     h: $data.status === 0,
     i: $data.listData.length === 0 && !$data.loading
   }, $data.listData.length === 0 && !$data.loading ? {
-    j: _ctx.config.pic_url + "/static/list-null.png"
+    j: _ctx.config.pic_url + "/list-null.png"
   } : {
     k: common_vendor.p({
       status: $options.loadMoreStatus
@@ -163,7 +163,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   }, {
     l: $data.scrollviewHigh + "px",
     m: common_vendor.o((...args) => $options.scrolltolowerFunc && $options.scrolltolowerFunc(...args), "ee"),
-    n: common_vendor.o((...args) => $options.gotoMore && $options.gotoMore(...args), "90"),
+    n: common_vendor.o((...args) => $options.gotoMore && $options.gotoMore(...args), "17"),
     o: common_vendor.n($options.themeClass),
     p: $options.themeName
   });

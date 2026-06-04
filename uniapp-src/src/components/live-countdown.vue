@@ -16,7 +16,7 @@
       </view>
     </view>
     <view v-if="showSubscribe" class="lc-portrait__btn" @click="handleSubscribe">
-      <image class="lc-portrait__btn-icon" src="./static/icons/heart.png" mode="aspectFit" />
+      <image class="lc-portrait__btn-icon" src="https://man.lqjy.cc/static/icons/heart.png" mode="aspectFit" />
       <text class="lc-portrait__btn-text">立即开通提醒</text>
     </view>
   </view>

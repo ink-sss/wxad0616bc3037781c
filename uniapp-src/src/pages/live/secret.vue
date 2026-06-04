@@ -1,6 +1,6 @@
 <template>
   <view class="secret">
-    <image class="secret-img" src="https://weilive.yukelive.com/static/addBlack.png" />
+    <image class="secret-img" src="https://man.lqjy.cc/static/addBlack.png" />
     <view class="secret-text">您暂时无权访问</view>
     <button class="secret-btn" type="warn" @tap="goIndex">知道了</button>
   </view>

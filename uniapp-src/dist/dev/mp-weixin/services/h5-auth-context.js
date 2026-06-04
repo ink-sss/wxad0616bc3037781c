@@ -449,9 +449,13 @@ function buildH5AuthContext(input = {}) {
     roomId: sceneContext.roomId || "",
     liveId: sceneContext.liveId || "",
     tenantId: normalizedInput.tenantId || normalizedInput.tenant_id || "",
+    _tc: normalizedInput._tc || normalizedInput.tc || "",
     bindId,
     customerId,
     liveType: normalizedInput.liveType || normalizedInput.live_type || "",
+    liveName: normalizedInput.liveName || normalizedInput.live_name || "",
+    cover: normalizedInput.cover || normalizedInput.liveCover || normalizedInput.live_cover || "",
+    liveCover: normalizedInput.liveCover || normalizedInput.live_cover || normalizedInput.cover || "",
     termId: sceneContext.termId || "",
     videoId: sceneContext.videoId || "",
     mode: sceneContext.mode || "",
@@ -505,6 +509,21 @@ function getCurrentPageUrl(fallback = "/pages/center/index") {
     return fallback;
   }
 }
+function saveCurrentPageForNativeLogin(fallback = "/pages/center/index") {
+  try {
+    const pages = getCurrentPages();
+    const currentPage = pages[pages.length - 1];
+    if (!currentPage || !currentPage.route || LOGIN_ROUTES.includes(currentPage.route))
+      return fallback;
+    const options = currentPage.$page && currentPage.$page.options || currentPage.options || {};
+    writeStorage("currentPage", currentPage.route);
+    writeStorage("currentPageOptions", options);
+    const query = encodeQuery(options);
+    return `/${currentPage.route}${query ? `?${query}` : ""}`;
+  } catch (error) {
+    return fallback;
+  }
+}
 function buildRedirectFromH5AuthContext(input = {}) {
   const context = mergeContext(loadH5AuthContext(), buildH5AuthContext(input));
   let target = context.redirect ? normalizeRedirectUrl(context.redirect) : "";
@@ -525,28 +544,14 @@ function buildRedirectFromH5AuthContext(input = {}) {
   });
   return normalizeRedirectUrl(target);
 }
-function buildH5LoginUrl(input = {}) {
-  const context = saveH5AuthContext(input);
-  const redirect = buildRedirectFromH5AuthContext(context);
-  const params = {
-    redirect,
-    roomCode: context.roomCode,
-    roomId: context.roomId,
-    liveId: context.liveId,
-    tenantId: context.tenantId,
-    bindId: context.bindId,
-    liveType: context.liveType,
-    termId: context.termId,
-    videoId: context.videoId
-  };
-  const query = encodeQuery(params);
-  return `/pages/login/login${query ? `?${query}` : ""}`;
-}
-function redirectToH5Login(input = {}) {
-  const url = buildH5LoginUrl({
-    ...input,
-    redirect: input.redirect || getCurrentPageUrl("/pages/center/index")
-  });
+function redirectToNativeLogin(input = {}) {
+  saveCurrentPageForNativeLogin(input.redirect || "/pages/center/index");
+  let url = "/pages/login/login";
+  try {
+    if (common_vendor.index.getStorageSync("me"))
+      url = "/pages/login/anchorlogin";
+  } catch (error) {
+  }
   common_vendor.index.navigateTo({
     url,
     fail() {
@@ -559,6 +564,44 @@ function redirectToH5Login(input = {}) {
     }
   });
   return false;
+}
+function redirectAfterNativeLogin(defaultUrl = "/pages/index/index") {
+  clearH5AuthContext();
+  try {
+    const pages = getCurrentPages();
+    if (pages.length > 1) {
+      common_vendor.index.navigateBack();
+      return;
+    }
+  } catch (error) {
+  }
+  const route = readStorage("currentPage", "");
+  const options = readStorage("currentPageOptions", {}) || {};
+  let url = defaultUrl;
+  if (route) {
+    const query = encodeQuery(options);
+    url = `/${route}${query ? `?${query}` : ""}`;
+  }
+  if (url.startsWith("/pages/user/index/index")) {
+    common_vendor.index.switchTab({
+      url: "/pages/user/index/index",
+      fail() {
+        common_vendor.index.reLaunch({ url });
+      }
+    });
+    return;
+  }
+  common_vendor.index.redirectTo({
+    url,
+    fail() {
+      common_vendor.index.reLaunch({
+        url,
+        fail() {
+          common_vendor.index.navigateTo({ url });
+        }
+      });
+    }
+  });
 }
 function redirectAfterH5Login(input = {}) {
   const url = buildRedirectFromH5AuthContext(input);
@@ -585,20 +628,9 @@ function redirectAfterH5Login(input = {}) {
   });
 }
 function redirectAfterH5LoginSkipped(input = {}) {
-  const context = mergeContext(loadH5AuthContext(), buildH5AuthContext(input));
-  const target = buildRedirectFromH5AuthContext(context);
   clearH5AuthContext();
-  if (/^\/pages\/broadcast\/(entry|replay)\b/.test(target)) {
-    common_vendor.index.reLaunch({
-      url: appendQuery(target, { loginSkipped: 1 }),
-      fail() {
-        common_vendor.index.redirectTo({ url: appendQuery(target, { loginSkipped: 1 }) });
-      }
-    });
-    return;
-  }
-  common_vendor.index.reLaunch({
-    url: "/pages/index/index?loginSkipped=1",
+  common_vendor.index.redirectTo({
+    url: "/pages/index/index",
     fail() {
       common_vendor.index.switchTab({
         url: "/pages/user/index/index",
@@ -607,20 +639,6 @@ function redirectAfterH5LoginSkipped(input = {}) {
         }
       });
     }
-  });
-}
-function ensureH5Authenticated(input = {}) {
-  syncH5AuthSession(input);
-  if (hasH5Token()) {
-    saveH5AuthContext(input);
-    return true;
-  }
-  return redirectToH5Login(input);
-}
-function ensureH5PageAuth(query = {}, fallbackRedirect = "") {
-  return ensureH5Authenticated({
-    ...query,
-    redirect: fallbackRedirect || getCurrentPageUrl("/pages/center/index")
   });
 }
 function isH5UnauthorizedError(error = {}) {
@@ -634,11 +652,10 @@ function handleH5Unauthorized(error = {}, input = {}) {
   if (!isH5UnauthorizedError(error))
     return false;
   clearH5AuthSession();
-  redirectToH5Login(input);
+  redirectToNativeLogin(input);
   return true;
 }
 exports.buildH5AuthContext = buildH5AuthContext;
-exports.ensureH5PageAuth = ensureH5PageAuth;
 exports.getCurrentPageUrl = getCurrentPageUrl;
 exports.getH5Token = getH5Token;
 exports.handleH5Unauthorized = handleH5Unauthorized;
@@ -648,6 +665,7 @@ exports.readBindId = readBindId;
 exports.readCachedH5Customer = readCachedH5Customer;
 exports.redirectAfterH5Login = redirectAfterH5Login;
 exports.redirectAfterH5LoginSkipped = redirectAfterH5LoginSkipped;
-exports.redirectToH5Login = redirectToH5Login;
+exports.redirectAfterNativeLogin = redirectAfterNativeLogin;
+exports.redirectToNativeLogin = redirectToNativeLogin;
 exports.saveH5AuthContext = saveH5AuthContext;
 exports.syncH5AuthSession = syncH5AuthSession;

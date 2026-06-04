@@ -1,7 +1,7 @@
 "use strict";
 const common_vendor = require("../../../common/vendor.js");
 const platform_weixin_navigation = require("../../../platform/weixin/navigation.js");
-const common_assets = require("../../../common/assets.js");
+const services_miniprogramProducts = require("../../../services/miniprogram-products.js");
 const spec = () => "./popup/spec2.js";
 const share = () => "./popup/share.js";
 const coupon = () => "./popup/coupon.js";
@@ -38,7 +38,7 @@ const _sfc_main = {
       ispresale: false,
       statusBarHeight: 0,
       titleBarHeight: 0,
-      store_open: 1,
+      store_open: 0,
       phoneHeight: 0,
       scrollviewHigh: 0,
       loadding: true,
@@ -103,8 +103,10 @@ const _sfc_main = {
       specDisabled: false,
       referee_id: "",
       is_fav: false,
-      chatSetting: {},
-      isKefuPop: false
+      chatSetting: null,
+      isKefuPop: false,
+      showFavorite: false,
+      showComments: false
     };
   },
   computed: {
@@ -134,7 +136,6 @@ const _sfc_main = {
     this.getData();
   },
   onShareAppMessage() {
-    this.taskFunc();
     const params = this.getShareUrlParams({
       product_id: this.product_id,
       referee_id: this.getUserId()
@@ -181,13 +182,8 @@ const _sfc_main = {
     },
     getData() {
       common_vendor.index.showLoading({ title: "加载中" });
-      this._get("product.product/detail", {
-        product_id: this.product_id,
-        url: this.url,
-        visitcode: this.getVisitcode(),
-        referee_id: this.referee_id
-      }, (res) => {
-        const data = res.data;
+      services_miniprogramProducts.fetchProductDetail(this.product_id).then((product) => {
+        const data = services_miniprogramProducts.normalizeProductDetail(product || {});
         this.service_type = data.mp_service == null ? 10 : data.mp_service.service_type;
         if (data.detail.is_preview === 1 && (/* @__PURE__ */ new Date()).valueOf() / 1e3 < data.detail.preview_time) {
           this.is_preview = data.detail.is_preview;
@@ -208,14 +204,14 @@ const _sfc_main = {
         }
         if (data.detail.secKill)
           this.skuName = "seckill";
-        this.shop_supplier_id = data.detail.supplier.shop_supplier_id;
-        this.shop_info = data.detail.supplier;
-        this.isfollow = data.detail.isfollow;
+        this.shop_supplier_id = data.detail.supplier ? data.detail.supplier.shop_supplier_id : 0;
+        this.shop_info = data.detail.supplier || {};
+        this.isfollow = data.detail.isfollow || 0;
         this.is_virtual = data.detail.is_virtual;
-        this.is_fav = data.is_fav;
-        this.couponList = data.couponList;
-        this.cart_total_num = data.cart_total_num;
-        this.store_open = data.store_open;
+        this.is_fav = false;
+        this.couponList = [];
+        this.cart_total_num = 0;
+        this.store_open = 0;
         data.detail.content = formatContent(data.detail.content);
         if (this.activeName && this.activeName !== "advance" && this.activeName !== "preview") {
           if (data.detail[this.activeName].specData)
@@ -224,15 +220,21 @@ const _sfc_main = {
           this.initSpecData(data.specData);
         }
         this.detail = data.detail;
-        this.show_discount = data.show_discount;
-        this.discount = data.discount;
+        this.show_discount = false;
+        this.discount = { product_coupon: [], product_reduce: [], give_points: 0 };
+        this.showFavorite = false;
+        this.showComments = false;
         this.getServer();
-        this.getChatInfo();
+        this.chatSetting = null;
         this.loadding = false;
         common_vendor.index.hideLoading();
         this.$nextTick(() => {
           this.initScroll();
         });
+      }).catch(() => {
+        this.loadding = false;
+        common_vendor.index.hideLoading();
+        common_vendor.index.showToast({ title: "商品加载失败", icon: "none" });
       });
     },
     getServer() {
@@ -356,7 +358,9 @@ const _sfc_main = {
     },
     showShare() {
       this.isbottmpanel = true;
-      this.taskFunc();
+    },
+    showPurchaseDisabled() {
+      common_vendor.index.showToast({ title: "暂不支持直接购买", icon: "none" });
     },
     closeAppShare() {
       this.isAppShare = false;
@@ -398,18 +402,7 @@ const _sfc_main = {
       this.gotoPage("/pages/shop/shop?shop_supplier_id=" + this.shop_supplier_id);
     },
     favorite() {
-      this._post("user.Favorite/add", {
-        pid: this.product_id,
-        type: 20
-      }, () => {
-        if (this.isfollow === 0) {
-          common_vendor.index.showToast({ icon: "none", title: "收藏成功，请到“我的->我的收藏”查看和管理哦" });
-          this.isfollow = 1;
-        } else if (this.isfollow === 1) {
-          this.isfollow = 0;
-          common_vendor.index.showToast({ icon: "none", title: "取消成功" });
-        }
-      });
+      return false;
     },
     changeSwiper() {
       this.isVideoPlay = false;
@@ -417,8 +410,7 @@ const _sfc_main = {
     returnValFunc() {
     },
     taskFunc() {
-      this._post("plus.task.Task/dayTask", { task_type: "product" }, () => {
-      });
+      return false;
     },
     sendFunc(type) {
       this[type]();
@@ -433,13 +425,7 @@ const _sfc_main = {
       }
     },
     getChatInfo() {
-      this._post("live.roomNew/getChatSetting", {
-        app_id: this.getAppId(),
-        supplier_id: this.shop_supplier_id
-      }, (res) => {
-        if (res.code === 1)
-          this.chatSetting = res.data;
-      });
+      this.chatSetting = null;
     },
     contackBack() {
     },
@@ -491,72 +477,74 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     h: common_vendor.s($options.topBackStyle),
     i: Number($data.scrollId) + 1 < $data.commentTop ? 1 : "",
     j: common_vendor.o(($event) => $options.changeTopId(0), "ce"),
-    k: Number($data.scrollId) + 1 < $data.contentTop && Number($data.scrollId) + 1 > $data.commentTop ? 1 : "",
-    l: common_vendor.o(($event) => $options.changeTopId($data.commentTop), "b2"),
-    m: Number($data.scrollId) + 1 > $data.contentTop ? 1 : "",
-    n: common_vendor.o(($event) => $options.changeTopId($data.contentTop), "2d"),
-    o: common_vendor.n($data.scrollId < 100 ? "close" : "open"),
-    p: common_vendor.s(_ctx.topBarHeight && _ctx.topBarHeight() === 0 ? "" : "padding-top:" + _ctx.topBarTop() + "px"),
-    q: $data.detail.video_link
-  }, $data.detail.video_link ? common_vendor.e({
-    r: !$data.isVideoPlay
-  }, !$data.isVideoPlay ? {
-    s: common_vendor.o(($event) => $options.openVideo("video"), "37")
+    k: $data.showComments
+  }, $data.showComments ? {
+    l: Number($data.scrollId) + 1 < $data.contentTop && Number($data.scrollId) + 1 > $data.commentTop ? 1 : "",
+    m: common_vendor.o(($event) => $options.changeTopId($data.commentTop), "cd")
   } : {}, {
-    t: !$data.isVideoPlay
+    n: Number($data.scrollId) + 1 > $data.contentTop ? 1 : "",
+    o: common_vendor.o(($event) => $options.changeTopId($data.contentTop), "90"),
+    p: common_vendor.n($data.scrollId < 100 ? "close" : "open"),
+    q: common_vendor.s(_ctx.topBarHeight && _ctx.topBarHeight() === 0 ? "" : "padding-top:" + _ctx.topBarTop() + "px"),
+    r: $data.detail.video_link
+  }, $data.detail.video_link ? common_vendor.e({
+    s: !$data.isVideoPlay
   }, !$data.isVideoPlay ? {
-    v: $data.detail.poster ? $data.detail.poster.file_path : $data.detail.image[0].file_path,
-    w: common_vendor.o(($event) => $options.openVideo("video"), "f2")
+    t: common_vendor.o(($event) => $options.openVideo("video"), "81")
+  } : {}, {
+    v: !$data.isVideoPlay
+  }, !$data.isVideoPlay ? {
+    w: $data.detail.poster ? $data.detail.poster.file_path : $data.detail.image[0].file_path,
+    x: common_vendor.o(($event) => $options.openVideo("video"), "01")
   } : {
-    x: $data.detail.video_link,
-    y: $data.isMPH5,
+    y: $data.detail.video_link,
     z: $data.isMPH5,
     A: $data.isMPH5,
-    B: common_vendor.o(($event) => $data.isVideoPlay = false, "07")
+    B: $data.isMPH5,
+    C: common_vendor.o(($event) => $data.isVideoPlay = false, "b1")
   }) : {}, {
-    C: common_vendor.f($data.detail.image, (image, index, i0) => {
+    D: common_vendor.f($data.detail.image, (image, index, i0) => {
       return {
         a: image.file_path,
         b: common_vendor.o(($event) => _ctx.yulan($data.detail.image, index), index),
         c: index
       };
     }),
-    D: $data.indicatorDots,
-    E: $data.autoplay,
-    F: $data.interval,
-    G: $data.duration,
-    H: common_vendor.o((...args) => $options.changeSwiper && $options.changeSwiper(...args), "b1"),
-    I: $data.is_preview === 1
+    E: $data.indicatorDots,
+    F: $data.autoplay,
+    G: $data.interval,
+    H: $data.duration,
+    I: common_vendor.o((...args) => $options.changeSwiper && $options.changeSwiper(...args), "22"),
+    J: $data.is_preview === 1
   }, $data.is_preview === 1 ? {
-    J: common_vendor.o($options.sendFunc, "87"),
-    K: common_vendor.p({
+    K: common_vendor.o($options.sendFunc, "40"),
+    L: common_vendor.p({
       detail: $data.detail,
       is_fav: $data.is_fav
     })
   } : {}, {
-    L: $data.ispresale
+    M: $data.ispresale
   }, $data.ispresale ? common_vendor.e({
-    M: $data.activeName === "advance"
+    N: $data.activeName === "advance"
   }, $data.activeName === "advance" ? {
-    N: common_vendor.t(_ctx.subPrice($data.detail[$data.activeName][$data.skuName][0].product_price, "1")),
-    O: common_vendor.t(_ctx.subPrice($data.detail[$data.activeName][$data.skuName][0].product_price, "2"))
+    O: common_vendor.t(_ctx.subPrice($data.detail[$data.activeName][$data.skuName][0].product_price, "1")),
+    P: common_vendor.t(_ctx.subPrice($data.detail[$data.activeName][$data.skuName][0].product_price, "2"))
   } : {
-    P: common_vendor.t(_ctx.subPrice($data.detail[$data.activeName][$data.skuName][0][$data.activePrice], "1")),
-    Q: common_vendor.t(_ctx.subPrice($data.detail[$data.activeName][$data.skuName][0][$data.activePrice], "2"))
+    Q: common_vendor.t(_ctx.subPrice($data.detail[$data.activeName][$data.skuName][0][$data.activePrice], "1")),
+    R: common_vendor.t(_ctx.subPrice($data.detail[$data.activeName][$data.skuName][0][$data.activePrice], "2"))
   }, {
-    R: $data.activeName === "advance"
+    S: $data.activeName === "advance"
   }, $data.activeName === "advance" ? {
-    S: common_vendor.t((Number($data.detail[$data.activeName][$data.skuName][0].product_price) - Number($data.detail[$data.activeName][$data.skuName][0][$data.activePrice]) + Number($data.detail[$data.activeName].money)).toFixed(2))
+    T: common_vendor.t((Number($data.detail[$data.activeName][$data.skuName][0].product_price) - Number($data.detail[$data.activeName][$data.skuName][0][$data.activePrice]) + Number($data.detail[$data.activeName].money)).toFixed(2))
   } : {}, {
-    T: $data.activeName === "advance"
+    U: $data.activeName === "advance"
   }, $data.activeName === "advance" ? {
-    U: common_vendor.t($data.detail[$data.activeName].money),
-    V: common_vendor.t($data.detail[$data.activeName][$data.skuName][0][$data.activePrice])
+    V: common_vendor.t($data.detail[$data.activeName].money),
+    W: common_vendor.t($data.detail[$data.activeName][$data.skuName][0][$data.activePrice])
   } : {}, {
-    W: common_vendor.t($data.activeText),
-    X: common_assets._imports_0$6,
+    X: common_vendor.t($data.activeText),
     Y: common_vendor.sr("countdown", "489b8bc3-1"),
-    Z: common_vendor.o($options.returnValFunc, "e0"),
+    Z: common_vendor.o($options.returnValFunc, "53"),
     aa: common_vendor.p({
       config: {
         startstamp: $data.detail[$data.activeName].start_time,
@@ -590,7 +578,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   } : {}, {
     ai: $data.discount.product_coupon.length > 0
   }, $data.discount.product_coupon.length > 0 ? {
-    aj: common_vendor.o((...args) => $options.openCoupon && $options.openCoupon(...args), "a1")
+    aj: common_vendor.o((...args) => $options.openCoupon && $options.openCoupon(...args), "ac")
   } : {}, {
     ak: common_vendor.t($data.detail.product_name),
     al: $data.detail.selling_point
@@ -612,28 +600,29 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   }, $data.detail.spec_type === 20 && $data.detail.product_sku.product_price !== $data.detail.product_max_price ? {
     aw: common_vendor.t($data.detail.product_max_price)
   } : {}, {
-    ax: common_assets._imports_1$2,
-    ay: common_vendor.o((...args) => $options.showShare && $options.showShare(...args), "ea"),
+    ax: common_vendor.o((...args) => $options.showShare && $options.showShare(...args), "e3"),
+    ay: $data.showFavorite
+  }, $data.showFavorite ? {
     az: !$data.is_fav ? 1 : "",
-    aA: common_assets._imports_2$1,
-    aB: common_vendor.o((...args) => $options.favorite && $options.favorite(...args), "5f"),
-    aC: $data.detail.product_sku && $data.detail.product_sku.line_price > 0
+    aA: common_vendor.o((...args) => $options.favorite && $options.favorite(...args), "87")
+  } : {}, {
+    aB: $data.detail.product_sku && $data.detail.product_sku.line_price > 0
   }, $data.detail.product_sku && $data.detail.product_sku.line_price > 0 ? {
-    aD: common_vendor.t($data.detail.product_sku.line_price)
+    aC: common_vendor.t($data.detail.product_sku.line_price)
   } : {}, {
-    aE: common_vendor.t($data.detail.product_sales),
-    aF: $data.show_discount
+    aD: common_vendor.t($data.detail.product_sales),
+    aE: $data.show_discount
   }, $data.show_discount ? common_vendor.e({
-    aG: $data.discount.give_points > 0
+    aF: $data.discount.give_points > 0
   }, $data.discount.give_points > 0 ? {
+    aG: common_vendor.t(_ctx.points_name()),
     aH: common_vendor.t(_ctx.points_name()),
-    aI: common_vendor.t(_ctx.points_name()),
-    aJ: common_vendor.t($data.discount.give_points),
-    aK: common_vendor.t(_ctx.points_name())
+    aI: common_vendor.t($data.discount.give_points),
+    aJ: common_vendor.t(_ctx.points_name())
   } : {}, {
-    aL: $data.discount.product_reduce.length > 0
+    aK: $data.discount.product_reduce.length > 0
   }, $data.discount.product_reduce.length > 0 ? {
-    aM: common_vendor.f($data.discount.product_reduce, (item, index, i0) => {
+    aL: common_vendor.f($data.discount.product_reduce, (item, index, i0) => {
       return common_vendor.e({
         a: item.full_type === 1
       }, item.full_type === 1 ? {
@@ -655,36 +644,38 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       });
     })
   } : {}, {
-    aN: $data.discount.product_coupon.length > 0
+    aM: $data.discount.product_coupon.length > 0
   }, $data.discount.product_coupon.length > 0 ? {
-    aO: common_vendor.o((...args) => $options.openCoupon && $options.openCoupon(...args), "b7")
+    aN: common_vendor.o((...args) => $options.openCoupon && $options.openCoupon(...args), "21")
   } : {}) : {}, {
-    aP: $data.detail.supplier && $data.detail.supplier.store_type === 20
+    aO: $data.detail.supplier && $data.detail.supplier.store_type === 20
   }, $data.detail.supplier && $data.detail.supplier.store_type === 20 ? {} : {}, {
-    aQ: common_vendor.t($data.detail.product_name),
-    aR: $data.detail.selling_point
+    aP: common_vendor.t($data.detail.product_name),
+    aQ: $data.detail.selling_point
   }, $data.detail.selling_point ? {
-    aS: common_vendor.t($data.detail.selling_point)
+    aR: common_vendor.t($data.detail.selling_point)
   } : {}) : {}, {
-    aT: $data.detail.spec_type === 20 || $data.detail.server || $data.detail.secKill
+    aS: $data.detail.spec_type === 20 || $data.detail.server || $data.detail.secKill
   }, $data.detail.spec_type === 20 || $data.detail.server || $data.detail.secKill ? common_vendor.e({
-    aU: $data.detail.secKill
+    aT: $data.detail.secKill
   }, $data.detail.secKill ? {
-    aV: common_vendor.o(($event) => _ctx.gotoPage("/pagesPlus/seckill/detail/detail?seckill_product_id=" + $data.detail.secKill.seckill_product_id + "&time_id=" + $data.detail.secKill.time_id), "e5")
+    aU: common_vendor.o(($event) => _ctx.gotoPage("/pagesPlus/seckill/detail/detail?seckill_product_id=" + $data.detail.secKill.seckill_product_id + "&time_id=" + $data.detail.secKill.time_id), "70")
   } : {}, {
-    aW: $data.detail.spec_type === 20
+    aV: $data.detail.spec_type === 20
   }, $data.detail.spec_type === 20 ? {
-    aX: common_vendor.t($data.alreadyChioce),
-    aY: $data.detail.server !== "" ? 1 : "",
-    aZ: common_vendor.o(($event) => $options.openPopup($data.ispresale ? "deposit" : "order"), "6c")
+    aW: common_vendor.t($data.alreadyChioce),
+    aX: $data.detail.server !== "" ? 1 : "",
+    aY: common_vendor.o(($event) => $options.openPopup($data.ispresale ? "deposit" : "order"), "aa")
   } : {}, {
-    ba: $data.detail.server !== ""
+    aZ: $data.detail.server !== ""
   }, $data.detail.server !== "" ? {
-    bb: common_vendor.t($data.serverList),
-    bc: common_vendor.o((...args) => $options.showGuarantee && $options.showGuarantee(...args), "73")
+    ba: common_vendor.t($data.serverList),
+    bb: common_vendor.o((...args) => $options.showGuarantee && $options.showGuarantee(...args), "da")
   } : {}) : {}, {
+    bc: $data.showComments
+  }, $data.showComments ? common_vendor.e({
     bd: common_vendor.t($data.detail.comment_data_count),
-    be: common_vendor.o(($event) => $options.lookEvaluate($data.detail.product_id), "dc"),
+    be: common_vendor.o(($event) => $options.lookEvaluate($data.detail.product_id), "65"),
     bf: $data.detail.comment_data_count > 0
   }, $data.detail.comment_data_count > 0 ? {
     bg: common_vendor.f($data.detail.commentData, (item, index, i0) => {
@@ -697,7 +688,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         f: index
       };
     })
-  } : {}, {
+  } : {}) : {}, {
     bh: $data.store_open
   }, $data.store_open ? {
     bi: $data.shop_info.logos,
@@ -705,24 +696,24 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     bk: common_vendor.t($data.shop_info.category_name),
     bl: common_vendor.t($data.shop_info.product_sales),
     bm: common_vendor.t($data.shop_info.server_score),
-    bn: common_vendor.o((...args) => $options.goto_shop && $options.goto_shop(...args), "ef")
+    bn: common_vendor.o((...args) => $options.goto_shop && $options.goto_shop(...args), "2f")
   } : {}, {
     bo: $data.detail.video_link_detail
   }, $data.detail.video_link_detail ? common_vendor.e({
     bp: !$data.isContentVideoPlay
   }, !$data.isContentVideoPlay ? {
-    bq: common_vendor.o(($event) => $options.openVideo("content-video"), "2e")
+    bq: common_vendor.o(($event) => $options.openVideo("content-video"), "96")
   } : {}, {
     br: !$data.isContentVideoPlay
   }, !$data.isContentVideoPlay ? {
     bs: $data.detail.contentPoster ? $data.detail.contentPoster.file_path : "",
-    bt: common_vendor.o(($event) => $options.openVideo("content-video"), "93")
+    bt: common_vendor.o(($event) => $options.openVideo("content-video"), "71")
   } : {
     bv: $data.detail.video_link_detail,
     bw: $data.isMPH5,
     bx: $data.isMPH5,
     by: $data.isMPH5,
-    bz: common_vendor.o(($event) => $data.isContentVideoPlay = false, "fe")
+    bz: common_vendor.o(($event) => $data.isContentVideoPlay = false, "f7")
   }) : {}, {
     bA: $data.detail.is_picture === 0
   }, $data.detail.is_picture === 0 ? {
@@ -741,47 +732,47 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     bF: $data.scrollviewHigh + "px",
     bG: common_vendor.o((...args) => $options.scrollFunc && $options.scrollFunc(...args), "13")
   }) : {}, {
-    bH: common_vendor.o(($event) => _ctx.gotoPage("/pages/index/index"), "ba"),
+    bH: common_vendor.o(($event) => _ctx.gotoPage("/pages/index/index"), "40"),
     bI: $data.cart_total_num > 0
   }, $data.cart_total_num > 0 ? {
     bJ: common_vendor.t($data.cart_total_num)
   } : {}, {
-    bK: common_vendor.o((...args) => $options.gotocart && $options.gotocart(...args), "78"),
+    bK: common_vendor.o((...args) => $options.gotocart && $options.gotocart(...args), "7e"),
     bL: $data.chatSetting !== null && $data.chatSetting.type === 10
   }, $data.chatSetting !== null && $data.chatSetting.type === 10 ? common_vendor.e({
     bM: $data.chatSetting.type === 10
   }, $data.chatSetting.type === 10 ? {
-    bN: common_vendor.o((...args) => $options.contackBack && $options.contackBack(...args), "80")
+    bN: common_vendor.o((...args) => $options.contackBack && $options.contackBack(...args), "86")
   } : {}) : {}, {
     bO: $data.chatSetting !== null && $data.chatSetting.type === 20 && $data.chatSetting.link
   }, $data.chatSetting !== null && $data.chatSetting.type === 20 && $data.chatSetting.link ? {
-    bP: common_vendor.o((...args) => $options.onKefuClick && $options.onKefuClick(...args), "4e")
+    bP: common_vendor.o((...args) => $options.onKefuClick && $options.onKefuClick(...args), "fa")
   } : {}, {
     bQ: $data.chatSetting !== null && $data.chatSetting.type === 30 && $data.chatSetting.url && $data.chatSetting.corpId
   }, $data.chatSetting !== null && $data.chatSetting.type === 30 && $data.chatSetting.url && $data.chatSetting.corpId ? {
-    bR: common_vendor.o((...args) => $options.onWxKefuClick && $options.onWxKefuClick(...args), "63")
+    bR: common_vendor.o((...args) => $options.onWxKefuClick && $options.onWxKefuClick(...args), "e9")
   } : {}, {
     bS: $data.chatSetting !== null && $data.chatSetting.type === 40 && $data.chatSetting.pic
   }, $data.chatSetting !== null && $data.chatSetting.type === 40 && $data.chatSetting.pic ? {
-    bT: common_vendor.o((...args) => $options.onCodeKefuClick && $options.onCodeKefuClick(...args), "dc")
+    bT: common_vendor.o((...args) => $options.onCodeKefuClick && $options.onCodeKefuClick(...args), "69")
   } : {}, {
     bU: $data.is_preview === 1
   }, $data.is_preview === 1 ? {} : common_vendor.e({
     bV: !$data.room_id && !$data.is_virtual && !$data.ispresale && !$data.detail.custom_form
   }, !$data.room_id && !$data.is_virtual && !$data.ispresale && !$data.detail.custom_form ? {
-    bW: common_vendor.o(($event) => $options.openPopup("card"), "17")
+    bW: common_vendor.o(($event) => $options.openPopup("card"), "35")
   } : {}, {
     bX: !$data.ispresale
   }, !$data.ispresale ? {
-    bY: common_vendor.o(($event) => $options.openPopup("order"), "3e")
+    bY: common_vendor.o((...args) => $options.showPurchaseDisabled && $options.showPurchaseDisabled(...args), "0f")
   } : common_vendor.e({
     bZ: $data.activeName === "advance"
   }, $data.activeName === "advance" ? {
     ca: common_vendor.t($data.detail[$data.activeName].money)
   } : {}, {
-    cb: common_vendor.o(($event) => $options.openPopup("deposit"), "f8")
+    cb: common_vendor.o(($event) => $options.openPopup("deposit"), "c8")
   })), {
-    cc: common_vendor.o($options.closePopup, "d6"),
+    cc: common_vendor.o($options.closePopup, "cd"),
     cd: common_vendor.p({
       ["spec-disabled"]: $data.specDisabled,
       ["is-popup"]: $data.isPopup,
@@ -792,30 +783,30 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       ["tenant-id"]: $data.tenant_id,
       ["share-code"]: $data.share_code
     }),
-    ce: common_vendor.o($options.closeBottmpanel, "a2"),
+    ce: common_vendor.o($options.closeBottmpanel, "df"),
     cf: common_vendor.p({
       isbottmpanel: $data.isbottmpanel,
       product_id: $data.product_id
     }),
-    cg: common_vendor.o($options.closeGuarantee, "87"),
+    cg: common_vendor.o($options.closeGuarantee, "a0"),
     ch: common_vendor.p({
       isguarantee: $data.isguarantee,
       server: $data.detail.server
     }),
-    ci: common_vendor.o($options.closeAppShare, "b7"),
+    ci: common_vendor.o($options.closeAppShare, "97"),
     cj: common_vendor.p({
       ["is-app-share"]: $data.isAppShare,
       ["app-params"]: $data.appParams
     }),
     ck: $data.poster_img,
-    cl: common_vendor.o((...args) => $options.savePosterImg && $options.savePosterImg(...args), "2c"),
+    cl: common_vendor.o((...args) => $options.savePosterImg && $options.savePosterImg(...args), "15"),
     cm: common_vendor.o($options.hidePopupFunc, "2f"),
     cn: common_vendor.p({
       show: $data.isCreatedImg,
       type: "middle",
       height: "auto"
     }),
-    co: common_vendor.o($options.closeCouponFunc, "04"),
+    co: common_vendor.o($options.closeCouponFunc, "ce"),
     cp: common_vendor.p({
       ["is-coupon"]: $data.isCoupon,
       discount: $data.discount,
@@ -824,7 +815,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     cq: $data.chatSetting !== null
   }, $data.chatSetting !== null ? {
     cr: $data.chatSetting.pic,
-    cs: common_vendor.o($options.hideKefuPop, "0b"),
+    cs: common_vendor.o($options.hideKefuPop, "02"),
     ct: common_vendor.p({
       show: $data.isKefuPop,
       type: "middle"

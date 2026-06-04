@@ -46,14 +46,14 @@
                     v-if="!fullscreen"
                     class="full-screen"
                     mode="widthFix"
-                    src="https://weilive.yukelive.com/static/live/full-screen.png"
+                    src="https://man.lqjy.cc/static/icons/competitor-live/icon-fullscreen.svg"
                     @tap.stop="requestFullscreen"
                   />
                   <image
                     v-else
                     class="full-screen-qp"
                     mode="widthFix"
-                    src="https://weilive.yukelive.com/static/live/full-screen-exit.png"
+                    src="https://man.lqjy.cc/static/icons/close.svg"
                     @tap.stop="exitFullscreen"
                   />
                 </view>
@@ -87,7 +87,7 @@
       </view>
 
       <view v-if="isEnded" class="live-end">
-        <image class="live-end-img" src="https://weilive.yukelive.com/static/xiuxi (1).png" />
+        <image class="live-end-img" src="https://man.lqjy.cc/static/xiuxi%20(1).png" />
         <view class="live-end-text">本场次已结束</view>
         <bottom-option
           class="bottom-option"
@@ -99,7 +99,7 @@
       </view>
       <view v-else-if="noPermissionText" class="live-end">
         <people-number :live-id="liveId" :online-number="onlineNumber" @goShop="openShopList" />
-        <image class="live-end-img" src="https://weilive.yukelive.com/static/xiuxi (1).png" />
+        <image class="live-end-img" src="https://man.lqjy.cc/static/xiuxi%20(1).png" />
         <view class="live-end-text">{{ noPermissionText }}</view>
       </view>
       <view v-if="showOverlay" class="content-box" :style="horizontalContentStyle">
@@ -189,7 +189,7 @@
           <live-title :detail="liveDetail" />
           <end-topicon @goShop="openShopList" />
         </view>
-        <image class="live-end-img" src="https://weilive.yukelive.com/static/xiuxi (1).png" />
+        <image class="live-end-img" src="https://man.lqjy.cc/static/xiuxi%20(1).png" />
         <view class="live-end-text">本场次已结束</view>
         <view class="bottom-option">
           <bottom-option :live-id="liveId" @clearScreen="clearScreen" @sendBarrage="sendBarrage" @goShop="openShopList" />
@@ -200,7 +200,7 @@
           <live-title :detail="liveDetail" />
           <end-topicon @goShop="openShopList" />
         </view>
-        <image class="live-end-img" src="https://weilive.yukelive.com/static/xiuxi (1).png" />
+        <image class="live-end-img" src="https://man.lqjy.cc/static/xiuxi%20(1).png" />
         <view class="live-end-text">{{ noPermissionText }}</view>
       </view>
       <view v-if="showOverlay" class="live-content">
@@ -404,7 +404,7 @@ export default {
       return this.isHorizontal && Number(this.roomSetting.is_checkin || this.liveDetail.is_checkin || 0) === 1
     },
     signInConfig() {
-      return this.liveDetail.config || this.roomSetting.config || { pic_url: 'https://weilive.yukelive.com' }
+      return this.liveDetail.config || this.roomSetting.config || { pic_url: 'https://man.lqjy.cc/static' }
     },
     isLogin() {
       return uni.getStorageSync('token') || uni.getStorageSync('user_id') ? 1 : 0

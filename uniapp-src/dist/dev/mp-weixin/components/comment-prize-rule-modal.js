@@ -27,12 +27,12 @@ const _sfc_main = {
     const emit = __emit;
     const showRulePanel = common_vendor.ref(false);
     const image = {
-      lotteryClose: "/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-lottery-close-icon-0ad17f9d.png",
-      commentHeader: "/static/remote-icons/nyfs-oss-bcvdata-com-frontend-mobile-live-lottery-comment-header-abb7423b.png",
-      arrowLeft: "/static/remote-icons/nyfs-oss-bcvdata-com-frontend-mobile-commons-arrow-left-gray-f0a8573f.png",
-      productOne: "/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-sign-gift-5def5533.png",
-      productTwo: "/static/remote-icons/nyfs-oss-bcvdata-com-uploads-consolewechat-1681-rtf-20260430144045241662-91b0e034.jpg",
-      productThree: "/static/remote-icons/nyfs-oss-bcvdata-com-frontend-mobile-live-prize-bg-7c92e47e.png"
+      lotteryClose: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-lottery-close-icon-0ad17f9d.png",
+      commentHeader: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-frontend-mobile-live-lottery-comment-header-abb7423b.png",
+      arrowLeft: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-frontend-mobile-commons-arrow-left-gray-f0a8573f.png",
+      productOne: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-sign-gift-5def5533.png",
+      productTwo: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-uploads-consolewechat-1681-rtf-20260430144045241662-91b0e034.jpg",
+      productThree: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-frontend-mobile-live-prize-bg-7c92e47e.png"
     };
     const fallbackPrizeCards = [
       { id: "fallback-1", level: "1", name: "评论奖品", img: image.productOne, is_open_prize: 2, num: 1, person_count: 0, is_display_num: 1 },

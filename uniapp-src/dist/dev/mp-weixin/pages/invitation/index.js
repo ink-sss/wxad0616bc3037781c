@@ -85,7 +85,7 @@ const _sfc_main = {
         shareCode: data.shareCode || data.share_code || "",
         bindId: data.bindId || data.bind_id || "",
         anchorName: data.anchorName || "",
-        anchorAvatar: inviter.avatar || data.anchorAvatar || "/static/icons/default.png",
+        anchorAvatar: inviter.avatar || data.anchorAvatar || "https://man.lqjy.cc/static/icons/default.png",
         liveName: data.liveName || "",
         pushTime: Number(data.pushTime) || 0,
         scheduleTime: data.scheduleTime || "",

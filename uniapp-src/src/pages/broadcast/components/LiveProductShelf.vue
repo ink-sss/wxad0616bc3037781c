@@ -43,7 +43,7 @@
             <image
               v-else
               class="buy-img"
-              src="/static/icons/shopping-icon.png"
+              src="https://man.lqjy.cc/static/icons/shopping-icon.png"
               mode="aspectFill"
             />
             <view class="buy-content">

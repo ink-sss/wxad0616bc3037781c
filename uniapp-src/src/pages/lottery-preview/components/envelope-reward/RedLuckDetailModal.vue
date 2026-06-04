@@ -55,8 +55,8 @@ defineProps({
 const emit = defineEmits(["close"]);
 
 const image = {
-  back: "./static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-look-luck-title-left-8282db91.png",
-  bestLuck: "./static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-bestluck-06aab894.png"
+  back: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-look-luck-title-left-8282db91.png",
+  bestLuck: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-bestluck-06aab894.png"
 };
 </script>
 
@@ -88,7 +88,7 @@ const image = {
   width: 100%;
   height: 216rpx;
   text-align: center;
-  background: url("../static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-look-luck-title-b29f7266.png") no-repeat;
+  background: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-look-luck-title-b29f7266.png") no-repeat;
   background-size: 100% 100%;
 }
 

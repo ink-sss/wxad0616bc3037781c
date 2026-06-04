@@ -38,7 +38,7 @@
               <view v-if="item.isCurrent" class="product-badge explaining-badge recommend-tip">
                 <image
                   class="recommend-tip-img"
-                  src="./static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-recommend-tip-9e14e49e.gif"
+                  src="https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-recommend-tip-9e14e49e.gif"
                   mode="aspectFit"
                 />
                 <text class="badge-text">讲解中</text>

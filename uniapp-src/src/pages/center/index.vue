@@ -44,19 +44,20 @@ import { getRefundUnreadStats } from "@/api/refund";
 import { getCenter } from "@/api/user";
 import { useUserStore } from "@/stores/user";
 import { logoutAndRedirect } from "@/services/logout";
-import { ensureH5PageAuth, handleH5Unauthorized, readCachedH5Customer } from "@/services/h5-auth-context";
-import { loadLiveRoomContext, resolveLiveRoomCode, saveLiveRoomContext } from "@/utils/live-room-context";
+import { handleH5Unauthorized, readCachedH5Customer } from "@/services/h5-auth-context";
+import { appendLiveRoomQuery, loadLiveRoomContext, mergeLiveRoomContext, resolveLiveRoomCode, saveLiveRoomContext } from "@/utils/live-room-context";
 import { normalizeLiveRouteOptions } from "@/utils/live-route";
 import { returnToLiveRoom } from "@/utils/live-room-navigation";
 import { navigateToPrizeRecord } from "@/utils/route-navigation";
 
-const DEFAULT_AVATAR = "/static/login-default.png";
-const iconBase = "/static/icons/";
+const DEFAULT_AVATAR = "https://man.lqjy.cc/static/login-default.png";
+const iconBase = "https://man.lqjy.cc/static/icons/";
 
 const name = ref("用户");
 const avatar = ref(DEFAULT_AVATAR);
 const liveRoomCode = ref("");
 const liveRoomId = ref(0);
+const liveRoomContext = ref({});
 const isDistributor = ref(false);
 const distributorStatus = ref(0);
 const enableShare = ref(1);
@@ -228,8 +229,9 @@ function syncLiveContext(options = {}) {
   if (normalized.roomCode || normalized.roomId || normalized.liveId) {
     saveLiveRoomContext(normalized);
   }
+  liveRoomContext.value = mergeLiveRoomContext(loadLiveRoomContext() || {}, normalized || {});
   liveRoomCode.value = resolveLiveRoomCode(normalized.roomCode);
-  const ctx = loadLiveRoomContext();
+  const ctx = liveRoomContext.value;
   liveRoomId.value = Number(normalized.roomId || normalized.liveId || ctx?.liveId || ctx?.roomId || 0);
   if (ctx) {
     isDistributor.value = !!ctx.isDistributor && Number(ctx.distributorStatus || 0) === 1;
@@ -242,7 +244,6 @@ onLoad((options = {}) => {
   lastQuery = options || {};
   syncLiveContext(options);
   applyCachedCustomer();
-  if (!ensureH5PageAuth(options, "/pages/center/index")) return;
   loadCenter();
 });
 
@@ -255,15 +256,14 @@ function onItemClick(item) {
   onAction(item.key);
 }
 
-function withLiveRoomCode(prefix = "?") {
-  return liveRoomCode.value ? `${prefix}roomCode=${encodeURIComponent(liveRoomCode.value)}` : "";
+function withLiveQuery(url) {
+  return appendLiveRoomQuery(url, liveRoomContext.value);
 }
 
 function onAction(type) {
   if (["orders", "unpay", "unsend", "unreceive", "finished", "refund"].includes(type)) {
     if (type === "refund") {
-      const code = withLiveRoomCode("&");
-      uni.navigateTo({ url: `/pages/order/list?status=refund${code}` });
+      uni.navigateTo({ url: withLiveQuery("/pages/order/list?status=refund") });
       return;
     }
     const statusMap = {
@@ -273,21 +273,15 @@ function onAction(type) {
       unreceive: "unreceive",
       finished: "finished",
     };
-    const code = withLiveRoomCode("&");
-    uni.navigateTo({ url: `/pages/order/list?status=${statusMap[type]}${code}` });
+    uni.navigateTo({ url: withLiveQuery(`/pages/order/list?status=${statusMap[type]}`) });
     return;
   }
   if (type === "complaint") {
-    const params = [
-      `fromPath=${encodeURIComponent("/pages/center/index")}`,
-      liveRoomCode.value ? `roomCode=${encodeURIComponent(liveRoomCode.value)}` : "",
-      liveRoomId.value ? `roomId=${encodeURIComponent(liveRoomId.value)}` : "",
-    ].filter(Boolean);
-    uni.navigateTo({ url: `/pages/report/report-type?${params.join("&")}` });
+    uni.navigateTo({ url: withLiveQuery("/pages/report/report-type?fromPath=%2Fpages%2Fcenter%2Findex") });
     return;
   }
   if (type === "prizeRecord") {
-    navigateToPrizeRecord(`/pages/prize-record/index${withLiveRoomCode("?")}`);
+    navigateToPrizeRecord(withLiveQuery("/pages/prize-record/index"));
     return;
   }
   if (type === "invitationRecord") {
@@ -295,21 +289,19 @@ function onAction(type) {
       uni.showToast({ title: "请从直播间进入", icon: "none" });
       return;
     }
-    const code = withLiveRoomCode("&");
     uni.navigateTo({
-      url: `/pages/invitation-record/index?roomId=${liveRoomId.value}${code}`,
+      url: withLiveQuery(`/pages/invitation-record/index?roomId=${liveRoomId.value}`),
     });
     return;
   }
   if (type === "address") {
-    const code = withLiveRoomCode("?");
-    uni.navigateTo({ url: `/pages/address/index${code}` });
+    uni.navigateTo({ url: withLiveQuery("/pages/address/index") });
   }
 }
 
 function goBack() {
   if (liveRoomCode.value) {
-    returnToLiveRoom(liveRoomCode.value);
+    returnToLiveRoom(liveRoomCode.value, liveRoomContext.value);
     return;
   }
   uni.navigateBack({

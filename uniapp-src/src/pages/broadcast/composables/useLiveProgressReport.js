@@ -16,7 +16,11 @@ export function useLiveProgressReport(ctx) {
     roomGroupType,
     replayVideosList,
     replayCurrentIndex,
-    API_BASE,
+    roomCode,
+    liveTenantId,
+    shareCode,
+    liveBindId,
+    myUserId,
   } = ctx;
 
   function persistReplayProgress(forceSeconds) {
@@ -83,6 +87,20 @@ export function useLiveProgressReport(ctx) {
     if (!currentVideo?.termId) return;
     reportViewProgress({
       roomId: Number(liveId.value),
+      roomCode: roomCode?.value || "",
+      room_code: roomCode?.value || "",
+      tenantId: liveTenantId?.value || "",
+      tenant_id: liveTenantId?.value || "",
+      shareCode: shareCode?.value || "",
+      share_code: shareCode?.value || "",
+      bindId: liveBindId?.value || "",
+      bind_id: liveBindId?.value || "",
+      liveType: "replay",
+      live_type: "replay",
+      customerId: myUserId?.value || "",
+      customer_id: myUserId?.value || "",
+      userId: myUserId?.value || "",
+      user_id: myUserId?.value || "",
       termId: Number(currentVideo.termId),
       videoId: Number(replayCurrentVideoId.value),
       lastPosition: replayLastTime.value || 0,

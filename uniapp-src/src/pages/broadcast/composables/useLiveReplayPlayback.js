@@ -15,7 +15,8 @@ export function useLiveReplayPlayback(ctx) {
     productList, showProduct, explainingProductId, currentProduct, getVideoPlayer,
     setVideoPlayer, getLiveVideoElement, initVideoPlayer, loadCommentHistory,
     loadCurrentProduct, currentVideoPoster, liveCover, isMuted,
-    liveId, roomGroupType, roomWatchByDay, pushStatus, stopHeartbeat, persistReplayProgress,
+    liveId, roomCode, liveTenantId, shareCode, liveBindId, myUserId,
+    roomGroupType, roomWatchByDay, pushStatus, stopHeartbeat, persistReplayProgress,
     roomCurrentTermId, syncLiveMiniWindowState, syncReplayCommentCursor, enqueueReplayComments,
     replayCommentCursor, replayCommentTimeline, replaceReplayMessagesAt, getSavedStorage, setSavedStorage,
     mapProductItem, syncProductCardIndex, pullUrlRef, reportViewProgressApi,
@@ -37,6 +38,36 @@ let _endedFallbackTimer = null; // 兜底 ended 检测 timer，切视频时需�
 let _srcSwitchGuard = false;
 let _seekVerifyTimer = null;
 let replayLoopStartTime = 0;
+function buildReplaySimContext(video = {}) {
+  const roomId = Number(liveId?.value || 0);
+  const tenantId = Number(liveTenantId?.value || 0);
+  const termId = Number(video.termId || roomCurrentTermId?.value || 0);
+  const customerId = Number(myUserId?.value || 0);
+  return {
+    roomId,
+    room_id: roomId,
+    liveId: roomId,
+    live_id: roomId,
+    roomCode: roomCode?.value || "",
+    room_code: roomCode?.value || "",
+    tenantId,
+    tenant_id: tenantId,
+    shareCode: shareCode?.value || "",
+    share_code: shareCode?.value || "",
+    bindId: liveBindId?.value || "",
+    bind_id: liveBindId?.value || "",
+    termId,
+    term_id: termId,
+    liveTermId: termId,
+    live_term_id: termId,
+    customerId,
+    customer_id: customerId,
+    userId: customerId,
+    user_id: customerId,
+    liveType: "replay",
+    live_type: "replay",
+  };
+}
 function clearMessages() {
   messages.value = [];
   refreshPinnedMessage();
@@ -291,7 +322,7 @@ function prepareReplaySwitchState(video, idx, seekSeconds, playUrl, backupUrl) {
   clearCommentQueue();
   replayCommentTimeline.value = [];
   replayCommentCursor.value = 0;
-  if (video.id) loadSimMessages(video.id, seekSeconds); else resetSimMessages();
+  if (video.id) loadSimMessages(video.id, seekSeconds, buildReplaySimContext(video)); else resetSimMessages();
   _lastSavedProgress = seekSeconds;
   _seekTarget = seekSeconds;
   onVideoTimeUpdate._endedTriggered = false;

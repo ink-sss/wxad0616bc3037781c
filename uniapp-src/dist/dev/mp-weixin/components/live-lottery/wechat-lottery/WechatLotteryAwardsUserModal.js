@@ -1,6 +1,6 @@
 "use strict";
 const common_vendor = require("../../../common/vendor.js");
-const base = "https://nyfs-oss.bcvdata.com/Public/Home/Images";
+const base = "https://man.lqjy.cc/static/Public/Home/Images";
 const _sfc_main = {
   __name: "WechatLotteryAwardsUserModal",
   props: {
@@ -22,13 +22,13 @@ const _sfc_main = {
     const props = __props;
     const emit = __emit;
     const image = {
-      avatar: "/static/remote-icons/nyfs-oss-bcvdata-com-uploads-consolewechat-1681-rtf-20260430144045241662-91b0e034.jpg",
+      avatar: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-uploads-consolewechat-1681-rtf-20260430144045241662-91b0e034.jpg",
       awardsTitle: `${base}/Watch/luckydraw/luckydrawAwards2.png`,
       lotteryTop: `${base}/Watch/luckydraw/lotteryTop3.png`,
       lotteryFloor: `${base}/Watch/luckydraw/lotteryFloor.png`,
       lotteryLine: `${base}/Watch/luckydraw/lotteryFloorLine.png`,
       floorClose: `${base}/Watch/luckydraw/floorClose.png`,
-      element: "/static/remote-icons/nyfs-oss-bcvdata-com-public-pkenvelope-element3-b60b22b7.png"
+      element: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-pkenvelope-element3-b60b22b7.png"
     };
     const isVisible = common_vendor.computed(() => props.activeModal === "wechatLotteryAwards" || props.activeModal === "wechatLotteryAwardsUser");
     const prizeName = common_vendor.computed(() => props.prize.name || props.prize.title || "抽奖奖品");

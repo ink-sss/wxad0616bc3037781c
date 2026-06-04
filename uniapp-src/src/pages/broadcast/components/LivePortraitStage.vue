@@ -7,16 +7,12 @@
       'live-room--live': useLiveVisualStyle,
       'live-room--replay-visual': !useLiveVisualStyle,
     }"
-    :style="
-      isWechatH5 && isIOS
-        ? { opacity: 1, transition: 'opacity 0.3s' }
-        : {}
-    "
+    :style="rootStyle"
   >
     <view v-if="showReplayFirstVideoLoading" class="replay-first-loading">
       <image
         class="replay-first-loading__image"
-        src="/static/icons/competitor-live/loading.gif"
+        src="https://man.lqjy.cc/static/icons/competitor-live/loading.gif"
         mode="aspectFit"
       />
     </view>
@@ -29,26 +25,18 @@
           </view>
           <view class="anchor-meta">
             <text class="anchor-name">{{ anchorName  }}</text>
-            <view class="anchor-likes">
-              <image
-                v-if="useLiveVisualStyle"
-                class="anchor-likes__fire"
-                src="/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-fire-6f37634f.png"
-                mode="aspectFit"
-              />
-              <text class="anchor-likes__text">{{ anchorSubText }}</text>
-            </view>
+            <text class="anchor-likes">{{ anchorSubText }}</text>
           </view>
         </view>
         <view v-if="roomGroupType !== 1 && roomSetting.showStatus !== 0" class="live-status-badge live-status-badge--inline" :class="liveStatusClass">
           <text class="live-status-text">{{ liveStatusLabel }}</text>
         </view>
       </view>
-      <view v-if="!(isWaitingSchedule && warmUpVideoUrl)" class="viewer-area">
+      <view v-if="showTopViewerTools" class="viewer-area">
         <view v-if="roomSetting.showViewerData !== 0" class="viewer-badge">
           <image
             class="viewer-icon"
-            src="/static/icons/eye.png"
+            :src="topViewerIcon"
             mode="aspectFit"
           />
           <text
@@ -60,10 +48,10 @@
         <view class="report-btn" @click="goReport">
           <image
             class="report-icon"
-            src="/static/icons/tousu2.png"
+            :src="topReportIcon"
             mode="aspectFit"
           />
-          <text class="report-text">投诉</text>
+          <text v-if="!useH5ReplayTopStyle" class="report-text">投诉</text>
         </view>
       </view>
     </view>
@@ -305,7 +293,7 @@
       :style="buyingNoticeStyle"
     >
       <view class="buying-notice__content">
-        <image class="buying-notice__icon" src="/static/icons/shopping-icon.png" mode="aspectFit" />
+        <image class="buying-notice__icon" src="https://man.lqjy.cc/static/icons/shopping-icon.png" mode="aspectFit" />
         <text class="buying-notice__nick">{{ buyingNotice.nick }}</text>
         <text v-if="buyingNotice.count > 1" class="buying-notice__text">等{{ buyingNotice.count }}人</text>
         <text class="buying-notice__text">{{ buyingNotice.noticeText || '正在去购买' }}</text>
@@ -322,7 +310,7 @@
       <view class="goods-shopping-li">
         <view class="toShopping">
           <view v-if="goShoppingNotice.productImage" class="goods-thumb">
-            <image class="goodsPic" :src="goShoppingNotice.productImage" mode="aspectFill" />
+            <image id="goodsPic" class="goodsPic" :src="goShoppingNotice.productImage" mode="aspectFill" />
           </view>
           <view class="shoppingText">
             <view class="shoppingTextName">
@@ -617,6 +605,7 @@ import LiveExternalLotteryTools from "./LiveExternalLotteryTools.vue";
 import LiveMarqueeAd from "./LiveMarqueeAd.vue";
 import LiveProductShelf from "./LiveProductShelf.vue";
 import { formatLikeCount, isLiveCoverOnlyStatusText } from "../utils/entry-format.js";
+import { LIVE_PLAYER_READY_CODES, hasLivePlayerNetActivity } from "../utils/live-player-status.js";
 import { isLivePlayerSource } from "@/utils/live-route.js";
 
 const props = defineProps({
@@ -631,35 +620,9 @@ const props = defineProps({
 });
 
 const BUY_POPUP_Z_INDEX = 100000000;
-const LIVE_PLAYER_READY_CODES = [2003, 2004, 2007, 2008];
-const LIVE_PLAYER_NET_ACTIVITY_FIELDS = [
-  ["videoBitrate", "videoKBitrate", "videoBitrateKbps", "VIDEO_BITRATE", "VIDEO_KBITRATE", "VIDEO_BITRATE_KBPS", "video_bitrate", "video_kbitrate", "video_bitrate_kbps"],
-  ["audioBitrate", "audioKBitrate", "audioBitrateKbps", "AUDIO_BITRATE", "AUDIO_KBITRATE", "AUDIO_BITRATE_KBPS", "audio_bitrate", "audio_kbitrate", "audio_bitrate_kbps"],
-  ["videoFPS", "fps", "VIDEO_FPS", "FPS", "video_fps"],
-  ["netSpeed", "netJitter", "NET_SPEED", "NET_JITTER", "net_speed", "net_jitter"],
-  ["videoWidth", "width", "VIDEO_WIDTH", "video_width"],
-  ["videoHeight", "height", "VIDEO_HEIGHT", "video_height"],
-];
-
-function firstNumericField(source, fields) {
-  if (!source) return 0;
-  for (const field of fields) {
-    const raw = source[field];
-    if (raw === undefined || raw === null || raw === "") continue;
-    const value = Number(raw);
-    if (Number.isFinite(value)) return value;
-    const parsed = Number.parseFloat(raw);
-    if (Number.isFinite(parsed)) return parsed;
-  }
-  return 0;
-}
-
-function hasLivePlayerNetActivity(info) {
-  return LIVE_PLAYER_NET_ACTIVITY_FIELDS.some((fields) => firstNumericField(info, fields) > 0);
-}
-
 const {
   mode, accessDenied, isWechatH5, isIOS, anchorName, anchorAvatar, likeCount, isWaitingSchedule,
+  broadcastNavHeight,
   warmUpVideoUrl, roomSetting, viewerCountAnimating, displayViewerCount, displayVideoUrl, mediaSourceComponent, mediaSourceType, videoRenderKey, isReplay, isLiveVisualMode,
   hasReplay, liveStatusText, quickReplies, roomGroupType, videoPoster, replayCover, isMuted, showWxAddrDonePlayBtn,
   autoplayBlocked, playbackErrorVisible, playbackErrorText,
@@ -716,6 +679,17 @@ const renderAddressFormPopup = useDelayedRender(showAddressFormPopup);
 const renderLiveReportPopup = useDelayedRender(showLiveReportPopup);
 const renderSignPopup = useDelayedRender(showSignPopup);
 
+const rootStyle = computed(() => {
+  const style = {
+    "--broadcast-nav-height": broadcastNavHeight.value || "0px",
+  };
+  if (isWechatH5.value && isIOS.value) {
+    style.opacity = 1;
+    style.transition = "opacity 0.3s";
+  }
+  return style;
+});
+
 function parseStageStartTs(value) {
   if (!value) return 0
   const ts = new Date(String(value).replace(/-/g, '/')).getTime()
@@ -747,6 +721,25 @@ const liveStatusClass = computed(() => {
   return 'live-status--pending'
 })
 const useLiveVisualStyle = computed(() => isLiveVisualMode.value)
+const allowWarmupInteraction = computed(() =>
+  roomGroupType.value === 1 && isWaitingSchedule.value && !!warmUpVideoUrl.value
+)
+const useH5ReplayTopStyle = computed(() => isReplay.value && !useLiveVisualStyle.value)
+const showTopViewerTools = computed(() =>
+  useH5ReplayTopStyle.value ||
+  !isWaitingSchedule.value ||
+  allowWarmupInteraction.value
+)
+const topViewerIcon = computed(() =>
+  useH5ReplayTopStyle.value
+    ? "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-fire-6f37634f.png"
+    : "https://man.lqjy.cc/static/icons/eye.png"
+)
+const topReportIcon = computed(() =>
+  useH5ReplayTopStyle.value
+    ? "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-complaint-text-52b0a134.png"
+    : "https://man.lqjy.cc/static/icons/tousu2.png"
+)
 const shouldUseLivePlayer = computed(() => {
   const url = String(displayVideoUrl.value || "");
   if (!url || isReplay.value) return false;

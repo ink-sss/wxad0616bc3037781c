@@ -1,4 +1,5 @@
 "use strict";
+const services_miniprogramProducts = require("../../services/miniprogram-products.js");
 const common_vendor = require("../../common/vendor.js");
 const DiyArticle = () => "./article/article.js";
 const DiyAssembleProduct = () => "./assembleProduct/assembleProduct.js";
@@ -34,7 +35,7 @@ const _sfc_main = {
   props: ["diyItems", "userInfo", "serviceUserId", "diytop", "storeInfo"],
   emits: ["scanQrcode", "stopPush", "getData", "bg", "openSearch"],
   data() {
-    return { thisindex: 0, category_id: "", listData: [], page: 1, last_page: 0, no_more: false, loading: true };
+    return { thisindex: 0, category_id: "", listData: [], page: 1, last_page: 0, no_more: false, loading: true, defaultProductsLoaded: false };
   },
   computed: { loadingType() {
     return this.loading ? 1 : this.listData.length && this.no_more ? 2 : 0;
@@ -42,6 +43,14 @@ const _sfc_main = {
     const value = 80 - 2 * (this.diytop || 0);
     return value <= 0 ? 0 : value;
   } },
+  watch: {
+    diyItems: {
+      handler() {
+        this.loadDefaultProducts();
+      },
+      immediate: true
+    }
+  },
   methods: {
     scanQrcode() {
       this.$emit("scanQrcode");
@@ -65,22 +74,27 @@ const _sfc_main = {
         this.initProduct();
       }
     },
-    getProduct() {
-      if (typeof this._get !== "function") {
-        this.loading = false;
-        this.$emit("stopPush");
+    shouldLoadDefaultProducts() {
+      return !this.defaultProductsLoaded && this.thisindex === 0 && Array.isArray(this.diyItems) && this.diyItems.some((item) => item && item.type === "product" && Array.isArray(item.data) && item.data.length === 0);
+    },
+    loadDefaultProducts() {
+      if (!this.shouldLoadDefaultProducts())
         return;
-      }
+      this.defaultProductsLoaded = true;
+      this.thisindex = 1;
+      this.initProduct();
+    },
+    getProduct() {
       this.loading = true;
-      this._get("product.product/lists", { page: this.page || 1, category_id: this.category_id, search: "", sortType: "all", sortPrice: 0, list_rows: 20 }, (res) => {
-        var _a;
-        const list = ((_a = res == null ? void 0 : res.data) == null ? void 0 : _a.list) || {};
+      services_miniprogramProducts.fetchProducts({ page: this.page || 1, categoryId: this.category_id || "", search: "", sortType: "all", sortPrice: 0, pageSize: 20 }).then((data) => {
+        const list = services_miniprogramProducts.normalizeProductList(data || {}, 20);
         this.listData = this.listData.concat(list.data || []);
         this.last_page = list.last_page || 0;
-        if (this.last_page <= 1 || this.page >= 9)
+        if (this.last_page <= 1 || this.page >= 9 || this.page >= this.last_page)
           this.no_more = true;
-      }, () => {
-      }, () => {
+      }).catch(() => {
+        this.no_more = true;
+      }).finally(() => {
         this.loading = false;
         this.$emit("stopPush");
       });
@@ -100,11 +114,12 @@ const _sfc_main = {
       this.getProduct();
     },
     scrolltolowerFunc() {
-      if (this.thisindex === 0)
+      if (this.thisindex === 0 || this.no_more)
         return;
       if (this.page < this.last_page) {
         this.page += 1;
         this.getProduct();
+        return;
       }
       this.no_more = true;
     },

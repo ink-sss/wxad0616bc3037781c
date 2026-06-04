@@ -50,7 +50,7 @@ defineProps({
   width: 100%;
   height: 188rpx;
   margin-top: 12rpx;
-  background: url("../static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-num-taskcouponbottonsbg-87b730a1.png") no-repeat;
+  background: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-num-taskcouponbottonsbg-87b730a1.png") no-repeat;
   background-size: 100% 100%;
 }
 

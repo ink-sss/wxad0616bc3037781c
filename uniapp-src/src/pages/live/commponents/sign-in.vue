@@ -97,7 +97,7 @@ export default {
       return Boolean(this.requestParams.live_id && this.requestParams.app_id && this.requestParams.supplier_id)
     },
     signIcon() {
-      const base = this.config?.pic_url || 'https://weilive.yukelive.com'
+      const base = this.config?.pic_url || 'https://man.lqjy.cc/static'
       return `${base}/202512081258135e2e81819.png`
     },
     cacheKey() {

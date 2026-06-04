@@ -1,7 +1,7 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
 const utils_routeNavigation = require("../../utils/route-navigation.js");
-const base = "https://nyfs-oss.bcvdata.com/Public/Home/Images";
+const base = "https://man.lqjy.cc/static/Public/Home/Images";
 const _sfc_main = {
   __name: "WechatLotteryResultModals",
   props: {
@@ -30,7 +30,7 @@ const _sfc_main = {
       congrats: `${base}/Watch/luckydraw/luckydrawCongrats.png`,
       writeoff: `${base}/Watch/luckydraw/write-offRemind.png`,
       copyIcon: `${base}/Watch/luckydraw/copyIcon.png`,
-      element: "/static/remote-icons/nyfs-oss-bcvdata-com-public-pkenvelope-element3-b60b22b7.png"
+      element: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-pkenvelope-element3-b60b22b7.png"
     };
     function firstValue(source = {}, ...keys) {
       for (const key of keys) {

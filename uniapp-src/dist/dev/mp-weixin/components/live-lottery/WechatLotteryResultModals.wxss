@@ -93,7 +93,7 @@
   transform: translateX(-50%);
 }
 .notPrizeInfo.data-v-23f7bbe9 {
-  background: url("../../static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-watch-luckydraw-noprizebg-ff5f7a55.png") top center/contain no-repeat;
+  background: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-watch-luckydraw-noprizebg-ff5f7a55.png") top center/contain no-repeat;
 }
 .notPrizeText.data-v-23f7bbe9 {
   margin-top: 360rpx;
@@ -154,7 +154,7 @@
   width: 606rpx;
   margin: 0 auto;
   border-radius: 40rpx;
-  background-image: url("../../static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-watch-luckydraw-lottery-2d8f96df.png");
+  background-image: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-watch-luckydraw-lottery-2d8f96df.png");
   background-size: 100% 100%;
   box-shadow: 0 0 40rpx 0 #ffd48b;
   animation: sourceWinFadeInOut-23f7bbe9 2s infinite;

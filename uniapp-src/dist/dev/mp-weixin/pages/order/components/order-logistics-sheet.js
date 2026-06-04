@@ -1,6 +1,5 @@
 "use strict";
 const common_vendor = require("../../../common/vendor.js");
-const common_assets = require("../../../common/assets.js");
 const _sfc_main = {
   __name: "order-logistics-sheet",
   props: {
@@ -28,12 +27,11 @@ const _sfc_main = {
         d: common_vendor.t(__props.logisticsStatusLabel),
         e: common_vendor.n(__props.logisticsStatusClass),
         f: common_vendor.t(__props.logisticsData.trackingNo || "--"),
-        g: common_assets._imports_0$4,
-        h: common_vendor.o(($event) => _ctx.$emit("copy"), "8e")
+        g: common_vendor.o(($event) => _ctx.$emit("copy"), "8e")
       } : {}, {
-        i: !__props.logisticsData || !__props.logisticsData.traces || __props.logisticsData.traces.length === 0
+        h: !__props.logisticsData || !__props.logisticsData.traces || __props.logisticsData.traces.length === 0
       }, !__props.logisticsData || !__props.logisticsData.traces || __props.logisticsData.traces.length === 0 ? {} : {
-        j: common_vendor.f(__props.logisticsData.traces, (trace, idx, i0) => {
+        i: common_vendor.f(__props.logisticsData.traces, (trace, idx, i0) => {
           return common_vendor.e({
             a: idx === 0 ? 1 : "",
             b: idx < __props.logisticsData.traces.length - 1
@@ -46,9 +44,9 @@ const _sfc_main = {
           });
         })
       }, {
-        k: common_vendor.o(() => {
+        j: common_vendor.o(() => {
         }, "bc"),
-        l: common_vendor.o(($event) => _ctx.$emit("close"), "06")
+        k: common_vendor.o(($event) => _ctx.$emit("close"), "06")
       });
     };
   }

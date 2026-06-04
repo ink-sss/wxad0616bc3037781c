@@ -18,6 +18,7 @@ const pages_broadcast_composables_useLiveSidePanels = require("./composables/use
 const stores_user = require("../../stores/user.js");
 const stores_index = require("../../stores/index.js");
 const stores_domain = require("../../stores/domain.js");
+const utils_navigationBar = require("../../utils/navigation-bar.js");
 const utils_urlHelpers = require("../../utils/url-helpers.js");
 const pages_broadcast_utils_liveRouteContext = require("./utils/live-route-context.js");
 const pages_broadcast_composables_useLiveChatInput = require("./composables/useLiveChatInput.js");
@@ -84,7 +85,8 @@ const _sfc_main = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
     const chatBgImage = common_vendor.ref("");
     const liveDate = common_vendor.ref("");
     const anchorName = common_vendor.ref("官方直播间");
-    const anchorAvatar = common_vendor.ref("/static/icons/default.png");
+    const anchorAvatar = common_vendor.ref("https://man.lqjy.cc/static/icons/default.png");
+    const broadcastNavHeight = common_vendor.ref(utils_navigationBar.getCustomNavBarHeightStyle());
     const liveInitResolved = common_vendor.ref(false);
     const liveRedirecting = common_vendor.ref(false);
     const showEntryOverlay = common_vendor.ref(true);
@@ -507,6 +509,7 @@ const _sfc_main = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
       shareCode,
       liveBindId,
       isReplay,
+      replayCurrentVideoId,
       anchorName,
       anchorAvatar,
       userStore,
@@ -899,7 +902,12 @@ const _sfc_main = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
       getSeekTarget: () => getSeekTarget(),
       setLastSavedProgress: (value) => setLastSavedProgress(value),
       replayVideosList,
-      replayCurrentIndex
+      replayCurrentIndex,
+      roomCode,
+      liveTenantId,
+      shareCode,
+      liveBindId,
+      myUserId
     });
     const entryActions = pages_broadcast_composables_useLiveEntryActions.useLiveEntryActions({
       mode,
@@ -974,6 +982,11 @@ const _sfc_main = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
       roomWatchByDay,
       pushStatus,
       stopHeartbeat,
+      roomCode,
+      liveTenantId,
+      shareCode,
+      liveBindId,
+      myUserId,
       persistReplayProgress,
       roomCurrentTermId,
       syncLiveMiniWindowState,
@@ -1480,6 +1493,7 @@ const _sfc_main = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
       anchorAvatar,
       likeCount,
       isWaitingSchedule,
+      broadcastNavHeight,
       warmUpVideoUrl,
       roomSetting,
       viewerCountAnimating,

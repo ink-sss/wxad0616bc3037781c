@@ -35,6 +35,11 @@ function useLiveReplayPlayback(ctx) {
     liveCover,
     isMuted,
     liveId,
+    roomCode,
+    liveTenantId,
+    shareCode,
+    liveBindId,
+    myUserId,
     roomGroupType,
     roomWatchByDay,
     pushStatus,
@@ -73,6 +78,36 @@ function useLiveReplayPlayback(ctx) {
   let _srcSwitchGuard = false;
   let _seekVerifyTimer = null;
   let replayLoopStartTime = 0;
+  function buildReplaySimContext(video = {}) {
+    const roomId = Number((liveId == null ? void 0 : liveId.value) || 0);
+    const tenantId = Number((liveTenantId == null ? void 0 : liveTenantId.value) || 0);
+    const termId = Number(video.termId || (roomCurrentTermId == null ? void 0 : roomCurrentTermId.value) || 0);
+    const customerId = Number((myUserId == null ? void 0 : myUserId.value) || 0);
+    return {
+      roomId,
+      room_id: roomId,
+      liveId: roomId,
+      live_id: roomId,
+      roomCode: (roomCode == null ? void 0 : roomCode.value) || "",
+      room_code: (roomCode == null ? void 0 : roomCode.value) || "",
+      tenantId,
+      tenant_id: tenantId,
+      shareCode: (shareCode == null ? void 0 : shareCode.value) || "",
+      share_code: (shareCode == null ? void 0 : shareCode.value) || "",
+      bindId: (liveBindId == null ? void 0 : liveBindId.value) || "",
+      bind_id: (liveBindId == null ? void 0 : liveBindId.value) || "",
+      termId,
+      term_id: termId,
+      liveTermId: termId,
+      live_term_id: termId,
+      customerId,
+      customer_id: customerId,
+      userId: customerId,
+      user_id: customerId,
+      liveType: "replay",
+      live_type: "replay"
+    };
+  }
   function clearMessages() {
     messages.value = [];
     refreshPinnedMessage();
@@ -307,7 +342,7 @@ function useLiveReplayPlayback(ctx) {
     replayCommentTimeline.value = [];
     replayCommentCursor.value = 0;
     if (video.id)
-      loadSimMessages(video.id, seekSeconds);
+      loadSimMessages(video.id, seekSeconds, buildReplaySimContext(video));
     else
       resetSimMessages();
     _lastSavedProgress = seekSeconds;

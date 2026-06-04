@@ -26,7 +26,7 @@ const _sfc_main = {
     const emit = __emit;
     return (_ctx, _cache) => {
       return {
-        a: common_assets._imports_0$9,
+        a: common_assets._imports_0,
         b: common_vendor.t(__props.title),
         c: __props.avatar,
         d: common_vendor.t(__props.userName),

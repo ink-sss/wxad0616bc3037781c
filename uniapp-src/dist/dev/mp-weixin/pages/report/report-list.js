@@ -1,7 +1,6 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
 const api_complaint = require("../../api/complaint.js");
-const services_h5AuthContext = require("../../services/h5-auth-context.js");
 const _sfc_main = {
   data() {
     return {
@@ -14,8 +13,6 @@ const _sfc_main = {
     };
   },
   onLoad(query = {}) {
-    if (!services_h5AuthContext.ensureH5PageAuth(query))
-      return;
     this.loadList(true);
   },
   methods: {

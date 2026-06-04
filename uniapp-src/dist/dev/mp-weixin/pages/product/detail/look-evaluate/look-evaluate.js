@@ -146,7 +146,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     }),
     n: $data.tableData.length === 0 && !$data.loading
   }, $data.tableData.length === 0 && !$data.loading ? {
-    o: _ctx.config.pic_url + "/static/live/none.png"
+    o: _ctx.config.pic_url + "/live/none.png"
   } : {
     p: common_vendor.p({
       ["loading-type"]: $options.loadingType
@@ -157,7 +157,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     s: $data.isopenimg
   }, $data.isopenimg ? {
     t: $data.popImg,
-    v: common_vendor.o(($event) => $data.isopenimg = false, "bc")
+    v: common_vendor.o(($event) => $data.isopenimg = false, "ad")
   } : {});
 }
 const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-c8576a24"]]);

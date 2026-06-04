@@ -190,7 +190,7 @@ const prizeTitle = computed(() => {
   width: 30rpx;
   height: 30rpx;
   margin-right: 12rpx;
-  background: url("../static/remote-icons/i-nuoyun-watch-notice-blue.png") center / contain no-repeat;
+  background: url("https://man.lqjy.cc/static/remote-icons/i-nuoyun-watch-notice-blue.png") center / contain no-repeat;
 }
 
 .reward-amount {
@@ -204,7 +204,7 @@ const prizeTitle = computed(() => {
   z-index: 1;
   width: 30rpx;
   height: 30rpx;
-  background: url("../static/remote-icons/i-nuoyun-watch-common-close.png") center / contain no-repeat;
+  background: url("https://man.lqjy.cc/static/remote-icons/i-nuoyun-watch-common-close.png") center / contain no-repeat;
 }
 
 .header-bg {

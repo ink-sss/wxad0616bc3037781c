@@ -7,7 +7,7 @@
         {
           "name": "pages/broadcast/entry",
           "pathName": "pages/broadcast/entry",
-          "query": "",
+          "query": "roomCode=xus4wd64sjje&tenantId=15&liveType=replay&_tc=xthxirwe9f&wx_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b21lcklkIjoxNTMsInRlbmFudElkIjoxNSwib3BlbklkIjoib2U3XzAyLWZ4eXNGLUpOLURKUEd6ZENRZmxiayIsInVuaW9uSWQiOiJvTXgxVTJXT0taZ3RDWnVTOFIyX1BxZEt5bGswIiwicGhvbmUiOiIiLCJuaWNrbmFtZSI6IuaZtOWkqSIsImJ1ZmZlclRpbWUiOjg2NDAwLCJpc3MiOiJxbVBsdXMiLCJhdWQiOlsiSDUiXSwiZXhwIjoxNzgxMTQ0NDQxLCJuYmYiOjE3ODA1Mzk2NDF9.CVMdzSD9O1o3a_H7A7oaoVlu1_fa8AfcydNdW0lzQS4",
           "scene": null,
           "launchMode": "default"
         }

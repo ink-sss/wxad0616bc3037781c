@@ -37,7 +37,7 @@
         </view>
         <image
           class="list-arrow"
-          src="./static/icons/right.svg"
+          src="https://man.lqjy.cc/static/icons/right.svg"
           mode="aspectFit"
         />
       </view>

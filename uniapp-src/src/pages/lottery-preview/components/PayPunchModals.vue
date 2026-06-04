@@ -102,7 +102,7 @@ const emit = defineEmits(["close"]);
   text-align: left;
   color: #333;
   font-size: 64rpx;
-  background: url("../static/remote-icons/nyfs-oss-bcvdata-com-wechat-live-livepicture-payimgmodalbgnew-3b9c9d69.png") center / cover no-repeat;
+  background: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-wechat-live-livepicture-payimgmodalbgnew-3b9c9d69.png") center / cover no-repeat;
 }
 
 .payPicWarn {
@@ -267,7 +267,7 @@ const emit = defineEmits(["close"]);
   box-sizing: border-box;
   text-align: center;
   border-radius: 48rpx;
-  background: url("../static/remote-icons/nyfs-oss-bcvdata-com-public-punchclock-pcdialogbg-d37b4393.png") center / 100% 100% no-repeat;
+  background: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-punchclock-pcdialogbg-d37b4393.png") center / 100% 100% no-repeat;
 }
 
 .punchClockUserDialogIconClose {

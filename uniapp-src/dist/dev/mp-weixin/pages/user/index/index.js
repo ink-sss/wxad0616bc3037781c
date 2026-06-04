@@ -4,7 +4,6 @@ const pages_user_pageTools = require("../page-tools.js");
 const api_order = require("../../../api/order.js");
 const api_refund = require("../../../api/refund.js");
 const api_user = require("../../../api/user.js");
-const services_h5AuthContext = require("../../../services/h5-auth-context.js");
 const utils_liveRoute = require("../../../utils/live-route.js");
 const utils_liveRoomContext = require("../../../utils/live-room-context.js");
 const RequestLoading = () => "../../../components/liveloading.js";
@@ -98,7 +97,6 @@ const _sfc_main = {
       isloadding: true,
       detail: defaultDetail(),
       orderCount: {},
-      sessionKey: "",
       wxBinding: false,
       getPhone: false,
       isLoggedIn: false,
@@ -113,19 +111,19 @@ const _sfc_main = {
     h5OrderItems() {
       var _a, _b, _c, _d, _e;
       return [
-        { type: "unpay", text: "待付款", count: ((_a = this.orderCount) == null ? void 0 : _a.unpay) || 0, icon: "/static/icon/pay.png" },
-        { type: "unsend", text: "待发货", count: ((_b = this.orderCount) == null ? void 0 : _b.unsend) || 0, icon: "/static/icon/daifahuo.png" },
-        { type: "unreceive", text: "待收货", count: ((_c = this.orderCount) == null ? void 0 : _c.unreceive) || 0, icon: "/static/icon/daishouhuo.png" },
-        { type: "finished", text: "已完成", count: ((_d = this.orderCount) == null ? void 0 : _d.finished) || 0, icon: "/static/order/1-3.png" },
-        { type: "refund", text: "退款/售后", count: ((_e = this.orderCount) == null ? void 0 : _e.refund) || 0, icon: "/static/icon/icon-tuikuan.png" }
+        { type: "unpay", text: "待付款", count: ((_a = this.orderCount) == null ? void 0 : _a.unpay) || 0, icon: "https://man.lqjy.cc/static/icon/pay.png" },
+        { type: "unsend", text: "待发货", count: ((_b = this.orderCount) == null ? void 0 : _b.unsend) || 0, icon: "https://man.lqjy.cc/static/icon/daifahuo.png" },
+        { type: "unreceive", text: "待收货", count: ((_c = this.orderCount) == null ? void 0 : _c.unreceive) || 0, icon: "https://man.lqjy.cc/static/icon/daishouhuo.png" },
+        { type: "finished", text: "已完成", count: ((_d = this.orderCount) == null ? void 0 : _d.finished) || 0, icon: "https://man.lqjy.cc/static/order/1-3.png" },
+        { type: "refund", text: "退款/售后", count: ((_e = this.orderCount) == null ? void 0 : _e.refund) || 0, icon: "https://man.lqjy.cc/static/icon/icon-tuikuan.png" }
       ];
     },
     h5ServiceItems() {
       return [
-        { type: "prizeRecord", text: "中奖记录", icon: "/static/icon/lottery-points.png" },
-        { type: "invitationRecord", text: "邀请记录", icon: "/static/icon/icon-tuandui.png" },
-        { type: "complaint", text: "投诉", icon: "/static/icon/chat.png" },
-        { type: "address", text: "收货地址", icon: "/static/icon/address_icon.png" }
+        { type: "prizeRecord", text: "中奖记录", icon: "https://man.lqjy.cc/static/icon/lottery-points.png" },
+        { type: "invitationRecord", text: "邀请记录", icon: "https://man.lqjy.cc/static/icon/icon-tuandui.png" },
+        { type: "complaint", text: "投诉", icon: "https://man.lqjy.cc/static/icon/chat.png" },
+        { type: "address", text: "收货地址", icon: "https://man.lqjy.cc/static/icon/address_icon.png" }
       ];
     },
     hasProfile() {
@@ -133,7 +131,7 @@ const _sfc_main = {
     },
     profileAvatar() {
       var _a, _b;
-      return ((_a = this.detail) == null ? void 0 : _a.avatarUrl) || ((_b = this.detail) == null ? void 0 : _b.avatar) || "/static/login-default.png";
+      return ((_a = this.detail) == null ? void 0 : _a.avatarUrl) || ((_b = this.detail) == null ? void 0 : _b.avatar) || "https://man.lqjy.cc/static/login-default.png";
     },
     profileName() {
       if (this.hasProfile) {
@@ -146,10 +144,16 @@ const _sfc_main = {
       if (!this.isLoggedIn)
         return "未登录，点击登录";
       const id = ((_a = this.detail) == null ? void 0 : _a.user_id) || ((_b = this.detail) == null ? void 0 : _b.userId);
-      return id ? `ID：${id}` : "已登录";
+      return id ? `ID:${id}` : "ID:--";
     },
-    profileActionText() {
-      return this.isLoggedIn ? "设置" : "登录";
+    profileGradeName() {
+      var _a, _b, _c;
+      if (!this.isLoggedIn)
+        return "";
+      const grade = (_a = this.detail) == null ? void 0 : _a.grade;
+      if (typeof grade === "string" && grade)
+        return grade;
+      return (grade == null ? void 0 : grade.name) || ((_b = this.detail) == null ? void 0 : _b.gradeName) || ((_c = this.detail) == null ? void 0 : _c.grade_name) || "普通会员";
     }
   },
   onReady() {
@@ -161,21 +165,12 @@ const _sfc_main = {
       common_vendor.index.setStorageSync("referee_id", query.referee_id);
     if ((query == null ? void 0 : query.roomCode) || (query == null ? void 0 : query.roomId) || (query == null ? void 0 : query.liveId))
       utils_liveRoomContext.saveLiveRoomContext(utils_liveRoute.normalizeLiveRouteOptions(query));
-    if (!services_h5AuthContext.ensureH5PageAuth(query, "/pages/center/index")) {
-      this.isloadding = false;
-      return;
-    }
     this.syncAuthFromStorage();
     this.applyCachedProfile();
     this.syncLiveContext();
-    this.getSession();
     common_vendor.index.setNavigationBarColor({ frontColor: "#ffffff", backgroundColor: "#ffffff" });
   },
   onShow() {
-    if (!services_h5AuthContext.ensureH5PageAuth({}, "/pages/center/index")) {
-      this.isloadding = false;
-      return;
-    }
     this.syncLiveContext();
     this.getData();
   },
@@ -183,15 +178,6 @@ const _sfc_main = {
     this.getData();
   },
   methods: {
-    getSession() {
-      if (!this.isLoggedIn)
-        return;
-      pages_user_pageTools.loginCode().then((code) => {
-        this._post("user.user/getSession", { code }, (res) => {
-          this.sessionKey = res.data.session_key;
-        });
-      });
-    },
     async getData() {
       this.isloadding = true;
       common_vendor.index.showLoading({ title: "加载中" });
@@ -259,7 +245,8 @@ const _sfc_main = {
     },
     openProfileOrLogin() {
       if (!this.isLoggedIn) {
-        services_h5AuthContext.ensureH5PageAuth({}, "/pages/center/index");
+        if (typeof this.doLogin === "function")
+          this.doLogin();
         return;
       }
       this.gotoPage("/pages/user/set/set");
@@ -268,67 +255,40 @@ const _sfc_main = {
       this.gotoPage("/pages/user/modify-phone/modify-phone");
     },
     getPhoneNumber(event) {
-      var _a;
+      var _a, _b, _c;
       if (((_a = event == null ? void 0 : event.detail) == null ? void 0 : _a.errMsg) && event.detail.errMsg !== "getPhoneNumber:ok")
         return false;
-      let detail;
-      try {
-        detail = pages_user_pageTools.phonePayload(event);
-      } catch (error) {
-        return false;
-      }
       common_vendor.index.showLoading({ title: "加载中" });
-      this._post(
-        "user.user/bindMobile",
-        {
-          session_key: this.sessionKey,
-          encrypted_data: detail.encrypted_data,
-          iv: detail.iv
-        },
-        (res) => {
-          common_vendor.index.showToast({ title: "绑定成功" });
-          this.detail.mobile = res.data.mobile;
-        },
-        false,
-        () => common_vendor.index.hideLoading()
-      );
+      const userId = ((_b = this.detail) == null ? void 0 : _b.user_id) || ((_c = this.detail) == null ? void 0 : _c.userId) || common_vendor.index.getStorageSync("user_id");
+      pages_user_pageTools.bindMiniProgramMobile(userId, event).then((data = {}) => {
+        common_vendor.index.showToast({ title: "绑定成功" });
+        this.detail.mobile = data.mobile;
+        if (data.user_id)
+          common_vendor.index.setStorageSync("user_id", data.user_id);
+      }).catch((error) => {
+        common_vendor.index.showToast({ title: (error == null ? void 0 : error.message) || (error == null ? void 0 : error.msg) || "授权失败，请重新授权", icon: "none" });
+      }).finally(() => common_vendor.index.hideLoading());
     },
     syncLiveContext() {
-      this.liveRoomContext = utils_liveRoomContext.loadLiveRoomContext();
+      this.liveRoomContext = utils_liveRoomContext.mergeLiveRoomContext(utils_liveRoomContext.loadLiveRoomContext() || {});
     },
-    liveQuery() {
-      const context = this.liveRoomContext || {};
-      const params = [];
-      if (context.roomCode)
-        params.push(`roomCode=${encodeURIComponent(context.roomCode)}`);
-      if (context.roomId || context.liveId)
-        params.push(`roomId=${encodeURIComponent(context.roomId || context.liveId)}`);
-      return params.length ? `?${params.join("&")}` : "";
+    withLiveQuery(url) {
+      return utils_liveRoomContext.appendLiveRoomQuery(url, this.liveRoomContext || {});
     },
     gotoH5CenterModule(type) {
       var _a, _b;
-      const query = this.liveQuery();
       const roomId = ((_a = this.liveRoomContext) == null ? void 0 : _a.roomId) || ((_b = this.liveRoomContext) == null ? void 0 : _b.liveId) || "";
-      const withLiveQuery = (url2) => {
-        if (!query)
-          return url2;
-        return `${url2}${url2.includes("?") ? "&" : "?"}${query.slice(1)}`;
-      };
       const routes = {
-        orders: withLiveQuery("/pages/order/list?status=all"),
-        unpay: withLiveQuery("/pages/order/list?status=unpay"),
-        unsend: withLiveQuery("/pages/order/list?status=unsend"),
-        unreceive: withLiveQuery("/pages/order/list?status=unreceive"),
-        refund: withLiveQuery("/pages/order/refund-list"),
-        prizeRecord: `/pages/prize-record/index${query}`,
-        invitationRecord: withLiveQuery(`/pages/invitation-record/index?roomId=${encodeURIComponent(roomId)}`),
-        complaint: withLiveQuery("/pages/report/report-type?fromPath=%2Fpages%2Fcenter%2Findex"),
-        address: withLiveQuery("/pages/address/index")
+        orders: this.withLiveQuery("/pages/order/list?status=all"),
+        unpay: this.withLiveQuery("/pages/order/list?status=unpay"),
+        unsend: this.withLiveQuery("/pages/order/list?status=unsend"),
+        unreceive: this.withLiveQuery("/pages/order/list?status=unreceive"),
+        refund: this.withLiveQuery("/pages/order/refund-list"),
+        prizeRecord: this.withLiveQuery("/pages/prize-record/index"),
+        invitationRecord: this.withLiveQuery(`/pages/invitation-record/index?roomId=${encodeURIComponent(roomId)}`),
+        complaint: this.withLiveQuery("/pages/report/report-type?fromPath=%2Fpages%2Fcenter%2Findex"),
+        address: this.withLiveQuery("/pages/address/index")
       };
-      if (type === "returnLive") {
-        common_vendor.index.navigateTo({ url: utils_liveRoute.buildBroadcastEntryUrl(this.liveRoomContext || {}) });
-        return;
-      }
       const url = routes[type];
       if (url)
         common_vendor.index.navigateTo({ url });
@@ -344,26 +304,25 @@ if (!Array) {
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return common_vendor.e({
     a: common_vendor.s(`background:${$data.bgColor};`),
-    b: $options.profileAvatar,
-    c: common_vendor.t($options.profileName),
-    d: common_vendor.t($options.profileSubtitle),
-    e: common_vendor.t($options.profileActionText),
-    f: common_vendor.o((...args) => $options.openProfileOrLogin && $options.openProfileOrLogin(...args), "78"),
-    g: $data.getPhone
-  }, $data.getPhone ? common_vendor.e({
-    h: $data.wxBinding
-  }, $data.wxBinding ? {
-    i: common_vendor.o((...args) => $options.getPhoneNumber && $options.getPhoneNumber(...args), "dc")
-  } : {
-    j: common_vendor.o((...args) => $options.bindMobile && $options.bindMobile(...args), "6b")
-  }) : {}, {
-    k: $data.liveRoomContext.roomCode || $data.liveRoomContext.roomId
-  }, $data.liveRoomContext.roomCode || $data.liveRoomContext.roomId ? {
-    l: common_vendor.t($data.liveRoomContext.liveName || "返回最近直播间"),
-    m: common_vendor.o(($event) => $options.gotoH5CenterModule("returnLive"), "0e")
+    b: common_vendor.s(`background:${$data.bgColor};`),
+    c: $options.profileAvatar,
+    d: common_vendor.t($options.profileName),
+    e: $options.profileGradeName
+  }, $options.profileGradeName ? {
+    f: common_vendor.t($options.profileGradeName)
   } : {}, {
-    n: common_vendor.o(($event) => $options.gotoH5CenterModule("orders"), "40"),
-    o: common_vendor.f($options.h5OrderItems, (item, k0, i0) => {
+    g: common_vendor.t($options.profileSubtitle),
+    h: common_vendor.o((...args) => $options.openProfileOrLogin && $options.openProfileOrLogin(...args), "7e"),
+    i: $data.getPhone
+  }, $data.getPhone ? common_vendor.e({
+    j: $data.wxBinding
+  }, $data.wxBinding ? {
+    k: common_vendor.o((...args) => $options.getPhoneNumber && $options.getPhoneNumber(...args), "ec")
+  } : {
+    l: common_vendor.o((...args) => $options.bindMobile && $options.bindMobile(...args), "8e")
+  }) : {}, {
+    m: common_vendor.o(($event) => $options.gotoH5CenterModule("orders"), "71"),
+    n: common_vendor.f($options.h5OrderItems, (item, k0, i0) => {
       return common_vendor.e({
         a: item.icon,
         b: common_vendor.t(item.text),
@@ -375,7 +334,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         f: common_vendor.o(($event) => $options.gotoH5CenterModule(item.type), item.type)
       });
     }),
-    p: common_vendor.f($options.h5ServiceItems, (item, k0, i0) => {
+    o: common_vendor.f($options.h5ServiceItems, (item, k0, i0) => {
       return {
         a: item.icon,
         b: common_vendor.t(item.text),
@@ -383,14 +342,14 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         d: common_vendor.o(($event) => $options.gotoH5CenterModule(item.type), item.type)
       };
     }),
-    q: $data.isloadding
+    p: $data.isloadding
   }, $data.isloadding ? {
-    r: common_vendor.p({
+    q: common_vendor.p({
       loadding: $data.isloadding
     })
   } : {}, {
-    s: common_vendor.n($options.themeClass),
-    t: $options.themeClass
+    r: common_vendor.n($options.themeClass),
+    s: $options.themeClass
   });
 }
 const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-e43f9ca3"]]);

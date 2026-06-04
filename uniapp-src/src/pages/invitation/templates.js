@@ -1,9 +1,10 @@
-import tpl601Bg from "@/static/invitation/tpl601.png";
-import tpl602Bg from "@/static/invitation/tpl602.png";
-import tpl603Bg from "@/static/invitation/tpl603.png";
-import tpl604Bg from "@/static/invitation/tpl604.png";
-import tpl605Bg from "@/static/invitation/tpl605.png";
-import tpl606Bg from "@/static/invitation/tpl606.png";
+const STATIC_URL = "https://man.lqjy.cc/static";
+const tpl601Bg = `${STATIC_URL}/invitation/tpl601.png`;
+const tpl602Bg = `${STATIC_URL}/invitation/tpl602.png`;
+const tpl603Bg = `${STATIC_URL}/invitation/tpl603.png`;
+const tpl604Bg = `${STATIC_URL}/invitation/tpl604.png`;
+const tpl605Bg = `${STATIC_URL}/invitation/tpl605.png`;
+const tpl606Bg = `${STATIC_URL}/invitation/tpl606.png`;
 
 const templates = [
   {

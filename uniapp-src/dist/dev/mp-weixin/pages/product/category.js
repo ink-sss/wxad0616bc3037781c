@@ -1,5 +1,7 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
+const services_localCart = require("../../services/local-cart.js");
+const services_miniprogramProducts = require("../../services/miniprogram-products.js");
 const TabBar = () => "../../components/tabbar/footTabbar.js";
 let throttleTimer = null;
 function throttle(fn, wait = 500) {
@@ -21,8 +23,8 @@ const _sfc_main = {
     return {
       loading: true,
       searchName: "搜索商品",
-      show_type: 3,
-      style: 1,
+      show_type: 10,
+      style: 4,
       phoneHeight: 0,
       scrollviewHigh: 0,
       listData: [],
@@ -33,7 +35,7 @@ const _sfc_main = {
       page: 1,
       category_id: 0,
       tableData: [],
-      isLogin: false,
+      isLogin: true,
       shoppingNum: 0,
       shoppingPrice: null,
       productModel: {},
@@ -48,7 +50,9 @@ const _sfc_main = {
       url: "",
       platFormType: "",
       osName: "",
-      openPopCate: false
+      openPopCate: false,
+      background: "#ffffff",
+      no_more: false
     };
   },
   computed: {
@@ -86,7 +90,7 @@ const _sfc_main = {
   },
   onShareAppMessage() {
     return {
-      title: this.templet.share_title,
+      title: "商品分类",
       path: "/pages/product/category?" + this.getShareUrlParams()
     };
   },
@@ -95,7 +99,7 @@ const _sfc_main = {
       this.$refs.categoryMaskRef.open();
     },
     isBuyFast() {
-      if (this.isLogin && (this.show_type === 10 && this.style === 4 || this.show_type === 20 && this.style === 3)) {
+      if (this.show_type === 10 && this.style === 4 || this.show_type === 20 && this.style === 3) {
         const height = this.phoneHeight - this.searchHeight - this.shoppingHeight;
         this.scrollviewHigh = height - this.footerHeight;
         return true;
@@ -126,24 +130,35 @@ const _sfc_main = {
     },
     getData() {
       this.loading = true;
-      this._get("product.category/index", {}, (res) => {
-        this.show_type = res.data.template.category_style;
-        this.style = res.data.template.wind_style;
-        this.listData = res.data.list;
+      services_miniprogramProducts.fetchCategories().then((data) => {
+        const categories = Array.isArray(data) ? data.map(services_miniprogramProducts.normalizeCategory) : [];
+        this.show_type = 10;
+        this.style = 4;
+        this.listData = categories;
         if (this.listData && this.listData.length > 0) {
           if (this.listData[0].child && this.show_type === 20) {
-            this.category_id = this.listData[0].child[0].category_id;
+            this.category_id = this.listData[0].child[0] ? this.listData[0].child[0].category_id : this.listData[0].category_id;
             this.childlist = this.listData[0].child;
           } else {
             this.category_id = this.listData[0].category_id;
           }
+        } else {
+          this.category_id = 0;
+          this.childlist = [];
         }
         if (this.style === 2 || (this.show_type === 10 && this.style === 4 || this.show_type === 20 && this.style === 3)) {
           this.getProduct();
           if (this.show_type === 10 && this.style === 4 || this.show_type === 20 && this.style === 3)
             this.getShoppingNum();
         }
-        this.background = res.data.background;
+        this.background = "#ffffff";
+        this.loading = false;
+      }).catch(() => {
+        this.listData = [];
+        this.childlist = [];
+        this.category_id = 0;
+        this.productlist = [];
+        this.no_more = true;
         this.loading = false;
       });
     },
@@ -163,57 +178,31 @@ const _sfc_main = {
       return ids;
     },
     Submit() {
-      const ids = this.getCheckedIds();
-      if (ids.length === 0) {
-        common_vendor.index.showToast({ title: "请选择商品", icon: "none" });
-        return false;
-      }
-      this.gotoPage("/pages/order/confirm-order?order_type=cart&cart_ids=" + ids);
+      common_vendor.index.showToast({ title: "购物车暂不支持结算", icon: "none" });
     },
     getShoppingNum() {
-      this._post("product.Category/lists", {}, (res) => {
-        const productList = res.data.productList;
-        this.isLogin = false;
-        if (productList) {
-          this.isLogin = true;
-          this.tableData = productList;
-          let num = 0;
-          let price = 0;
-          const products = [];
-          productList.forEach((supplier) => {
-            if (supplier.productList && supplier.productList.length > 0) {
-              supplier.productList.forEach((item) => {
-                products.push(item);
-                num += item.total_num;
-                price += parseFloat(item.total_num) * parseFloat(item.product_price);
-              });
-            }
-          });
-          this.productArr = products;
-          this.shoppingNum = num;
-          this.shoppingPrice = price.toFixed(2);
-        }
-      }, () => {
-        this.productlist = [];
-        this.no_more = false;
-        this.page = 1;
-        this.getData();
-      });
+      const summary = services_localCart.getLocalCartSummary();
+      this.isLogin = true;
+      this.tableData = summary.productList;
+      this.productArr = summary.items;
+      this.shoppingNum = summary.totalNum;
+      this.shoppingPrice = summary.totalPrice;
     },
     addShopping(item) {
       if (item.spec_type === 20)
         this.getSpecData(item.product_id);
       else
-        this.addSingleSpec(item.product_id);
+        this.addSingleSpec(item);
     },
-    addSingleSpec(productId) {
-      this._post("order.cart/add", {
-        product_id: productId,
-        total_num: 1,
+    addSingleSpec(item) {
+      services_localCart.addLocalCartItem({
+        ...item,
+        product_price: item.product_min_price || item.product_price,
+        stock_num: item.product_stock,
         spec_sku_id: 0
-      }, () => {
-        this.getShoppingNum();
       });
+      this.getShoppingNum();
+      common_vendor.index.showToast({ title: "已加入购物车", icon: "success" });
     },
     scrolltolowerFunc() {
       if (this.no_more)
@@ -225,19 +214,18 @@ const _sfc_main = {
         this.no_more = true;
     },
     getSpecData(productId) {
-      this._get("product.product/detail", {
-        product_id: productId,
-        url: this.url,
-        visitcode: this.getVisitcode()
-      }, (res) => {
-        if (res.data.specData) {
+      services_miniprogramProducts.fetchProductDetail(productId).then((data) => {
+        const detailData = services_miniprogramProducts.normalizeProductDetail(data || {});
+        if (detailData.specData) {
           this.isPopup = false;
-          this.detail = res.data.detail;
-          this.specData = res.data.specData;
-          this.initSpecData(res.data.specData);
+          this.detail = detailData.detail;
+          this.specData = detailData.specData;
+          this.initSpecData(detailData.specData);
         } else {
           common_vendor.index.showToast({ title: "暂无规格，请于后台添加!", mask: false, duration: 1500, icon: "none" });
         }
+      }).catch(() => {
+        common_vendor.index.showToast({ title: "商品规格加载失败", mask: false, duration: 1500, icon: "none" });
       });
     },
     initMaskPopup() {
@@ -274,19 +262,23 @@ const _sfc_main = {
     },
     getProduct() {
       this.loading = true;
-      this._get("product.product/lists", {
+      services_miniprogramProducts.fetchProducts({
         page: this.page || 1,
-        category_id: this.category_id,
+        categoryId: this.category_id || "",
         search: "",
         sortType: "",
         sortPrice: "",
-        list_rows: 20
-      }, (res) => {
+        pageSize: 20
+      }).then((data) => {
+        const list = services_miniprogramProducts.normalizeProductList(data || {}, 20);
         this.loading = false;
-        this.productlist = this.productlist.concat(res.data.list.data);
-        this.last_page = res.data.list.last_page;
-        if (res.data.list.last_page <= 1)
+        this.productlist = this.productlist.concat(list.data);
+        this.last_page = list.last_page;
+        if (list.last_page <= 1 || this.page >= list.last_page)
           this.no_more = true;
+      }).catch(() => {
+        this.loading = false;
+        this.no_more = true;
       });
     },
     selectCategory(index) {
@@ -438,24 +430,23 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     F: common_vendor.t($data.shoppingNum)
   } : {}, {
     G: common_vendor.o((...args) => $options.lookProduct && $options.lookProduct(...args), "45"),
-    H: common_vendor.t($data.shoppingPrice),
-    I: common_vendor.o((...args) => $options.Submit && $options.Submit(...args), "c1")
+    H: common_vendor.t($data.shoppingPrice)
   }) : {}, {
-    J: $data.isDomHeight && $data.osName !== "android"
+    I: $data.isDomHeight && $data.osName !== "android"
   }, $data.isDomHeight && $data.osName !== "android" ? {} : {}, {
-    K: common_vendor.p({
+    J: common_vendor.p({
       ["is-scroll"]: true
     }),
-    L: common_vendor.o($options.closePopup, "4f"),
-    M: common_vendor.p({
+    K: common_vendor.o($options.closePopup, "7d"),
+    L: common_vendor.p({
       ["is-popup"]: $data.isPopup,
       ["is-category"]: true,
       ["product-model"]: $data.productModel
     }),
-    N: $data.openPopCate
+    M: $data.openPopCate
   }, $data.openPopCate ? {
-    O: $data.searchHeight + "px",
-    P: common_vendor.f($data.childlist, (item, index, i0) => {
+    N: $data.searchHeight + "px",
+    O: common_vendor.f($data.childlist, (item, index, i0) => {
       return {
         a: common_vendor.t(item.name),
         b: item.category_id || index,
@@ -463,10 +454,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         d: common_vendor.o(($event) => $options.changeCategory(item.category_id), item.category_id || index)
       };
     }),
-    Q: common_vendor.o(($event) => $data.openPopCate = false, "3d")
+    P: common_vendor.o(($event) => $data.openPopCate = false, "66")
   } : {}, {
-    R: common_vendor.n(_ctx.theme && _ctx.theme()),
-    S: _ctx.theme && _ctx.theme()
+    Q: common_vendor.n(_ctx.theme && _ctx.theme()),
+    R: _ctx.theme && _ctx.theme()
   });
 }
 const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-528fcc3e"]]);

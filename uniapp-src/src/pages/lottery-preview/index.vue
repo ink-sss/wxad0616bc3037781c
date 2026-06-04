@@ -142,7 +142,7 @@
             <view class="watch_reward-eb-con">
               <image
                 class="watch_reward_img"
-                src="./static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-num-watch-reward-icon-422b8d60.png"
+                src="https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-num-watch-reward-icon-422b8d60.png"
                 mode="aspectFill"
               />
               <text class="watch_reward_name">{{ activeRewardBroadcast.username }}</text>
@@ -193,7 +193,7 @@ const previewCommentLotteryPrizes = [
     id: 1,
     level: "1",
     name: "1",
-    img: "./static/remote-icons/nyfs-oss-bcvdata-com-uploads-consolewechat-1681-rtf-20260430144045241662-91b0e034.jpg",
+    img: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-uploads-consolewechat-1681-rtf-20260430144045241662-91b0e034.jpg",
     is_open_prize: 2,
     is_display_num: 1,
     num: 10,
@@ -203,7 +203,7 @@ const previewCommentLotteryPrizes = [
     id: 2,
     level: "2",
     name: "2",
-    img: "./static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-prize-thre-bg-1a948604.png",
+    img: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-prize-thre-bg-1a948604.png",
     is_open_prize: 0,
     is_display_num: 1,
     num: 1,

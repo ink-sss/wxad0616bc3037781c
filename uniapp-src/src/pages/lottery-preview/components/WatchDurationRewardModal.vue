@@ -366,9 +366,9 @@ function formatStock(reward) {
 @font-face {
   font-family: iconfont;
   src:
-    url("/static/remote-icons/s-nuoyun-iconfont.woff2") format("woff2"),
-    url("/static/remote-icons/s-nuoyun-iconfont.woff") format("woff"),
-    url("/static/remote-icons/s-nuoyun-iconfont.ttf") format("truetype");
+    url("https://man.lqjy.cc/static/remote-icons/s-nuoyun-iconfont.woff2") format("woff2"),
+    url("https://man.lqjy.cc/static/remote-icons/s-nuoyun-iconfont.woff") format("woff"),
+    url("https://man.lqjy.cc/static/remote-icons/s-nuoyun-iconfont.ttf") format("truetype");
 }
 
 .watch-duration-reward-source {
@@ -411,7 +411,7 @@ function formatStock(reward) {
   }
 
   .center-watch-bg.enable-receive {
-    background-image: url("/static/remote-icons/s-nuoyun-center-watch-enable-receive-bg.png");
+    background-image: url("https://man.lqjy.cc/static/remote-icons/s-nuoyun-center-watch-enable-receive-bg.png");
   }
 
   .source-goods-reward-box {
@@ -524,7 +524,7 @@ function formatStock(reward) {
   .source-goods-reward-close {
     width: 64rpx;
     height: 64rpx;
-    background: url("/static/remote-icons/s-nuoyun-icon-close.png") center / contain no-repeat;
+    background: url("https://man.lqjy.cc/static/remote-icons/s-nuoyun-icon-close.png") center / contain no-repeat;
   }
 
   .bottom-reward-popup {

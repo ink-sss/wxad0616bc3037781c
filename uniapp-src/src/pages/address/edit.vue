@@ -71,7 +71,6 @@ import {
   deleteAddress,
   getAddressList,
 } from "@/api/address";
-import { ensureH5PageAuth } from "@/services/h5-auth-context";
 import areaData from "@/utils/area.json";
 
 const isEdit = ref(false);
@@ -247,7 +246,6 @@ async function loadAddressDetail(id) {
 }
 
 onLoad((options) => {
-  if (!ensureH5PageAuth(options)) return;
   setRegionColumns();
   if (options?.id) {
     isEdit.value = true;

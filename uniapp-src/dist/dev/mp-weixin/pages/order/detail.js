@@ -1,8 +1,6 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
-const common_assets = require("../../common/assets.js");
 const api_order = require("../../api/order.js");
-const services_h5AuthContext = require("../../services/h5-auth-context.js");
 const utils_liveRoomContext = require("../../utils/live-room-context.js");
 if (!Math) {
   (OrderLogisticsSheet + LiveMiniWindow)();
@@ -22,35 +20,35 @@ const _sfc_main = {
         status: "unpay",
         statusTitle: "待付款",
         subtitle: "请尽快完成支付",
-        heroImage: "/static/icons/order1.png",
+        heroImage: "https://man.lqjy.cc/static/icons/order1.png",
         heroClass: "status-hero-unpay"
       },
       2: {
         status: "unsend",
         statusTitle: "待发货",
         subtitle: "商家正在备货中，请耐心等待发货",
-        heroImage: "/static/icons/order2.png",
+        heroImage: "https://man.lqjy.cc/static/icons/order2.png",
         heroClass: "status-hero-unsend"
       },
       3: {
         status: "unreceive",
         statusTitle: "待收货",
         subtitle: "您的包裹正在运输中，请保持电话畅通",
-        heroImage: "/static/icons/order2.png",
+        heroImage: "https://man.lqjy.cc/static/icons/order2.png",
         heroClass: "status-hero-unreceive"
       },
       4: {
         status: "finished",
         statusTitle: "已完成",
         subtitle: "订单已完成，感谢您的购买",
-        heroImage: "/static/icons/order2.png",
+        heroImage: "https://man.lqjy.cc/static/icons/order2.png",
         heroClass: "status-hero-finished"
       },
       5: {
         status: "cancelled",
         statusTitle: "已取消",
         subtitle: "订单已取消",
-        heroImage: "/static/icons/order2.png",
+        heroImage: "https://man.lqjy.cc/static/icons/order2.png",
         heroClass: "status-hero-unsend"
       }
     };
@@ -150,7 +148,7 @@ const _sfc_main = {
           status: "refund_success",
           statusTitle: "退款成功",
           subtitle: "退款金额已原路返回，请注意查收",
-          heroImage: "/static/icons/order3.png",
+          heroImage: "https://man.lqjy.cc/static/icons/order3.png",
           heroClass: "status-hero-refund"
         };
       }
@@ -382,8 +380,6 @@ const _sfc_main = {
       common_vendor.index.navigateTo({ url: "/pages/order/confirm?payload=" + payload });
     }
     common_vendor.onLoad((options) => {
-      if (!services_h5AuthContext.ensureH5PageAuth(options))
-        return;
       common_vendor.index.$off("address-selected", onAddressSelected);
       common_vendor.index.$on("address-selected", onAddressSelected);
       const routeRoomCode = utils_liveRoomContext.resolveLiveRoomCode(options == null ? void 0 : options.roomCode);
@@ -408,43 +404,41 @@ const _sfc_main = {
         e: common_vendor.t(orderDetail.value.subtitle),
         f: orderDetail.value.heroImage,
         g: common_vendor.n(heroClass.value),
-        h: common_assets._imports_0$3,
-        i: orderDetail.value.address.fullAddress
+        h: orderDetail.value.address.fullAddress
       }, orderDetail.value.address.fullAddress ? {
-        j: common_vendor.t(orderDetail.value.address.name),
-        k: common_vendor.t(orderDetail.value.address.phone)
+        i: common_vendor.t(orderDetail.value.address.name),
+        j: common_vendor.t(orderDetail.value.address.phone)
       } : {}, {
-        l: orderDetail.value.address.fullAddress
+        k: orderDetail.value.address.fullAddress
       }, orderDetail.value.address.fullAddress ? {
-        m: common_vendor.t(orderDetail.value.address.fullAddress)
+        l: common_vendor.t(orderDetail.value.address.fullAddress)
       } : {}, {
-        n: orderDetail.value.canSelectAddress
+        m: orderDetail.value.canSelectAddress
       }, orderDetail.value.canSelectAddress ? {
-        o: common_vendor.t(orderDetail.value.address.fullAddress ? "更换" : "选择"),
-        p: common_vendor.o(openAddressSelect, "99")
+        n: common_vendor.t(orderDetail.value.address.fullAddress ? "更换" : "选择"),
+        o: common_vendor.o(openAddressSelect, "d1")
       } : {}, {
-        q: orderDetail.value.canSelectAddress ? 1 : "",
-        r: common_vendor.o(openAddressSelect, "86"),
-        s: orderDetail.value.goods.image,
-        t: common_vendor.t(orderDetail.value.goods.title),
-        v: common_vendor.t(orderDetail.value.goods.unitPrice),
-        w: common_vendor.t(orderDetail.value.goods.spec),
-        x: common_vendor.t(orderDetail.value.goods.quantity),
-        y: common_vendor.t(orderDetail.value.amount.goodsAmount),
-        z: common_vendor.t(orderDetail.value.amount.freightAmount),
-        A: common_vendor.t(orderDetail.value.amount.payAmount),
-        B: common_vendor.t(orderDetail.value.orderNo),
-        C: common_assets._imports_0$4,
-        D: common_vendor.o(copyOrderNo, "54"),
-        E: common_vendor.t(orderDetail.value.createTime),
-        F: common_vendor.t(orderDetail.value.payType),
-        G: common_vendor.t(orderDetail.value.expressType),
-        H: common_vendor.t(orderDetail.value.expressNo),
-        I: orderDetail.value.expressNo !== "--"
+        p: orderDetail.value.canSelectAddress ? 1 : "",
+        q: common_vendor.o(openAddressSelect, "86"),
+        r: orderDetail.value.goods.image,
+        s: common_vendor.t(orderDetail.value.goods.title),
+        t: common_vendor.t(orderDetail.value.goods.unitPrice),
+        v: common_vendor.t(orderDetail.value.goods.spec),
+        w: common_vendor.t(orderDetail.value.goods.quantity),
+        x: common_vendor.t(orderDetail.value.amount.goodsAmount),
+        y: common_vendor.t(orderDetail.value.amount.freightAmount),
+        z: common_vendor.t(orderDetail.value.amount.payAmount),
+        A: common_vendor.t(orderDetail.value.orderNo),
+        B: common_vendor.o(copyOrderNo, "56"),
+        C: common_vendor.t(orderDetail.value.createTime),
+        D: common_vendor.t(orderDetail.value.payType),
+        E: common_vendor.t(orderDetail.value.expressType),
+        F: common_vendor.t(orderDetail.value.expressNo),
+        G: orderDetail.value.expressNo !== "--"
       }, orderDetail.value.expressNo !== "--" ? {} : {}, {
-        J: orderDetail.value.expressNo !== "--" ? 1 : "",
-        K: common_vendor.o(onExpressNoClick, "b1"),
-        L: common_vendor.f(orderDetail.value.actions, (action, k0, i0) => {
+        H: orderDetail.value.expressNo !== "--" ? 1 : "",
+        I: common_vendor.o(onExpressNoClick, "91"),
+        J: common_vendor.f(orderDetail.value.actions, (action, k0, i0) => {
           return {
             a: common_vendor.t(action.label),
             b: action.key,
@@ -452,17 +446,17 @@ const _sfc_main = {
             d: common_vendor.o(($event) => handleAction(action.key), action.key)
           };
         }),
-        M: logisticsVisible.value
+        K: logisticsVisible.value
       }, logisticsVisible.value ? {
-        N: common_vendor.o(($event) => logisticsVisible.value = false, "dc"),
-        O: common_vendor.o(copyTrackingNo, "66"),
-        P: common_vendor.p({
+        L: common_vendor.o(($event) => logisticsVisible.value = false, "bc"),
+        M: common_vendor.o(copyTrackingNo, "97"),
+        N: common_vendor.p({
           ["logistics-data"]: logisticsData.value,
           ["logistics-status-label"]: logisticsStatusLabel.value,
           ["logistics-status-class"]: logisticsStatusClass.value
         })
       } : {}, {
-        Q: common_vendor.p({
+        O: common_vendor.p({
           ["room-code"]: orderDetail.value.roomCode,
           ["bottom-offset"]: 380
         })

@@ -62,6 +62,8 @@
 </template>
 
 <script>
+import { addLocalCartItem } from '../../../../services/local-cart.js'
+
 function cloneFallbackModel() {
   return {
     detail: { image: [{ file_path: '' }], product_stock: 0, product_price: 0, line_price: 0 },
@@ -296,14 +298,19 @@ export default {
         uni.showToast({ title: '请选择属性', icon: 'none', duration: 2000 })
         return false
       }
-      this._post('order.cart/add', {
+      const summary = addLocalCartItem({
+        ...this.form.detail,
         product_id: productId,
-        total_num: totalNum,
-        spec_sku_id: specSkuId
-      }, (res) => {
-        uni.showToast({ title: res.msg, duration: 2000 })
-        this.$emit('close', null, res.data.cart_total_num)
-      })
+        product_name: this.form.detail.product_name,
+        product_image: this.form.show_sku.sku_image,
+        product_price: this.form.show_sku.product_price,
+        line_price: this.form.show_sku.line_price,
+        stock_num: this.form.show_sku.stock_num,
+        spec_sku_id: specSkuId,
+        product_attr: this.selectSpec.replace(/^已选:\s*/, '')
+      }, totalNum)
+      uni.showToast({ title: '已加入购物车', duration: 2000 })
+      this.$emit('close', null, summary.totalNum)
     },
     createdOrder() {
       const productId = this.form.detail.product_id

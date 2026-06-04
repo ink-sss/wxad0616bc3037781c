@@ -7,19 +7,46 @@ export function parseScene(scene = '') {
   } catch (error) {
     decoded = String(scene)
   }
-  decoded
-    .split('&')
-    .forEach((part) => {
-      const separator = part.includes(':') ? ':' : '='
-      const [key, value] = part.split(separator)
-      if (key) result[key] = value || ''
-    })
+  const queryTexts = []
+  const pushQueryText = (text = '') => {
+    if (!text) return
+    const queryIndex = text.indexOf('?')
+    if (queryIndex >= 0) {
+      queryTexts.push(text.slice(queryIndex + 1))
+    } else if (text.includes('=') || (text.includes(':') && !text.includes('://'))) {
+      queryTexts.push(text.replace(/^\?/, ''))
+    }
+  }
+  const [beforeHash = '', ...hashParts] = decoded.split('#')
+  pushQueryText(beforeHash)
+  hashParts.forEach(pushQueryText)
+  if (!queryTexts.length) pushQueryText(decoded)
+  queryTexts.forEach((queryText) => {
+    queryText
+      .replace(/^\?/, '')
+      .split('&')
+      .forEach((part) => {
+        if (!part) return
+        const separatorIndex = part.includes('=') ? part.indexOf('=') : part.indexOf(':')
+        const rawKey = separatorIndex >= 0 ? part.slice(0, separatorIndex) : part
+        const rawValue = separatorIndex >= 0 ? part.slice(separatorIndex + 1) : ''
+        let key = rawKey
+        let value = rawValue
+        try {
+          key = decodeURIComponent(rawKey)
+        } catch (error) {}
+        try {
+          value = decodeURIComponent(rawValue)
+        } catch (error) {}
+        if (key) result[key] = value || ''
+      })
+  })
   return result
 }
 
 export function normalizeLiveRouteOptions(query = {}) {
   const scene = parseScene(query.scene)
-  const merged = { ...query, ...scene }
+  const merged = { ...scene, ...query }
   const shareCode = merged.shareCode || merged.share_code || ''
   const roomCode = merged.roomCode || merged.room_code || shareCode || ''
   const liveId = merged.liveId || merged.live_id || merged.roomId || merged.room_id || ''

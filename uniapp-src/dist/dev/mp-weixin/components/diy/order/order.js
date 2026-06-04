@@ -59,7 +59,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return {
     a: common_vendor.f($data.orderItem, (item, index, i0) => {
       return common_vendor.e({
-        a: `/static/order/${$options.styleType}-${index}.png`
+        a: `https://man.lqjy.cc/static/order/${$options.styleType}-${index}.png`
       }, $options.orderCount ? common_vendor.e({
         b: $options.orderCount[item.pop] != null && Number($options.orderCount[item.pop]) > 0
       }, $options.orderCount[item.pop] != null && Number($options.orderCount[item.pop]) > 0 ? {

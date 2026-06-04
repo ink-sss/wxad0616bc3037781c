@@ -1,0 +1,2 @@
+{"file":".trellis/spec/frontend/index.md","reason":"Verify changed Mini Program frontend entry behavior stays within package guidance."}
+{"file":".trellis/spec/guides/index.md","reason":"Verify helper changes were searched and scoped."}

@@ -24,23 +24,9 @@ function findLivePageIndex(pages) {
   return -1;
 }
 function buildLiveRoomUrl(roomCode = "", extraParams = {}) {
-  var _a;
-  const code = String(roomCode || "").trim();
-  const params = [];
-  if (code)
-    params.push(`roomCode=${encodeURIComponent(code)}`);
-  const merged = { ...extraParams || {} };
-  if (!merged.liveType) {
-    const cachedType = String(((_a = utils_liveRoomContext.loadLiveRoomContext()) == null ? void 0 : _a.liveType) || "").trim();
-    if (cachedType)
-      merged.liveType = cachedType;
-  }
-  Object.entries(merged).forEach(([key, value]) => {
-    if (value === void 0 || value === null || value === "")
-      return;
-    params.push(`${encodeURIComponent(key)}=${encodeURIComponent(value)}`);
-  });
-  return `/pages/broadcast/entry${params.length ? `?${params.join("&")}` : ""}`;
+  const cached = utils_liveRoomContext.loadLiveRoomContext() || {};
+  const merged = utils_liveRoomContext.mergeLiveRoomContext(cached, { roomCode }, extraParams || {});
+  return utils_liveRoomContext.appendLiveRoomQuery("/pages/broadcast/entry", merged);
 }
 function returnToLiveRoom(roomCode = "", extraParams = {}) {
   const targetUrl = buildLiveRoomUrl(roomCode, extraParams);

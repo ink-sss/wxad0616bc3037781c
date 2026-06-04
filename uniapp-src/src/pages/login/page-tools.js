@@ -1,10 +1,11 @@
 import { login as weixinLogin, normalizePhoneNumberEvent } from '../../platform/weixin/index.js'
+import { bindMobileMiniProgram, loginMiniProgram } from '../../api/miniprogram-login.js'
 import { loginAndRedirectWithMiniProgramWechat } from '../../services/h5-auth.js'
 import {
   buildH5AuthContext,
   getCurrentPageUrl,
   hasH5Token,
-  redirectAfterH5Login,
+  redirectAfterNativeLogin,
   redirectAfterH5LoginSkipped,
   saveH5AuthContext,
   syncH5AuthSession,
@@ -53,42 +54,24 @@ export function pluginUserInfo(event = {}) {
 }
 
 export function loginWithWechatPluginProfile(vm, event = {}) {
-  if (!vm || typeof vm._post !== 'function') {
-    return Promise.reject(new Error('登录组件未初始化'))
+  const userInfo = pluginUserInfo(event)
+  const profile = {
+    nickName: userInfo.nickName || userInfo.nickname || '',
+    nickname: userInfo.nickname || userInfo.nickName || '',
+    avatarUrl: userInfo.avatarUrl || userInfo.avatar || '',
+    avatar: userInfo.avatar || userInfo.avatarUrl || '',
   }
 
-  const userInfo = pluginUserInfo(event)
-
-  return loginCode().then((code) => new Promise((resolve, reject) => {
-    const app = getApp()
-    let settled = false
-    vm._post(
-      'user.user/userLogin',
-      {
-        code,
-        shop_supplier_id: app?.globalData?.shop_supplier_id || uni.getStorageSync('shop_supplier_id') || '',
-        nickName: userInfo.nickName || userInfo.nickname || '',
-        avatarUrl: userInfo.avatarUrl || userInfo.avatar || '',
-      },
-      (res) => {
-        settled = true
-        const data = res?.data || {}
-        if (!data.token) {
-          reject(new Error('登录接口未返回 token'))
-          return
-        }
-        saveLoginSession(data)
-        resolve(data)
-      },
-      (error) => {
-        settled = true
-        reject(error)
-      },
-      () => {
-        if (!settled) reject(new Error('授权失败，请重新登录'))
-      },
-    )
-  }))
+  return loginCode().then((code) => loginMiniProgram({
+    code,
+    nickName: profile.nickName,
+    avatarUrl: profile.avatarUrl,
+  })).then((data = {}) => {
+    if (!data.token) throw new Error('登录接口未返回 token')
+    const session = { ...profile, ...data }
+    saveLoginSession(session)
+    return session
+  })
 }
 
 export function buildLoginContext(query = {}, fallback = '/pages/center/index') {
@@ -101,7 +84,7 @@ export function alreadyH5LoggedIn() {
 }
 
 export function redirectAfterExistingH5Login(context = {}) {
-  redirectAfterH5Login(context)
+  redirectAfterNativeLogin()
 }
 
 export function redirectAfterSkippedH5Login(context = {}) {
@@ -127,6 +110,18 @@ export function phonePayload(event) {
     iv: phone.iv,
     code: phone.code,
   }
+}
+
+export function bindMiniProgramMobile(userId, event) {
+  if (!userId) return Promise.reject(new Error('缺少用户 ID，请重新登录'))
+  const detail = phonePayload(event)
+
+  return loginCode().then((code) => bindMobileMiniProgram({
+    code,
+    user_id: userId,
+    encrypted_data: detail.encrypted_data,
+    iv: detail.iv,
+  }))
 }
 
 export function mobileValid(mobile) {

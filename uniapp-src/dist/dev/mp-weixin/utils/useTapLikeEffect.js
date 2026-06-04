@@ -1,11 +1,11 @@
 "use strict";
 const common_vendor = require("../common/vendor.js");
 const ZAN_IMAGES = [
-  "/static/zan/zan_1.png",
-  "/static/zan/zan_2.png",
-  "/static/zan/zan_3.png",
-  "/static/zan/zan_4.png",
-  "/static/zan/zan_5.png"
+  "https://man.lqjy.cc/static/zan/zan_1.png",
+  "https://man.lqjy.cc/static/zan/zan_2.png",
+  "https://man.lqjy.cc/static/zan/zan_3.png",
+  "https://man.lqjy.cc/static/zan/zan_4.png",
+  "https://man.lqjy.cc/static/zan/zan_5.png"
 ];
 const COMBO_THRESHOLD = 10;
 const COMBO_GAP = 600;

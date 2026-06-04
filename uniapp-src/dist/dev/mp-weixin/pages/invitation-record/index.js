@@ -1,10 +1,8 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
-const common_assets = require("../../common/assets.js");
 const api_live = require("../../api/live.js");
-const services_h5AuthContext = require("../../services/h5-auth-context.js");
 const utils_liveRoomContext = require("../../utils/live-room-context.js");
-const defaultAvatar = "/static/remote-icons/s-nuoyun-avatar-default.png";
+const defaultAvatar = "https://man.lqjy.cc/static/remote-icons/s-nuoyun-avatar-default.png";
 const pageSize = 10;
 const retryTimes = 3;
 const retryDelay = 500;
@@ -118,8 +116,6 @@ const _sfc_main = {
       loadRecords(true);
     }
     common_vendor.onLoad((options) => {
-      if (!services_h5AuthContext.ensureH5PageAuth(options))
-        return;
       const optionRoomId = Number((options == null ? void 0 : options.roomId) || 0);
       if (optionRoomId > 0) {
         roomId.value = optionRoomId;
@@ -134,11 +130,10 @@ const _sfc_main = {
         a: common_vendor.o(onSearch, "7c"),
         b: keyword.value,
         c: common_vendor.o(($event) => keyword.value = $event.detail.value, "11"),
-        d: common_assets._imports_0$2,
-        e: common_vendor.o(onSearch, "67"),
-        f: records.value.length
+        d: common_vendor.o(onSearch, "b5"),
+        e: records.value.length
       }, records.value.length ? {
-        g: common_vendor.f(records.value, (item, k0, i0) => {
+        f: common_vendor.f(records.value, (item, k0, i0) => {
           return common_vendor.e({
             a: item.avatar || defaultAvatar,
             b: common_vendor.t(item.nickname || "用户"),
@@ -150,14 +145,12 @@ const _sfc_main = {
             g: item.customerId
           });
         })
-      } : !loading.value ? {
-        i: common_assets._imports_1$1
-      } : {}, {
-        h: !loading.value,
-        j: loading.value
+      } : !loading.value ? {} : {}, {
+        g: !loading.value,
+        h: loading.value
       }, loading.value ? {} : finished.value && records.value.length ? {} : {}, {
-        k: finished.value && records.value.length,
-        l: common_vendor.o(loadMore, "80")
+        i: finished.value && records.value.length,
+        j: common_vendor.o(loadMore, "39")
       });
     };
   }

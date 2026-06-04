@@ -85,12 +85,12 @@ const emit = defineEmits(["close", "send-comment"]);
 const showRulePanel = ref(false);
 
 const image = {
-  lotteryClose: "/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-lottery-close-icon-0ad17f9d.png",
-  commentHeader: "/static/remote-icons/nyfs-oss-bcvdata-com-frontend-mobile-live-lottery-comment-header-abb7423b.png",
-  arrowLeft: "/static/remote-icons/nyfs-oss-bcvdata-com-frontend-mobile-commons-arrow-left-gray-f0a8573f.png",
-  productOne: "/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-sign-gift-5def5533.png",
-  productTwo: "/static/remote-icons/nyfs-oss-bcvdata-com-uploads-consolewechat-1681-rtf-20260430144045241662-91b0e034.jpg",
-  productThree: "/static/remote-icons/nyfs-oss-bcvdata-com-frontend-mobile-live-prize-bg-7c92e47e.png"
+  lotteryClose: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-lottery-close-icon-0ad17f9d.png",
+  commentHeader: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-frontend-mobile-live-lottery-comment-header-abb7423b.png",
+  arrowLeft: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-frontend-mobile-commons-arrow-left-gray-f0a8573f.png",
+  productOne: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-sign-gift-5def5533.png",
+  productTwo: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-uploads-consolewechat-1681-rtf-20260430144045241662-91b0e034.jpg",
+  productThree: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-frontend-mobile-live-prize-bg-7c92e47e.png"
 };
 
 const fallbackPrizeCards = [
@@ -231,7 +231,7 @@ function formatCommentPrizeNum(value, isLarge = false) {
   padding: 136rpx 0 64rpx;
   box-sizing: border-box;
   border-radius: 48rpx 48rpx 0 0;
-  background: url("/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-bg-new-commentprize-e3b6e811.png") no-repeat;
+  background: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-bg-new-commentprize-e3b6e811.png") no-repeat;
   background-size: cover;
 }
 
@@ -247,7 +247,7 @@ function formatCommentPrizeNum(value, isLarge = false) {
   z-index: 2;
   width: 88rpx;
   height: 88rpx;
-  background-image: url("/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-lottery-tips-icon-4c577585.png");
+  background-image: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-lottery-tips-icon-4c577585.png");
   background-repeat: no-repeat;
   background-position: center;
   background-size: 36rpx 36rpx;
@@ -314,7 +314,7 @@ function formatCommentPrizeNum(value, isLarge = false) {
   align-items: center;
   width: 686rpx;
   height: 240rpx;
-  background: url("/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-prize-one-bg-bf2bdee8.png") no-repeat;
+  background: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-prize-one-bg-bf2bdee8.png") no-repeat;
   background-size: 100% 100%;
 }
 
@@ -323,12 +323,12 @@ function formatCommentPrizeNum(value, isLarge = false) {
   width: 330rpx;
   height: 380rpx;
   margin-right: 26rpx;
-  background: url("/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-prize-two-bg-e8d7bdbd.png") no-repeat;
+  background: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-prize-two-bg-e8d7bdbd.png") no-repeat;
   background-size: 100% 100%;
 }
 
 .threeOrHandBg {
-  background: url("/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-prize-thre-bg-1a948604.png") no-repeat;
+  background: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-prize-thre-bg-1a948604.png") no-repeat;
   background-size: 100% 100%;
 }
 
@@ -355,15 +355,15 @@ function formatCommentPrizeNum(value, isLarge = false) {
 }
 
 .commentPrizeLiType0 {
-  background-image: url("/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-lottery-not-started-0db79bb6.png");
+  background-image: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-lottery-not-started-0db79bb6.png");
 }
 
 .commentPrizeLiType1 {
-  background-image: url("/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-lottery-drawn-e0e29558.png");
+  background-image: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-lottery-drawn-e0e29558.png");
 }
 
 .commentPrizeLiType2 {
-  background-image: url("/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-lottery-in-progress-7e8792fb.png");
+  background-image: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-default-lottery-in-progress-7e8792fb.png");
 }
 
 .prizeEndBg .commentPrizeLiImgBox .commentPrizeLiImg,

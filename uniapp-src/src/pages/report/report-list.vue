@@ -22,7 +22,6 @@
 
 <script>
 import { getComplaintList } from '../../api/complaint.js'
-import { ensureH5PageAuth } from '../../services/h5-auth-context.js'
 
 export default {
   data() {
@@ -36,7 +35,6 @@ export default {
     }
   },
   onLoad(query = {}) {
-    if (!ensureH5PageAuth(query)) return
     this.loadList(true)
   },
   methods: {

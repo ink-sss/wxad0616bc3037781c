@@ -3,15 +3,15 @@
  * 职责边界：只放直播入口私有的默认资源、观看数/时间格式和录播时间解析，不上提到全局 common。
  */
 export const ZAN_IMAGES = [
-  "/static/zan/zan_1.png",
-  "/static/zan/zan_2.png",
-  "/static/zan/zan_3.png",
-  "/static/zan/zan_4.png",
-  "/static/zan/zan_5.png",
+  "https://man.lqjy.cc/static/zan/zan_1.png",
+  "https://man.lqjy.cc/static/zan/zan_2.png",
+  "https://man.lqjy.cc/static/zan/zan_3.png",
+  "https://man.lqjy.cc/static/zan/zan_4.png",
+  "https://man.lqjy.cc/static/zan/zan_5.png",
 ];
 // 默认头像：与抽奖 composable 中 DEFAULT_AVATAR 保持一致，避免 figma mcp 占位 URL 无法访问导致头像不显示
 export const defaultAvatar =
-  "/static/remote-icons/nyfs-oss-bcvdata-com-uploads-consolewechat-1681-rtf-20260430144045241662-91b0e034.jpg";
+  "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-uploads-consolewechat-1681-rtf-20260430144045241662-91b0e034.jpg";
 
 // [调试] 格式化秒数为 mm:ss
 export function formatPlayTime(seconds) {

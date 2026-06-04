@@ -1,7 +1,7 @@
 "use strict";
 const common_vendor = require("../../../common/vendor.js");
-const common_assets = require("../../../common/assets.js");
 const pages_broadcast_utils_entryFormat = require("../utils/entry-format.js");
+const pages_broadcast_utils_livePlayerStatus = require("../utils/live-player-status.js");
 const utils_liveRoute = require("../../../utils/live-route.js");
 if (!Array) {
   const _easycom_wd_overlay2 = common_vendor.resolveComponent("wd-overlay");
@@ -47,34 +47,6 @@ const _sfc_main = {
   },
   setup(__props, { expose: __expose }) {
     const props = __props;
-    const LIVE_PLAYER_READY_CODES = [2003, 2004, 2007, 2008];
-    const LIVE_PLAYER_NET_ACTIVITY_FIELDS = [
-      ["videoBitrate", "videoKBitrate", "videoBitrateKbps", "VIDEO_BITRATE", "VIDEO_KBITRATE", "VIDEO_BITRATE_KBPS", "video_bitrate", "video_kbitrate", "video_bitrate_kbps"],
-      ["audioBitrate", "audioKBitrate", "audioBitrateKbps", "AUDIO_BITRATE", "AUDIO_KBITRATE", "AUDIO_BITRATE_KBPS", "audio_bitrate", "audio_kbitrate", "audio_bitrate_kbps"],
-      ["videoFPS", "fps", "VIDEO_FPS", "FPS", "video_fps"],
-      ["netSpeed", "netJitter", "NET_SPEED", "NET_JITTER", "net_speed", "net_jitter"],
-      ["videoWidth", "width", "VIDEO_WIDTH", "video_width"],
-      ["videoHeight", "height", "VIDEO_HEIGHT", "video_height"]
-    ];
-    function firstNumericField(source, fields) {
-      if (!source)
-        return 0;
-      for (const field of fields) {
-        const raw = source[field];
-        if (raw === void 0 || raw === null || raw === "")
-          continue;
-        const value = Number(raw);
-        if (Number.isFinite(value))
-          return value;
-        const parsed = Number.parseFloat(raw);
-        if (Number.isFinite(parsed))
-          return parsed;
-      }
-      return 0;
-    }
-    function hasLivePlayerNetActivity(info) {
-      return LIVE_PLAYER_NET_ACTIVITY_FIELDS.some((fields) => firstNumericField(info, fields) > 0);
-    }
     const {
       mode,
       accessDenied,
@@ -84,6 +56,7 @@ const _sfc_main = {
       anchorAvatar,
       likeCount,
       isWaitingSchedule,
+      broadcastNavHeight,
       warmUpVideoUrl,
       roomSetting,
       viewerCountAnimating,
@@ -232,6 +205,16 @@ const _sfc_main = {
     const renderAddressFormPopup = useDelayedRender(showAddressFormPopup);
     const renderLiveReportPopup = useDelayedRender(showLiveReportPopup);
     const renderSignPopup = useDelayedRender(showSignPopup);
+    const rootStyle = common_vendor.computed(() => {
+      const style = {
+        "--broadcast-nav-height": broadcastNavHeight.value || "0px"
+      };
+      if (isWechatH5.value && isIOS.value) {
+        style.opacity = 1;
+        style.transition = "opacity 0.3s";
+      }
+      return style;
+    });
     function parseStageStartTs(value) {
       if (!value)
         return 0;
@@ -273,6 +256,19 @@ const _sfc_main = {
       return "live-status--pending";
     });
     const useLiveVisualStyle = common_vendor.computed(() => isLiveVisualMode.value);
+    const allowWarmupInteraction = common_vendor.computed(
+      () => roomGroupType.value === 1 && isWaitingSchedule.value && !!warmUpVideoUrl.value
+    );
+    const useH5ReplayTopStyle = common_vendor.computed(() => isReplay.value && !useLiveVisualStyle.value);
+    const showTopViewerTools = common_vendor.computed(
+      () => useH5ReplayTopStyle.value || !isWaitingSchedule.value || allowWarmupInteraction.value
+    );
+    const topViewerIcon = common_vendor.computed(
+      () => useH5ReplayTopStyle.value ? "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-fire-6f37634f.png" : "https://man.lqjy.cc/static/icons/eye.png"
+    );
+    const topReportIcon = common_vendor.computed(
+      () => useH5ReplayTopStyle.value ? "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-complaint-text-52b0a134.png" : "https://man.lqjy.cc/static/icons/tousu2.png"
+    );
     const shouldUseLivePlayer = common_vendor.computed(() => {
       const url = String(displayVideoUrl.value || "");
       if (!url || isReplay.value)
@@ -568,7 +564,7 @@ const _sfc_main = {
     function handleLivePlayerStateChange(event) {
       var _a;
       const code = Number(((_a = event == null ? void 0 : event.detail) == null ? void 0 : _a.code) || 0);
-      if (LIVE_PLAYER_READY_CODES.includes(code)) {
+      if (pages_broadcast_utils_livePlayerStatus.LIVE_PLAYER_READY_CODES.includes(code)) {
         setIsPlaying(true);
         commitVideoFrameReady("live-player-state");
         markPlaybackReady == null ? void 0 : markPlaybackReady("live-player-state");
@@ -585,7 +581,7 @@ const _sfc_main = {
     function handleLivePlayerNetStatus(event) {
       var _a;
       const info = ((_a = event == null ? void 0 : event.detail) == null ? void 0 : _a.info) || (event == null ? void 0 : event.detail) || {};
-      if (hasLivePlayerNetActivity(info)) {
+      if (pages_broadcast_utils_livePlayerStatus.hasLivePlayerNetActivity(info)) {
         setIsPlaying(true);
         commitVideoFrameReady("live-player-netstatus");
         if (typeof onVideoPlay === "function") {
@@ -687,38 +683,34 @@ const _sfc_main = {
         a: common_vendor.unref(mode) === "portrait" && !common_vendor.unref(accessDenied)
       }, common_vendor.unref(mode) === "portrait" && !common_vendor.unref(accessDenied) ? common_vendor.e({
         b: common_vendor.unref(showReplayFirstVideoLoading)
-      }, common_vendor.unref(showReplayFirstVideoLoading) ? {
-        c: common_assets._imports_0$13
-      } : {}, {
-        d: common_vendor.unref(anchorAvatar),
-        e: common_vendor.t(common_vendor.unref(anchorName)),
-        f: useLiveVisualStyle.value
-      }, useLiveVisualStyle.value ? {
-        g: common_assets._imports_1$5
-      } : {}, {
-        h: common_vendor.t(anchorSubText.value),
-        i: !common_vendor.unref(anchorName) ? 1 : "",
-        j: common_vendor.unref(roomGroupType) !== 1 && common_vendor.unref(roomSetting).showStatus !== 0
+      }, common_vendor.unref(showReplayFirstVideoLoading) ? {} : {}, {
+        c: common_vendor.unref(anchorAvatar),
+        d: common_vendor.t(common_vendor.unref(anchorName)),
+        e: common_vendor.t(anchorSubText.value),
+        f: !common_vendor.unref(anchorName) ? 1 : "",
+        g: common_vendor.unref(roomGroupType) !== 1 && common_vendor.unref(roomSetting).showStatus !== 0
       }, common_vendor.unref(roomGroupType) !== 1 && common_vendor.unref(roomSetting).showStatus !== 0 ? {
-        k: common_vendor.t(liveStatusLabel.value),
-        l: common_vendor.n(liveStatusClass.value)
+        h: common_vendor.t(liveStatusLabel.value),
+        i: common_vendor.n(liveStatusClass.value)
       } : {}, {
-        m: !(common_vendor.unref(isWaitingSchedule) && common_vendor.unref(warmUpVideoUrl))
-      }, !(common_vendor.unref(isWaitingSchedule) && common_vendor.unref(warmUpVideoUrl)) ? common_vendor.e({
-        n: common_vendor.unref(roomSetting).showViewerData !== 0
+        j: showTopViewerTools.value
+      }, showTopViewerTools.value ? common_vendor.e({
+        k: common_vendor.unref(roomSetting).showViewerData !== 0
       }, common_vendor.unref(roomSetting).showViewerData !== 0 ? {
-        o: common_assets._imports_2$3,
-        p: common_vendor.t(common_vendor.unref(displayViewerCount)),
-        q: common_vendor.unref(viewerCountAnimating) ? 1 : ""
+        l: topViewerIcon.value,
+        m: common_vendor.t(common_vendor.unref(displayViewerCount)),
+        n: common_vendor.unref(viewerCountAnimating) ? 1 : ""
       } : {}, {
-        r: common_assets._imports_3$1,
-        s: common_vendor.o((...args) => common_vendor.unref(goReport) && common_vendor.unref(goReport)(...args), "90")
+        o: topReportIcon.value,
+        p: !useH5ReplayTopStyle.value
+      }, !useH5ReplayTopStyle.value ? {} : {}, {
+        q: common_vendor.o((...args) => common_vendor.unref(goReport) && common_vendor.unref(goReport)(...args), "04")
       }) : {}, {
-        t: !(common_vendor.unref(isWaitingSchedule) && common_vendor.unref(warmUpVideoUrl))
+        r: !(common_vendor.unref(isWaitingSchedule) && common_vendor.unref(warmUpVideoUrl))
       }, !(common_vendor.unref(isWaitingSchedule) && common_vendor.unref(warmUpVideoUrl)) ? {
-        v: common_vendor.o(common_vendor.unref(openCommentPrizeRuleModal), "cb"),
-        w: common_vendor.o(common_vendor.unref(openWatchRewardPanel), "79"),
-        x: common_vendor.p({
+        s: common_vendor.o(common_vendor.unref(openCommentPrizeRuleModal), "25"),
+        t: common_vendor.o(common_vendor.unref(openWatchRewardPanel), "1a"),
+        v: common_vendor.p({
           ["comment-lottery-visible"]: common_vendor.unref(commentLotteryEntryVisible),
           keyword: common_vendor.unref(commentLotteryEntryKeyword),
           ["bubble-visible"]: common_vendor.unref(commentLotteryBubbleVisible),
@@ -726,57 +718,57 @@ const _sfc_main = {
           ["watch-reward-label"]: common_vendor.unref(watchRewardEntryLabel)
         })
       } : {}, {
-        y: shouldUseLivePlayer.value && common_vendor.unref(displayVideoUrl)
+        w: shouldUseLivePlayer.value && common_vendor.unref(displayVideoUrl)
       }, shouldUseLivePlayer.value && common_vendor.unref(displayVideoUrl) ? {
-        z: "live-player-" + common_vendor.unref(videoRenderKey),
-        A: common_vendor.unref(displayVideoUrl),
-        B: common_vendor.unref(isMuted),
-        C: common_vendor.unref(isMuted) ? "speaker" : "speaker",
-        D: common_vendor.unref(mode) === "portrait" ? "vertical" : "horizontal",
-        E: common_vendor.unref(videoPoster) ? "url(" + common_vendor.unref(videoPoster) + ")" : "none",
-        F: common_vendor.o(handleLivePlayerStateChange, "11"),
-        G: common_vendor.o(handleLivePlayerNetStatus, "3a"),
-        H: common_vendor.o(handleLivePlayerError, "ff"),
-        I: common_vendor.o((...args) => common_vendor.unref(onVideoTap) && common_vendor.unref(onVideoTap)(...args), "fb")
+        x: "live-player-" + common_vendor.unref(videoRenderKey),
+        y: common_vendor.unref(displayVideoUrl),
+        z: common_vendor.unref(isMuted),
+        A: common_vendor.unref(isMuted) ? "speaker" : "speaker",
+        B: common_vendor.unref(mode) === "portrait" ? "vertical" : "horizontal",
+        C: common_vendor.unref(videoPoster) ? "url(" + common_vendor.unref(videoPoster) + ")" : "none",
+        D: common_vendor.o(handleLivePlayerStateChange, "b1"),
+        E: common_vendor.o(handleLivePlayerNetStatus, "12"),
+        F: common_vendor.o(handleLivePlayerError, "d1"),
+        G: common_vendor.o((...args) => common_vendor.unref(onVideoTap) && common_vendor.unref(onVideoTap)(...args), "72")
       } : {}, {
-        J: !shouldUseLivePlayer.value && common_vendor.unref(displayVideoUrl)
+        H: !shouldUseLivePlayer.value && common_vendor.unref(displayVideoUrl)
       }, !shouldUseLivePlayer.value && common_vendor.unref(displayVideoUrl) ? {
-        K: common_vendor.unref(videoRenderKey),
-        L: common_vendor.unref(displayVideoUrl),
-        M: common_vendor.unref(isWaitingSchedule) && !!common_vendor.unref(warmUpVideoUrl),
-        N: common_vendor.unref(videoPoster) ? "url(" + common_vendor.unref(videoPoster) + ")" : "none",
-        O: common_vendor.unref(isMuted),
-        P: common_vendor.unref(videoPoster),
-        Q: common_vendor.o(handleVideoPlay, "bd"),
-        R: common_vendor.o(markVideoFrameReady, "cc"),
-        S: common_vendor.o(markVideoFrameReady, "e6"),
-        T: common_vendor.o(markVideoFrameReady, "02"),
-        U: common_vendor.o(handleVideoPause, "2c"),
-        V: common_vendor.o(handleVideoTimeUpdate, "b4"),
-        W: common_vendor.o(handleVideoEnded, "8d"),
-        X: common_vendor.o(($event) => handleVideoError($event, common_vendor.unref(displayVideoUrl)), "2d"),
-        Y: common_vendor.o((...args) => common_vendor.unref(onVideoTap) && common_vendor.unref(onVideoTap)(...args), "da")
+        I: common_vendor.unref(videoRenderKey),
+        J: common_vendor.unref(displayVideoUrl),
+        K: common_vendor.unref(isWaitingSchedule) && !!common_vendor.unref(warmUpVideoUrl),
+        L: common_vendor.unref(videoPoster) ? "url(" + common_vendor.unref(videoPoster) + ")" : "none",
+        M: common_vendor.unref(isMuted),
+        N: common_vendor.unref(videoPoster),
+        O: common_vendor.o(handleVideoPlay, "82"),
+        P: common_vendor.o(markVideoFrameReady, "19"),
+        Q: common_vendor.o(markVideoFrameReady, "63"),
+        R: common_vendor.o(markVideoFrameReady, "a3"),
+        S: common_vendor.o(handleVideoPause, "77"),
+        T: common_vendor.o(handleVideoTimeUpdate, "99"),
+        U: common_vendor.o(handleVideoEnded, "0c"),
+        V: common_vendor.o(($event) => handleVideoError($event, common_vendor.unref(displayVideoUrl)), "4b"),
+        W: common_vendor.o((...args) => common_vendor.unref(onVideoTap) && common_vendor.unref(onVideoTap)(...args), "88")
       } : {}, {
-        Z: showManualPlayButton.value
+        X: showManualPlayButton.value
       }, showManualPlayButton.value ? {
-        aa: common_vendor.o((...args) => common_vendor.unref(manualPlayVideo) && common_vendor.unref(manualPlayVideo)(...args), "76")
+        Y: common_vendor.o((...args) => common_vendor.unref(manualPlayVideo) && common_vendor.unref(manualPlayVideo)(...args), "a5")
       } : {}, {
-        ab: shouldRenderLivePoster.value
+        Z: shouldRenderLivePoster.value
       }, shouldRenderLivePoster.value ? {
-        ac: common_vendor.unref(liveCover),
-        ad: !showLivePoster.value ? 1 : ""
+        aa: common_vendor.unref(liveCover),
+        ab: !showLivePoster.value ? 1 : ""
       } : {}, {
-        ae: shouldRenderReplayPoster.value
+        ac: shouldRenderReplayPoster.value
       }, shouldRenderReplayPoster.value ? {
-        af: replayCoverPoster.value,
-        ag: replayPosterHidden.value ? 1 : ""
+        ad: replayCoverPoster.value,
+        ae: replayPosterHidden.value ? 1 : ""
       } : {}, {
-        ah: common_vendor.unref(playbackErrorVisible)
+        af: common_vendor.unref(playbackErrorVisible)
       }, common_vendor.unref(playbackErrorVisible) ? {
-        ai: common_vendor.t(common_vendor.unref(playbackErrorText) || "播放失败，请重试"),
-        aj: common_vendor.o((...args) => common_vendor.unref(retryPlayback) && common_vendor.unref(retryPlayback)(...args), "ca")
+        ag: common_vendor.t(common_vendor.unref(playbackErrorText) || "播放失败，请重试"),
+        ah: common_vendor.o((...args) => common_vendor.unref(retryPlayback) && common_vendor.unref(retryPlayback)(...args), "32")
       } : {}, {
-        ak: common_vendor.f(common_vendor.unref(tapEffects), (effect, k0, i0) => {
+        ai: common_vendor.f(common_vendor.unref(tapEffects), (effect, k0, i0) => {
           return {
             a: effect.slotId + "-" + effect.runId,
             b: effect.img,
@@ -785,26 +777,26 @@ const _sfc_main = {
             e: common_vendor.o(($event) => common_vendor.unref(finishTapEffect)(effect.slotId, effect.runId), effect.slotId + "-" + effect.runId)
           };
         }),
-        al: common_vendor.unref(comboInfo).visible
+        aj: common_vendor.unref(comboInfo).visible
       }, common_vendor.unref(comboInfo).visible ? {
-        am: common_vendor.t(common_vendor.unref(comboInfo).count),
-        an: common_vendor.unref(comboInfo).key,
-        ao: common_vendor.unref(comboInfo).x + "px",
-        ap: common_vendor.unref(comboInfo).y + "px"
+        ak: common_vendor.t(common_vendor.unref(comboInfo).count),
+        al: common_vendor.unref(comboInfo).key,
+        am: common_vendor.unref(comboInfo).x + "px",
+        an: common_vendor.unref(comboInfo).y + "px"
       } : {}, {
-        aq: common_vendor.p({
+        ao: common_vendor.p({
           ["room-setting"]: common_vendor.unref(roomSetting),
           variant: "portrait"
         }),
-        ar: common_vendor.unref(shouldShowComments) && common_vendor.unref(pinnedMessage)
+        ap: common_vendor.unref(shouldShowComments) && common_vendor.unref(pinnedMessage)
       }, common_vendor.unref(shouldShowComments) && common_vendor.unref(pinnedMessage) ? {
-        as: common_vendor.t(common_vendor.unref(pinnedMessage).nick),
-        at: common_vendor.t(common_vendor.unref(pinnedMessage).content),
-        av: common_vendor.s(pinnedBarStyle.value)
+        aq: common_vendor.t(common_vendor.unref(pinnedMessage).nick),
+        ar: common_vendor.t(common_vendor.unref(pinnedMessage).content),
+        as: common_vendor.s(pinnedBarStyle.value)
       } : {}, {
-        aw: common_vendor.unref(shouldShowComments)
+        at: common_vendor.unref(shouldShowComments)
       }, common_vendor.unref(shouldShowComments) ? {
-        ax: common_vendor.f(common_vendor.unref(visibleMessages), (msg, k0, i0) => {
+        av: common_vendor.f(common_vendor.unref(visibleMessages), (msg, k0, i0) => {
           return common_vendor.e({
             a: msg.type === "system"
           }, msg.type === "system" ? {
@@ -830,62 +822,61 @@ const _sfc_main = {
             p: common_vendor.n(msg.type === "enter" || msg.type === "leave" ? "enter-bubble" : "")
           });
         }),
-        ay: isChatAreaScrolled.value ? 1 : "",
-        az: !common_vendor.unref(inputFocused),
-        aA: common_vendor.s(chatAreaStyle.value),
-        aB: common_vendor.unref(scrollToId),
-        aC: common_vendor.unref(commentScrollWithAnimation),
-        aD: common_vendor.o(handleChatAreaScroll, "63")
+        aw: isChatAreaScrolled.value ? 1 : "",
+        ax: !common_vendor.unref(inputFocused),
+        ay: common_vendor.s(chatAreaStyle.value),
+        az: common_vendor.unref(scrollToId),
+        aA: common_vendor.unref(commentScrollWithAnimation),
+        aB: common_vendor.o(handleChatAreaScroll, "4b")
       } : {}, {
-        aE: common_vendor.unref(enterNotice).visible && !common_vendor.unref(shouldShowEntryOverlay)
+        aC: common_vendor.unref(enterNotice).visible && !common_vendor.unref(shouldShowEntryOverlay)
       }, common_vendor.unref(enterNotice).visible && !common_vendor.unref(shouldShowEntryOverlay) ? common_vendor.e({
-        aF: common_vendor.unref(enterNotice).noticeType === "leave"
+        aD: common_vendor.unref(enterNotice).noticeType === "leave"
       }, common_vendor.unref(enterNotice).noticeType === "leave" ? {
-        aG: common_vendor.t(common_vendor.unref(enterNotice).nick)
+        aE: common_vendor.t(common_vendor.unref(enterNotice).nick)
       } : {
-        aH: common_vendor.t(common_vendor.unref(enterNotice).nick)
+        aF: common_vendor.t(common_vendor.unref(enterNotice).nick)
       }, {
-        aI: common_vendor.unref(enterNotice).key,
-        aJ: common_vendor.unref(enterNotice).leaving ? 1 : "",
-        aK: common_vendor.s(enterNoticeStyle.value)
+        aG: common_vendor.unref(enterNotice).key,
+        aH: common_vendor.unref(enterNotice).leaving ? 1 : "",
+        aI: common_vendor.s(enterNoticeStyle.value)
       }) : {}, {
-        aL: common_vendor.unref(buyingNotice).visible
+        aJ: common_vendor.unref(buyingNotice).visible
       }, common_vendor.unref(buyingNotice).visible ? common_vendor.e({
-        aM: common_assets._imports_0$12,
-        aN: common_vendor.t(common_vendor.unref(buyingNotice).nick),
-        aO: common_vendor.unref(buyingNotice).count > 1
+        aK: common_vendor.t(common_vendor.unref(buyingNotice).nick),
+        aL: common_vendor.unref(buyingNotice).count > 1
       }, common_vendor.unref(buyingNotice).count > 1 ? {
-        aP: common_vendor.t(common_vendor.unref(buyingNotice).count)
+        aM: common_vendor.t(common_vendor.unref(buyingNotice).count)
       } : {}, {
-        aQ: common_vendor.t(common_vendor.unref(buyingNotice).noticeText || "正在去购买"),
-        aR: common_vendor.unref(buyingNotice).key,
-        aS: common_vendor.unref(buyingNotice).leaving ? 1 : "",
-        aT: common_vendor.s(buyingNoticeStyle.value)
+        aN: common_vendor.t(common_vendor.unref(buyingNotice).noticeText || "正在去购买"),
+        aO: common_vendor.unref(buyingNotice).key,
+        aP: common_vendor.unref(buyingNotice).leaving ? 1 : "",
+        aQ: common_vendor.s(buyingNoticeStyle.value)
       }) : {}, {
-        aU: common_vendor.unref(goShoppingNotice).visible
+        aR: common_vendor.unref(goShoppingNotice).visible
       }, common_vendor.unref(goShoppingNotice).visible ? common_vendor.e({
-        aV: common_vendor.unref(goShoppingNotice).productImage
+        aS: common_vendor.unref(goShoppingNotice).productImage
       }, common_vendor.unref(goShoppingNotice).productImage ? {
-        aW: common_vendor.unref(goShoppingNotice).productImage
+        aT: common_vendor.unref(goShoppingNotice).productImage
       } : {}, {
-        aX: common_vendor.t(common_vendor.unref(goShoppingNotice).nick),
-        aY: common_vendor.t(common_vendor.unref(goShoppingNotice).count > 1 ? `等${common_vendor.unref(goShoppingNotice).count}人在购买` : common_vendor.unref(goShoppingNotice).noticeText || "正在去购买"),
-        aZ: common_vendor.unref(goShoppingNotice).productName
+        aU: common_vendor.t(common_vendor.unref(goShoppingNotice).nick),
+        aV: common_vendor.t(common_vendor.unref(goShoppingNotice).count > 1 ? `等${common_vendor.unref(goShoppingNotice).count}人在购买` : common_vendor.unref(goShoppingNotice).noticeText || "正在去购买"),
+        aW: common_vendor.unref(goShoppingNotice).productName
       }, common_vendor.unref(goShoppingNotice).productName ? {
-        ba: common_vendor.t(common_vendor.unref(goShoppingNotice).productName)
+        aX: common_vendor.t(common_vendor.unref(goShoppingNotice).productName)
       } : {}, {
-        bb: common_vendor.o(openGoShoppingNoticeProduct, "c4"),
-        bc: common_vendor.unref(goShoppingNotice).key,
-        bd: common_vendor.unref(goShoppingNotice).leaving ? 1 : "",
-        be: common_vendor.s(goShoppingNoticeStyle.value)
+        aY: common_vendor.o(openGoShoppingNoticeProduct, "4a"),
+        aZ: common_vendor.unref(goShoppingNotice).key,
+        ba: common_vendor.unref(goShoppingNotice).leaving ? 1 : "",
+        bb: common_vendor.s(goShoppingNoticeStyle.value)
       }) : {}, {
-        bf: common_vendor.o(($event) => common_vendor.unref(setShowProduct)($event), "3b"),
-        bg: common_vendor.o(($event) => common_vendor.unref(setShowProductList)($event), "03"),
-        bh: common_vendor.o(common_vendor.unref(onProductCardChange), "61"),
-        bi: common_vendor.o(common_vendor.unref(onProductBuy), "f9"),
-        bj: common_vendor.o(common_vendor.unref(onProductDetail), "54"),
-        bk: common_vendor.o(($event) => common_vendor.unref(loadProductList)(), "51"),
-        bl: common_vendor.p({
+        bc: common_vendor.o(($event) => common_vendor.unref(setShowProduct)($event), "f8"),
+        bd: common_vendor.o(($event) => common_vendor.unref(setShowProductList)($event), "2a"),
+        be: common_vendor.o(common_vendor.unref(onProductCardChange), "63"),
+        bf: common_vendor.o(common_vendor.unref(onProductBuy), "fc"),
+        bg: common_vendor.o(common_vendor.unref(onProductDetail), "f9"),
+        bh: common_vendor.o(($event) => common_vendor.unref(loadProductList)(), "bd"),
+        bi: common_vendor.p({
           mode: "portrait",
           ["show-product"]: common_vendor.unref(showProduct),
           ["show-product-list"]: common_vendor.unref(showProductList),
@@ -899,26 +890,26 @@ const _sfc_main = {
           ["success-notice"]: common_vendor.unref(productListSuccessNotice),
           ["show-hot-sale"]: Number(common_vendor.unref(roomSetting).showHotSale ?? 1) === 1
         }),
-        bm: common_vendor.unref(muteTipVisible)
+        bj: common_vendor.unref(muteTipVisible)
       }, common_vendor.unref(muteTipVisible) ? {
-        bn: common_vendor.t(common_vendor.unref(userBlocked) ? "您已被拉黑，无法参与互动" : common_vendor.unref(muteRemainText) ? `您已被禁言，剩余${common_vendor.unref(muteRemainText)}` : "您已被禁言")
+        bk: common_vendor.t(common_vendor.unref(userBlocked) ? "您已被拉黑，无法参与互动" : common_vendor.unref(muteRemainText) ? `您已被禁言，剩余${common_vendor.unref(muteRemainText)}` : "您已被禁言")
       } : {}, {
-        bo: common_vendor.sr(portraitInputRef, "49f93bbb-3", {
+        bl: common_vendor.sr(portraitInputRef, "49f93bbb-3", {
           "k": "portraitInputRef"
         }),
-        bp: common_vendor.o(common_vendor.unref(focusInput), "6e"),
-        bq: common_vendor.o(common_vendor.unref(setInputText), "55"),
-        br: common_vendor.o(common_vendor.unref(onInputFocus), "eb"),
-        bs: common_vendor.o(common_vendor.unref(handleSendClick), "0e"),
-        bt: common_vendor.o(common_vendor.unref(onInputBlur), "2e"),
-        bv: common_vendor.o(common_vendor.unref(handleSendClick), "b0"),
-        bw: common_vendor.o(common_vendor.unref(toggleCenter), "7a"),
-        bx: common_vendor.o(common_vendor.unref(toggleProduct), "d9"),
-        by: common_vendor.o(common_vendor.unref(doLike), "46"),
-        bz: common_vendor.o(common_vendor.unref(finishHeartAnimation), "34"),
-        bA: common_vendor.o(handleQuickReply, "a5"),
-        bB: common_vendor.o(($event) => common_vendor.unref(setShowShare)(true), "48"),
-        bC: common_vendor.p({
+        bm: common_vendor.o(common_vendor.unref(focusInput), "bd"),
+        bn: common_vendor.o(common_vendor.unref(setInputText), "76"),
+        bo: common_vendor.o(common_vendor.unref(onInputFocus), "76"),
+        bp: common_vendor.o(common_vendor.unref(handleSendClick), "3c"),
+        bq: common_vendor.o(common_vendor.unref(onInputBlur), "04"),
+        br: common_vendor.o(common_vendor.unref(handleSendClick), "8f"),
+        bs: common_vendor.o(common_vendor.unref(toggleCenter), "25"),
+        bt: common_vendor.o(common_vendor.unref(toggleProduct), "5f"),
+        bv: common_vendor.o(common_vendor.unref(doLike), "ca"),
+        bw: common_vendor.o(common_vendor.unref(finishHeartAnimation), "63"),
+        bx: common_vendor.o(handleQuickReply, "ae"),
+        by: common_vendor.o(($event) => common_vendor.unref(setShowShare)(true), "05"),
+        bz: common_vendor.p({
           ["model-value"]: common_vendor.unref(inputText),
           variant: "portrait",
           show: !common_vendor.unref(isWaitingSchedule),
@@ -934,11 +925,11 @@ const _sfc_main = {
           ["is-distributor"]: common_vendor.unref(isDistributor),
           ["distributor-status"]: common_vendor.unref(distributorStatus)
         }),
-        bD: common_vendor.unref(renderSharePopup)
+        bA: common_vendor.unref(renderSharePopup)
       }, common_vendor.unref(renderSharePopup) ? {
-        bE: common_vendor.o(($event) => common_vendor.unref(setShowShare)(false), "67"),
-        bF: common_vendor.o(common_vendor.unref(onShareAction), "e2"),
-        bG: common_vendor.p({
+        bB: common_vendor.o(($event) => common_vendor.unref(setShowShare)(false), "7f"),
+        bC: common_vendor.o(common_vendor.unref(onShareAction), "e2"),
+        bD: common_vendor.p({
           visible: common_vendor.unref(showShare),
           ["room-id"]: common_vendor.unref(liveId),
           ["room-code"]: common_vendor.unref(roomCode),
@@ -958,11 +949,11 @@ const _sfc_main = {
           ["distributor-status"]: common_vendor.unref(distributorStatus)
         })
       } : {}, {
-        bH: common_vendor.unref(renderCenterPopup)
+        bE: common_vendor.unref(renderCenterPopup)
       }, common_vendor.unref(renderCenterPopup) ? {
-        bI: common_vendor.o(($event) => common_vendor.unref(setShowCenterPopup)(false), "2b"),
-        bJ: common_vendor.o(common_vendor.unref(onCenterAction), "7d"),
-        bK: common_vendor.p({
+        bF: common_vendor.o(($event) => common_vendor.unref(setShowCenterPopup)(false), "42"),
+        bG: common_vendor.o(common_vendor.unref(onCenterAction), "cc"),
+        bH: common_vendor.p({
           visible: common_vendor.unref(showCenterPopup),
           name: common_vendor.unref(centerPopupName),
           avatar: common_vendor.unref(centerPopupAvatar),
@@ -972,16 +963,16 @@ const _sfc_main = {
           ["enable-share"]: common_vendor.unref(roomSetting).enableShare
         })
       } : {}, {
-        bL: common_vendor.unref(renderBuyPopup)
+        bI: common_vendor.unref(renderBuyPopup)
       }, common_vendor.unref(renderBuyPopup) ? {
-        bM: common_vendor.o(($event) => common_vendor.unref(setShowBuyPopup)(false), "c3"),
-        bN: common_vendor.o(common_vendor.unref(openBuyAddressPopup), "d5"),
-        bO: common_vendor.o(($event) => common_vendor.unref(setBuyRemark)($event), "85"),
-        bP: common_vendor.o(common_vendor.unref(onBuyQuantityChange), "1a"),
-        bQ: common_vendor.o(common_vendor.unref(onBuySkuChange), "0e"),
-        bR: common_vendor.o(common_vendor.unref(onBuyCouponSelect), "18"),
-        bS: common_vendor.o(common_vendor.unref(onBuyConfirm), "a8"),
-        bT: common_vendor.p({
+        bJ: common_vendor.o(($event) => common_vendor.unref(setShowBuyPopup)(false), "ae"),
+        bK: common_vendor.o(common_vendor.unref(openBuyAddressPopup), "40"),
+        bL: common_vendor.o(($event) => common_vendor.unref(setBuyRemark)($event), "2b"),
+        bM: common_vendor.o(common_vendor.unref(onBuyQuantityChange), "b7"),
+        bN: common_vendor.o(common_vendor.unref(onBuySkuChange), "3c"),
+        bO: common_vendor.o(common_vendor.unref(onBuyCouponSelect), "bb"),
+        bP: common_vendor.o(common_vendor.unref(onBuyConfirm), "b3"),
+        bQ: common_vendor.p({
           visible: common_vendor.unref(showBuyPopup),
           ["z-index"]: BUY_POPUP_Z_INDEX,
           ["coupon-z-index"]: BUY_POPUP_Z_INDEX + 1,
@@ -1001,10 +992,10 @@ const _sfc_main = {
           ["coupon-loading"]: common_vendor.unref(couponLoading)
         })
       } : {}, {
-        bU: common_vendor.unref(renderLiveReportPopup)
+        bR: common_vendor.unref(renderLiveReportPopup)
       }, common_vendor.unref(renderLiveReportPopup) ? {
-        bV: common_vendor.o(common_vendor.unref(setShowLiveReportPopup), "53"),
-        bW: common_vendor.p({
+        bS: common_vendor.o(common_vendor.unref(setShowLiveReportPopup), "e6"),
+        bT: common_vendor.p({
           visible: common_vendor.unref(showLiveReportPopup),
           ["live-id"]: common_vendor.unref(liveId),
           ["room-code"]: common_vendor.unref(roomCode),
@@ -1019,15 +1010,15 @@ const _sfc_main = {
           ["from-path"]: common_vendor.unref(broadcastReturnPath)
         })
       } : {}, {
-        bX: common_vendor.unref(renderAddressPopup)
+        bU: common_vendor.unref(renderAddressPopup)
       }, common_vendor.unref(renderAddressPopup) ? {
-        bY: common_vendor.o(common_vendor.unref(onSelectBuyAddress), "41"),
-        bZ: common_vendor.o(common_vendor.unref(onAddBuyAddress), "20"),
-        ca: common_vendor.o(common_vendor.unref(onEditBuyAddress), "7a"),
-        cb: common_vendor.o(common_vendor.unref(onAddBuyAddress), "fa"),
-        cc: common_vendor.o(common_vendor.unref(onDeleteBuyAddress), "1f"),
-        cd: common_vendor.o(common_vendor.unref(onImportWxAddress), "b2"),
-        ce: common_vendor.p({
+        bV: common_vendor.o(common_vendor.unref(onSelectBuyAddress), "dd"),
+        bW: common_vendor.o(common_vendor.unref(onAddBuyAddress), "a0"),
+        bX: common_vendor.o(common_vendor.unref(onEditBuyAddress), "18"),
+        bY: common_vendor.o(common_vendor.unref(onAddBuyAddress), "14"),
+        bZ: common_vendor.o(common_vendor.unref(onDeleteBuyAddress), "00"),
+        ca: common_vendor.o(common_vendor.unref(onImportWxAddress), "3a"),
+        cb: common_vendor.p({
           list: common_vendor.unref(addressList),
           ["selected-id"]: common_vendor.unref(selectedAddressId),
           title: "地址管理",
@@ -1035,8 +1026,8 @@ const _sfc_main = {
           ["show-default-row"]: false,
           ["button-disabled"]: false
         }),
-        cf: common_vendor.o(($event) => common_vendor.unref(setShowAddressPopup)(false), "d1"),
-        cg: common_vendor.p({
+        cc: common_vendor.o(($event) => common_vendor.unref(setShowAddressPopup)(false), "31"),
+        cd: common_vendor.p({
           visible: common_vendor.unref(showAddressPopup),
           height: common_vendor.unref(addressList).length === 0 ? "52vh" : "78vh",
           radius: "24rpx 24rpx 0 0",
@@ -1046,34 +1037,34 @@ const _sfc_main = {
           ["mask-color"]: "rgba(0, 0, 0, 0.35)"
         })
       } : {}, {
-        ch: common_vendor.unref(renderAddressFormPopup)
+        ce: common_vendor.unref(renderAddressFormPopup)
       }, common_vendor.unref(renderAddressFormPopup) ? {
-        ci: common_vendor.o(($event) => common_vendor.unref(setShowAddressFormPopup)(false), "1d"),
-        cj: common_vendor.o(common_vendor.unref(onBuyAddressSaved), "0f"),
-        ck: common_vendor.p({
+        cf: common_vendor.o(($event) => common_vendor.unref(setShowAddressFormPopup)(false), "d3"),
+        cg: common_vendor.o(common_vendor.unref(onBuyAddressSaved), "b0"),
+        ch: common_vendor.p({
           visible: common_vendor.unref(showAddressFormPopup),
           ["edit-data"]: common_vendor.unref(editAddressData),
           ["popup-height"]: "78vh",
           ["z-index"]: BUY_POPUP_Z_INDEX + 4
         })
       } : {}, {
-        cl: common_vendor.unref(isTruthyFlag)(common_vendor.unref(signConfig).enabled) && common_vendor.unref(renderSignPopup)
+        ci: common_vendor.unref(isTruthyFlag)(common_vendor.unref(signConfig).enabled) && common_vendor.unref(renderSignPopup)
       }, common_vendor.unref(isTruthyFlag)(common_vendor.unref(signConfig).enabled) && common_vendor.unref(renderSignPopup) ? {
-        cm: common_vendor.o(($event) => !common_vendor.unref(isTruthyFlag)(common_vendor.unref(signConfig).forceEnabled) && common_vendor.unref(setShowSignPopup)(false), "80"),
-        cn: common_vendor.p({
+        cj: common_vendor.o(($event) => !common_vendor.unref(isTruthyFlag)(common_vendor.unref(signConfig).forceEnabled) && common_vendor.unref(setShowSignPopup)(false), "39"),
+        ck: common_vendor.p({
           show: common_vendor.unref(showSignPopup),
           ["custom-style"]: "z-index:950;background:rgba(0,0,0,0.5);"
         })
       } : {}, {
-        co: common_vendor.unref(isTruthyFlag)(common_vendor.unref(signConfig).enabled) && common_vendor.unref(renderSignPopup)
+        cl: common_vendor.unref(isTruthyFlag)(common_vendor.unref(signConfig).enabled) && common_vendor.unref(renderSignPopup)
       }, common_vendor.unref(isTruthyFlag)(common_vendor.unref(signConfig).enabled) && common_vendor.unref(renderSignPopup) ? common_vendor.e({
-        cp: !common_vendor.unref(isTruthyFlag)(common_vendor.unref(signConfig).forceEnabled)
+        cm: !common_vendor.unref(isTruthyFlag)(common_vendor.unref(signConfig).forceEnabled)
       }, !common_vendor.unref(isTruthyFlag)(common_vendor.unref(signConfig).forceEnabled) ? {
-        cq: common_vendor.o(($event) => common_vendor.unref(setShowSignPopup)(false), "c0")
+        cn: common_vendor.o(($event) => common_vendor.unref(setShowSignPopup)(false), "90")
       } : {}, {
-        cr: common_vendor.o(common_vendor.unref(onSignedDone), "f6"),
-        cs: common_vendor.o(($event) => common_vendor.unref(setShowSignPopup)(false), "d2"),
-        ct: common_vendor.p({
+        co: common_vendor.o(common_vendor.unref(onSignedDone), "69"),
+        cp: common_vendor.o(($event) => common_vendor.unref(setShowSignPopup)(false), "9f"),
+        cq: common_vendor.p({
           ["room-id"]: common_vendor.unref(liveId),
           ["room-code"]: common_vendor.unref(roomCode),
           ["tenant-id"]: common_vendor.unref(liveTenantId),
@@ -1091,16 +1082,16 @@ const _sfc_main = {
           ["submit-text"]: "确定",
           ["success-mode"]: "toast"
         }),
-        cv: common_vendor.o(() => {
-        }, "37"),
-        cw: common_vendor.o(($event) => !common_vendor.unref(isTruthyFlag)(common_vendor.unref(signConfig).forceEnabled) && common_vendor.unref(setShowSignPopup)(false), "46"),
-        cx: common_vendor.p({
+        cr: common_vendor.o(() => {
+        }, "fe"),
+        cs: common_vendor.o(($event) => !common_vendor.unref(isTruthyFlag)(common_vendor.unref(signConfig).forceEnabled) && common_vendor.unref(setShowSignPopup)(false), "98"),
+        ct: common_vendor.p({
           show: common_vendor.unref(showSignPopup),
           duration: 500,
           ["custom-style"]: "position:fixed;left:0;top:0;right:0;bottom:0;z-index:951;"
         })
       }) : {}, {
-        cy: common_vendor.p({
+        cv: common_vendor.p({
           visible: common_vendor.unref(showNotStartedOverlay) && !(common_vendor.unref(roomGroupType) === 0 && common_vendor.unref(isReplay)) && !common_vendor.unref(showProductList) && !common_vendor.unref(showBuyPopup) && !common_vendor.unref(showAddressPopup) && !common_vendor.unref(showAddressFormPopup),
           portrait: true,
           title: common_vendor.unref(liveOverlayTitle),
@@ -1109,16 +1100,13 @@ const _sfc_main = {
           avatar: common_vendor.unref(anchorAvatar),
           name: common_vendor.unref(anchorName)
         }),
-        cz: common_vendor.o(common_vendor.unref(enterLive), "a2"),
-        cA: common_vendor.p({
+        cw: common_vendor.o(common_vendor.unref(enterLive), "19"),
+        cx: common_vendor.p({
           show: common_vendor.unref(shouldShowEntryOverlay)
         }),
-        cB: useLiveVisualStyle.value ? 1 : "",
-        cC: !useLiveVisualStyle.value ? 1 : "",
-        cD: common_vendor.s(common_vendor.unref(isWechatH5) && common_vendor.unref(isIOS) ? {
-          opacity: 1,
-          transition: "opacity 0.3s"
-        } : {})
+        cy: useLiveVisualStyle.value ? 1 : "",
+        cz: !useLiveVisualStyle.value ? 1 : "",
+        cA: common_vendor.s(rootStyle.value)
       }) : {});
     };
   }

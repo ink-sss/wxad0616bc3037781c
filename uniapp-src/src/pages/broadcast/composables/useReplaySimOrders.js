@@ -11,6 +11,7 @@ import { getReplaySimMessages } from '@/api/live'
 
 const WINDOW_SIZE = 20 // 每次预加载 20 秒的消息，与后端缓存键对齐
 const PRELOAD_LEAD_SEC = 5 // 提前 5 秒预加载下一窗口
+const SEEK_JUMP_THRESHOLD_SEC = 10 // 原生 video seek/timeupdate 跳跃时跳过旧窗口飘屏
 
 function firstValue(source = {}, ...keys) {
   if (!source || typeof source !== 'object') return undefined
@@ -68,6 +69,11 @@ function toSeconds(value, fallback = NaN) {
 function toPositiveInt(value, fallback = 1) {
   const n = Number(value)
   return Number.isFinite(n) && n > 0 ? Math.floor(n) : fallback
+}
+
+function normalizeSeconds(value) {
+  const n = Number(value)
+  return Number.isFinite(n) && n > 0 ? Math.floor(n) : 0
 }
 
 function normalizeReplaySimOrder(raw = {}) {
@@ -197,20 +203,31 @@ export function useReplaySimOrders() {
   let _loadedEndSec = 0
   // 是否正在加载
   let _loading = false
+  // 当前录播上下文，供 H5 后端按房间/租户/分享归因过滤模拟消息
+  let _context = {}
+  let _requestVersion = 0
+  let _lastConsumeSeconds = 0
 
   /**
    * 切视频时：重置所有状态并从指定秒数开始加载
    * @param {number} videoId
    * @param {number} startFromSec 从哪一秒开始（之前的消息不加载不显示）
    */
-  const loadSimMessages = async (videoId, startFromSec = 0) => {
+  const loadSimMessages = async (videoId, startFromSec = 0, context = {}) => {
+    const startSeconds = normalizeSeconds(startFromSec)
     _videoId = videoId
+    _context = context && typeof context === 'object' ? { ...context } : {}
     simTimeline.value = []
     simCursor.value = 0
     _loadedEndSec = 0
     _loading = false
+    _requestVersion += 1
+    _lastConsumeSeconds = startSeconds
     if (!videoId) return
-    await _loadWindow(alignDownToWindow(startFromSec))
+    await _loadWindow(alignDownToWindow(startSeconds), {
+      syncCursorSeconds: startSeconds,
+      version: _requestVersion,
+    })
   }
 
   /**
@@ -218,10 +235,45 @@ export function useReplaySimOrders() {
    */
   const resetSimMessages = () => {
     _videoId = 0
+    _context = {}
     simTimeline.value = []
     simCursor.value = 0
     _loadedEndSec = 0
     _loading = false
+    _requestVersion += 1
+    _lastConsumeSeconds = 0
+  }
+
+  function syncCursorToSeconds(currentSeconds) {
+    const targetSeconds = normalizeSeconds(currentSeconds)
+    const timeline = simTimeline.value
+    let lo = 0
+    let hi = timeline.length
+    while (lo < hi) {
+      const mid = (lo + hi) >>> 1
+      if (Number(timeline[mid].triggerAtSec || 0) <= targetSeconds) {
+        lo = mid + 1
+      } else {
+        hi = mid
+      }
+    }
+    simCursor.value = lo
+  }
+
+  function reloadWindowAt(currentSeconds) {
+    const targetSeconds = normalizeSeconds(currentSeconds)
+    simTimeline.value = []
+    simCursor.value = 0
+    _loadedEndSec = 0
+    _loading = false
+    _requestVersion += 1
+    _lastConsumeSeconds = targetSeconds
+    if (_videoId) {
+      _loadWindow(alignDownToWindow(targetSeconds), {
+        syncCursorSeconds: targetSeconds,
+        version: _requestVersion,
+      })
+    }
   }
 
   /**
@@ -230,18 +282,35 @@ export function useReplaySimOrders() {
    * @returns {Array} 本次触发的消息列表
    */
   const consumeSimOrders = (currentSeconds) => {
+    const normalizedSeconds = normalizeSeconds(currentSeconds)
+    if (_videoId && _loadedEndSec > 0 && normalizedSeconds > _loadedEndSec + WINDOW_SIZE) {
+      reloadWindowAt(normalizedSeconds)
+      return []
+    }
+    const jumpedForward =
+      simTimeline.value.length > 0 &&
+      normalizedSeconds > _lastConsumeSeconds + SEEK_JUMP_THRESHOLD_SEC
+    if (
+      jumpedForward
+    ) {
+      syncCursorToSeconds(normalizedSeconds)
+    }
     // 当播放进度接近已加载上界时，预加载下一窗口
-    if (_videoId && !_loading && _loadedEndSec > 0 && currentSeconds >= _loadedEndSec - PRELOAD_LEAD_SEC) {
-      _loadWindow(_loadedEndSec)
+    if (_videoId && !_loading && _loadedEndSec > 0 && normalizedSeconds >= _loadedEndSec - PRELOAD_LEAD_SEC) {
+      _loadWindow(_loadedEndSec, jumpedForward ? {
+        syncCursorSeconds: normalizedSeconds,
+        version: _requestVersion,
+      } : {})
     }
 
     const pending = []
     while (simCursor.value < simTimeline.value.length) {
       const item = simTimeline.value[simCursor.value]
-      if (item.triggerAtSec > currentSeconds) break
+      if (item.triggerAtSec > normalizedSeconds) break
       pending.push(item)
       simCursor.value++
     }
+    _lastConsumeSeconds = normalizedSeconds
     return pending
   }
 
@@ -253,42 +322,33 @@ export function useReplaySimOrders() {
     // 如果回退到已加载数据之前的位置，重新加载
     if (simTimeline.value.length > 0 && currentSeconds < simTimeline.value[0].triggerAtSec) {
       // 清空并从当前位置重新加载
-      simTimeline.value = []
-      simCursor.value = 0
-      _loadedEndSec = 0
-      if (_videoId) {
-        _loadWindow(alignDownToWindow(currentSeconds))
-      }
+      reloadWindowAt(currentSeconds)
       return
     }
     // 在已有数据内，二分查找定位游标
-    const timeline = simTimeline.value
-    let lo = 0
-    let hi = timeline.length
-    while (lo < hi) {
-      const mid = (lo + hi) >>> 1
-      if (timeline[mid].triggerAtSec <= currentSeconds) {
-        lo = mid + 1
-      } else {
-        hi = mid
-      }
-    }
-    simCursor.value = lo
+    syncCursorToSeconds(currentSeconds)
+    _lastConsumeSeconds = normalizeSeconds(currentSeconds)
   }
 
   /**
    * 加载指定起始秒的一个窗口，startSec 会被对齐到 WINDOW_SIZE 的倍数
    */
-  const _loadWindow = async (startSec) => {
+  const _loadWindow = async (startSec, options = {}) => {
     if (_loading) return
     _loading = true
+    const version = options.version || _requestVersion
+    const requestVideoId = _videoId
     const alignedStart = alignDownToWindow(startSec)
     const endSec = alignedStart + WINDOW_SIZE
     try {
-      const data = normalizeReplaySimMessages(await getReplaySimMessages(_videoId, alignedStart, endSec))
+      const data = normalizeReplaySimMessages(await getReplaySimMessages(_videoId, alignedStart, endSec, _context))
+      if (version !== _requestVersion || requestVideoId !== _videoId) return
       if (Array.isArray(data) && data.length > 0) {
         // 追加到 timeline（已按 triggerAtSec 排序，直接 concat）
         simTimeline.value = simTimeline.value.concat(data)
+        if (Number.isFinite(Number(options.syncCursorSeconds))) {
+          syncCursorToSeconds(options.syncCursorSeconds)
+        }
         // [diag] 拉取到数据时记录一条，确认 API 返回与跨窗口拼接正常
         // console.log('[useReplaySimOrders] 加载区间', {
         //   videoId: _videoId,
@@ -301,7 +361,9 @@ export function useReplaySimOrders() {
     } catch (e) {
       console.error('[useReplaySimOrders] 加载模拟消息失败:', e)
     } finally {
-      _loading = false
+      if (version === _requestVersion) {
+        _loading = false
+      }
     }
   }
 

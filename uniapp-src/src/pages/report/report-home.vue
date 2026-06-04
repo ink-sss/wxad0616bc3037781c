@@ -26,7 +26,6 @@
 <script setup>
 import { ref } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
-import { ensureH5PageAuth } from "@/services/h5-auth-context";
 import { loadLiveRoomContext } from "@/utils/live-room-context";
 import { buildBroadcastReturnPath } from "@/pages/broadcast/utils/live-route-context.js";
 
@@ -69,7 +68,6 @@ function goSelectType() {
 }
 
 onLoad((options) => {
-  if (!ensureH5PageAuth(options)) return;
   liveId.value = options.liveId || "";
   roomCode.value = options.roomCode || options.room_code || "";
   tenantId.value = options.tenantId || options.tenant_id || "";

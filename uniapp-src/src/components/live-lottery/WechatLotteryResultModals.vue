@@ -86,7 +86,7 @@ const props = defineProps({
 
 const emit = defineEmits(["close"]);
 
-const base = "https://nyfs-oss.bcvdata.com/Public/Home/Images";
+const base = "https://man.lqjy.cc/static/Public/Home/Images";
 const image = {
   floorClose: `${base}/Watch/luckydraw/floorClose.png`,
   lotteryTop: `${base}/Watch/luckydraw/lotteryTop3.png`,
@@ -95,7 +95,7 @@ const image = {
   congrats: `${base}/Watch/luckydraw/luckydrawCongrats.png`,
   writeoff: `${base}/Watch/luckydraw/write-offRemind.png`,
   copyIcon: `${base}/Watch/luckydraw/copyIcon.png`,
-  element: "/static/remote-icons/nyfs-oss-bcvdata-com-public-pkenvelope-element3-b60b22b7.png"
+  element: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-pkenvelope-element3-b60b22b7.png"
 };
 
 function firstValue(source = {}, ...keys) {
@@ -278,7 +278,7 @@ function handleRecordAction() {
 }
 
 .notPrizeInfo {
-  background:  url("/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-watch-luckydraw-noprizebg-ff5f7a55.png") top center / contain no-repeat;
+  background:  url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-watch-luckydraw-noprizebg-ff5f7a55.png") top center / contain no-repeat;
 }
 
 .notPrizeText {
@@ -350,7 +350,7 @@ function handleRecordAction() {
   width: 606rpx;
   margin: 0 auto;
   border-radius: 40rpx;
-  background-image: url("/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-watch-luckydraw-lottery-2d8f96df.png");
+  background-image: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-watch-luckydraw-lottery-2d8f96df.png");
   background-size: 100% 100%;
   box-shadow: 0 0 40rpx 0 #ffd48b;
   animation: sourceWinFadeInOut 2s infinite;

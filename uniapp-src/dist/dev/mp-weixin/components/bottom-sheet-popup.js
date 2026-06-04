@@ -1,6 +1,5 @@
 "use strict";
 const common_vendor = require("../common/vendor.js");
-const common_assets = require("../common/assets.js");
 if (!Array) {
   const _easycom_wd_overlay2 = common_vendor.resolveComponent("wd-overlay");
   const _easycom_wd_transition2 = common_vendor.resolveComponent("wd-transition");
@@ -73,14 +72,13 @@ const _sfc_main = {
         }),
         c: __props.showClose
       }, __props.showClose ? {
-        d: common_assets._imports_0$8,
-        e: common_vendor.o(($event) => emit("close"), "d5")
+        d: common_vendor.o(($event) => emit("close"), "d5")
       } : {}, {
-        f: common_vendor.s(panelStyle.value),
-        g: common_vendor.o(() => {
+        e: common_vendor.s(panelStyle.value),
+        f: common_vendor.o(() => {
         }, "ac"),
-        h: common_vendor.o(($event) => emit("close"), "eb"),
-        i: common_vendor.p({
+        g: common_vendor.o(($event) => emit("close"), "eb"),
+        h: common_vendor.p({
           show: __props.visible,
           duration: __props.duration,
           ["enter-class"]: "sheet-popup-enter",

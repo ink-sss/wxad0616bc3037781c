@@ -212,58 +212,58 @@ const _sfc_main = {
 };
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return common_vendor.e({
-    a: $data.userInfo.avatarUrl || "/static/login-default.png",
+    a: $data.userInfo.avatarUrl || "https://man.lqjy.cc/static/login-default.png",
     b: common_vendor.o((...args) => $options.onChooseAvatar && $options.onChooseAvatar(...args), "d5"),
     c: common_vendor.t($data.userInfo.user_id || "--"),
     d: common_vendor.o(($event) => {
       $data.type = "nickName";
       $options.update();
-    }, "e7"),
+    }, "13"),
     e: $data.userInfo.nickName,
-    f: common_vendor.o(($event) => $data.userInfo.nickName = $event.detail.value, "0b"),
+    f: common_vendor.o(($event) => $data.userInfo.nickName = $event.detail.value, "22"),
     g: common_vendor.t($options.maskPhone($data.userInfo.mobile) || "去绑定"),
-    h: common_vendor.o((...args) => $options.isPhoneOpen && $options.isPhoneOpen(...args), "3f"),
+    h: common_vendor.o((...args) => $options.isPhoneOpen && $options.isPhoneOpen(...args), "90"),
     i: Number($data.userInfo.gender) === 1,
     j: Number($data.userInfo.gender) === 0,
-    k: common_vendor.o((...args) => $options.changeGender && $options.changeGender(...args), "9e"),
+    k: common_vendor.o((...args) => $options.changeGender && $options.changeGender(...args), "65"),
     l: common_vendor.t($data.userInfo.password ? "修改" : "设置"),
-    m: common_vendor.o((...args) => $options.isPasswordOpen && $options.isPasswordOpen(...args), "91"),
+    m: common_vendor.o((...args) => $options.isPasswordOpen && $options.isPasswordOpen(...args), "9b"),
     n: $data.isPhone
   }, $data.isPhone ? common_vendor.e({
     o: $data.mobileModel.mobile,
-    p: common_vendor.o(($event) => $data.mobileModel.mobile = $event.detail.value, "6d"),
+    p: common_vendor.o(($event) => $data.mobileModel.mobile = $event.detail.value, "6b"),
     q: $data.sms_open
   }, $data.sms_open ? {
     r: $data.mobileModel.code,
-    s: common_vendor.o(($event) => $data.mobileModel.code = $event.detail.value, "71"),
+    s: common_vendor.o(($event) => $data.mobileModel.code = $event.detail.value, "1d"),
     t: common_vendor.t($data.send_btn_txt),
     v: $data.is_send,
-    w: common_vendor.o(($event) => $options.sendCode("mobileModel"), "5f")
+    w: common_vendor.o(($event) => $options.sendCode("mobileModel"), "92")
   } : {}, {
-    x: common_vendor.o((...args) => $options.changePhone && $options.changePhone(...args), "2b"),
-    y: common_vendor.o(($event) => $data.isPhone = false, "08")
+    x: common_vendor.o((...args) => $options.changePhone && $options.changePhone(...args), "7f"),
+    y: common_vendor.o(($event) => $data.isPhone = false, "f8")
   }) : {}, {
     z: $data.isPassword
   }, $data.isPassword ? common_vendor.e({
     A: $data.passwordModel.mobile,
-    B: common_vendor.o(($event) => $data.passwordModel.mobile = $event.detail.value, "24"),
+    B: common_vendor.o(($event) => $data.passwordModel.mobile = $event.detail.value, "cc"),
     C: $data.sms_open
   }, $data.sms_open ? {
     D: $data.passwordModel.code,
-    E: common_vendor.o(($event) => $data.passwordModel.code = $event.detail.value, "9e"),
+    E: common_vendor.o(($event) => $data.passwordModel.code = $event.detail.value, "70"),
     F: common_vendor.t($data.send_btn_txt),
     G: $data.is_send,
-    H: common_vendor.o(($event) => $options.sendCode("passwordModel"), "bd")
+    H: common_vendor.o(($event) => $options.sendCode("passwordModel"), "3d")
   } : {}, {
     I: $data.passwordModel.password,
-    J: common_vendor.o(($event) => $data.passwordModel.password = $event.detail.value, "42"),
+    J: common_vendor.o(($event) => $data.passwordModel.password = $event.detail.value, "f7"),
     K: $data.passwordModel.repassword,
-    L: common_vendor.o(($event) => $data.passwordModel.repassword = $event.detail.value, "39"),
-    M: common_vendor.o((...args) => $options.changePassword && $options.changePassword(...args), "7c"),
-    N: common_vendor.o(($event) => $data.isPassword = false, "cc")
+    L: common_vendor.o(($event) => $data.passwordModel.repassword = $event.detail.value, "e9"),
+    M: common_vendor.o((...args) => $options.changePassword && $options.changePassword(...args), "6d"),
+    N: common_vendor.o(($event) => $data.isPassword = false, "12")
   }) : {}, {
-    O: common_vendor.o((...args) => $options.logout && $options.logout(...args), "59"),
-    P: common_vendor.o((...args) => $options.deleteAccount && $options.deleteAccount(...args), "26"),
+    O: common_vendor.o((...args) => $options.logout && $options.logout(...args), "fe"),
+    P: common_vendor.o((...args) => $options.deleteAccount && $options.deleteAccount(...args), "79"),
     Q: _ctx.theme && _ctx.theme()
   });
 }

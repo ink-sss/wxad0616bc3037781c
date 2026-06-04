@@ -41,7 +41,7 @@ const emit = defineEmits(["close"]);
   height: 800rpx;
   overflow: hidden;
   border-radius: 4rpx;
-  background-image: url("../static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-envelope-bg-682dda9f.png");
+  background-image: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-envelope-bg-682dda9f.png");
   background-size: 100% 100%;
   background-color: transparent;
   transform: translate(-50%, -50%);

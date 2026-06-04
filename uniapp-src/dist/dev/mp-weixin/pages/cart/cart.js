@@ -1,6 +1,6 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
-const common_assets = require("../../common/assets.js");
+const services_localCart = require("../../services/local-cart.js");
 const RecommendProduct = () => "../../components/recommendProduct/recommendProduct.js";
 const RequestLoading = () => "../../components/liveloading.js";
 const TabBar = () => "../../components/tabbar/footTabbar.js";
@@ -33,19 +33,16 @@ const _sfc_main = {
   methods: {
     getData() {
       this.isloadding = true;
-      this._get("order.cart/lists", {}, (res) => {
-        this.isloadding = false;
-        this.tableData = res.data.productList || [];
-        this.store_open = res.data.store_open;
-        this.totalNum = res.data.totalNum;
-        this.tableData.forEach((supplier) => {
-          supplier.checked = false;
-        });
-        this.loadding = false;
-        this._initGoodsChecked();
-      }, () => {
-        this.getData();
+      const summary = services_localCart.getLocalCartSummary();
+      this.isloadding = false;
+      this.tableData = summary.productList || [];
+      this.store_open = 0;
+      this.totalNum = summary.totalNum;
+      this.tableData.forEach((supplier) => {
+        supplier.checked = false;
       });
+      this.loadding = false;
+      this._initGoodsChecked();
     },
     _initGoodsChecked() {
       const checkedIds = this.getCheckedData();
@@ -122,41 +119,17 @@ const _sfc_main = {
       this.totalPrice = total.toFixed(2);
     },
     Submit() {
-      const ids = this.getCheckedIds();
-      if (ids.length === 0) {
-        common_vendor.index.showToast({ title: "请选择商品", icon: "none" });
-        return false;
-      }
-      this.gotoPage("/pages/order/confirm-order?order_type=cart&cart_ids=" + ids);
+      common_vendor.index.showToast({ title: "购物车暂不支持结算", icon: "none" });
     },
     addFunc(item) {
-      common_vendor.index.showLoading({ title: "加载中" });
-      this._post("order.cart/add", {
-        product_id: item.product_id,
-        spec_sku_id: item.spec_sku_id,
-        total_num: 1
-      }, () => {
-        common_vendor.index.hideLoading();
-        this.loadding = false;
-        this.getData();
-      }, () => {
-        this.loadding = false;
-      });
+      services_localCart.incrementLocalCartItem(item);
+      this.getData();
     },
     reduceFunc(item) {
       if (item.total_num <= 1)
         return;
-      common_vendor.index.showLoading({ title: "加载中" });
-      this._post("order.cart/sub", {
-        product_id: item.product_id,
-        spec_sku_id: item.spec_sku_id
-      }, () => {
-        this.loadding = false;
-        common_vendor.index.hideLoading();
-        this.getData();
-      }, () => {
-        this.loadding = false;
-      });
+      services_localCart.decrementLocalCartItem(item);
+      this.getData();
     },
     onDelete() {
       const ids = this.getCheckedIds();
@@ -169,10 +142,8 @@ const _sfc_main = {
         content: "您确定要移除选择的商品吗?",
         success: (modal) => {
           if (modal.confirm) {
-            this._post("order.cart/delete", { cart_id: ids.join() }, () => {
-              this.getData();
-              this.onDeleteEvent(ids);
-            });
+            services_localCart.removeLocalCartItems(ids);
+            this.getData();
           }
         }
       });
@@ -245,19 +216,14 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             f: common_vendor.t(item.product_sku && item.product_sku.product_attr),
             g: common_vendor.t(item.product_price),
             h: item.total_num > 1
-          }, item.total_num > 1 ? {
-            i: common_assets._imports_0
-          } : {
-            j: common_assets._imports_1
-          }, {
-            k: common_vendor.o(($event) => $options.reduceFunc(item), item.cart_id || productIndex),
-            l: common_vendor.t(item.total_num),
-            m: item.product_sku && item.total_num < item.product_sku.stock_num
+          }, item.total_num > 1 ? {} : {}, {
+            i: common_vendor.o(($event) => $options.reduceFunc(item), item.cart_id || productIndex),
+            j: common_vendor.t(item.total_num),
+            k: item.product_sku && item.total_num < item.product_sku.stock_num
           }, item.product_sku && item.total_num < item.product_sku.stock_num ? {
-            n: common_assets._imports_2,
-            o: common_vendor.o(($event) => $options.addFunc(item), item.cart_id || productIndex)
+            l: common_vendor.o(($event) => $options.addFunc(item), item.cart_id || productIndex)
           } : {}, {
-            p: item.cart_id || productIndex
+            m: item.cart_id || productIndex
           });
         }),
         f: supplierIndex
@@ -265,35 +231,34 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     }),
     g: $data.store_open
   }) : {
-    h: _ctx.config.pic_url + "/static/list-null.png",
-    i: common_vendor.o((...args) => $options.gotoShop && $options.gotoShop(...args), "5e")
+    h: _ctx.config.pic_url + "/list-null.png",
+    i: common_vendor.o((...args) => $options.gotoShop && $options.gotoShop(...args), "b4")
   }, {
     j: $data.totalNum > 0
   }, $data.totalNum > 0 ? common_vendor.e({
     k: $data.checkedAll,
-    l: common_vendor.o((...args) => $options.onCheckedAll && $options.onCheckedAll(...args), "16"),
+    l: common_vendor.o((...args) => $options.onCheckedAll && $options.onCheckedAll(...args), "af"),
     m: !$data.isEdit
   }, !$data.isEdit ? {
-    n: common_vendor.t($data.totalPrice),
-    o: common_vendor.o((...args) => $options.Submit && $options.Submit(...args), "b2")
+    n: common_vendor.t($data.totalPrice)
   } : {
-    p: common_vendor.o((...args) => $options.onDelete && $options.onDelete(...args), "4a")
+    o: common_vendor.o((...args) => $options.onDelete && $options.onDelete(...args), "a4")
   }) : {}, {
-    q: $data.totalNum > 0
+    p: $data.totalNum > 0
   }, $data.totalNum > 0 ? {
-    r: common_vendor.p({
+    q: common_vendor.p({
       location: 10
     })
   } : {}, {
-    s: $data.totalNum > 0 ? 1 : ""
+    r: $data.totalNum > 0 ? 1 : ""
   }) : {}, {
-    t: $data.isloadding
+    s: $data.isloadding
   }, $data.isloadding ? {
-    v: common_vendor.p({
+    t: common_vendor.p({
       loadding: $data.isloadding
     })
   } : {}, {
-    w: _ctx.theme && _ctx.theme()
+    v: _ctx.theme && _ctx.theme()
   });
 }
 const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-fb6ea9e5"]]);

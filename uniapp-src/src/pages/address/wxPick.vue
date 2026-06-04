@@ -17,7 +17,6 @@
 import { computed, ref } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
 import { importWxAddress } from "@/services/wechat-address";
-import { ensureH5PageAuth } from "@/services/h5-auth-context";
 
 const step = ref("loading");
 const errorMsg = ref("");
@@ -61,7 +60,6 @@ async function startPick() {
 onLoad((options = {}) => {
   const from = options.from || options.redirect || "";
   if (from) redirectUrl.value = decodeURIComponent(from);
-  if (!ensureH5PageAuth(options, redirectUrl.value)) return;
   startPick();
 });
 </script>

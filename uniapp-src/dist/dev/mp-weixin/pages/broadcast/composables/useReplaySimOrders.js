@@ -3,6 +3,7 @@ const common_vendor = require("../../../common/vendor.js");
 const api_live = require("../../../api/live.js");
 const WINDOW_SIZE = 20;
 const PRELOAD_LEAD_SEC = 5;
+const SEEK_JUMP_THRESHOLD_SEC = 10;
 function firstValue(source = {}, ...keys) {
   if (!source || typeof source !== "object")
     return void 0;
@@ -64,6 +65,10 @@ function toSeconds(value, fallback = NaN) {
 function toPositiveInt(value, fallback = 1) {
   const n = Number(value);
   return Number.isFinite(n) && n > 0 ? Math.floor(n) : fallback;
+}
+function normalizeSeconds(value) {
+  const n = Number(value);
+  return Number.isFinite(n) && n > 0 ? Math.floor(n) : 0;
 }
 function normalizeReplaySimOrder(raw = {}) {
   const payload = raw && typeof raw === "object" ? raw : {};
@@ -181,76 +186,126 @@ function useReplaySimOrders() {
   let _videoId = 0;
   let _loadedEndSec = 0;
   let _loading = false;
-  const loadSimMessages = async (videoId, startFromSec = 0) => {
+  let _context = {};
+  let _requestVersion = 0;
+  let _lastConsumeSeconds = 0;
+  const loadSimMessages = async (videoId, startFromSec = 0, context = {}) => {
+    const startSeconds = normalizeSeconds(startFromSec);
     _videoId = videoId;
+    _context = context && typeof context === "object" ? { ...context } : {};
     simTimeline.value = [];
     simCursor.value = 0;
     _loadedEndSec = 0;
     _loading = false;
+    _requestVersion += 1;
+    _lastConsumeSeconds = startSeconds;
     if (!videoId)
       return;
-    await _loadWindow(alignDownToWindow(startFromSec));
+    await _loadWindow(alignDownToWindow(startSeconds), {
+      syncCursorSeconds: startSeconds,
+      version: _requestVersion
+    });
   };
   const resetSimMessages = () => {
     _videoId = 0;
+    _context = {};
     simTimeline.value = [];
     simCursor.value = 0;
     _loadedEndSec = 0;
     _loading = false;
+    _requestVersion += 1;
+    _lastConsumeSeconds = 0;
   };
-  const consumeSimOrders = (currentSeconds) => {
-    if (_videoId && !_loading && _loadedEndSec > 0 && currentSeconds >= _loadedEndSec - PRELOAD_LEAD_SEC) {
-      _loadWindow(_loadedEndSec);
-    }
-    const pending = [];
-    while (simCursor.value < simTimeline.value.length) {
-      const item = simTimeline.value[simCursor.value];
-      if (item.triggerAtSec > currentSeconds)
-        break;
-      pending.push(item);
-      simCursor.value++;
-    }
-    return pending;
-  };
-  const syncSimCursor = (currentSeconds) => {
-    if (simTimeline.value.length > 0 && currentSeconds < simTimeline.value[0].triggerAtSec) {
-      simTimeline.value = [];
-      simCursor.value = 0;
-      _loadedEndSec = 0;
-      if (_videoId) {
-        _loadWindow(alignDownToWindow(currentSeconds));
-      }
-      return;
-    }
+  function syncCursorToSeconds(currentSeconds) {
+    const targetSeconds = normalizeSeconds(currentSeconds);
     const timeline = simTimeline.value;
     let lo = 0;
     let hi = timeline.length;
     while (lo < hi) {
       const mid = lo + hi >>> 1;
-      if (timeline[mid].triggerAtSec <= currentSeconds) {
+      if (Number(timeline[mid].triggerAtSec || 0) <= targetSeconds) {
         lo = mid + 1;
       } else {
         hi = mid;
       }
     }
     simCursor.value = lo;
+  }
+  function reloadWindowAt(currentSeconds) {
+    const targetSeconds = normalizeSeconds(currentSeconds);
+    simTimeline.value = [];
+    simCursor.value = 0;
+    _loadedEndSec = 0;
+    _loading = false;
+    _requestVersion += 1;
+    _lastConsumeSeconds = targetSeconds;
+    if (_videoId) {
+      _loadWindow(alignDownToWindow(targetSeconds), {
+        syncCursorSeconds: targetSeconds,
+        version: _requestVersion
+      });
+    }
+  }
+  const consumeSimOrders = (currentSeconds) => {
+    const normalizedSeconds = normalizeSeconds(currentSeconds);
+    if (_videoId && _loadedEndSec > 0 && normalizedSeconds > _loadedEndSec + WINDOW_SIZE) {
+      reloadWindowAt(normalizedSeconds);
+      return [];
+    }
+    const jumpedForward = simTimeline.value.length > 0 && normalizedSeconds > _lastConsumeSeconds + SEEK_JUMP_THRESHOLD_SEC;
+    if (jumpedForward) {
+      syncCursorToSeconds(normalizedSeconds);
+    }
+    if (_videoId && !_loading && _loadedEndSec > 0 && normalizedSeconds >= _loadedEndSec - PRELOAD_LEAD_SEC) {
+      _loadWindow(_loadedEndSec, jumpedForward ? {
+        syncCursorSeconds: normalizedSeconds,
+        version: _requestVersion
+      } : {});
+    }
+    const pending = [];
+    while (simCursor.value < simTimeline.value.length) {
+      const item = simTimeline.value[simCursor.value];
+      if (item.triggerAtSec > normalizedSeconds)
+        break;
+      pending.push(item);
+      simCursor.value++;
+    }
+    _lastConsumeSeconds = normalizedSeconds;
+    return pending;
   };
-  const _loadWindow = async (startSec) => {
+  const syncSimCursor = (currentSeconds) => {
+    if (simTimeline.value.length > 0 && currentSeconds < simTimeline.value[0].triggerAtSec) {
+      reloadWindowAt(currentSeconds);
+      return;
+    }
+    syncCursorToSeconds(currentSeconds);
+    _lastConsumeSeconds = normalizeSeconds(currentSeconds);
+  };
+  const _loadWindow = async (startSec, options = {}) => {
     if (_loading)
       return;
     _loading = true;
+    const version = options.version || _requestVersion;
+    const requestVideoId = _videoId;
     const alignedStart = alignDownToWindow(startSec);
     const endSec = alignedStart + WINDOW_SIZE;
     try {
-      const data = normalizeReplaySimMessages(await api_live.getReplaySimMessages(_videoId, alignedStart, endSec));
+      const data = normalizeReplaySimMessages(await api_live.getReplaySimMessages(_videoId, alignedStart, endSec, _context));
+      if (version !== _requestVersion || requestVideoId !== _videoId)
+        return;
       if (Array.isArray(data) && data.length > 0) {
         simTimeline.value = simTimeline.value.concat(data);
+        if (Number.isFinite(Number(options.syncCursorSeconds))) {
+          syncCursorToSeconds(options.syncCursorSeconds);
+        }
       }
       _loadedEndSec = endSec;
     } catch (e) {
       console.error("[useReplaySimOrders] 加载模拟消息失败:", e);
     } finally {
-      _loading = false;
+      if (version === _requestVersion) {
+        _loading = false;
+      }
     }
   };
   return {

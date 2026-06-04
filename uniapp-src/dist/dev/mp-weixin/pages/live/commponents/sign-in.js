@@ -55,7 +55,7 @@ const _sfc_main = {
     },
     signIcon() {
       var _a;
-      const base = ((_a = this.config) == null ? void 0 : _a.pic_url) || "https://weilive.yukelive.com";
+      const base = ((_a = this.config) == null ? void 0 : _a.pic_url) || "https://man.lqjy.cc/static";
       return `${base}/202512081258135e2e81819.png`;
     },
     cacheKey() {

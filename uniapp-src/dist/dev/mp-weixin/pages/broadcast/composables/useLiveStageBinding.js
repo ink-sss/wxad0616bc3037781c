@@ -9,6 +9,7 @@ function buildVideoState(ctx) {
     liveInitResolved: ctx.liveInitResolved,
     anchorName: ctx.anchorName,
     anchorAvatar: ctx.anchorAvatar,
+    broadcastNavHeight: ctx.broadcastNavHeight,
     isWaitingSchedule: ctx.isWaitingSchedule,
     warmUpVideoUrl: ctx.warmUpVideoUrl,
     displayVideoUrl: ctx.displayVideoUrl,

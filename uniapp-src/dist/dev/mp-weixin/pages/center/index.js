@@ -15,8 +15,8 @@ if (!Math) {
 }
 const CenterSectionCard = () => "../../components/center-section-card.js";
 const LiveMiniWindow = () => "../../components/live-mini-window.js";
-const DEFAULT_AVATAR = "/static/login-default.png";
-const iconBase = "/static/icons/";
+const DEFAULT_AVATAR = "https://man.lqjy.cc/static/login-default.png";
+const iconBase = "https://man.lqjy.cc/static/icons/";
 const _sfc_main = {
   __name: "index",
   setup(__props) {
@@ -24,6 +24,7 @@ const _sfc_main = {
     const avatar = common_vendor.ref(DEFAULT_AVATAR);
     const liveRoomCode = common_vendor.ref("");
     const liveRoomId = common_vendor.ref(0);
+    const liveRoomContext = common_vendor.ref({});
     const isDistributor = common_vendor.ref(false);
     const distributorStatus = common_vendor.ref(0);
     const enableShare = common_vendor.ref(1);
@@ -168,8 +169,9 @@ const _sfc_main = {
       if (normalized.roomCode || normalized.roomId || normalized.liveId) {
         utils_liveRoomContext.saveLiveRoomContext(normalized);
       }
+      liveRoomContext.value = utils_liveRoomContext.mergeLiveRoomContext(utils_liveRoomContext.loadLiveRoomContext() || {}, normalized || {});
       liveRoomCode.value = utils_liveRoomContext.resolveLiveRoomCode(normalized.roomCode);
-      const ctx = utils_liveRoomContext.loadLiveRoomContext();
+      const ctx = liveRoomContext.value;
       liveRoomId.value = Number(normalized.roomId || normalized.liveId || (ctx == null ? void 0 : ctx.liveId) || (ctx == null ? void 0 : ctx.roomId) || 0);
       if (ctx) {
         isDistributor.value = !!ctx.isDistributor && Number(ctx.distributorStatus || 0) === 1;
@@ -181,8 +183,6 @@ const _sfc_main = {
       lastQuery = options || {};
       syncLiveContext(options);
       applyCachedCustomer();
-      if (!services_h5AuthContext.ensureH5PageAuth(options, "/pages/center/index"))
-        return;
       loadCenter();
     });
     common_vendor.onShow(() => {
@@ -192,14 +192,13 @@ const _sfc_main = {
     function onItemClick(item) {
       onAction(item.key);
     }
-    function withLiveRoomCode(prefix = "?") {
-      return liveRoomCode.value ? `${prefix}roomCode=${encodeURIComponent(liveRoomCode.value)}` : "";
+    function withLiveQuery(url) {
+      return utils_liveRoomContext.appendLiveRoomQuery(url, liveRoomContext.value);
     }
     function onAction(type) {
       if (["orders", "unpay", "unsend", "unreceive", "finished", "refund"].includes(type)) {
         if (type === "refund") {
-          const code2 = withLiveRoomCode("&");
-          common_vendor.index.navigateTo({ url: `/pages/order/list?status=refund${code2}` });
+          common_vendor.index.navigateTo({ url: withLiveQuery("/pages/order/list?status=refund") });
           return;
         }
         const statusMap = {
@@ -209,21 +208,15 @@ const _sfc_main = {
           unreceive: "unreceive",
           finished: "finished"
         };
-        const code = withLiveRoomCode("&");
-        common_vendor.index.navigateTo({ url: `/pages/order/list?status=${statusMap[type]}${code}` });
+        common_vendor.index.navigateTo({ url: withLiveQuery(`/pages/order/list?status=${statusMap[type]}`) });
         return;
       }
       if (type === "complaint") {
-        const params = [
-          `fromPath=${encodeURIComponent("/pages/center/index")}`,
-          liveRoomCode.value ? `roomCode=${encodeURIComponent(liveRoomCode.value)}` : "",
-          liveRoomId.value ? `roomId=${encodeURIComponent(liveRoomId.value)}` : ""
-        ].filter(Boolean);
-        common_vendor.index.navigateTo({ url: `/pages/report/report-type?${params.join("&")}` });
+        common_vendor.index.navigateTo({ url: withLiveQuery("/pages/report/report-type?fromPath=%2Fpages%2Fcenter%2Findex") });
         return;
       }
       if (type === "prizeRecord") {
-        utils_routeNavigation.navigateToPrizeRecord(`/pages/prize-record/index${withLiveRoomCode("?")}`);
+        utils_routeNavigation.navigateToPrizeRecord(withLiveQuery("/pages/prize-record/index"));
         return;
       }
       if (type === "invitationRecord") {
@@ -231,20 +224,18 @@ const _sfc_main = {
           common_vendor.index.showToast({ title: "请从直播间进入", icon: "none" });
           return;
         }
-        const code = withLiveRoomCode("&");
         common_vendor.index.navigateTo({
-          url: `/pages/invitation-record/index?roomId=${liveRoomId.value}${code}`
+          url: withLiveQuery(`/pages/invitation-record/index?roomId=${liveRoomId.value}`)
         });
         return;
       }
       if (type === "address") {
-        const code = withLiveRoomCode("?");
-        common_vendor.index.navigateTo({ url: `/pages/address/index${code}` });
+        common_vendor.index.navigateTo({ url: withLiveQuery("/pages/address/index") });
       }
     }
     function goBack() {
       if (liveRoomCode.value) {
-        utils_liveRoomNavigation.returnToLiveRoom(liveRoomCode.value);
+        utils_liveRoomNavigation.returnToLiveRoom(liveRoomCode.value, liveRoomContext.value);
         return;
       }
       common_vendor.index.navigateBack({

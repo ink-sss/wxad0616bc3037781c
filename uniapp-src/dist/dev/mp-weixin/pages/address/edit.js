@@ -1,7 +1,6 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
 const api_address = require("../../api/address.js");
-const services_h5AuthContext = require("../../services/h5-auth-context.js");
 const area = require("../../area.js");
 const _sfc_main = {
   __name: "edit",
@@ -163,8 +162,6 @@ const _sfc_main = {
       }
     }
     common_vendor.onLoad((options) => {
-      if (!services_h5AuthContext.ensureH5PageAuth(options))
-        return;
       setRegionColumns();
       if (options == null ? void 0 : options.id) {
         isEdit.value = true;

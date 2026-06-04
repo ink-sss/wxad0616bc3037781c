@@ -25,9 +25,9 @@ const _sfc_main = {
     const props = __props;
     const emit = __emit;
     const image = {
-      avatar: "/static/remote-icons/nyfs-oss-bcvdata-com-uploads-consolewechat-1681-rtf-20260430144045241662-91b0e034.jpg",
-      close: "/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-watch-luckydraw-floorclose-c8b795b1.png",
-      gift: "/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-sign-gift-5def5533.png"
+      avatar: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-uploads-consolewechat-1681-rtf-20260430144045241662-91b0e034.jpg",
+      close: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-watch-luckydraw-floorclose-c8b795b1.png",
+      gift: "https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-sign-gift-5def5533.png"
     };
     const prizeName = common_vendor.computed(() => props.prize.name || props.prize.title || "抽奖奖品");
     const prizeQuantity = common_vendor.computed(() => Number(props.prize.quantity || 1) || 1);

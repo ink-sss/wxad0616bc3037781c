@@ -456,9 +456,13 @@ export function buildH5AuthContext(input = {}) {
     roomId: sceneContext.roomId || "",
     liveId: sceneContext.liveId || "",
     tenantId: normalizedInput.tenantId || normalizedInput.tenant_id || "",
+    _tc: normalizedInput._tc || normalizedInput.tc || "",
     bindId,
     customerId,
     liveType: normalizedInput.liveType || normalizedInput.live_type || "",
+    liveName: normalizedInput.liveName || normalizedInput.live_name || "",
+    cover: normalizedInput.cover || normalizedInput.liveCover || normalizedInput.live_cover || "",
+    liveCover: normalizedInput.liveCover || normalizedInput.live_cover || normalizedInput.cover || "",
     termId: sceneContext.termId || "",
     videoId: sceneContext.videoId || "",
     mode: sceneContext.mode || "",
@@ -513,6 +517,22 @@ export function getCurrentPageUrl(fallback = "/pages/center/index") {
   }
 }
 
+export function saveCurrentPageForNativeLogin(fallback = "/pages/center/index") {
+  try {
+    const pages = getCurrentPages();
+    const currentPage = pages[pages.length - 1];
+    if (!currentPage || !currentPage.route || LOGIN_ROUTES.includes(currentPage.route)) return fallback;
+
+    const options = (currentPage.$page && currentPage.$page.options) || currentPage.options || {};
+    writeStorage("currentPage", currentPage.route);
+    writeStorage("currentPageOptions", options);
+    const query = encodeQuery(options);
+    return `/${currentPage.route}${query ? `?${query}` : ""}`;
+  } catch (error) {
+    return fallback;
+  }
+}
+
 export function buildRedirectFromH5AuthContext(input = {}) {
   const context = mergeContext(loadH5AuthContext(), buildH5AuthContext(input));
   let target = context.redirect ? normalizeRedirectUrl(context.redirect) : "";
@@ -554,10 +574,8 @@ export function buildH5LoginUrl(input = {}) {
 }
 
 export function redirectToH5Login(input = {}) {
-  const url = buildH5LoginUrl({
-    ...input,
-    redirect: input.redirect || getCurrentPageUrl("/pages/center/index"),
-  });
+  saveCurrentPageForNativeLogin(input.redirect || "/pages/center/index");
+  const url = "/pages/login/login";
   uni.navigateTo({
     url,
     fail() {
@@ -570,6 +588,69 @@ export function redirectToH5Login(input = {}) {
     },
   });
   return false;
+}
+
+export function redirectToNativeLogin(input = {}) {
+  saveCurrentPageForNativeLogin(input.redirect || "/pages/center/index");
+  let url = "/pages/login/login";
+  try {
+    if (uni.getStorageSync("me")) url = "/pages/login/anchorlogin";
+  } catch (error) {}
+
+  uni.navigateTo({
+    url,
+    fail() {
+      uni.redirectTo({
+        url,
+        fail() {
+          uni.reLaunch({ url });
+        },
+      });
+    },
+  });
+  return false;
+}
+
+export function redirectAfterNativeLogin(defaultUrl = "/pages/index/index") {
+  clearH5AuthContext();
+
+  try {
+    const pages = getCurrentPages();
+    if (pages.length > 1) {
+      uni.navigateBack();
+      return;
+    }
+  } catch (error) {}
+
+  const route = readStorage("currentPage", "");
+  const options = readStorage("currentPageOptions", {}) || {};
+  let url = defaultUrl;
+  if (route) {
+    const query = encodeQuery(options);
+    url = `/${route}${query ? `?${query}` : ""}`;
+  }
+
+  if (url.startsWith("/pages/user/index/index")) {
+    uni.switchTab({
+      url: "/pages/user/index/index",
+      fail() {
+        uni.reLaunch({ url });
+      },
+    });
+    return;
+  }
+
+  uni.redirectTo({
+    url,
+    fail() {
+      uni.reLaunch({
+        url,
+        fail() {
+          uni.navigateTo({ url });
+        },
+      });
+    },
+  });
 }
 
 export function redirectAfterH5Login(input = {}) {
@@ -598,22 +679,10 @@ export function redirectAfterH5Login(input = {}) {
 }
 
 export function redirectAfterH5LoginSkipped(input = {}) {
-  const context = mergeContext(loadH5AuthContext(), buildH5AuthContext(input));
-  const target = buildRedirectFromH5AuthContext(context);
   clearH5AuthContext();
 
-  if (/^\/pages\/broadcast\/(entry|replay)\b/.test(target)) {
-    uni.reLaunch({
-      url: appendQuery(target, { loginSkipped: 1 }),
-      fail() {
-        uni.redirectTo({ url: appendQuery(target, { loginSkipped: 1 }) });
-      },
-    });
-    return;
-  }
-
-  uni.reLaunch({
-    url: "/pages/index/index?loginSkipped=1",
+  uni.redirectTo({
+    url: "/pages/index/index",
     fail() {
       uni.switchTab({
         url: "/pages/user/index/index",
@@ -629,9 +698,8 @@ export function ensureH5Authenticated(input = {}) {
   syncH5AuthSession(input);
   if (hasH5Token()) {
     saveH5AuthContext(input);
-    return true;
   }
-  return redirectToH5Login(input);
+  return true;
 }
 
 export function ensureH5PageAuth(query = {}, fallbackRedirect = "") {
@@ -661,6 +729,6 @@ export function isH5UnauthorizedError(error = {}) {
 export function handleH5Unauthorized(error = {}, input = {}) {
   if (!isH5UnauthorizedError(error)) return false;
   clearH5AuthSession();
-  redirectToH5Login(input);
+  redirectToNativeLogin(input);
   return true;
 }

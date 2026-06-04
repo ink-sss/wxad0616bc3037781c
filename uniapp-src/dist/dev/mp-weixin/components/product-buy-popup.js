@@ -1,6 +1,5 @@
 "use strict";
 const common_vendor = require("../common/vendor.js");
-const common_assets = require("../common/assets.js");
 if (!Array) {
   const _easycom_wd_popup2 = common_vendor.resolveComponent("wd-popup");
   _easycom_wd_popup2();
@@ -278,19 +277,17 @@ const _sfc_main = {
         e: common_vendor.t(selectedSpecText.value),
         f: props.requireAddress !== 2
       }, props.requireAddress !== 2 ? common_vendor.e({
-        g: common_assets._imports_0$17,
-        h: common_vendor.t(addressDisplay.value.address || "请选择收货地址"),
-        i: !__props.addressText ? 1 : "",
-        j: addressDisplay.value.contact
+        g: common_vendor.t(addressDisplay.value.address || "请选择收货地址"),
+        h: !__props.addressText ? 1 : "",
+        i: addressDisplay.value.contact
       }, addressDisplay.value.contact ? {
-        k: common_vendor.t(addressDisplay.value.contact)
+        j: common_vendor.t(addressDisplay.value.contact)
       } : {}, {
-        l: common_assets._imports_1$3,
-        m: common_vendor.o(($event) => emit("select-address"), "a4")
+        k: common_vendor.o(($event) => emit("select-address"), "a4")
       }) : {}, {
-        n: isMultiSpec.value
+        l: isMultiSpec.value
       }, isMultiSpec.value ? {
-        o: common_vendor.f(specs.value, (specGroup, k0, i0) => {
+        m: common_vendor.f(specs.value, (specGroup, k0, i0) => {
           return {
             a: common_vendor.t(specGroup.name),
             b: common_vendor.f(specGroup.values, (sv, k1, i1) => {
@@ -308,47 +305,44 @@ const _sfc_main = {
           };
         })
       } : {}, {
-        p: common_vendor.t(displayStock.value),
-        q: common_assets._imports_2$5,
-        r: quantity.value <= 1 ? 1 : "",
-        s: common_vendor.o(($event) => changeQty(-1), "82"),
-        t: common_vendor.t(quantity.value),
-        v: common_assets._imports_3$3,
-        w: quantity.value >= displayStock.value ? 1 : "",
-        x: common_vendor.o(($event) => changeQty(1), "75"),
-        y: __props.remark,
-        z: common_vendor.o(onRemarkInput, "e2"),
-        A: __props.usableCoupons.length > 0 && !selectedCoupon.value
+        n: common_vendor.t(displayStock.value),
+        o: quantity.value <= 1 ? 1 : "",
+        p: common_vendor.o(($event) => changeQty(-1), "34"),
+        q: common_vendor.t(quantity.value),
+        r: quantity.value >= displayStock.value ? 1 : "",
+        s: common_vendor.o(($event) => changeQty(1), "38"),
+        t: __props.remark,
+        v: common_vendor.o(onRemarkInput, "d3"),
+        w: __props.usableCoupons.length > 0 && !selectedCoupon.value
       }, __props.usableCoupons.length > 0 && !selectedCoupon.value ? {
-        B: common_vendor.t(__props.usableCoupons.length)
+        x: common_vendor.t(__props.usableCoupons.length)
       } : {}, {
-        C: common_vendor.t(couponDisplayText.value),
-        D: !selectedCoupon.value ? 1 : "",
-        E: common_assets._imports_1$3,
-        F: common_vendor.o(openCouponSelector, "a4"),
-        G: common_vendor.t(__props.goodsAmount),
-        H: showCouponDiscount.value
+        y: common_vendor.t(couponDisplayText.value),
+        z: !selectedCoupon.value ? 1 : "",
+        A: common_vendor.o(openCouponSelector, "83"),
+        B: common_vendor.t(__props.goodsAmount),
+        C: showCouponDiscount.value
       }, showCouponDiscount.value ? {
-        I: common_vendor.t(__props.discountAmount)
+        D: common_vendor.t(__props.discountAmount)
       } : {}, {
-        J: common_vendor.t(__props.shippingFee),
-        K: common_vendor.t(__props.totalPrice),
-        L: common_vendor.t(isSoldOut.value ? "已售罄" : __props.loading ? "提交中..." : "立即购买"),
-        M: common_vendor.n(isSoldOut.value ? "confirm-btn-disabled" : ""),
-        N: common_vendor.o(($event) => !isSoldOut.value && onConfirm(), "be"),
-        O: common_vendor.o(($event) => emit("close"), "dd"),
-        P: common_vendor.o(($event) => popupVisible.value = $event, "31"),
-        Q: common_vendor.p({
+        E: common_vendor.t(__props.shippingFee),
+        F: common_vendor.t(__props.totalPrice),
+        G: common_vendor.t(isSoldOut.value ? "已售罄" : __props.loading ? "提交中..." : "立即购买"),
+        H: common_vendor.n(isSoldOut.value ? "confirm-btn-disabled" : ""),
+        I: common_vendor.o(($event) => !isSoldOut.value && onConfirm(), "74"),
+        J: common_vendor.o(($event) => emit("close"), "dd"),
+        K: common_vendor.o(($event) => popupVisible.value = $event, "31"),
+        L: common_vendor.p({
           position: "bottom",
           ["z-index"]: __props.zIndex,
           ["custom-style"]: "height: 84vh; border-radius: 24rpx 24rpx 0 0; overflow: hidden;",
           modelValue: popupVisible.value
         }),
-        R: couponPopupVisible.value
+        M: couponPopupVisible.value
       }, couponPopupVisible.value ? {
-        S: common_vendor.o(($event) => couponPopupVisible.value = false, "20"),
-        T: common_vendor.o(handleCouponSelect, "bf"),
-        U: common_vendor.p({
+        N: common_vendor.o(($event) => couponPopupVisible.value = false, "ae"),
+        O: common_vendor.o(handleCouponSelect, "16"),
+        P: common_vendor.p({
           visible: couponPopupVisible.value,
           ["usable-coupons"]: __props.usableCoupons,
           ["unusable-coupons"]: __props.unusableCoupons,

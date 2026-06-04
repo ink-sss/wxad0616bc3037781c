@@ -1,8 +1,6 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
-const common_assets = require("../../common/assets.js");
 const api_live = require("../../api/live.js");
-const services_h5AuthContext = require("../../services/h5-auth-context.js");
 const utils_liveRoomContext = require("../../utils/live-room-context.js");
 const utils_liveRoomNavigation = require("../../utils/live-room-navigation.js");
 const utils_routeNavigation = require("../../utils/route-navigation.js");
@@ -32,10 +30,10 @@ const _sfc_main = {
     const pendingWinType = common_vendor.ref(0);
     const liveRoomCode = common_vendor.ref("");
     const recordIconMap = {
-      1: "/static/remote-icons/s-nuoyun-income-prize-1.png",
-      2: "/static/remote-icons/s-nuoyun-income-prize-2.png",
-      3: "/static/remote-icons/s-nuoyun-income-prize-3.png",
-      4: "/static/remote-icons/s-nuoyun-income-prize-4.png"
+      1: "https://man.lqjy.cc/static/remote-icons/s-nuoyun-income-prize-1.png",
+      2: "https://man.lqjy.cc/static/remote-icons/s-nuoyun-income-prize-2.png",
+      3: "https://man.lqjy.cc/static/remote-icons/s-nuoyun-income-prize-3.png",
+      4: "https://man.lqjy.cc/static/remote-icons/s-nuoyun-income-prize-4.png"
     };
     const currentMonth = common_vendor.computed(() => {
       const now = /* @__PURE__ */ new Date();
@@ -206,8 +204,6 @@ const _sfc_main = {
     }
     common_vendor.onLoad((options) => {
       liveRoomCode.value = utils_liveRoomContext.resolveLiveRoomCode((options == null ? void 0 : options.roomCode) || (options == null ? void 0 : options.room_code));
-      if (!services_h5AuthContext.ensureH5PageAuth(options))
-        return;
       loadRecords(true);
     });
     function goBack() {
@@ -227,11 +223,10 @@ const _sfc_main = {
         c: common_vendor.t(selectedMonthLabel.value)
       } : {}, {
         d: common_vendor.t(selectedTypeLabel.value),
-        e: common_assets._imports_0$1,
-        f: common_vendor.o(openFilter, "78"),
-        g: records.value.length
+        e: common_vendor.o(openFilter, "78"),
+        f: records.value.length
       }, records.value.length ? {
-        h: common_vendor.f(records.value, (record, k0, i0) => {
+        g: common_vendor.f(records.value, (record, k0, i0) => {
           return common_vendor.e({
             a: recordIcon(record),
             b: common_vendor.t(record.winTypeText),
@@ -246,26 +241,24 @@ const _sfc_main = {
             i: record.recordId
           });
         })
-      } : !loading.value ? {
-        j: common_assets._imports_1$1
-      } : {}, {
-        i: !loading.value,
-        k: loading.value
+      } : !loading.value ? {} : {}, {
+        h: !loading.value,
+        i: loading.value
       }, loading.value ? {} : finished.value && records.value.length ? {} : {}, {
-        l: finished.value && records.value.length,
-        m: common_vendor.o(loadMore, "f3"),
-        n: filterVisible.value
+        j: finished.value && records.value.length,
+        k: common_vendor.o(loadMore, "f3"),
+        l: filterVisible.value
       }, filterVisible.value ? common_vendor.e({
-        o: common_vendor.o(($event) => filterVisible.value = false, "4f"),
-        p: common_vendor.t(pendingMonthLabel.value),
-        q: currentMonth.value,
-        r: pendingMonth.value || currentMonth.value,
-        s: common_vendor.o(onMonthChange, "07"),
-        t: pendingMonth.value
+        m: common_vendor.o(($event) => filterVisible.value = false, "86"),
+        n: common_vendor.t(pendingMonthLabel.value),
+        o: currentMonth.value,
+        p: pendingMonth.value || currentMonth.value,
+        q: common_vendor.o(onMonthChange, "45"),
+        r: pendingMonth.value
       }, pendingMonth.value ? {
-        v: common_vendor.o(($event) => pendingMonth.value = "", "11")
+        s: common_vendor.o(($event) => pendingMonth.value = "", "1e")
       } : {}, {
-        w: common_vendor.f(typeOptions, (option, k0, i0) => {
+        t: common_vendor.f(typeOptions, (option, k0, i0) => {
           return {
             a: common_vendor.t(option.label),
             b: option.value,
@@ -273,10 +266,10 @@ const _sfc_main = {
             d: common_vendor.o(($event) => pendingWinType.value = option.value, option.value)
           };
         }),
-        x: common_vendor.o(confirmFilter, "41")
+        v: common_vendor.o(confirmFilter, "ec")
       }) : {}, {
-        y: common_vendor.o(goBack, "b2"),
-        z: common_vendor.p({
+        w: common_vendor.o(goBack, "a8"),
+        x: common_vendor.p({
           ["room-code"]: liveRoomCode.value,
           ["bottom-offset"]: 140
         })

@@ -1,6 +1,7 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
 const pages_login_pageTools = require("./page-tools.js");
+const api_miniprogramLogin = require("../../api/miniprogram-login.js");
 const _sfc_main = {
   data() {
     return {
@@ -45,26 +46,18 @@ const _sfc_main = {
     },
     loadWechatLoginStatus() {
       this.loading = true;
-      pages_login_pageTools.loginCode().then((code) => new Promise((resolve) => {
-        this._post(
-          "user.user/login",
-          {
-            code,
-            source: "wx",
-            invitation_id: this.invitation_id,
-            referee_id: common_vendor.index.getStorageSync("referee_id") || ""
-          },
-          (res) => {
-            const data = (res == null ? void 0 : res.data) || {};
-            this.user_id = data.user_id || "";
-            this.mobile = data.mobile !== void 0 ? data.mobile : true;
-            this.is_login = !!data.is_login;
-            resolve();
-          },
-          () => resolve(),
-          () => resolve()
-        );
-      })).catch(() => {
+      pages_login_pageTools.loginCode().then((code) => api_miniprogramLogin.preLoginMiniProgram({
+        code,
+        source: "wx",
+        invitation_id: this.invitation_id,
+        referee_id: common_vendor.index.getStorageSync("referee_id") || ""
+      })).then((data = {}) => {
+        this.user_id = data.user_id || "";
+        this.mobile = data.mobile !== void 0 ? data.mobile : true;
+        this.is_login = !!data.is_login;
+        if (data.user_id)
+          common_vendor.index.setStorageSync("user_id", data.user_id);
+      }).catch(() => {
       }).finally(() => {
         this.loading = false;
       });
@@ -135,20 +128,20 @@ if (!Array) {
 }
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return common_vendor.e({
-    a: $data.setting.login_logo || _ctx.config.pic_url + "/static/live/default_logo.jpeg",
+    a: $data.setting.login_logo || _ctx.config.pic_url + "/live/default_logo.jpeg",
     b: common_vendor.t($data.setting.name),
     c: $data.setting.login_desc
   }, $data.setting.login_desc ? {
     d: common_vendor.t($data.setting.login_desc)
   } : {}, {
-    e: common_vendor.o($options.loginSuccess, "2d"),
-    f: common_vendor.o($options.loginFail, "87"),
-    g: common_vendor.o($options.loginCancel, "20"),
-    h: common_vendor.o((...args) => $options.onNotLogin && $options.onNotLogin(...args), "b1"),
+    e: common_vendor.o($options.loginSuccess, "5f"),
+    f: common_vendor.o($options.loginFail, "7a"),
+    g: common_vendor.o($options.loginCancel, "02"),
+    h: common_vendor.o((...args) => $options.onNotLogin && $options.onNotLogin(...args), "69"),
     i: $data.isRead ? 1 : "",
-    j: common_vendor.o(($event) => $options.xieyi("service"), "44"),
+    j: common_vendor.o(($event) => $options.xieyi("service"), "e7"),
     k: common_vendor.o(($event) => $options.xieyi("privacy"), "a7"),
-    l: common_vendor.o(($event) => $data.isRead = !$data.isRead, "54"),
+    l: common_vendor.o(($event) => $data.isRead = !$data.isRead, "a8"),
     m: _ctx.theme && _ctx.theme()
   });
 }
