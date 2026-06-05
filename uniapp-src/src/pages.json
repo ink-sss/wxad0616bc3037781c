@@ -1,7 +1,35 @@
 {
   "easycom": {
-    "autoscan": true,
+    "autoscan": false,
     "custom": {
+      "^address-form-popup$": "@/components/address-form-popup.vue",
+      "^address-list-panel$": "@/components/address-list-panel.vue",
+      "^app-share$": "@/components/app-share.vue",
+      "^bottom-sheet-popup$": "@/components/bottom-sheet-popup.vue",
+      "^center-popup$": "@/components/center-popup.vue",
+      "^center-section-card$": "@/components/center-section-card.vue",
+      "^comment-prize-rule-modal$": "@/components/comment-prize-rule-modal.vue",
+      "^coupon-select-popup$": "@/components/coupon-select-popup.vue",
+      "^diy$": "@/components/diy/diy.vue",
+      "^live-countdown$": "@/components/live-countdown.vue",
+      "^live-mini-window$": "@/components/live-mini-window.vue",
+      "^live-report-popup$": "@/components/live-report-popup.vue",
+      "^live-sign-in$": "@/components/live-sign-in.vue",
+      "^live-tab$": "@/components/liveTab.vue",
+      "^mp-share$": "@/components/mp-share.vue",
+      "^notice-bar-nvue$": "@/components/notice-bar-nvue.vue",
+      "^product-buy-popup$": "@/components/product-buy-popup.vue",
+      "^product-card$": "@/components/product-card.vue",
+      "^product-list$": "@/components/product-list.vue",
+      "^recommend-product$": "@/components/recommendProduct/recommendProduct.vue",
+      "^request-loading$": "@/components/liveloading.vue",
+      "^search-product$": "@/components/searchProduct.vue",
+      "^share-popup$": "@/components/share-popup.vue",
+      "^tab-bar$": "@/components/tabbar/footTabbar.vue",
+      "^uni-icons$": "@/uni_modules/uni-icons/components/uni-icons/uni-icons.vue",
+      "^uni-load-more$": "@/components/uni-load-more.vue",
+      "^uni-notice-bar$": "@/uni_modules/uni-notice-bar/components/uni-notice-bar/uni-notice-bar.vue",
+      "^uni-popup$": "@/components/uni-popup.vue",
       "^wd-(.*)": "wot-design-uni/components/wd-$1/wd-$1.vue"
     }
   },
@@ -229,10 +257,6 @@
       }
     },
     {
-      "path": "components/upload/upload",
-      "style": {}
-    },
-    {
       "path": "pages/coupon/coupon",
       "style": {
         "navigationBarTitleText": "领券中心"
@@ -444,14 +468,10 @@
     }
   ],
   "globalStyle": {
-    "backgroundColor": "#F5F5F5",
-    "renderer": "skyline",
-    "lazyCodeLoading": "requiredComponents"
+    "backgroundColor": "#F5F5F5"
   },
   "window": {
-    "backgroundColor": "#F5F5F5",
-    "renderer": "skyline",
-    "lazyCodeLoading": "requiredComponents"
+    "backgroundColor": "#F5F5F5"
   },
   "permission": {
     "scope.userLocation": {

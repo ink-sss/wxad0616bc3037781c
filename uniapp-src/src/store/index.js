@@ -16,7 +16,7 @@ function getStorageSync(key, fallback = '') {
 
 export function createInitialState() {
   return {
-    theme: getStorageSync('theme', 2) || 2,
+    theme: getStorageSync('theme', 0) || 0,
     footTab: '',
     points_name: '积分',
     is_prohibition: 0,

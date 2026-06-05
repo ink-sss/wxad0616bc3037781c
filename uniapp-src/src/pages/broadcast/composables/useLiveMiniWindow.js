@@ -65,14 +65,10 @@ export function useLiveMiniWindow(ctx) {
     );
     if (!roomCode.value || (!sourceUrl && !(rtcAppId && rtcChannel && rtcToken))) return;
     lastLiveMiniStateSyncAt = now;
-    const soundMutedByUser = extra.soundMutedByUser ?? (
-      extra.canPlayWithSound === true || extra.muted === false
-        ? false
-        : (keepRtcSource ? previousState.soundMutedByUser === true : false)
-    );
     const currentVideo = replayVideosList.value[replayCurrentIndex.value] || {};
     const currentTime = Math.max(0, Number(extra.currentTime ?? getCurrentMiniWindowTime() ?? 0));
     saveLiveMiniState({
+      ...extra,
       roomCode: roomCode.value,
       liveId: liveId.value,
       videoId: extra.videoId || replayCurrentVideoId.value || currentVideo.id || "",
@@ -94,12 +90,11 @@ export function useLiveMiniWindow(ctx) {
       duration: Number(currentVideo.duration || 0),
       isReplay: extra.isReplay ?? isReplay.value,
       isLive: extra.isLive ?? !isReplay.value,
-      muted: extra.muted ?? isMuted.value,
-      canPlayWithSound: extra.canPlayWithSound ?? !isMuted.value,
-      soundMutedByUser,
+      muted: false,
+      canPlayWithSound: true,
+      soundMutedByUser: false,
       pushStatus: pushStatus.value,
       updatedAt: now,
-      ...extra,
     });
     // #endif
   }
@@ -110,14 +105,13 @@ export function useLiveMiniWindow(ctx) {
     syncLiveMiniWindowState({
       force: true,
       currentTime,
-      muted: isMuted.value,
-      canPlayWithSound: !isMuted.value,
+      muted: false,
+      canPlayWithSound: true,
+      soundMutedByUser: false,
     });
     try {
       const videoPlayer = getVideoPlayer();
-      if (videoPlayer && typeof videoPlayer.getRawPlayer === "function" && typeof videoPlayer.setMuted === "function") {
-        videoPlayer.setMuted(true);
-      } else if (videoPlayer && typeof videoPlayer.pause === "function") {
+      if (videoPlayer && typeof videoPlayer.pause === "function") {
         videoPlayer.pause();
       } else if (videoPlayer && typeof videoPlayer.stop === "function") {
         videoPlayer.stop();
@@ -198,8 +192,9 @@ export function useLiveMiniWindow(ctx) {
       videoId: targetVideoId || state.videoId || replayCurrentVideoId.value || "",
       replayIndex: Number(options.miniResumeIndex ?? state.replayIndex ?? replayCurrentIndex.value),
       currentTime: target,
-      canPlayWithSound: state.canPlayWithSound ?? !isMuted.value,
-      soundMutedByUser: state.soundMutedByUser === true,
+      muted: false,
+      canPlayWithSound: true,
+      soundMutedByUser: false,
       force: true,
     });
     return true;

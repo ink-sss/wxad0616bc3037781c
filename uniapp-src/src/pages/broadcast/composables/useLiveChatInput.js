@@ -12,6 +12,7 @@ export function useLiveChatInput({ mode, chatDisabled, getStageRef } = {}) {
   const portraitInputRef = ref(null);
   const landscapeInputRef = ref(null);
   let keyboardListenerBound = false;
+  let keyboardHeightChangeHandler = null;
 
   const bottomBarStyle = computed(() => {
     if (!inputFocused.value || keyboardHeight.value <= 0) return {};
@@ -27,10 +28,12 @@ export function useLiveChatInput({ mode, chatDisabled, getStageRef } = {}) {
 
   function bindKeyboardListener() {
     if (keyboardListenerBound || typeof uni.onKeyboardHeightChange !== "function") return;
-    keyboardListenerBound = true;
-    uni.onKeyboardHeightChange((res) => {
+    keyboardHeightChangeHandler = (res) => {
+      if (!keyboardListenerBound) return;
       keyboardHeight.value = inputFocused.value ? Number(res?.height || 0) : 0;
-    });
+    };
+    keyboardListenerBound = true;
+    uni.onKeyboardHeightChange(keyboardHeightChangeHandler);
   }
 
   function onInputFocus(event = {}) {
@@ -73,6 +76,13 @@ export function useLiveChatInput({ mode, chatDisabled, getStageRef } = {}) {
   function stopKeyboardListener() {
     inputFocused.value = false;
     keyboardHeight.value = 0;
+    if (!keyboardListenerBound) return;
+    const offKeyboardHeightChange = uni.offKeyboardHeightChange;
+    if (typeof offKeyboardHeightChange === "function" && keyboardHeightChangeHandler) {
+      offKeyboardHeightChange(keyboardHeightChangeHandler);
+    }
+    keyboardHeightChangeHandler = null;
+    keyboardListenerBound = false;
   }
 
   return {

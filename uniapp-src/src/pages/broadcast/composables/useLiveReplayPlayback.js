@@ -199,17 +199,20 @@ function createReplaySeekAndPlay(existingEl, seekSeconds, needSeekFirstSwitch, o
         console.warn("[Live] 切集 seek 失败:", e);
       }
     }
-    const wantMuted = !!(getVideoPlayer() && getVideoPlayer().muted);
-    existingEl.muted = wantMuted;
+    existingEl.muted = false;
     const playPromise = existingEl.play && existingEl.play();
     if (playPromise && typeof playPromise.catch === "function") {
       playPromise.catch((err) => {
-        console.warn("[Live] 切集播放失败，降级静音:", err);
-        existingEl.muted = true;
-        isMuted.value = true;
-        if (getVideoPlayer()) getVideoPlayer().muted = true;
-        syncLiveMiniWindowState({ force: true });
-        existingEl.play().catch(() => {});
+        console.warn("[Live] 切集有声播放失败，保持有声等待重试:", err);
+        existingEl.muted = false;
+        isMuted.value = false;
+        if (getVideoPlayer()) getVideoPlayer().muted = false;
+        syncLiveMiniWindowState({
+          force: true,
+          muted: false,
+          canPlayWithSound: true,
+          soundMutedByUser: false,
+        });
       });
     }
   };

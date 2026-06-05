@@ -1,5 +1,5 @@
 import { login as weixinLogin, normalizePhoneNumberEvent, requestMerchantTransfer } from '../../platform/weixin/index.js'
-import { bindMobileMiniProgram } from '../../api/miniprogram-login.js'
+import { bindMobileMiniProgram, persistMiniProgramLoginSession } from '../../api/miniprogram-login.js'
 
 export function toast(title) {
   uni.showToast({ title, icon: 'none' })
@@ -35,6 +35,7 @@ export function bindMiniProgramMobile(userId, event) {
 }
 
 export function saveLoginSession(data = {}) {
+  persistMiniProgramLoginSession(data)
   if (data.token) uni.setStorageSync('token', data.token)
   if (data.user_id) uni.setStorageSync('user_id', data.user_id)
   if (data.shop_supplier_id) uni.setStorageSync('shop_supplier_id', data.shop_supplier_id)

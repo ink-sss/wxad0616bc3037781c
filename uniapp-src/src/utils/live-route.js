@@ -131,10 +131,17 @@ const LIVE_SOURCE_FIELDS = [
     rank: 20,
   },
   {
-    keys: ['pullHlsUrl', 'pull_hls_url', 'adaptiveHlsUrl', 'adaptive_hls_url', 'liveAdaptiveHlsUrl', 'live_adaptive_hls_url', 'httpHlsUrl', 'http_hls_url', 'pullHttpHlsUrl', 'pull_http_hls_url', 'hlsUrl', 'hls_url', 'liveHlsUrl', 'live_hls_url', 'hlsPullUrl', 'hls_pull_url', 'm3u8Url', 'm3u8_url', 'm3u8', 'hls'],
+    keys: ['pullHlsUrl', 'pull_hls_url', 'httpHlsUrl', 'http_hls_url', 'pullHttpHlsUrl', 'pull_http_hls_url', 'hlsUrl', 'hls_url', 'liveHlsUrl', 'live_hls_url', 'hlsPullUrl', 'hls_pull_url', 'm3u8Url', 'm3u8_url', 'm3u8', 'hls'],
     type: 'hls',
     component: 'video',
     rank: 30,
+  },
+  {
+    keys: ['adaptiveHlsUrl', 'adaptive_hls_url', 'liveAdaptiveHlsUrl', 'live_adaptive_hls_url'],
+    type: 'hls',
+    component: 'video',
+    rank: 31,
+    isAdaptiveHls: true,
   },
   {
     keys: ['streamUrl', 'stream_url', 'liveUrl', 'live_url', 'pullUrl', 'pull_url', 'playUrl', 'play_url', 'sourceUrl', 'source_url', 'mediaUrl', 'media_url', 'src', 'source', 'url', 'urls'],
@@ -373,6 +380,7 @@ function pushLiveCandidate(candidates, seen, rawUrl, meta = {}) {
     type: hasExplicitType ? meta.type : detected.type,
     component: meta.component || detected.component || 'live-player',
     field: meta.field || '',
+    isAdaptiveHls: !!meta.isAdaptiveHls,
     sourceIndex: meta.sourceIndex || 0,
     rank: Number(hasExplicitType ? (meta.rank || detected.rank || 999) : (detected.rank || meta.rank || 999)),
   })

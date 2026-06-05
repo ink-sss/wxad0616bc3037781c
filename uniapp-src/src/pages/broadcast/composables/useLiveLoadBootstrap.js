@@ -32,9 +32,11 @@ export function useLiveLoadBootstrap(ctx) {
     setShowWxAddrDonePlayBtn,
     setSafeBottom,
     setIsIOSKeyboardMode,
+    setPlaybackDebugRouteOptions,
   } = ctx;
 
   onLoad(async (options) => {
+    setPlaybackDebugRouteOptions?.(options || {});
     const shouldStop = await runLiveEntryBootstrap(options || {}, {
       getLiveDetail,
       initLive,
@@ -104,5 +106,6 @@ export function useLiveLoadBootstrapRegistration(ctx) {
     setIsIOSKeyboardMode(value) {
       ctx.isIOSKeyboardMode.value = value;
     },
+    setPlaybackDebugRouteOptions: ctx.setPlaybackDebugRouteOptions,
   });
 }

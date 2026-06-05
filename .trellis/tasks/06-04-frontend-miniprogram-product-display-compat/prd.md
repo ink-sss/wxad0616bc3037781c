@@ -8,7 +8,7 @@ Make the uni-app frontend consume the server-provided `/h5/miniprogram/categorie
 
 * User selected page-level direct compatibility, not a global legacy adapter.
 * Server success envelope uses `code: 0`, so these display requests must not use the legacy `_get` success path.
-* Homepage and TabBar should use frontend yellow defaults when old `index/index` and `index/nav` are missing.
+* Homepage and TabBar should use the frontend's pre-migration default theme when old `index/index` and `index/nav` are missing.
 * The default homepage should still show a product stream and request `/h5/miniprogram/products`.
 * Product detail should keep local cart add, but direct purchase is disabled with a toast.
 
@@ -23,7 +23,7 @@ Make the uni-app frontend consume the server-provided `/h5/miniprogram/categorie
 
 ## Acceptance Criteria
 
-* [ ] Homepage opens with the yellow default search/header, default TabBar, and product stream without relying on old index endpoints.
+* [ ] Homepage opens with the pre-migration default search/header theme, default TabBar, and product stream without relying on old index endpoints.
 * [ ] Category tree renders from the new categories API or shows an empty state without throwing.
 * [ ] Product list, category product stream, and DIY product stream render mapped product data and paginate correctly.
 * [ ] Product detail renders name, images, price, stock, detail content/images, and supports multi-spec local cart add.

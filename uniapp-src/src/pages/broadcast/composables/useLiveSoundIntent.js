@@ -118,14 +118,19 @@ export function useLiveSoundIntent(ctx) {
           const p = el.play && el.play();
           if (p && typeof p.catch === "function") {
             p.catch((err) => {
-              console.warn("[Live] 暖场带声播放失败，降级静音:", err);
+              console.warn("[Live] 暖场带声播放失败，保持有声等待手势:", err);
               try {
-                el.muted = true;
-                isMuted.value = true;
+                el.muted = false;
+                el.removeAttribute("muted");
+                isMuted.value = false;
                 const videoPlayer = getVideoPlayer();
-                if (videoPlayer) videoPlayer.muted = true;
-                syncLiveMiniWindowState({ force: true });
-                el.play && el.play();
+                if (videoPlayer) videoPlayer.muted = false;
+                syncLiveMiniWindowState({
+                  force: true,
+                  muted: false,
+                  canPlayWithSound: true,
+                  soundMutedByUser: false,
+                });
               } catch (e) {}
             });
           }
@@ -167,12 +172,16 @@ export function useLiveSoundIntent(ctx) {
           const p = el.play && el.play();
           if (p && typeof p.catch === "function") {
             p.catch(() => {
-              // 有声被拒 → 降级静音播放，保证画面不黑
-              el.muted = true;
-              el.setAttribute("muted", "");
-              isMuted.value = true;
-              syncLiveMiniWindowState({ force: true });
-              el.play && el.play().catch(() => {});
+              // 有声自动播放被平台拒绝时，保持有声状态，等待用户手势/重试链路恢复。
+              el.muted = false;
+              el.removeAttribute("muted");
+              isMuted.value = false;
+              syncLiveMiniWindowState({
+                force: true,
+                muted: false,
+                canPlayWithSound: true,
+                soundMutedByUser: false,
+              });
             });
           }
         } catch (e) {

@@ -90,7 +90,7 @@ export function buildCreateOrderPayload({
     liveRoomId,
     liveTermId,
     buyerRemark,
-    source: liveRoomId ? 2 : 1,
+    source: 4,
   };
   if (couponId) payload.couponId = couponId;
   if (shareCode) payload.shareCode = shareCode;
@@ -480,10 +480,10 @@ export function useLivePurchase({
         onOrderCreated?.({ productId: product.id, quantity, orderRes });
       }
       pendingOrderId.value = orderRes.orderId || orderRes.ID || 0;
-      const payMode = await executeYeepayPayment(orderRes.orderNo, {
+      const payResult = await executeYeepayPayment(orderRes.orderNo, {
         roomCode: roomCode.value,
       });
-      if (payMode === "jsapi") {
+      if (payResult?.confirmed) {
         pendingOrderId.value = 0;
         showBuyPopup.value = false;
       }

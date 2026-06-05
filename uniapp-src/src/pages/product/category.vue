@@ -76,7 +76,7 @@
                   <view v-if="item.product_stock <= 0" class="sallsell-out"><view class="sallsell-out-btn">当前售罄</view></view>
                   <image class="product-image-2" :src="item.product_image" />
                 </view>
-                <view class="flex-1 d-c d-b-s product-info">
+                <view class="flex-1 d-c d-b-s product-info" style="height:154rpx">
                   <view class="text-ellipsis-2 f28 gray3">{{ item.product_name }}</view>
                   <view class="theme-price f36 fb price-wrap">
                     <text class="f24">￥</text>{{ item.product_min_price }}
@@ -105,6 +105,7 @@
           <view>{{ shoppingPrice }}</view>
         </view>
       </view>
+      <button class="shopping-r" @tap="Submit">去结算</button>
     </view>
 
     <view v-if="isDomHeight && osName !== 'android'" id="footBottom"></view>
@@ -446,10 +447,14 @@ export default {
 }
 </script>
 
-<style scoped>
-.category-wrap {
+<style>
+page {
   min-height: 0;
+}
+
+.category-wrap {
   background: #fff;
+  min-height: 0;
 }
 
 .index-search-box-cate {

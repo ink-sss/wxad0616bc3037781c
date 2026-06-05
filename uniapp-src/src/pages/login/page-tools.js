@@ -1,5 +1,5 @@
 import { login as weixinLogin, normalizePhoneNumberEvent } from '../../platform/weixin/index.js'
-import { bindMobileMiniProgram, loginMiniProgram } from '../../api/miniprogram-login.js'
+import { bindMobileMiniProgram, loginMiniProgram, persistMiniProgramLoginSession } from '../../api/miniprogram-login.js'
 import { loginAndRedirectWithMiniProgramWechat } from '../../services/h5-auth.js'
 import {
   buildH5AuthContext,
@@ -7,6 +7,7 @@ import {
   hasH5Token,
   redirectAfterNativeLogin,
   redirectAfterH5LoginSkipped,
+  saveNativeLoginRedirectFromQuery,
   saveH5AuthContext,
   syncH5AuthSession,
 } from '../../services/h5-auth-context.js'
@@ -29,6 +30,7 @@ export function getCurrentRedirect(defaultUrl = '/pages/user/index/index') {
 
 export function saveLoginSession(data = {}) {
   syncH5AuthSession(data)
+  persistMiniProgramLoginSession(data)
 
   if (data.token) uni.setStorageSync('token', data.token)
   if (data.user_id) uni.setStorageSync('user_id', data.user_id)
@@ -53,13 +55,16 @@ export function pluginUserInfo(event = {}) {
   )
 }
 
-export function loginWithWechatPluginProfile(vm, event = {}) {
-  const userInfo = pluginUserInfo(event)
+export function pluginLoginCode(event = {}) {
+  return event?.detail?.detail?.code || event?.detail?.code || event?.code || ''
+}
+
+export function loginWithWechatDevtoolsProfile() {
   const profile = {
-    nickName: userInfo.nickName || userInfo.nickname || '',
-    nickname: userInfo.nickname || userInfo.nickName || '',
-    avatarUrl: userInfo.avatarUrl || userInfo.avatar || '',
-    avatar: userInfo.avatar || userInfo.avatarUrl || '',
+    nickName: 'ink',
+    nickname: 'ink',
+    avatarUrl: 'https://thirdwx.qlogo.cn/mmopen/vi_32/g6IhnkVoZ0pBaoe9Z4FXyIwZJS922PoYQiay9tZiaExCibdxOJuRkSkiaubqxbx3Rib1uOGSUyOlNUg9QkBFGM5dP8w/132',
+    avatar: 'https://thirdwx.qlogo.cn/mmopen/vi_32/g6IhnkVoZ0pBaoe9Z4FXyIwZJS922PoYQiay9tZiaExCibdxOJuRkSkiaubqxbx3Rib1uOGSUyOlNUg9QkBFGM5dP8w/132',
   }
 
   return loginCode().then((code) => loginMiniProgram({
@@ -68,6 +73,55 @@ export function loginWithWechatPluginProfile(vm, event = {}) {
     avatarUrl: profile.avatarUrl,
   })).then((data = {}) => {
     if (!data.token) throw new Error('登录接口未返回 token')
+    console.log('[MiniProgramLogin] devtools login success', {
+      hasToken: !!data.token,
+      user_id: data.user_id || '',
+      hasImUser: !!data.im_user_id,
+    })
+    const session = { ...profile, ...data }
+    saveLoginSession(session)
+    return session
+  })
+}
+
+function resolvePluginLoginCode(event = {}) {
+  const fallbackCode = pluginLoginCode(event)
+  return loginCode().catch((error) => {
+    if (fallbackCode) {
+      console.warn('[MiniProgramLogin] wx.login failed, fallback to plugin code', error)
+      return fallbackCode
+    }
+    throw error
+  })
+}
+
+export function loginWithWechatPluginProfile(vm, event = {}) {
+  const userInfo = pluginUserInfo(event)
+  const code = pluginLoginCode(event)
+  const profile = {
+    nickName: userInfo.nickName || userInfo.nickname || '',
+    nickname: userInfo.nickname || userInfo.nickName || '',
+    avatarUrl: userInfo.avatarUrl || userInfo.avatar || '',
+    avatar: userInfo.avatar || userInfo.avatarUrl || '',
+  }
+
+  console.log('[MiniProgramLogin] plugin loginSuccess payload', {
+    hasPluginCode: !!code,
+    hasNickName: !!profile.nickName,
+    hasAvatarUrl: !!profile.avatarUrl,
+  })
+
+  return resolvePluginLoginCode(event).then((loginCodeValue) => loginMiniProgram({
+    code: loginCodeValue,
+    nickName: profile.nickName,
+    avatarUrl: profile.avatarUrl,
+  })).then((data = {}) => {
+    if (!data.token) throw new Error('登录接口未返回 token')
+    console.log('[MiniProgramLogin] /h5/miniprogram/login success', {
+      hasToken: !!data.token,
+      user_id: data.user_id || '',
+      hasImUser: !!data.im_user_id,
+    })
     const session = { ...profile, ...data }
     saveLoginSession(session)
     return session
@@ -75,6 +129,7 @@ export function loginWithWechatPluginProfile(vm, event = {}) {
 }
 
 export function buildLoginContext(query = {}, fallback = '/pages/center/index') {
+  saveNativeLoginRedirectFromQuery(query)
   const redirect = query.redirect || getCurrentRedirect(fallback) || getCurrentPageUrl(fallback)
   return saveH5AuthContext(buildH5AuthContext({ ...query, redirect }))
 }

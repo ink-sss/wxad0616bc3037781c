@@ -42,6 +42,11 @@ Components in the uni-app source project are Vue single-file components under
   navigation row that needs horizontal layout should define `display: flex`,
   `flex-direction: row`, and `align-items: center` on its own selector instead
   of relying only on classes such as `d-s-c`.
+- For mp-weixin component internals, prefer state classes and selectors inside
+  the component's own scoped style over parent `:deep()` overrides. Mini Program
+  style isolation can make parent deep selectors unreliable for replacing child
+  images or backgrounds; pass a prop/class state into the child and style the
+  child-owned node directly.
 
 ---
 

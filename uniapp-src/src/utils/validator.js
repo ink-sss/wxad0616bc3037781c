@@ -1,6 +1,6 @@
 import { utils } from '../common/utils.js';
-import { config } from '../env/config.js';
 import { hasWeixinApi, requestSubscribeMessage } from '../platform/weixin/index.js';
+import { getRuntimeConfig } from './runtime-config.js';
 
 function safeMenuButtonRect() {
   if (typeof uni.getMenuButtonBoundingClientRect === 'function') {
@@ -24,6 +24,7 @@ function safeWindowInfo() {
 }
 
 export function validator(app) {
+  const config = getRuntimeConfig();
   app.config.globalProperties.getAppId = function getAppId() {
     return uni.getStorageSync('me')
       ? uni.getStorageSync('me') || config.app_id || 10001

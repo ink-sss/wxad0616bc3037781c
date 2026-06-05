@@ -75,10 +75,11 @@
       class="live-video"
       :src="displayVideoUrl"
       mode="live"
-      object-fit="cover"
+      object-fit="fillCrop"
       :autoplay="true"
-      :muted="isMuted"
-      :sound-mode="isMuted ? 'speaker' : 'speaker'"
+      :muted="false"
+      sound-mode="speaker"
+      :mute-on-audio-conflict="false"
       :min-cache="1"
       :max-cache="3"
       :orientation="mode === 'portrait' ? 'vertical' : 'horizontal'"
@@ -104,6 +105,7 @@
       :show-play-btn="false"
       :show-center-play-btn="false"
       :show-fullscreen-btn="false"
+      :show-mute-btn="false"
       :enable-progress-gesture="false"
       object-fit="cover"
       :style="{
@@ -112,7 +114,7 @@
         backgroundPosition: 'center',
         backgroundColor: '#000',
       }"
-      :muted="isMuted"
+      :muted="false"
       :autoplay="true"
       preload="auto"
       :poster="videoPoster"
@@ -310,7 +312,7 @@
       <view class="goods-shopping-li">
         <view class="toShopping">
           <view v-if="goShoppingNotice.productImage" class="goods-thumb">
-            <image id="goodsPic" class="goodsPic" :src="goShoppingNotice.productImage" mode="aspectFill" />
+            <image class="goodsPic" :src="goShoppingNotice.productImage" mode="aspectFill" />
           </view>
           <view class="shoppingText">
             <view class="shoppingTextName">
@@ -915,6 +917,7 @@ const {
 	  onBuyAddressSaved, isTruthyFlag, onSignedDone, enterLive, onSubscribePush, onTabChange, openCommentPrizeRuleModal, openWatchRewardPanel,
 	  handleLivePlayerFailure, markPlaybackReady, retryPlayback
 	} = props.a;
+const recordPlaybackDebugEvent = props.a.recordPlaybackDebugEvent || (() => {});
 const handleVideoPlayerEnded = props.a.handleVideoPlayerEnded || (() => {});
 
 let frameCallbackPending = false;
@@ -973,11 +976,13 @@ function markVideoFrameReady(event) {
   }
   if (videoFrameReady.value) return;
   const el = event?.target;
+  const currentTime = Number(el?.currentTime ?? event?.detail?.currentTime ?? 0);
   if (!el) {
     if (
       event?.type === "loadeddata" ||
       event?.type === "playing" ||
-      event?.type === "live-player-netstatus"
+      event?.type === "live-player-netstatus" ||
+      (event?.type === "timeupdate" && currentTime > 0)
     ) {
       commitVideoFrameReady(event?.type || "media-event");
     }
@@ -992,7 +997,6 @@ function markVideoFrameReady(event) {
     });
     return;
   }
-  const currentTime = Number(el?.currentTime ?? event?.detail?.currentTime ?? 0);
   if (
     event?.type === "loadeddata" ||
     event?.type === "playing" ||
@@ -1005,6 +1009,11 @@ function markVideoFrameReady(event) {
 
 function handleVideoPlay(event) {
   setIsPlaying(true);
+  recordPlaybackDebugEvent("stage_video_play", {
+    mode: "portrait",
+    type: event?.type || "",
+    currentTime: Number(event?.target?.currentTime ?? event?.detail?.currentTime ?? 0),
+  });
   if (isReplay.value) {
     replayPlaybackConfirmed.value = true;
   }
@@ -1015,6 +1024,9 @@ function handleVideoPlay(event) {
 
 function handleVideoPause() {
   setIsPlaying(false);
+  recordPlaybackDebugEvent("stage_video_pause", {
+    mode: "portrait",
+  });
   replayPlaybackConfirmed.value = false;
 }
 
@@ -1025,6 +1037,11 @@ function handleVideoEnded() {
 
 function handleLivePlayerStateChange(event) {
   const code = Number(event?.detail?.code || 0);
+  recordPlaybackDebugEvent("stage_live_player_state", {
+    mode: "portrait",
+    code,
+    detail: event?.detail || {},
+  });
   if (LIVE_PLAYER_READY_CODES.includes(code)) {
     setIsPlaying(true);
     commitVideoFrameReady("live-player-state");
@@ -1042,6 +1059,10 @@ function handleLivePlayerStateChange(event) {
 
 function handleLivePlayerNetStatus(event) {
   const info = event?.detail?.info || event?.detail || {};
+  recordPlaybackDebugEvent("stage_live_player_netstatus", {
+    mode: "portrait",
+    info,
+  });
   if (hasLivePlayerNetActivity(info)) {
     setIsPlaying(true);
     commitVideoFrameReady("live-player-netstatus");
@@ -1081,8 +1102,15 @@ function handleVideoError(event, sourceUrl = "") {
 }
 
 function handleVideoTimeUpdate(event) {
-  markVideoFrameReady(event);
-  onVideoTimeUpdate(event);
+  const normalizedEvent = event?.type ? event : { ...(event || {}), type: "timeupdate" };
+  recordPlaybackDebugEvent("stage_video_timeupdate", {
+    mode: "portrait",
+    type: normalizedEvent?.type || "",
+    hasTarget: !!normalizedEvent?.target,
+    currentTime: Number(normalizedEvent?.target?.currentTime ?? normalizedEvent?.detail?.currentTime ?? 0),
+  });
+  markVideoFrameReady(normalizedEvent);
+  onVideoTimeUpdate(normalizedEvent);
 }
 
 // 快捷回复：点击标签直接发送消息，不填入输入框

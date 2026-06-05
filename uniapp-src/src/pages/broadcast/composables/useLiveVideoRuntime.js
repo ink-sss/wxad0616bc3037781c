@@ -2,6 +2,8 @@
  * 小程序媒体组件运行时能力。
  * 职责边界：恢复 live-player/video 播放；不查找 DOM，不保存播放业务状态。
  */
+import { applyMiniProgramSoundPlayback } from "./useMiniProgramSoundPlayback.js";
+
 export function useLiveVideoRuntime(ctx) {
   const {
     videoUrl,
@@ -22,20 +24,6 @@ export function useLiveVideoRuntime(ctx) {
 
   function applyInlineVideoAttrs() {}
 
-  function invokeContextPlay(context, methods = ["play"]) {
-    if (!context) return false;
-    let invoked = false;
-    methods.forEach((method) => {
-      try {
-        if (typeof context[method] === "function") {
-          context[method]();
-          invoked = true;
-        }
-      } catch (e) {}
-    });
-    return invoked;
-  }
-
   function shouldPreferVideoContext() {
     if (isReplay?.value) return true;
     if (mediaSourceComponent?.value === "video") return true;
@@ -54,27 +42,12 @@ export function useLiveVideoRuntime(ctx) {
   }
 
   function tryPlayNativeContext(preferVideo = false) {
-    const tryVideo = () => {
-      try {
-        const videoCtx = createMediaContext?.("liveVideo", "video") ||
-          (typeof uni.createVideoContext === "function" ? uni.createVideoContext("liveVideo") : null);
-        return invokeContextPlay(videoCtx, ["play"]);
-      } catch (e) {}
-      return false;
-    };
-    const tryLive = () => {
-      try {
-        const liveCtx = createMediaContext?.("liveVideo", "live-player") ||
-          (typeof uni.createLivePlayerContext === "function" ? uni.createLivePlayerContext("liveVideo") : null);
-        return invokeContextPlay(liveCtx, ["play", "resume"]);
-      } catch (e) {}
-      return false;
-    };
-    const knownComponent = getKnownMediaComponent();
-    if (knownComponent === "video") return tryVideo();
-    if (knownComponent === "live-player") return tryLive();
-    if (preferVideo) return tryVideo() || tryLive();
-    return tryLive() || tryVideo();
+    return applyMiniProgramSoundPlayback({
+      id: "liveVideo",
+      preferLivePlayer: !preferVideo,
+      knownComponent: getKnownMediaComponent(),
+      createMediaContext,
+    });
   }
 
   function resumeVideoPlayback(delay = 0, options = {}) {

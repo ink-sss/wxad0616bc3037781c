@@ -1,4 +1,4 @@
-import config from '../env/config.js'
+import { getRuntimeConfig } from '../utils/runtime-config.js'
 
 function toNumber(value, fallback = 0) {
   const number = Number(value)
@@ -38,6 +38,7 @@ function buildSkuId(sku = {}) {
 }
 
 function requestDisplayApi(path, data = {}) {
+  const config = getRuntimeConfig()
   const baseUrl = normalizeBaseUrl(config.h5_api_url || config.h5_url || config.app_url)
   const requestData = {
     ...data,

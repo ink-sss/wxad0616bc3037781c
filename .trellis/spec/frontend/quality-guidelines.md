@@ -186,8 +186,15 @@ await wechatSilentLogin({ code, sourceClient: "mp-weixin" });
 
 - Live source order must prefer RTMP before FLV. HLS/m3u8 is a fallback only
   when routed to a component that can render it.
+- WeChat Developer Tools and explicit HLS/video debug paths may prefer HLS
+  through `video`, but normal HLS fields (`pullHlsUrl`, `httpHlsUrl`,
+  `m3u8Url`) must stay ahead of adaptive HLS fields (`adaptiveHlsUrl`,
+  `liveAdaptiveHlsUrl`) unless adaptive HLS is the only viable HLS candidate.
 - Live candidates must carry `{ url, type, component }`, where RTMP/FLV use
   `live-player`; replay uses `video`.
+- Live candidates from adaptive HLS fields must carry `isAdaptiveHls` so source
+  selection and playback debug output can distinguish ABR streams from the
+  origin/default HLS stream.
 - `/h5/live/streamInf` is not just a fallback for missing detail URLs. Fetch it
   for live rooms when `roomCode` exists so a bad detail FLV cannot mask a usable
   RTMP stream.
@@ -214,6 +221,9 @@ await wechatSilentLogin({ code, sourceClient: "mp-weixin" });
 - Static scan of broadcast source and `src/utils/live-route.js` finds no H5
   browser globals/packages.
 - Focused source-order sanity check confirms RTMP sorts before FLV and HLS.
+- Focused HLS sanity check confirms normal HLS sorts before adaptive HLS in
+  Developer Tools/video paths, with adaptive HLS used only when no normal HLS
+  source exists.
 - WeChat Developer Tools and real-device validation remain required for actual
   `live-player` playback.
 

@@ -3,6 +3,7 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import { installStore } from './store'
 import { installSharedRuntime } from './utils/install.js'
+import { initPageSpy } from '@/utils/pageSpy.js'
 
 export function createApp() {
   const app = createSSRApp(App)
@@ -16,6 +17,7 @@ export function createApp() {
     source: 'compiled-mp-weixin',
     target: 'uni-app-vue3-js',
   }
+  app.config.globalProperties.$pageSpy = initPageSpy()
 
   return {
     app,

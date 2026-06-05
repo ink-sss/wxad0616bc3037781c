@@ -129,7 +129,7 @@ export function createVideoPlayer(options = {}) {
     url: options.url || '',
     backupUrl: options.backupUrl || '',
     live: !!options.live,
-    muted: !!options.muted,
+    muted: false,
     onEnded: options.onEnded || null,
     play() {
       try { getContext()?.play?.() } catch (error) {}
@@ -143,12 +143,18 @@ export function createVideoPlayer(options = {}) {
     seek(time = 0) {
       try { getVideoContext()?.seek?.(Number(time || 0)) } catch (error) {}
     },
-    setMuted(value) {
-      this.muted = !!value
+    setMuted() {
+      this.muted = false
+      const context = getContext()
+      try { context?.setMuted?.(false) } catch (error) {}
+      try { context?.setVolume?.(1) } catch (error) {}
+      try { context?.unmute?.() } catch (error) {}
+      try { context?.setSoundMode?.('speaker') } catch (error) {}
     },
     unmute() {
       this.setMuted(false)
       this.play()
+      try { getContext()?.resume?.() } catch (error) {}
     },
     playFromUserGesture() {
       this.play()

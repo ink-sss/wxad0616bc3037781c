@@ -1,6 +1,6 @@
 <template>
   <view class="login-page" :data-theme="theme && theme()">
-    <view class="brand">
+    <view class="brand" @click="handleShowPageSpy">
       <image class="logo" mode="aspectFit" :src="setting.login_logo || config.pic_url + '/live/default_logo.jpeg'" />
       <view class="name">{{ setting.name }}</view>
       <view v-if="setting.login_desc" class="desc">{{ setting.login_desc }}</view>
@@ -16,6 +16,7 @@
         @loginFail="loginFail"
         @loginCancel="loginCancel"
       />
+      <button class="primary" :loading="submitting" @tap="devtoolsLogin">开发者工具登录</button>
       <!-- #endif -->
       <!-- #ifndef MP-WEIXIN -->
       <button class="primary" :loading="submitting" @tap="userLogin">微信一键登录</button>
@@ -39,11 +40,13 @@ import {
   buildLoginContext,
   h5MiniWechatLogin,
   loginCode,
+  loginWithWechatDevtoolsProfile,
   loginWithWechatPluginProfile,
   redirectAfterExistingH5Login,
   redirectAfterSkippedH5Login,
   toast,
 } from './page-tools.js'
+import { fetchLoginSetting } from '../../api/login.js'
 import { preLoginMiniProgram } from '../../api/miniprogram-login.js'
 
 export default {
@@ -82,9 +85,13 @@ export default {
       return false
     },
     getCodeType() {
-      this._post('index/loginSetting', {}, (res) => {
-        this.setting = Object.assign(this.setting, res.data.setting || {})
-      })
+      fetchLoginSetting()
+        .then((data) => {
+          this.setting = Object.assign(this.setting, data.setting || {})
+        })
+        .catch((error) => {
+          console.warn('[MiniProgramLogin] loginSetting failed', error)
+        })
     },
     loadWechatLoginStatus() {
       this.loading = true
@@ -122,9 +129,15 @@ export default {
       this.submitting = true
       uni.showLoading({ title: '正在处理', mask: true })
       try {
+        console.log('[MiniProgramLogin] loginSuccess handler', {
+          detailKeys: Object.keys(event?.detail || {}),
+          hasCode: !!(event?.detail?.code || event?.detail?.detail?.code),
+          hasUserInfo: !!(event?.detail?.userInfo || event?.detail?.detail?.userInfo),
+        })
         const data = await loginWithWechatPluginProfile(this, event)
         this.afterLogin(data)
       } catch (error) {
+        console.error('[MiniProgramLogin] login failed', error)
         const message = error?.message || error?.msg || '授权失败，请重新登录'
         toast(message)
       } finally {
@@ -137,6 +150,23 @@ export default {
     },
     loginCancel() {
       toast('授权失败，请重新登录')
+    },
+    async devtoolsLogin() {
+      if (!this.ensureRead() || this.submitting) return
+      this.submitting = true
+      uni.showLoading({ title: '正在处理', mask: true })
+      try {
+        console.log('[MiniProgramLogin] devtools login handler')
+        const data = await loginWithWechatDevtoolsProfile()
+        this.afterLogin(data)
+      } catch (error) {
+        console.error('[MiniProgramLogin] devtools login failed', error)
+        const message = error?.message || error?.msg || '授权失败，请重新登录'
+        toast(message)
+      } finally {
+        this.submitting = false
+        uni.hideLoading()
+      }
     },
     async userLogin() {
       if (!this.ensureRead() || this.submitting) return
@@ -164,7 +194,17 @@ export default {
   },
 }
 </script>
+<script setup>
+  import {  getCurrentInstance } from 'vue'
+  const instance = getCurrentInstance()
 
+  const $pageSpy = instance?.appContext.config.globalProperties.$pageSpy
+ const handleShowPageSpy = () => {
+  console.log($pageSpy && typeof $pageSpy.showPanel === 'function','$pageSpy');
+  
+  if ($pageSpy && typeof $pageSpy.showPanel === 'function') $pageSpy.showPanel()
+ }
+</script>
 <style scoped>
 .login-page { min-height: 100vh; padding: 96rpx 48rpx; background: #f7f7f7; box-sizing: border-box; }
 .brand { display: flex; flex-direction: column; align-items: center; margin-bottom: 80rpx; color: #333; }

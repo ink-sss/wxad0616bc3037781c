@@ -111,8 +111,7 @@ export function useLiveDisplayState(ctx) {
     return liveCover.value || "";
   });
   // poster 策略：所有平台都挂 poster，避免首帧到达前黑屏。
-  // - iOS：muted autoplay 必成，但首帧解码/绘制需 1~2s，期间挂 poster 填黑屏
-  // - Android X5：muted autoplay 可能被拒，后续 _seekToShowFrame 会用真实帧覆盖 poster
+  // 当前直播间要求默认有声，若平台拒绝有声自动播放，则等待用户手势/重试链路恢复。
   // 浏览器原生行为：首帧一到自动用 video 内容覆盖 poster，GPU 切换无闪烁
   const videoPoster = computed(() => currentVideoPoster.value);
 

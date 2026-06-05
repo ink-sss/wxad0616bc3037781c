@@ -497,8 +497,8 @@ function navigateRefund(item) {
 async function handlePayAction(item) {
   try {
     const code = String(item.roomCode || liveRoomCode.value || "").trim();
-    const payMode = await executeYeepayPayment(item.orderNo, { roomCode: code });
-    if (payMode === "jsapi") {
+    const payResult = await executeYeepayPayment(item.orderNo, { roomCode: code });
+    if (payResult?.confirmed) {
       uni.showToast({ title: "支付成功", icon: "success" });
       setTimeout(() => {
         uni.redirectTo({

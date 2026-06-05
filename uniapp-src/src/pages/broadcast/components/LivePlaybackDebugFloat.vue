@@ -2,8 +2,7 @@
   <view
     v-if="show"
     class="playback-debug-float"
-    @click.stop
-    @touchstart.stop
+    @click.stop="clickBtn"
   >
     <view class="playback-debug-float__title">播放调试</view>
     <view class="playback-debug-float__summary">{{ summary }}</view>
@@ -12,13 +11,13 @@
       class="playback-debug-float__quality"
     >
       <view class="playback-debug-float__quality-state">{{ qualityText }}</view>
-      <view class="playback-debug-float__quality-actions">
+      <view class="playback-debug-float__quality-actions" @tap.stop>
         <view
           v-for="item in qualityControls"
           :key="item.quality"
           class="playback-debug-float__quality-btn"
           :class="{ 'is-active': item.active, 'is-disabled': item.disabled }"
-          @click.stop="!item.disabled && $emit('quality', item.quality)"
+          @tap.stop="!item.disabled && $emit('quality', item.quality)"
         >
           {{ item.label }}
         </view>
@@ -27,11 +26,11 @@
     <view class="playback-debug-float__actions">
       <view
         class="playback-debug-float__btn"
-        @click.stop="$emit('copy')"
+        @click="clickBtn"
       >
         复制信息
       </view>
-      <text class="playback-debug-float__status">{{ copyStatus }}</text>
+      <view class="playback-debug-float__status">{{ copyStatus }}</view>
     </view>
   </view>
 </template>
@@ -59,8 +58,10 @@ defineProps({
     default: "",
   },
 });
-
-defineEmits(["copy", "quality"]);
+const emit = defineEmits(["copy", "quality"]);
+const clickBtn = () => {
+  emit('copy');
+}
 </script>
 
 <style lang="scss" scoped>

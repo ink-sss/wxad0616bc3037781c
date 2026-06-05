@@ -1,15 +1,17 @@
 import { h5Post } from './h5.js'
-import { config } from '../env/config.js'
+import { getRuntimeConfig } from '../utils/runtime-config.js'
 
-export const MINIPROGRAM_LOGIN_APP_ID = 'wx43134e071b752953'
+export const MINIPROGRAM_LOGIN_APP_ID = 'wx3bf933f8a2018d8d'
+const OPEN_ID_KEYS = ['mini_program_open_id', 'open_id', 'openId', 'openid']
 
 export function getMiniProgramAppId() {
+  const runtimeConfig = getRuntimeConfig()
+  if (runtimeConfig.miniprogram_appid || runtimeConfig.appid) return runtimeConfig.miniprogram_appid || runtimeConfig.appid
+
   try {
-    const stored = uni.getStorageSync('miniprogram_login_app_id') || uni.getStorageSync('miniprogram_app_id')
+    const stored = uni.getStorageSync('miniprogram_app_id')
     if (stored) return stored
   } catch (error) {}
-
-  if (config.miniprogram_login_app_id) return config.miniprogram_login_app_id
 
   try {
     const accountInfo =
@@ -22,12 +24,45 @@ export function getMiniProgramAppId() {
     // Fall through to configured values for non-mp-weixin contexts.
   }
 
-  return config.miniprogram_appid || config.appid || MINIPROGRAM_LOGIN_APP_ID
+  return MINIPROGRAM_LOGIN_APP_ID
 }
 
 export function getShopSupplierId() {
   const app = getApp()
-  return app?.globalData?.shop_supplier_id || uni.getStorageSync('shop_supplier_id') || ''
+  const value = app?.globalData?.shop_supplier_id || uni.getStorageSync('shop_supplier_id') || 0
+  const id = Number(value)
+  return Number.isFinite(id) ? id : 0
+}
+
+export function getStoredMiniProgramOpenId() {
+  try {
+    for (const key of OPEN_ID_KEYS) {
+      const value = uni.getStorageSync(key)
+      if (value) return value
+    }
+  } catch (error) {}
+  return ''
+}
+
+export function persistMiniProgramOpenId(openId) {
+  if (!openId) return ''
+  try {
+    OPEN_ID_KEYS.forEach((key) => uni.setStorageSync(key, openId))
+  } catch (error) {}
+  try {
+    const app = getApp()
+    if (app?.globalData) {
+      app.globalData.open_id = openId
+      app.globalData.openId = openId
+    }
+  } catch (error) {}
+  return openId
+}
+
+export function persistMiniProgramLoginSession(data = {}) {
+  const openId = data.open_id || data.openId || data.openid || ''
+  persistMiniProgramOpenId(openId)
+  return data
 }
 
 export function buildMiniProgramLoginPayload(payload = {}) {
@@ -39,15 +74,29 @@ export function buildMiniProgramLoginPayload(payload = {}) {
 }
 
 export function preLoginMiniProgram(payload = {}) {
-  return h5Post('/h5/miniprogram/preLogin', buildMiniProgramLoginPayload(payload), {
-    authRedirect: false,
+  const data = buildMiniProgramLoginPayload(payload)
+  console.log('[MiniProgramLogin] POST /h5/miniprogram/preLogin', {
+    app_id: data.app_id,
+    shop_supplier_id: data.shop_supplier_id,
+    hasCode: !!data.code,
   })
+  return h5Post('/h5/miniprogram/preLogin', data, {
+    authRedirect: false,
+  }).then(persistMiniProgramLoginSession)
 }
 
 export function loginMiniProgram(payload = {}) {
-  return h5Post('/h5/miniprogram/login', buildMiniProgramLoginPayload(payload), {
-    authRedirect: false,
+  const data = buildMiniProgramLoginPayload(payload)
+  console.log('[MiniProgramLogin] POST /h5/miniprogram/login', {
+    app_id: data.app_id,
+    shop_supplier_id: data.shop_supplier_id,
+    hasCode: !!data.code,
+    hasNickName: !!data.nickName,
+    hasAvatarUrl: !!data.avatarUrl,
   })
+  return h5Post('/h5/miniprogram/login', data, {
+    authRedirect: false,
+  }).then(persistMiniProgramLoginSession)
 }
 
 export function bindMobileMiniProgram(payload = {}) {
@@ -56,5 +105,5 @@ export function bindMobileMiniProgram(payload = {}) {
     ...payload,
   }, {
     authRedirect: false,
-  })
+  }).then(persistMiniProgramLoginSession)
 }

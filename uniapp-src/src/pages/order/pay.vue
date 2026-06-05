@@ -194,19 +194,19 @@ async function doPay() {
   }
   status.value = "paying";
   try {
-    const payMode = await executeYeepayPayment(orderNo.value, {
+    const payResult = await executeYeepayPayment(orderNo.value, {
       channelType: preferredChannelType.value || 4,
       roomCode: liveRoomCode.value,
     });
-    if (payMode === "cashier") {
+    if (!payResult?.confirmed) {
       return;
     }
     status.value = "success";
   } catch (err) {
     status.value = "fail";
     errorMsg.value = err?.message || "支付失败，请重试";
-    // 支付失败/取消：重置订单已读状态，触发待付款角标
-    if (orderId.value) {
+    // 支付失败/取消：重置订单已读状态，触发待付款角标。支付结果待确认时不改未读状态。
+    if (orderId.value && err?.code !== "PAY_RESULT_PENDING") {
       markOrderUnread(orderId.value).catch(() => {});
     }
   }

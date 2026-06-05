@@ -33,6 +33,8 @@
     <home-push v-if="is_homepush" :homepush-data="homepush_data" @close="is_homepush = false" />
     <search-product v-if="showSearch" :is-show="showSearch" @close="closeSearch" />
     <live-tab />
+    <view @click="clickBtn">11234</view>
+
     <tab-bar />
   </view>
 </template>
@@ -44,56 +46,25 @@ import SearchProduct from '../../components/searchProduct.vue'
 import LiveTab from '../../components/liveTab.vue'
 import TabBar from '../../components/tabbar/footTabbar.vue'
 import { scanQrCode } from '../../platform/weixin/scan'
+import { defaultHomeData, DEFAULT_THEME } from '../../utils/default-style-data.js'
+function normalizeDiyItems(items) {
+  if (Array.isArray(items)) return items
+  if (!items || typeof items !== 'object') return []
 
-function defaultHomeItems() {
-  return [
-    {
-      type: 'search',
-      params: {
-        title_type: 'text',
-        title: '首页',
-        searchText: '搜索商品'
-      },
-      style: {
-        background: '#ffcc00',
-        searchBackGround: '#ffffff',
-        searchColor: '#999999',
-        titleTextColor: '#333333',
-        paddingLeft: 0,
-        paddingTop: 0,
-        paddingBottom: 0
-      }
-    },
-    {
-      type: 'product',
-      data: [],
-      params: {
-        column: 2,
-        productName: true,
-        productPrice: true,
-        linePrice: true,
-        productSales: true,
-        comment: false,
-        showCart: 0
-      },
-      style: {
-        background: '#f7f7f7',
-        bgcolor_color1: '#ffffff',
-        bgcolor_color2: '#ffffff',
-        product_name_color: '#333333',
-        product_price_color: '#ff5704',
-        line_price_color: '#999999',
-        product_sales_color: '#999999',
-        paddingLeft: 10,
-        paddingTop: 10,
-        paddingBottom: 20,
-        topRadio: 8,
-        bottomRadio: 8,
-        productTopRadio: 8,
-        productBottomRadio: 0
-      }
-    }
-  ]
+  return Object.keys(items)
+    .filter((key) => key !== 'page')
+    .sort((left, right) => Number(left) - Number(right))
+    .map((key) => items[key])
+}
+
+function hasDefaultProductStream(items) {
+  return items.some((item) => item && item.type === 'product' && Array.isArray(item.data) && item.data.length === 0)
+}
+
+function ensureDefaultProductStream(items) {
+  if (hasDefaultProductStream(items)) return items
+  const defaultProduct = normalizeDiyItems(defaultHomeData().items).find((item) => item && item.type === 'product')
+  return defaultProduct ? items.concat(defaultProduct) : items
 }
 
 export default {
@@ -188,27 +159,55 @@ export default {
       uni.stopPullDownRefresh()
     },
     applyDefaultTheme() {
-      uni.setStorageSync('theme', 2)
-      if (this.$store?.commit) this.$store.commit('changeTheme', 2)
+      uni.setStorageSync('theme', DEFAULT_THEME)
+      if (this.$store?.commit) this.$store.commit('changeTheme', DEFAULT_THEME)
+    },
+    applyHomeData(data) {
+      const nextData = data || defaultHomeData()
+      const page = nextData.page || (nextData.items && nextData.items.page) || { params: { name: '首页' } }
+      const setting = nextData.setting || {}
+      const collection = setting.collection || {}
+      const officia = setting.officia || {}
+      const homepush = setting.homepush || {}
+
+      this.items = ensureDefaultProductStream(normalizeDiyItems(nextData.items))
+      this.homeShare = page.params || { share_title: '首页', share_img: '' }
+      this.is_collection = collection.status === 1 || collection.status === '1'
+      this.is_follow = officia.status || '0'
+      this.is_homepush = homepush.is_open === 1 || homepush.is_open === '1'
+      this.homepush_data = homepush
+      this.setPage(page)
+    },
+    clickBtn() {
+      const pageSpy = this.$pageSpy
+      console.log('clickBtn', pageSpy)
+      if (pageSpy && typeof pageSpy.showPanel === 'function') pageSpy.showPanel()
     },
     getData() {
       this.loadError = ''
       uni.showLoading({ title: '加载中' })
       this.applyDefaultTheme()
-      this.items = defaultHomeItems()
-      this.homeShare = { share_title: '首页', share_img: '' }
-      this.is_collection = false
-      this.is_follow = '0'
-      this.is_homepush = false
-      this.setPage({ params: { name: '首页' } })
-      this.finishLoading()
+      if (typeof this._get !== 'function') {
+        this.applyHomeData(defaultHomeData())
+        this.finishLoading()
+        return
+      }
+
+      this._get('index/index', { url: this.url }, (res) => {
+        this.applyHomeData(res.data || defaultHomeData())
+        this.finishLoading()
+      }, () => {
+        this.applyHomeData(defaultHomeData())
+        this.finishLoading()
+      })
     },
     setPage(page) {
       const params = page.params || {}
+      const style = page.style || {}
       uni.setNavigationBarTitle({ title: params.name || '首页' })
       uni.setNavigationBarColor({
-        frontColor: '#000000',
-        backgroundColor: '#ffcc00'
+        frontColor: style.titleTextColor === 'white' ? '#ffffff' : '#000000',
+        backgroundColor: style.titleBackgroundColor || '#fd642a'
       })
     },
     toggleInit() {

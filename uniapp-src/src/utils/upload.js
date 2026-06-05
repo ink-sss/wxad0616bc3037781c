@@ -1,4 +1,4 @@
-import { config } from '../env/config.js';
+import { getRuntimeConfig } from './runtime-config.js';
 
 function parseUploadData(data) {
   if (typeof data === 'object') return data;
@@ -6,8 +6,9 @@ function parseUploadData(data) {
 }
 
 function resolveRuntimeContext(context = {}) {
+  const config = getRuntimeConfig(context.config);
   return {
-    config: context.config || config,
+    config,
     websiteUrl: context.websiteUrl || config.app_url,
     getAppId: typeof context.getAppId === 'function' ? context.getAppId.bind(context) : () => config.app_id,
     doLogin: typeof context.doLogin === 'function' ? context.doLogin.bind(context) : () => {},

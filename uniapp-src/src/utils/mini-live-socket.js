@@ -126,6 +126,40 @@ function getObjectPayload(value) {
   return value && typeof value === 'object' && !Array.isArray(value) ? value : {}
 }
 
+function parseJsonObject(text = '') {
+  if (!text) return {}
+  try {
+    const value = JSON.parse(text)
+    return getObjectPayload(value)
+  } catch (error) {
+    return {}
+  }
+}
+
+function normalizeLegacySystemNotice(data = {}) {
+  const field =
+    data?.payload?.userDefinedField ||
+    data?.payload?.user_defined_field ||
+    data?.userDefinedField ||
+    data?.user_defined_field ||
+    data?.data?.payload?.userDefinedField ||
+    data?.data?.payload?.user_defined_field ||
+    data?.data?.userDefinedField ||
+    data?.data?.user_defined_field ||
+    ''
+  if (typeof field !== 'string' || !field.includes('@ExplainEdit---')) return null
+  const raw = field.split('@ExplainEdit---').pop() || ''
+  const product = parseJsonObject(raw)
+  return {
+    ...data,
+    ...product,
+    type: 'product_status_update',
+    action: product.action || 'explaining',
+    data: product,
+    product,
+  }
+}
+
 function getMergedPayload(data = {}) {
   const nested = getObjectPayload(data.data)
   const nestedPayload = getObjectPayload(nested.payload)
@@ -180,9 +214,35 @@ function normalizeByName(data = {}) {
   if (matchEventName(name, ['leave', 'quit'])) return { ...data, type: 'leave', nick: data.nickname || data.nick || data.data?.nickname || data.data?.nick }
   if (matchEventName(name, ['online_count', 'viewer_count', 'onlinecount', 'viewercount'])) return { ...data, type: 'viewer_count', count: data.onlineCount || data.online_count || data.viewerCount || data.viewer_count || data.count || nested.onlineCount || nested.online_count || nested.viewerCount || nested.viewer_count || nested.count }
   if (matchEventName(name, ['r_to_buy', 'buy_reminder', 'buying_notice', 'paid_order_notice'])) return { ...data, type: 'r_to_buy' }
-  if (matchEventName(name, ['product', 'current_product'])) return { ...data, type: 'product' }
-  if (matchEventName(name, ['product_status_update', 'productstatusupdate', 'product_status'])) return { ...data, type: 'product_status_update' }
-  if (matchEventName(name, ['product_list', 'productlist'])) return { ...data, type: 'product_list' }
+  if (matchEventName(name, ['product', 'current_product', 'current_goods'])) return { ...data, type: 'product' }
+  if (matchEventName(name, [
+    'product_status_update',
+    'productstatusupdate',
+    'product_status',
+    'explain_edit',
+    'explainedit',
+    'explain_product',
+    'product_explain',
+    'explain_goods',
+    'goods_explain',
+    'goods_explaining',
+    'current_product_update',
+    'current_goods_update',
+  ])) return { ...data, type: 'product_status_update' }
+  if (matchEventName(name, [
+    'product_list',
+    'productlist',
+    'goods_list',
+    'goodslist',
+    'live_product_list',
+    'live_goods_list',
+    'product_shelf',
+    'goods_shelf',
+    'shelf_product',
+    'shelf_goods',
+    'product_update',
+    'goods_update',
+  ])) return { ...data, type: 'product_list' }
   if (matchEventName(name, ['product_stock', 'productstock'])) return { ...data, type: 'product_stock' }
   if (matchEventName(name, ['setting_update', 'room_setting_update'])) return { ...data, type: 'setting_update' }
   if (matchEventName(name, ['comment_audit'])) return { ...data, type: 'comment_audit' }
@@ -236,6 +296,8 @@ function normalizeMessage(data) {
   if (!data || typeof data !== 'object') return data
   const payload = getEnvelopePayload(data)
   if (!payload || typeof payload !== 'object') return payload
+  const legacyNotice = normalizeLegacySystemNotice(payload)
+  if (legacyNotice) return legacyNotice
 
   const byName = normalizeByName(payload)
   if (byName.type && typeof byName.type === 'string' && Number.isNaN(Number(byName.type))) return byName

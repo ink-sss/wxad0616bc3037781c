@@ -70,6 +70,7 @@ import { useLiveHeartbeatStatus } from "./composables/useLiveHeartbeatStatus.js"
 import { useLivePageLeave } from "./composables/useLivePageLeave.js";
 import { useLivePlaybackDebug } from "./composables/useLivePlaybackDebug.js";
 import { useLivePlaybackWiring } from "./composables/useLivePlaybackWiring.js";
+import { isWeChatDevtoolsRuntime } from "./utils/live-source.js";
 import { useLiveProgressReport } from "./composables/useLiveProgressReport.js";
 import { useLiveScheduleResume } from "./composables/useLiveScheduleResume.js";
 import { useLiveScreenWakeLock } from "./composables/useLiveScreenWakeLock.js";
@@ -92,7 +93,7 @@ const videoUrl = ref("");
 const videoRenderKey = ref(0);
 const isPlaying = ref(false);
 const videoFrameReady = ref(false);
-const isMuted = ref(true);
+const isMuted = ref(false);
 const videoDebugInfo = ref({
   intent: 0,
   actual: -1,
@@ -273,6 +274,7 @@ const playbackErrorVisible = ref(false);
 const playbackErrorText = ref("");
 const mediaSourceComponent = ref("");
 const mediaSourceType = ref("");
+const playbackDebugRouteOptions = ref({});
 let switchToFirstAvailableTab = () => {};
 let videoPlayer = null;
 let weixinBridgeReadyHandler = null;
@@ -478,12 +480,17 @@ const playbackDebug = useLivePlaybackDebug({
     isReplay: isReplay.value,
     isPlaying: isPlaying.value,
     isMuted: isMuted.value,
+    showEntryOverlay: showEntryOverlay.value,
+    shouldShowEntryOverlay: shouldShowEntryOverlay.value,
     videoFrameReady: videoFrameReady.value,
     pullUrl: pullUrl.value,
     videoUrl: videoUrl.value,
     displayVideoUrl: displayVideoUrl.value,
     mediaSourceComponent: mediaSourceComponent.value,
     mediaSourceType: mediaSourceType.value,
+    playbackErrorVisible: playbackErrorVisible.value,
+    playbackErrorText: playbackErrorText.value,
+    routeOptions: playbackDebugRouteOptions.value,
     mode: mode.value,
     isIOSH5,
     isWeChatIOSH5,
@@ -558,6 +565,13 @@ function readDebugFlag(params) {
 }
 
 function isPlaybackDebugEnabled() {
+  const routeFlag = readDebugFlag({
+    get(key) {
+      return playbackDebugRouteOptions.value?.[key] || "";
+    },
+  });
+  if (isFalsyDebugFlag(routeFlag)) return false;
+  if (isTruthyDebugFlag(routeFlag)) return true;
   const flag = readDebugFlag({
     get(key) {
       try {
@@ -580,7 +594,7 @@ function isPlaybackDebugEnabled() {
 }
 
 function isPlaybackDebugFloatEnabled() {
-  return isLocalDevelopmentHost() || isPlaybackDebugEnabled();
+  return isWeChatDevtoolsRuntime() || isLocalDevelopmentHost() || isPlaybackDebugEnabled();
 }
 
 function copyTextWithUniClipboard(text) {
@@ -597,8 +611,26 @@ function copyTextWithUniClipboard(text) {
   });
 }
 
+function copyTextWithWxClipboard(text) {
+  if (typeof wx === "undefined" || typeof wx.setClipboardData !== "function") {
+    return Promise.reject(new Error("wx.setClipboardData unavailable"));
+  }
+  return new Promise((resolve, reject) => {
+    wx.setClipboardData({
+      data: text,
+      success: resolve,
+      fail: reject,
+    });
+  });
+}
+
 async function copyTextToClipboard(text) {
-  await copyTextWithUniClipboard(text);
+  try {
+    await copyTextWithUniClipboard(text);
+    return;
+  } catch (e) {
+    await copyTextWithWxClipboard(text);
+  }
 }
 
 async function copyPlaybackDebugReport() {
@@ -610,11 +642,17 @@ async function copyPlaybackDebugReport() {
   try {
     await copyTextToClipboard(text);
     playbackDebugCopyStatus.value = "已复制";
+    try {
+      uni.showToast({ title: "调试信息已复制", icon: "none" });
+    } catch (e) {}
     setTimeout(() => {
       if (playbackDebugCopyStatus.value === "已复制") playbackDebugCopyStatus.value = "";
     }, 1800);
   } catch (e) {
     playbackDebugCopyStatus.value = "复制失败";
+    try {
+      uni.showToast({ title: "复制失败，请看控制台", icon: "none" });
+    } catch (toastError) {}
     recordPlaybackDebugEvent("debug_copy_failed", {
       message: e?.message || String(e || ""),
     });
@@ -793,6 +831,7 @@ const heartbeatStatus = useLiveHeartbeatStatus({
   liveId, sessionId,
   getEnterTimestamp: () => enterTimestamp,
   pushStatus, isPlaying, liveHeartbeat, getLiveStatus, setViewerCountDisplay, viewerCount, likeCount, isReplay,
+  videoFrameReady,
   isScheduleWarmupMode: () => isScheduleWarmupMode,
   isWaitingSchedule, pullUrl, messages,
   refreshPinnedMessage,
@@ -846,6 +885,7 @@ const {
   viewerLimitReached,
   viewerLimitText,
   showEntryOverlay,
+  shouldShowEntryOverlay,
   showReplayFirstVideoLoading,
   pendingRecoverBuyCtx,
   isWeChatIOSH5,
@@ -957,6 +997,7 @@ const { stageState, stageActions } = useLiveStageBinding({
   signConfig, showSignPopup, signFields, hasSigned, roomCurrentTermId, myUserId, pushStatus, showNotStartedOverlay,
   liveOverlayTitle, shouldShowEntryOverlay, activeTab, activeTabIndex, showLandscapeSubscribe, commentListStyle, hasVisibleWatchRewardTasks, watchRewardEntryLabel,
   defaultAvatar, goReport, onVideoPlay, onVideoTimeUpdate, onVideoTap, manualPlayVideo,
+  recordPlaybackDebugEvent,
   handleVideoPlayerEnded,
   handleLivePlayerFailure: (...args) => handleLivePlayerFailure(...args),
   markPlaybackReady: (...args) => markPlaybackReady(...args),
@@ -1003,6 +1044,9 @@ useLiveLoadBootstrapRegistration({
   getVisibilityResumeHandler: () => visibilityResumeHandler,
   setVisibilityResumeHandler: (handler) => { visibilityResumeHandler = handler; },
   userStore, pendingRecoverBuyCtx, setPendingSubscribeBack, showEntryOverlay, showWxAddrDonePlayBtn, safeBottom, isIOSKeyboardMode,
+  setPlaybackDebugRouteOptions: (options) => {
+    playbackDebugRouteOptions.value = options || {};
+  },
 });
 </script>
 <style lang="scss" scoped>

@@ -20,7 +20,7 @@
         :show-fullscreen-btn="false"
         :enable-progress-gesture="false"
         object-fit="cover"
-        :muted="muted"
+        :muted="false"
         :autoplay="true"
         playsinline
         webkit-playsinline

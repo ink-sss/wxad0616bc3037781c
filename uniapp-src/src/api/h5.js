@@ -1,5 +1,5 @@
-import { config } from '../env/config.js'
 import { handleH5Unauthorized } from '../services/h5-auth-context.js'
+import { getRuntimeConfig } from '../utils/runtime-config.js'
 
 function getStorageToken() {
   try {
@@ -63,8 +63,9 @@ export function getH5Token() {
 }
 
 export function getH5ApiBaseUrl() {
-  const explicit = getStorageH5ApiBaseUrl() || config.h5_api_url || config.h5_url
-  const base = explicit || `${config.app_url}/api`
+  const runtimeConfig = getRuntimeConfig()
+  const explicit = getStorageH5ApiBaseUrl() || runtimeConfig.h5_api_url || runtimeConfig.h5_url
+  const base = explicit || `${runtimeConfig.app_url}/api`
   return String(base).replace(/\/$/, '')
 }
 

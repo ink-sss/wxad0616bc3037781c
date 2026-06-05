@@ -70,6 +70,7 @@ import RequestLoading from '../../../components/liveloading.vue'
 import LiveTab from '../../../components/liveTab.vue'
 import TabBar from '../../../components/tabbar/footTabbar.vue'
 
+
 function defaultDetail() {
   return { balance: 0, points: 0, grade: { name: '' } }
 }

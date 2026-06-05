@@ -22,6 +22,12 @@ function firstPresent(...values) {
 
 export function resolveLivePullUrl(detail, preferHls) {
   if (!detail) return "";
+  const adaptiveHlsUrl = firstPresent(
+    detail.adaptiveHlsUrl,
+    detail.adaptive_hls_url,
+    detail.liveAdaptiveHlsUrl,
+    detail.live_adaptive_hls_url,
+  );
   const rtmpUrl = firstPresent(
     detail.pullRtmpUrl,
     detail.pull_rtmp_url,
@@ -48,13 +54,9 @@ export function resolveLivePullUrl(detail, preferHls) {
     detail.flvPullUrl,
     detail.flv_pull_url,
   );
-  const hlsUrl = firstPresent(
+  const normalHlsUrl = firstPresent(
     detail.pullHlsUrl,
     detail.pull_hls_url,
-    detail.adaptiveHlsUrl,
-    detail.adaptive_hls_url,
-    detail.liveAdaptiveHlsUrl,
-    detail.live_adaptive_hls_url,
     detail.httpHlsUrl,
     detail.http_hls_url,
     detail.pullHttpHlsUrl,
@@ -86,11 +88,10 @@ export function resolveLivePullUrl(detail, preferHls) {
     detail.src,
     detail.url,
   );
-  if (rtmpUrl && !preferHls) return rtmpUrl;
   if (preferHls) {
-    return hlsUrl || flvUrl || rtmpUrl || genericUrl || "";
+    return normalHlsUrl || adaptiveHlsUrl || flvUrl || rtmpUrl || genericUrl || "";
   }
-  return flvUrl || hlsUrl || genericUrl || rtmpUrl || "";
+  return rtmpUrl || flvUrl || normalHlsUrl || adaptiveHlsUrl || genericUrl || "";
 }
 
 export function wait(ms) {

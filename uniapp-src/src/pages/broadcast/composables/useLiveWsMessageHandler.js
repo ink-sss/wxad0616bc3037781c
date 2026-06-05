@@ -79,6 +79,40 @@ function normalizeEventName(value = "") {
     .toLowerCase();
 }
 
+function parseJsonObject(text = "") {
+  if (!text) return {};
+  try {
+    const value = JSON.parse(text);
+    return isPlainObject(value) ? value : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function normalizeLegacySystemNotice(data = {}) {
+  const field =
+    data?.payload?.userDefinedField ||
+    data?.payload?.user_defined_field ||
+    data?.userDefinedField ||
+    data?.user_defined_field ||
+    data?.data?.payload?.userDefinedField ||
+    data?.data?.payload?.user_defined_field ||
+    data?.data?.userDefinedField ||
+    data?.data?.user_defined_field ||
+    "";
+  if (typeof field !== "string" || !field.includes("@ExplainEdit---")) return null;
+  const raw = field.split("@ExplainEdit---").pop() || "";
+  const product = parseJsonObject(raw);
+  return {
+    ...data,
+    ...product,
+    type: "product_status_update",
+    action: product?.action || "explaining",
+    data: product,
+    product,
+  };
+}
+
 function compactEventName(value = "") {
   return normalizeEventName(value).replace(/_/g, "");
 }
@@ -174,9 +208,41 @@ const WS_TYPE_ALIASES = [
   { type: "system", aliases: ["system", "system_message"] },
   { type: "gift", aliases: ["gift"] },
   { type: "r_to_buy", aliases: ["r_to_buy", "buy_reminder", "buying_notice", "paid_order_notice"] },
-  { type: "product", aliases: ["product", "current_product"] },
-  { type: "product_status_update", aliases: ["product_status_update", "productstatusupdate", "product_status"] },
-  { type: "product_list", aliases: ["product_list", "productlist"] },
+  { type: "product", aliases: ["product", "current_product", "current_goods"] },
+  {
+    type: "product_status_update",
+    aliases: [
+      "product_status_update",
+      "productstatusupdate",
+      "product_status",
+      "explain_edit",
+      "explainedit",
+      "explain_product",
+      "product_explain",
+      "explain_goods",
+      "goods_explain",
+      "goods_explaining",
+      "current_product_update",
+      "current_goods_update",
+    ],
+  },
+  {
+    type: "product_list",
+    aliases: [
+      "product_list",
+      "productlist",
+      "goods_list",
+      "goodslist",
+      "live_product_list",
+      "live_goods_list",
+      "product_shelf",
+      "goods_shelf",
+      "shelf_product",
+      "shelf_goods",
+      "product_update",
+      "goods_update",
+    ],
+  },
   { type: "product_stock", aliases: ["product_stock", "productstock"] },
   { type: "setting_update", aliases: ["setting_update", "room_setting_update"] },
   { type: "comment_audit", aliases: ["comment_audit"] },
@@ -295,6 +361,8 @@ function resolveWsMessageType(data = {}) {
 
 export function normalizeBroadcastWsMessage(data = {}) {
   if (!isPlainObject(data)) return data;
+  const legacyNotice = normalizeLegacySystemNotice(data);
+  if (legacyNotice) return legacyNotice;
   const type = resolveWsMessageType(data);
   if (!type) return data;
   if (data.type === type) return data;
@@ -390,13 +458,45 @@ function getProductId(payload = {}) {
   return Number(payload.productId || payload.product_id || payload.goodsId || payload.goods_id || payload.id || 0);
 }
 
+function hasProductDetailPayload(payload = {}) {
+  return [
+    payload.productName,
+    payload.product_name,
+    payload.goodsName,
+    payload.goods_name,
+    payload.name,
+    payload.title,
+    payload.productImage,
+    payload.product_image,
+    payload.goodsPic,
+    payload.goods_pic,
+    payload.goodsImage,
+    payload.goods_image,
+    payload.coverImage,
+    payload.cover_image,
+    payload.image,
+    payload.salePrice,
+    payload.sale_price,
+    payload.productPrice,
+    payload.product_price,
+    payload.price,
+    payload.stock,
+    payload.stockNum,
+    payload.stock_num,
+    payload.productStock,
+    payload.product_stock,
+    payload.goodsStock,
+    payload.goods_stock,
+  ].some((value) => value !== undefined && value !== null && value !== "");
+}
+
 function sameProductId(left = {}, rightId = 0) {
   return getProductId(left) === Number(rightId || 0);
 }
 
 function normalizeProductAction(value = "") {
   const action = normalizeEventName(value);
-  if (["explain", "explaining", "current_product", "current"].includes(action)) return "explaining";
+  if (["explain", "explaining", "explain_edit", "explain_product", "product_explain", "explain_goods", "goods_explain", "goods_explaining", "current_product", "current_goods", "current"].includes(action)) return "explaining";
   if (["explaining_multi", "explain_multi", "multi_explaining", "current_products"].includes(action)) return "explaining_multi";
   if (["top", "pinned", "pin"].includes(action)) return "top";
   if (["sold_out", "soldout", "sell_out", "mark_sold_out"].includes(action)) return "sold_out";
@@ -626,10 +726,11 @@ function handleAudienceMessage(ctx, data, type, defaultContent) {
 function handleProductMessage(ctx, data) {
   const payload = getProductEventPayload(data);
   if (payload && typeof payload === "object" && Object.keys(payload).length > 0) {
-    ctx.currentProduct.value = ctx.mapProductItem(payload);
-    ctx.showProduct.value = true;
     const curId = getProductId(payload);
-    ctx.productList.value = ctx.productList.value.map((p) => ({ ...p, isCurrent: sameProductId(p, curId) }));
+    const current = { ...ctx.mapProductItem(payload), isCurrent: curId > 0 };
+    ctx.currentProduct.value = current;
+    ctx.showProduct.value = true;
+    if (curId > 0) upsertProductListItem(ctx, payload, { isCurrent: true, clearCurrent: true });
     ctx.explainingProductId.value = curId;
     ctx.syncProductCardIndex(curId);
     return;
@@ -646,6 +747,12 @@ function handleExplainingMulti(ctx, data) {
     .filter((id) => id > 0);
   const wsList = pickProductList(payload, "list", "products", "productList", "goodsList", "goods");
   const idSet = new Set(ids);
+  wsList.forEach((item) => {
+    const itemId = getProductId(item);
+    if (itemId > 0 && idSet.has(itemId)) {
+      upsertProductListItem(ctx, item, { isCurrent: true });
+    }
+  });
   ctx.productList.value = ctx.productList.value.map((p) => ({ ...p, isCurrent: idSet.has(getProductId(p)) }));
   if (ids.length <= 0) {
     ctx.showProduct.value = false;
@@ -659,6 +766,54 @@ function handleExplainingMulti(ctx, data) {
   ctx.showProduct.value = true;
   ctx.explainingProductId.value = first.id;
   ctx.syncProductCardIndex(first.id);
+}
+
+function upsertProductListItem(ctx, rawItem = {}, options = {}) {
+  if (!hasProductDetailPayload(rawItem)) {
+    const pid = getProductId(rawItem);
+    if (!pid) return null;
+    let matched = null;
+    ctx.productList.value = ctx.productList.value.map((item) => {
+      if (!sameProductId(item, pid)) {
+        return options.clearCurrent ? { ...item, isCurrent: false } : item;
+      }
+      matched = {
+        ...item,
+        ...(options.isCurrent !== undefined ? { isCurrent: options.isCurrent } : {}),
+      };
+      return matched;
+    });
+    return matched;
+  }
+  const mapped = preserveKnownManualSoldOut(ctx, rawItem, ctx.mapProductItem(rawItem));
+  const pid = getProductId(mapped);
+  if (!pid) return null;
+  const nextItem = {
+    ...mapped,
+    ...(options.isCurrent !== undefined ? { isCurrent: options.isCurrent } : {}),
+  };
+  let found = false;
+  ctx.productList.value = ctx.productList.value.map((item) => {
+    if (!sameProductId(item, pid)) {
+      return options.clearCurrent ? { ...item, isCurrent: false } : item;
+    }
+    found = true;
+    return {
+      ...item,
+      ...nextItem,
+      isCurrent: options.isCurrent !== undefined ? options.isCurrent : item.isCurrent,
+    };
+  });
+  if (!found) {
+    const appended = options.clearCurrent
+      ? ctx.productList.value.map((item) => ({ ...item, isCurrent: false }))
+      : ctx.productList.value;
+    ctx.productList.value = [...appended, nextItem];
+  }
+  if (ctx.productTotal) {
+    ctx.productTotal.value = Math.max(Number(ctx.productTotal.value || 0), ctx.productList.value.length);
+  }
+  return nextItem;
 }
 
 function handleSoldOutUpdate(ctx, data, pid) {
@@ -704,11 +859,11 @@ function handleProductStatusUpdate(ctx, data) {
     handleExplainingMulti(ctx, data);
   } else if (action === "explaining") {
     ctx.explainingProductId.value = pid || 0;
-    ctx.productList.value = ctx.productList.value.map((p) => ({ ...p, isCurrent: pid > 0 && sameProductId(p, pid) }));
     
     if (pid > 0) {
       // 开始讲解: 立即更新 currentProduct 和 showProduct
-      const explainingProduct = ctx.productList.value.find((p) => sameProductId(p, pid));
+      const upserted = upsertProductListItem(ctx, payload, { isCurrent: true, clearCurrent: true });
+      const explainingProduct = upserted || ctx.productList.value.find((p) => sameProductId(p, pid));
       if (explainingProduct) {
         ctx.currentProduct.value = { ...explainingProduct, isCurrent: true };
         ctx.showProduct.value = true;

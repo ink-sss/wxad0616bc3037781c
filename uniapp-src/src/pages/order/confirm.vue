@@ -446,7 +446,7 @@ async function onPay() {
       liveRoomId: liveRoomId.value,
       liveTermId: liveTermId.value,
       buyerRemark: remark.value,
-      source: liveRoomId.value ? 2 : 1,
+      source: 4,
     });
     if (!orderRes?.orderNo) {
       uni.showToast({ title: "创建订单失败", icon: "none" });
@@ -459,10 +459,10 @@ async function onPay() {
     }
     // 记录待支付订单ID，防止支付回调丢失
     pendingOrderId.value = orderRes.orderId || orderRes.ID || 0;
-    const payMode = await executeYeepayPayment(orderRes.orderNo, {
+    const payResult = await executeYeepayPayment(orderRes.orderNo, {
       roomCode: liveRoomCode.value,
     });
-    if (payMode === "jsapi") {
+    if (payResult?.confirmed) {
       pendingOrderId.value = 0;
     }
   } catch (err) {

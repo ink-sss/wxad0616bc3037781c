@@ -30,7 +30,7 @@ export function useLiveEntryInitializer(ctx) {
   const distributorStatus = ref(0);
   const {
     runtime, stopScheduleTimers, liveInitResolved, liveRedirecting, accessDenied, viewerLimitReached, viewerLimitText,
-    showEntryOverlay, showReplayFirstVideoLoading, pendingRecoverBuyCtx, isWeChatIOSH5, isMuted, replayCover,
+    showEntryOverlay, shouldShowEntryOverlay, showReplayFirstVideoLoading, pendingRecoverBuyCtx, isWeChatIOSH5, isMuted, replayCover,
     resetReplayContext, liveId, roomCode, shareCode, liveBindId, liveTenantId, liveName, liveCover, mode, userStore, myUserId,
     getLiveRedirectUrl, rtcConfig, roomGroupType, roomBroadcastMethod, roomWatchByDay, roomCurrentTermId,
     _isSameOrigin, anchorName, anchorAvatar, setViewerCountDisplay, likeCount, saveContextOptions, chatBgImage,
@@ -61,6 +61,12 @@ export function useLiveEntryInitializer(ctx) {
       showReplayFirstVideoLoading.value = !!value;
     }
   }
+  function isEntryOverlayVisible() {
+    if (shouldShowEntryOverlay && typeof shouldShowEntryOverlay.value !== "undefined") {
+      return !!shouldShowEntryOverlay.value;
+    }
+    return !!(showEntryOverlay.value && !isWeChatIOSH5 && !isMpWeixinRuntime());
+  }
   function clearLiveVideoForCoverOnly() {
     pullUrl.value = "";
     if (videoUrl) videoUrl.value = "";
@@ -90,7 +96,7 @@ export function useLiveEntryInitializer(ctx) {
   }
 
   async function reportLiveEntry() {
-    if (!userStore.token || sessionId.value || showEntryOverlay.value || accessDenied.value || viewerLimitReached?.value) return false;
+    if (!userStore.token || sessionId.value || isEntryOverlayVisible() || accessDenied.value || viewerLimitReached?.value) return false;
     sessionId.value =
       Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
     setEnterTimestamp(Date.now());
@@ -211,8 +217,8 @@ export function useLiveEntryInitializer(ctx) {
     } else {
       clearStoredSoundIntentRestore?.();
     }
-    // [关键] 起手静音保证全平台 muted autoplay 都被允许，等 WeixinJSBridge / 用户手势升级有声
-    isMuted.value = true;
+    // 直播间当前策略：默认有声播放，不再用静音自动播放兜底。
+    isMuted.value = false;
   }
 
   function applyResolvedEntryOptions(resolvedOptions, entryLiveType) {
@@ -1183,7 +1189,7 @@ export function useLiveEntryInitializer(ctx) {
     }
     await Promise.all([loadProductList(true), loadCurrentProduct()]);
     checkDistributorStatus();
-    if (!showEntryOverlay.value) {
+    if (!isEntryOverlayVisible()) {
       await reportLiveEntry();
       setTimeout(() => {
         sendFallbackEnter?.();

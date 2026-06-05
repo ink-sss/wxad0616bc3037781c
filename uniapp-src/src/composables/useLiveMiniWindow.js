@@ -42,7 +42,7 @@ export function useLiveMiniWindow(props = {}) {
   const visible = ref(!!(props.enabled && initial.roomCode && initial.playUrl))
   const poster = ref(initial.poster || '')
   const playUrl = ref(initial.playUrl || '')
-  const muted = ref(initial.muted !== false)
+  const muted = ref(false)
   const isPlaying = ref(false)
   const title = ref(initial.title || '直播间')
   const stateRoomCode = ref(initial.roomCode || props.roomCode || '')

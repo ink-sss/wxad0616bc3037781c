@@ -533,6 +533,27 @@ export function saveCurrentPageForNativeLogin(fallback = "/pages/center/index") 
   }
 }
 
+export function saveNativeLoginRedirectFromQuery(query = {}) {
+  const context = buildH5AuthContext(query);
+  const redirect = context.redirect || (
+    context.roomCode || context.roomId || context.liveId
+      ? buildBroadcastEntryUrl(context)
+      : ""
+  );
+  if (!redirect) return "";
+
+  const normalizedRedirect = normalizeRedirectUrl(redirect, "");
+  if (!normalizedRedirect) return "";
+
+  const target = splitUrl(normalizedRedirect);
+  const route = target.path.replace(/^\//, "");
+  if (!route || LOGIN_ROUTES.includes(route)) return "";
+
+  writeStorage("currentPage", route);
+  writeStorage("currentPageOptions", target.params || {});
+  return normalizedRedirect;
+}
+
 export function buildRedirectFromH5AuthContext(input = {}) {
   const context = mergeContext(loadH5AuthContext(), buildH5AuthContext(input));
   let target = context.redirect ? normalizeRedirectUrl(context.redirect) : "";
@@ -612,22 +633,30 @@ export function redirectToNativeLogin(input = {}) {
 }
 
 export function redirectAfterNativeLogin(defaultUrl = "/pages/index/index") {
+  const authContext = loadH5AuthContext();
   clearH5AuthContext();
-
-  try {
-    const pages = getCurrentPages();
-    if (pages.length > 1) {
-      uni.navigateBack();
-      return;
-    }
-  } catch (error) {}
 
   const route = readStorage("currentPage", "");
   const options = readStorage("currentPageOptions", {}) || {};
   let url = defaultUrl;
+  if (authContext.redirect) {
+    url = normalizeRedirectUrl(authContext.redirect, defaultUrl);
+  } else if (authContext.roomCode || authContext.roomId || authContext.liveId) {
+    url = buildBroadcastEntryUrl(authContext);
+  }
   if (route) {
     const query = encodeQuery(options);
     url = `/${route}${query ? `?${query}` : ""}`;
+    removeStorage("currentPage");
+    removeStorage("currentPageOptions");
+  } else {
+    try {
+      const pages = getCurrentPages();
+      if (pages.length > 1) {
+        uni.navigateBack();
+        return;
+      }
+    } catch (error) {}
   }
 
   if (url.startsWith("/pages/user/index/index")) {

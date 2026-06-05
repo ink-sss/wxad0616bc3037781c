@@ -32,24 +32,26 @@ function findCandidate(candidates = [], predicate = () => false) {
 
 export function selectMiniProgramLiveCandidate(candidates = [], options = {}) {
   if (!Array.isArray(candidates) || !candidates.length) return null;
-  if (isWeChatDevtoolsRuntime()) {
-    return findCandidate(candidates, (candidate) => candidate.component === "video") ||
-      findCandidate(candidates, (candidate) => candidate.type !== "rtmp" && candidate.component === "live-player") ||
-      findCandidate(candidates, (candidate) => candidate.type !== "rtmp") ||
-      findCandidate(candidates, () => true);
-  }
-  if (options?.preferHls) {
-    return findCandidate(candidates, (candidate) => candidate.component === "video" && candidate.type === "hls") ||
+  const preferVideo = options?.preferVideo === true || options?.preferHls === true || isWeChatDevtoolsRuntime();
+  const isAdaptiveHlsCandidate = (candidate) => (
+    candidate?.component === "video" &&
+    candidate?.type === "hls" &&
+    (candidate.isAdaptiveHls === true || String(candidate.field || "").toLowerCase().includes("adaptive"))
+  );
+  if (preferVideo) {
+    return findCandidate(candidates, (candidate) => candidate.component === "video" && candidate.type === "hls" && !isAdaptiveHlsCandidate(candidate)) ||
+      findCandidate(candidates, isAdaptiveHlsCandidate) ||
       findCandidate(candidates, (candidate) => candidate.component === "video") ||
       findCandidate(candidates, (candidate) => candidate.component === "live-player" && candidate.type === "flv") ||
+      findCandidate(candidates, (candidate) => candidate.component === "live-player" && candidate.type !== "rtmp") ||
       findCandidate(candidates, (candidate) => candidate.component === "live-player" && candidate.type === "rtmp") ||
-      findCandidate(candidates, (candidate) => candidate.component === "live-player") ||
       findCandidate(candidates, () => true);
   }
   return findCandidate(candidates, (candidate) => candidate.component === "live-player" && candidate.type === "rtmp") ||
     findCandidate(candidates, (candidate) => candidate.component === "live-player" && candidate.type === "flv") ||
-    findCandidate(candidates, (candidate) => candidate.component === "live-player") ||
-    findCandidate(candidates, (candidate) => candidate.component === "video" && candidate.type === "hls") ||
+    findCandidate(candidates, (candidate) => candidate.component === "live-player" && candidate.type !== "rtmp") ||
+    findCandidate(candidates, (candidate) => candidate.component === "video" && candidate.type === "hls" && !isAdaptiveHlsCandidate(candidate)) ||
+    findCandidate(candidates, isAdaptiveHlsCandidate) ||
     findCandidate(candidates, (candidate) => candidate.component === "video") ||
     findCandidate(candidates, () => true);
 }
@@ -70,6 +72,14 @@ function safeStreamUrl(value) {
 
 function firstPresent(...values) {
   return values.find((item) => item !== undefined && item !== null && item !== "");
+}
+
+function firstNormalHls(...values) {
+  return safeStreamUrl(firstPresent(...values));
+}
+
+function firstAdaptiveHls(...values) {
+  return safeStreamUrl(firstPresent(...values));
 }
 
 const STREAM_SOURCE_OBJECT_FIELDS = [
@@ -233,6 +243,36 @@ function firstUrlFromList(value) {
   return safeStreamUrl(value.find((item) => typeof item === "string" || typeof item === "number"));
 }
 
+function getPayloadNormalHlsUrl(payload = {}) {
+  return firstNormalHls(
+    payload.pullHlsUrl,
+    payload.pull_hls_url,
+    payload.httpHlsUrl,
+    payload.http_hls_url,
+    payload.pullHttpHlsUrl,
+    payload.pull_http_hls_url,
+    payload.hlsUrl,
+    payload.hls_url,
+    payload.liveHlsUrl,
+    payload.live_hls_url,
+    payload.hlsPullUrl,
+    payload.hls_pull_url,
+    payload.m3u8Url,
+    payload.m3u8_url,
+    payload.m3u8,
+    payload.hls,
+  );
+}
+
+function getPayloadAdaptiveHlsUrl(payload = {}) {
+  return firstAdaptiveHls(
+    payload.adaptiveHlsUrl,
+    payload.adaptive_hls_url,
+    payload.liveAdaptiveHlsUrl,
+    payload.live_adaptive_hls_url,
+  );
+}
+
 export function normalizeLiveSourceUrlKey(url) {
   if (!url) return "";
   const rawUrl = String(url).trim();
@@ -251,14 +291,16 @@ export function normalizePullStreams(payload = {}, preferHls = isIOSRuntime()) {
       const quality = String(firstPresent(item?.quality, item?.qualityName, item?.quality_name, item?.qualityCode, item?.quality_code, item?.definition, item?.clarity, item?.resolution, item?.name, index === 0 ? "origin" : `line-${index + 1}`)).trim();
       const rtmpUrl = safeStreamUrl(firstPresent(item?.rtmpUrl, item?.rtmp_url, item?.pullRtmpUrl, item?.pull_rtmp_url, item?.pullRtmp, item?.pull_rtmp, item?.liveRtmpUrl, item?.live_rtmp_url, item?.rtmpPullUrl, item?.rtmp_pull_url, item?.rtmp));
       const flvUrl = safeStreamUrl(firstPresent(item?.flvUrl, item?.flv_url, item?.pullFlvUrl, item?.pull_flv_url, item?.httpFlvUrl, item?.http_flv_url, item?.pullHttpFlvUrl, item?.pull_http_flv_url, item?.liveFlvUrl, item?.live_flv_url, item?.flvPullUrl, item?.flv_pull_url, item?.flv));
-      const hlsUrl = safeStreamUrl(firstPresent(item?.hlsUrl, item?.hls_url, item?.pullHlsUrl, item?.pull_hls_url, item?.adaptiveHlsUrl, item?.adaptive_hls_url, item?.liveAdaptiveHlsUrl, item?.live_adaptive_hls_url, item?.httpHlsUrl, item?.http_hls_url, item?.pullHttpHlsUrl, item?.pull_http_hls_url, item?.liveHlsUrl, item?.live_hls_url, item?.hlsPullUrl, item?.hls_pull_url, item?.m3u8Url, item?.m3u8_url, item?.m3u8, item?.hls));
+      const hlsUrl = firstNormalHls(item?.hlsUrl, item?.hls_url, item?.pullHlsUrl, item?.pull_hls_url, item?.httpHlsUrl, item?.http_hls_url, item?.pullHttpHlsUrl, item?.pull_http_hls_url, item?.liveHlsUrl, item?.live_hls_url, item?.hlsPullUrl, item?.hls_pull_url, item?.m3u8Url, item?.m3u8_url, item?.m3u8, item?.hls);
+      const adaptiveHlsUrl = firstAdaptiveHls(item?.adaptiveHlsUrl, item?.adaptive_hls_url, item?.liveAdaptiveHlsUrl, item?.live_adaptive_hls_url);
+      const viableHlsUrl = hlsUrl || adaptiveHlsUrl;
       const genericUrl = safeStreamUrl(firstPresent(item?.playUrl, item?.play_url, item?.streamUrl, item?.stream_url, item?.liveUrl, item?.live_url, item?.pullUrl, item?.pull_url, item?.sourceUrl, item?.source_url, item?.mediaUrl, item?.media_url, item?.src, item?.source, item?.url, firstUrlFromList(item?.urls), firstUrlFromList(item?.urlList), firstUrlFromList(item?.url_list)));
-      const playUrl = preferHls ? (hlsUrl || flvUrl || rtmpUrl || genericUrl) : (rtmpUrl || flvUrl || hlsUrl || genericUrl);
+      const playUrl = preferHls ? (viableHlsUrl || flvUrl || rtmpUrl || genericUrl) : (rtmpUrl || flvUrl || viableHlsUrl || genericUrl);
       if (!quality || !playUrl) return null;
       const sourceMeta = inferStreamSourceMeta(item, playUrl);
       const backupRtmpUrl = rtmpUrl && rtmpUrl !== playUrl ? rtmpUrl : "";
       const backupFlvUrl = flvUrl && flvUrl !== playUrl ? flvUrl : "";
-      const backupHlsUrl = hlsUrl && hlsUrl !== playUrl ? hlsUrl : "";
+      const backupHlsUrl = viableHlsUrl && viableHlsUrl !== playUrl ? viableHlsUrl : "";
       const bitrateKbps = Number(item?.bitrateKbps || 0);
       return {
         quality,
@@ -267,7 +309,9 @@ export function normalizePullStreams(payload = {}, preferHls = isIOSRuntime()) {
         bitrateKbps: Number.isFinite(bitrateKbps) && bitrateKbps > 0 ? bitrateKbps : 0,
         rtmpUrl,
         flvUrl,
-        hlsUrl,
+        hlsUrl: viableHlsUrl,
+        normalHlsUrl: hlsUrl,
+        adaptiveHlsUrl,
         playUrl,
         backupUrl: preferHls ? (backupFlvUrl || backupRtmpUrl || "") : (backupFlvUrl || backupHlsUrl || ""),
         backupRtmpUrl,
@@ -311,23 +355,22 @@ export function buildStreamPlaybackOptions(stream = {}) {
 }
 
 export function resolveStatusPullUrl(payload = {}, preferredQuality = "") {
-  const candidate = selectMiniProgramLiveCandidate(getMiniProgramLiveCandidates(payload), { preferHls: isIOSRuntime() });
+  const preferHls = isIOSRuntime() || isWeChatDevtoolsRuntime();
+  const candidate = selectMiniProgramLiveCandidate(getMiniProgramLiveCandidates(payload), { preferHls });
   if (candidate?.url) return candidate.url;
-  const stream = selectDefaultStream(normalizePullStreams(payload), preferredQuality);
+  const stream = selectDefaultStream(normalizePullStreams(payload, preferHls), preferredQuality);
   if (stream?.playUrl) return stream.playUrl;
-  if (payload.pullRtmpUrl || payload.pull_rtmp_url || payload.rtmpUrl || payload.rtmp_url) {
-    return payload.pullRtmpUrl || payload.pull_rtmp_url || payload.rtmpUrl || payload.rtmp_url;
+  if (preferHls) {
+    return getPayloadNormalHlsUrl(payload) || getPayloadAdaptiveHlsUrl(payload) || payload.pullUrl || payload.pull_url || payload.pullFlvUrl || payload.pull_flv_url || payload.httpFlvUrl || payload.http_flv_url || payload.pullRtmpUrl || payload.pull_rtmp_url || payload.rtmpUrl || payload.rtmp_url || "";
   }
-  if (isIOSRuntime()) {
-    return payload.pullHlsUrl || payload.pull_hls_url || payload.adaptiveHlsUrl || payload.adaptive_hls_url || payload.httpHlsUrl || payload.http_hls_url || payload.m3u8Url || payload.m3u8_url || payload.pullFlvUrl || payload.pull_flv_url || payload.httpFlvUrl || payload.http_flv_url || payload.pullUrl || payload.pull_url || "";
-  }
-  return payload.pullFlvUrl || payload.pull_flv_url || payload.httpFlvUrl || payload.http_flv_url || payload.pullHlsUrl || payload.pull_hls_url || payload.adaptiveHlsUrl || payload.adaptive_hls_url || payload.httpHlsUrl || payload.http_hls_url || payload.m3u8Url || payload.m3u8_url || payload.pullUrl || payload.pull_url || "";
+  return payload.pullRtmpUrl || payload.pull_rtmp_url || payload.rtmpUrl || payload.rtmp_url || payload.pullFlvUrl || payload.pull_flv_url || payload.httpFlvUrl || payload.http_flv_url || getPayloadNormalHlsUrl(payload) || getPayloadAdaptiveHlsUrl(payload) || payload.pullUrl || payload.pull_url || "";
 }
 
 export function buildStatusPlaybackOptions(payload = {}, mainUrl = "", preferredQuality = "") {
   const liveCandidates = getMiniProgramLiveCandidates(payload);
   const matchedCandidate = liveCandidates.find((candidate) => candidate.url && candidate.url === mainUrl) || null;
-  const streams = normalizePullStreams(payload);
+  const preferHls = isIOSRuntime() || isWeChatDevtoolsRuntime();
+  const streams = normalizePullStreams(payload, preferHls);
   const stream = selectDefaultStream(streams, preferredQuality);
   if (stream && (!mainUrl || stream.playUrl === mainUrl)) {
     return {
@@ -342,12 +385,16 @@ export function buildStatusPlaybackOptions(payload = {}, mainUrl = "", preferred
   const backupFlvUrl = firstPresent(payload.pullFlvUrl, payload.pull_flv_url, payload.httpFlvUrl, payload.http_flv_url, payload.pullHttpFlvUrl, payload.pull_http_flv_url, payload.flvUrl, payload.flv_url, payload.liveFlvUrl, payload.live_flv_url, payload.flvPullUrl, payload.flv_pull_url) && firstPresent(payload.pullFlvUrl, payload.pull_flv_url, payload.httpFlvUrl, payload.http_flv_url, payload.pullHttpFlvUrl, payload.pull_http_flv_url, payload.flvUrl, payload.flv_url, payload.liveFlvUrl, payload.live_flv_url, payload.flvPullUrl, payload.flv_pull_url) !== mainUrl
     ? firstPresent(payload.pullFlvUrl, payload.pull_flv_url, payload.httpFlvUrl, payload.http_flv_url, payload.pullHttpFlvUrl, payload.pull_http_flv_url, payload.flvUrl, payload.flv_url, payload.liveFlvUrl, payload.live_flv_url, payload.flvPullUrl, payload.flv_pull_url)
     : "";
-  const backupHlsUrl = firstPresent(payload.pullHlsUrl, payload.pull_hls_url, payload.adaptiveHlsUrl, payload.adaptive_hls_url, payload.httpHlsUrl, payload.http_hls_url, payload.pullHttpHlsUrl, payload.pull_http_hls_url, payload.hlsUrl, payload.hls_url, payload.liveHlsUrl, payload.live_hls_url, payload.hlsPullUrl, payload.hls_pull_url, payload.m3u8Url, payload.m3u8_url, payload.m3u8, payload.hls) && firstPresent(payload.pullHlsUrl, payload.pull_hls_url, payload.adaptiveHlsUrl, payload.adaptive_hls_url, payload.httpHlsUrl, payload.http_hls_url, payload.pullHttpHlsUrl, payload.pull_http_hls_url, payload.hlsUrl, payload.hls_url, payload.liveHlsUrl, payload.live_hls_url, payload.hlsPullUrl, payload.hls_pull_url, payload.m3u8Url, payload.m3u8_url, payload.m3u8, payload.hls) !== mainUrl
-    ? firstPresent(payload.pullHlsUrl, payload.pull_hls_url, payload.adaptiveHlsUrl, payload.adaptive_hls_url, payload.httpHlsUrl, payload.http_hls_url, payload.pullHttpHlsUrl, payload.pull_http_hls_url, payload.hlsUrl, payload.hls_url, payload.liveHlsUrl, payload.live_hls_url, payload.hlsPullUrl, payload.hls_pull_url, payload.m3u8Url, payload.m3u8_url, payload.m3u8, payload.hls)
+  const payloadHlsUrl = getPayloadNormalHlsUrl(payload) || getPayloadAdaptiveHlsUrl(payload);
+  const backupHlsUrl = payloadHlsUrl && payloadHlsUrl !== mainUrl
+    ? payloadHlsUrl
     : "";
-  const nextCandidateUrl = liveCandidates.find((candidate) => candidate.url && candidate.url !== mainUrl)?.url || "";
+  const nextCandidateUrl = selectMiniProgramLiveCandidate(
+    liveCandidates.filter((candidate) => candidate.url && candidate.url !== mainUrl),
+    { preferHls },
+  )?.url || "";
   return {
-    backupUrl: nextCandidateUrl || (isIOSRuntime() ? backupHlsUrl : (backupFlvUrl || backupHlsUrl || "")),
+    backupUrl: nextCandidateUrl || (preferHls ? (backupHlsUrl || backupFlvUrl || "") : (backupFlvUrl || backupHlsUrl || "")),
     backupRtmpUrl,
     backupFlvUrl,
     backupHlsUrl,

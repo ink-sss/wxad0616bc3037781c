@@ -230,27 +230,27 @@ function buildVideoActions(ctx) {
     handleVideoPlayerEnded: ctx.handleVideoPlayerEnded,
     handleLivePlayerFailure: ctx.handleLivePlayerFailure,
     markPlaybackReady: ctx.markPlaybackReady,
+    recordPlaybackDebugEvent: ctx.recordPlaybackDebugEvent,
     setVideoFrameReady: ctx.setVideoFrameReady,
     enterLive: ctx.enterLive,
     onSubscribePush: ctx.onSubscribePush,
     onTabChange: ctx.onTabChange,
     getVideoPlayer: ctx.getVideoPlayer,
     toggleMute() {
-      const muted = !ctx.isMuted.value;
-      ctx.isMuted.value = muted;
+      const muted = false;
+      ctx.isMuted.value = false;
       const player = typeof ctx.getVideoPlayer === "function" ? ctx.getVideoPlayer() : null;
       if (player && typeof player.setMuted === "function") {
-        player.setMuted(muted);
+        player.setMuted(false);
+      } else if (player && typeof player.unmute === "function") {
+        player.unmute();
       }
-      if (muted) {
-        ctx.clearStoredSoundIntentRestore?.();
-      }
-      ctx.setIOSWechatBridgeSoundAutoPlayAllowed?.(!muted);
+      ctx.setIOSWechatBridgeSoundAutoPlayAllowed?.(true);
       ctx.syncLiveMiniWindowState?.({
         force: true,
         muted,
-        canPlayWithSound: !muted,
-        soundMutedByUser: muted,
+        canPlayWithSound: true,
+        soundMutedByUser: false,
       });
     },
   };

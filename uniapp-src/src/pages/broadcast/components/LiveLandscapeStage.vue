@@ -36,8 +36,9 @@
         mode="live"
         object-fit="contain"
         :autoplay="true"
-        :muted="isMuted"
-        :sound-mode="isMuted ? 'speaker' : 'speaker'"
+        :muted="false"
+        sound-mode="speaker"
+        :mute-on-audio-conflict="false"
         :min-cache="1"
         :max-cache="3"
         orientation="horizontal"
@@ -63,6 +64,7 @@
         :show-play-btn="false"
         :show-center-play-btn="false"
         :show-fullscreen-btn="false"
+        :show-mute-btn="false"
         :enable-progress-gesture="false"
         object-fit="contain"
         :style="{
@@ -72,7 +74,7 @@
           backgroundRepeat: 'no-repeat',
           backgroundColor: '#000',
         }"
-        :muted="isMuted"
+        :muted="false"
         :autoplay="true"
         preload="auto"
         :poster="showLivePoster ? videoPoster : ''"
@@ -167,16 +169,9 @@
           </view>
         </view>
       </view>
-      <!-- 折叠态小窗浮控：关闭(仅隐藏小窗，不联动折叠按钮) + 静音切换。仅折叠态显示，由 css 控制。 -->
+      <!-- 折叠态小窗浮控：关闭(仅隐藏小窗，不联动折叠按钮)。仅折叠态显示，由 css 控制。 -->
       <view v-if="stageCollapsed" class="video-mini-controls" @click.stop @touchstart.stop>
         <text class="video-mini-controls__close" @click.stop="closeMiniWindow" @touchstart.stop>×</text>
-        <view class="video-mini-controls__mute" @click.stop="toggleMute" @touchstart.stop>
-          <image
-            class="video-mini-controls__icon"
-            :src="isMuted ? 'https://man.lqjy.cc/static/icons/competitor-live/icon-volume-off.svg' : 'https://man.lqjy.cc/static/icons/competitor-live/icon-volume-on.svg'"
-            mode="aspectFit"
-          />
-        </view>
       </view>
     </view>
     <!-- 顶部信息区：主播资料、观看人数与投诉入口 -->
@@ -651,7 +646,7 @@
       <view class="goods-shopping-li">
         <view class="toShopping">
           <view v-if="goShoppingNotice.productImage" class="goods-thumb">
-            <image id="goodsPic" class="goodsPic" :src="goShoppingNotice.productImage" mode="aspectFill" />
+            <image class="goodsPic" :src="goShoppingNotice.productImage" mode="aspectFill" />
           </view>
           <view class="shoppingText">
             <view class="shoppingTextName">
@@ -977,17 +972,20 @@ const {
   isTruthyFlag, onSignedDone, enterLive, onSubscribePush, onTabChange, openCommentPrizeRuleModal, openWatchRewardPanel, toggleMute, setLandscapeMiniActive,
   handleLivePlayerFailure, markPlaybackReady, retryPlayback,
 } = props.a;
+const recordPlaybackDebugEvent = props.a.recordPlaybackDebugEvent || (() => {});
 const handleVideoPlayerEnded = props.a.handleVideoPlayerEnded || (() => {});
 
 let frameCallbackPending = false;
 function markVideoFrameReady(event) {
   if (videoFrameReady.value) return;
   const el = event?.target;
+  const currentTime = Number(el?.currentTime ?? event?.detail?.currentTime ?? 0);
   if (!el) {
     if (
       event?.type === "loadeddata" ||
       event?.type === "playing" ||
-      event?.type === "live-player-netstatus"
+      event?.type === "live-player-netstatus" ||
+      (event?.type === "timeupdate" && currentTime > 0)
     ) {
       setVideoFrameReady(true);
       markPlaybackReady?.(event?.type || "media-event");
@@ -1004,7 +1002,6 @@ function markVideoFrameReady(event) {
     });
     return;
   }
-  const currentTime = Number(el?.currentTime ?? event?.detail?.currentTime ?? 0);
   if (
     event?.type === "loadeddata" ||
     event?.type === "playing" ||
@@ -1018,18 +1015,35 @@ function markVideoFrameReady(event) {
 
 function handleVideoPlay(event) {
   setIsPlaying(true);
+  recordPlaybackDebugEvent("stage_video_play", {
+    mode: "landscape",
+    type: event?.type || "",
+    currentTime: Number(event?.target?.currentTime ?? event?.detail?.currentTime ?? 0),
+  });
   if (typeof onVideoPlay === "function") {
     onVideoPlay(event);
   }
 }
 
 function handleVideoTimeUpdate(event) {
-  markVideoFrameReady(event);
-  onVideoTimeUpdate(event);
+  const normalizedEvent = event?.type ? event : { ...(event || {}), type: "timeupdate" };
+  recordPlaybackDebugEvent("stage_video_timeupdate", {
+    mode: "landscape",
+    type: normalizedEvent?.type || "",
+    hasTarget: !!normalizedEvent?.target,
+    currentTime: Number(normalizedEvent?.target?.currentTime ?? normalizedEvent?.detail?.currentTime ?? 0),
+  });
+  markVideoFrameReady(normalizedEvent);
+  onVideoTimeUpdate(normalizedEvent);
 }
 
 function handleLivePlayerStateChange(event) {
   const code = Number(event?.detail?.code || 0);
+  recordPlaybackDebugEvent("stage_live_player_state", {
+    mode: "landscape",
+    code,
+    detail: event?.detail || {},
+  });
   if (LIVE_PLAYER_READY_CODES.includes(code)) {
     setIsPlaying(true);
     setVideoFrameReady(true);
@@ -1047,6 +1061,10 @@ function handleLivePlayerStateChange(event) {
 
 function handleLivePlayerNetStatus(event) {
   const info = event?.detail?.info || event?.detail || {};
+  recordPlaybackDebugEvent("stage_live_player_netstatus", {
+    mode: "landscape",
+    info,
+  });
   if (hasLivePlayerNetActivity(info)) {
     setIsPlaying(true);
     markVideoFrameReady({ ...event, type: "live-player-netstatus" });

@@ -119,6 +119,22 @@ function clearMessages(ctx) {
   refreshPinnedMessage(ctx);
 }
 
+function updatePlayerSources(player, newPullUrl, playbackOptions) {
+  if (player && typeof player.updateSources === "function") {
+    player.updateSources(newPullUrl, playbackOptions);
+  }
+}
+
+function shouldKeepActivePlaybackSource(ctx, player, options = {}) {
+  if (!player?.url) return false;
+  if (options.source !== "poll") return false;
+  if (options.forceSwitchSameKey) return false;
+  if (options.reason !== "playback_resume") return false;
+  if (ctx.isPlaying?.value !== true) return false;
+  if (ctx.videoFrameReady && ctx.videoFrameReady.value !== true) return false;
+  return true;
+}
+
 function applyEndedSnapshot(ctx, payload) {
   const prevPushStatus = ctx.pushStatus ? Number(ctx.pushStatus.value) : undefined;
   if (ctx.pushStatus && payload.pushStatus !== undefined && payload.pushStatus !== null) {
@@ -205,6 +221,19 @@ export function applyLiveStatusSnapshot(ctx, payload, options = {}) {
     clearMessages(ctx);
     ctx.initVideoPlayer?.(newPullUrl, playbackOptions);
   } else if (newPullUrl && oldPullUrl && newSourceKey && oldSourceKey !== newSourceKey) {
+    const player = ctx.getVideoPlayer?.();
+    if (shouldKeepActivePlaybackSource(ctx, player, options)) {
+      ctx.pullUrl.value = newPullUrl;
+      updatePlayerSources(player, newPullUrl, playbackOptions);
+      ctx.recordPlaybackDebugEvent?.(`${eventPrefix}_source_keep_active`, {
+        activeUrl: player.url || "",
+        selectedUrl: newPullUrl,
+        oldSourceKey,
+        newSourceKey,
+        reason,
+      });
+      return true;
+    }
     ctx.pullUrl.value = newPullUrl;
     ctx.recordPlaybackDebugEvent?.(`${eventPrefix}_source_switch`, {
       from: oldPullUrl,
@@ -226,9 +255,7 @@ export function applyLiveStatusSnapshot(ctx, payload, options = {}) {
   } else {
     ctx.pullUrl.value = newPullUrl;
     const player = newPullUrl ? ctx.getVideoPlayer?.() : null;
-    if (player && typeof player.updateSources === "function") {
-      player.updateSources(newPullUrl, playbackOptions);
-    }
+    updatePlayerSources(player, newPullUrl, playbackOptions);
   }
   return true;
 }

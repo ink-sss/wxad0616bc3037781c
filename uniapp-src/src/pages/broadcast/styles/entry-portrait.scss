@@ -11,6 +11,16 @@
   height: 100vh;
   z-index: 0;
 }
+.live-portrait .live-video :deep(.uni-video-container),
+.live-portrait .live-video :deep(.uni-video-video) {
+  width: 100% !important;
+  height: 100% !important;
+}
+.live-portrait .live-video :deep(.uni-video-video) {
+  object-fit: cover;
+  object-position: inherit;
+  background: #000;
+}
 /* 竖屏等待开播封面占位 */
 .live-portrait .live-video--poster {
   background: #000;

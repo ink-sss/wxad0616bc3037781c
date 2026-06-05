@@ -18,6 +18,7 @@ export function useLiveHeartbeatStatus(ctx) {
     getEnterTimestamp,
     pushStatus,
     isPlaying,
+    videoFrameReady,
     liveHeartbeat,
     getLiveStatus,
     setViewerCountDisplay,
@@ -122,6 +123,7 @@ export function useLiveHeartbeatStatus(ctx) {
         applyLiveStatusSnapshot({
           pushStatus,
           isPlaying,
+          videoFrameReady,
           setViewerCountDisplay,
           viewerCount,
           likeCount,
