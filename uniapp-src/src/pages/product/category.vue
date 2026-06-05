@@ -24,7 +24,7 @@
         <view v-if="showTwo()" class="category-tab f-s-0">
           <scroll-view class="scroll-Y" scroll-y :style="{ height: scrollviewHigh + 'px' }">
             <view class="cotegory-padding">
-              <view v-for="(item, index) in listData" :key="item.category_id || index" :class="select_index === index ? 'item active' : 'item'" @tap="selectCategory(index)">
+              <view v-for="(item, index) in categoryTabs" :key="item.category_id || index" :class="select_index === index ? 'item active' : 'item'" @tap="selectCategory(index)">
                 <text>{{ item.name }}</text>
               </view>
             </view>
@@ -34,7 +34,7 @@
         <view v-if="(style === 1 && show_type === 20) || (style === 4 && show_type === 10)" class="category-tab f-s-0">
           <scroll-view class="scroll-Y" scroll-y :style="{ height: scrollviewHigh + 'px' }">
             <view class="cotegory-padding">
-              <view v-for="(item, index) in listData" :key="item.category_id || index" :class="select_index === index ? 'item active' : 'item'" @tap="selectCategory(index)">
+              <view v-for="(item, index) in categoryTabs" :key="item.category_id || index" :class="select_index === index ? 'item active' : 'item'" @tap="selectCategory(index)">
                 <text>{{ item.name }}</text>
               </view>
             </view>
@@ -80,9 +80,6 @@
                   <view class="text-ellipsis-2 f28 gray3">{{ item.product_name }}</view>
                   <view class="theme-price f36 fb price-wrap">
                     <text class="f24">￥</text>{{ item.product_min_price }}
-                    <view v-if="shoppingPrice && item.isActivity !== 1 && isBuyFast() && item.is_virtual !== 1 && item.custom_form === ''" class="add-shopping-wrap theme-bg" @tap.stop="addShopping(item)">
-                      <view class="icon iconfont icon-icozhuanhuan"></view>
-                    </view>
                   </view>
                 </view>
               </view>
@@ -93,20 +90,6 @@
     </view>
 
     <category-mask-vue ref="categoryMaskRef" :data-list="productArr" @get-shopping-num="getShoppingNum" />
-
-    <view v-if="isBuyFast()" id="shopping" class="shopping d-b-c customTabBar">
-      <view class="shopping-l d-s-c">
-        <view class="shopping-circle" @tap="lookProduct">
-          <view class="shopping-icon icon iconfont icon-icozhuanhuan"></view>
-          <view v-if="shoppingNum && shoppingNum !== 0" class="shopping-num">{{ shoppingNum }}</view>
-        </view>
-        <view class="shopping-price d-s-c">
-          <view class="shopping-symbol">￥</view>
-          <view>{{ shoppingPrice }}</view>
-        </view>
-      </view>
-      <button class="shopping-r" @tap="Submit">去结算</button>
-    </view>
 
     <view v-if="isDomHeight && osName !== 'android'" id="footBottom"></view>
     <tab-bar :is-scroll="true" />
@@ -197,7 +180,12 @@ export default {
       return this.loading ? 1 : this.productlist.length !== 0 && this.no_more ? 2 : 0
     },
     topSearchStyle() {
-      return this.topBarHeight && this.topBarHeight() === 0 ? '' : `height:${this.topBarHeight()}px;padding-top:${this.topBarTop()}px`
+      const top = typeof this.topBarTop === 'function' ? this.topBarTop() : 0
+      const height = typeof this.topBarHeight === 'function' ? this.topBarHeight() : 0
+      return height === 0 ? '' : `height:${top + Math.max(height, 38) + 10}px;padding-top:${top}px`
+    },
+    categoryTabs() {
+      return this.listData.length > 0 ? this.listData : [{ category_id: 0, name: '全部商品', child: [] }]
     },
     showCategoryType3() {
       return (this.show_type === 20 && (this.style === 1 || this.style === 2 || this.style === 3)) ||
@@ -237,11 +225,6 @@ export default {
       this.$refs.categoryMaskRef.open()
     },
     isBuyFast() {
-      if ((this.show_type === 10 && this.style === 4) || (this.show_type === 20 && this.style === 3)) {
-        const height = this.phoneHeight - this.searchHeight - this.shoppingHeight
-        this.scrollviewHigh = height - this.footerHeight
-        return true
-      }
       this.scrollviewHigh = this.phoneHeight - this.searchHeight - this.footerHeight
       return false
     },
@@ -254,9 +237,10 @@ export default {
           this.phoneHeight = res.windowHeight
           uni.createSelectorQuery().select('#searchBox').boundingClientRect((rect) => {
             this.searchHeight = (rect && rect.height) || 0
-          }).exec()
-          uni.createSelectorQuery().select('#footBottom').boundingClientRect((rect) => {
-            if (rect && rect.height) this.footerHeight = rect.height
+            uni.createSelectorQuery().select('#footBottom').boundingClientRect((footerRect) => {
+              this.footerHeight = (footerRect && footerRect.height) || 0
+              this.scrollviewHigh = this.phoneHeight - this.searchHeight - this.footerHeight
+            }).exec()
           }).exec()
           this.isDomHeight = false
         }
@@ -270,7 +254,7 @@ export default {
       fetchCategories().then((data) => {
         const categories = Array.isArray(data) ? data.map(normalizeCategory) : []
         this.show_type = 10
-        this.style = 4
+        this.style = 2
         this.listData = categories
         if (this.listData && this.listData.length > 0) {
           if (this.listData[0].child && this.show_type === 20) {
@@ -285,7 +269,6 @@ export default {
         }
         if (this.style === 2 || ((this.show_type === 10 && this.style === 4) || (this.show_type === 20 && this.style === 3))) {
           this.getProduct()
-          if ((this.show_type === 10 && this.style === 4) || (this.show_type === 20 && this.style === 3)) this.getShoppingNum()
         }
         this.background = '#ffffff'
         this.loading = false
@@ -413,20 +396,23 @@ export default {
     },
     selectCategory(index) {
       throttle(() => {
+        const tabs = this.categoryTabs
+        const selected = tabs[index]
+        if (!selected) return
         if (this.show_type === 10) {
           this.select_index = index
-          this.catename = this.listData[this.select_index].name
-          this.changeCategory(this.listData[this.select_index].category_id)
-        } else if (this.listData[index].child) {
-          this.childlist = this.listData[index].child
+          this.catename = selected.name
+          this.changeCategory(selected.category_id)
+        } else if (selected.child && selected.child.length > 0) {
+          this.childlist = selected.child
           this.select_index = index
-          this.catename = this.listData[this.select_index].name
+          this.catename = selected.name
           this.changeCategory(this.childlist[0].category_id)
         } else {
           this.select_index = index
           this.childlist = []
-          this.catename = this.listData[this.select_index].name
-          this.changeCategory(this.listData[this.select_index].category_id)
+          this.catename = selected.name
+          this.changeCategory(selected.category_id)
         }
       })
     },
@@ -455,6 +441,34 @@ page {
 .category-wrap {
   background: #fff;
   min-height: 0;
+}
+
+.pr { position: relative; }
+.ww100 { width: 100%; }
+.flex-1 { flex: 1; min-width: 0; }
+.d-c { display: flex; flex-direction: column; }
+.d-b-c { display: flex; align-items: center; justify-content: space-between; }
+.d-b-s { display: flex; align-items: flex-start; justify-content: space-between; }
+.d-s-c { display: flex; align-items: center; justify-content: flex-start; }
+.t-c,
+.tc { text-align: center; }
+.ml10 { margin-left: 10rpx; }
+.f24 { font-size: 24rpx; }
+.f28 { font-size: 28rpx; }
+.f36 { font-size: 36rpx; }
+.fb { font-weight: 700; }
+.gray3 { color: #333; }
+.text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.text-ellipsis-2 {
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .index-search-box-cate {
@@ -1134,5 +1148,122 @@ page {
 [data-theme=theme5] .pop-bg .pop-cate .pop-cate-item.active,
 [data-theme=theme6] .pop-bg .pop-cate .pop-cate-item.active {
   color: #fff !important;
+}
+
+/* Final uni-app overrides for legacy category layout parity. */
+.category-wrap {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.category-wrap > .category-content {
+  width: 100%;
+}
+
+.category-wrap .index-search-box-cate {
+  align-items: center;
+  gap: 16rpx;
+  min-height: 108rpx;
+  padding: 20rpx;
+}
+
+.category-wrap .index-search-cate {
+  min-width: 0;
+}
+
+.category-wrap .index-search-cate .iconfont {
+  font-size: 28rpx;
+  line-height: 1;
+}
+
+.category-wrap .wx-top-right {
+  flex: 0 0 200rpx;
+  height: 2rpx;
+  width: 200rpx;
+}
+
+.cotegory-type-3 {
+  align-items: stretch;
+  display: flex;
+  width: 100%;
+}
+
+.cotegory-type-3 .category-tab {
+  flex: 0 0 200rpx;
+  overflow: hidden;
+  width: 200rpx;
+}
+
+.cotegory-type-3 > .category-content {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.cotegory-type-3 .scroll-3 {
+  border-radius: 0;
+  box-sizing: border-box;
+  left: 0;
+  position: relative;
+  top: 0;
+  width: 100%;
+}
+
+.cotegory-type-3 .category-content .cotegory-padding {
+  padding: 0 0 calc(50px + 60rpx + env(safe-area-inset-bottom));
+}
+
+.product-item-2 {
+  align-items: center;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: flex-start;
+  margin: 18rpx 20rpx 26rpx;
+  width: auto;
+}
+
+.product-item-2:first-child {
+  margin-top: 20rpx;
+}
+
+.product-item-2 .image-boxs {
+  border-radius: 14rpx;
+  flex: 0 0 176rpx;
+  height: 176rpx;
+  margin-right: 20rpx;
+  width: 176rpx;
+}
+
+.product-item-2 .image-boxs .product-image-2 {
+  height: 176rpx;
+  width: 176rpx;
+}
+
+.product-item-2 .product-info {
+  flex: 1;
+  min-width: 0;
+  padding: 4rpx 0;
+}
+
+.product-item-2 .price-wrap {
+  min-height: 50rpx;
+  padding-right: 0;
+}
+
+.product-item-2 .f36 {
+  font-size: 32rpx;
+}
+
+.product-item-2 .f28 {
+  font-size: 27rpx;
+  line-height: 38rpx;
+}
+
+.theme-price {
+  color: #ff5704;
+}
+
+.theme-bg {
+  background-color: #ff5704;
 }
 </style>

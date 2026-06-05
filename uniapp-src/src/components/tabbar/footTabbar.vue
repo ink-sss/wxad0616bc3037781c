@@ -13,6 +13,15 @@
   </view>
 </template>
 <script>
+import { DEFAULT_THEME } from '../../utils/default-style-data.js'
+
+const THEME_COLORS = ['#ff5704', '#19ad57', '#ffcc00', '#33a7ff', '#e4e4e4', '#c8ba97', '#623ceb']
+
+function normalizeTheme(value) {
+  const theme = Number(`${value}`.replace(/^theme/, ''))
+  return Number.isInteger(theme) && theme >= 0 && theme < THEME_COLORS.length ? theme : DEFAULT_THEME
+}
+
 export default {
   name: 'FootTabbar',
   props: { isScroll: { type: Boolean, default: false } },
@@ -25,7 +34,15 @@ export default {
   mounted() { this.wxPhone(); },
   methods: {
     wxPhone() { this.wx_phone_compulsory = !!uni.getStorageSync('wx_phone_compulsory'); if (uni.getStorageSync('get_phone')) uni.removeStorageSync('get_phone'); },
-    defaultNav() { const theme = 2; return { backgroundColor: '#FFFFFF', is_auto: '0', textColor: '#000000', textHoverColor: '#ffcc00', type: '0', list: [ { iconPath: '/static/tabbar/home.png', link_url: '/pages/index/index', selectedIconPath: '/static/tabbar/home_' + theme + '.png', text: '首页' }, { iconPath: '/static/tabbar/category.png', link_url: '/pages/product/category', selectedIconPath: '/static/tabbar/category_' + theme + '.png', text: '分类' }, { iconPath: '/static/tabbar/shop.png', is_show: false, link_url: '/pages/shop/shop_list', selectedIconPath: '/static/tabbar/shop_' + theme + '.png', text: '商户' }, { iconPath: '/static/tabbar/cart.png', is_show: true, link_url: '/pages/cart/cart', selectedIconPath: '/static/tabbar/cart_' + theme + '.png', text: '购物车' }, { iconPath: '/static/tabbar/user.png', is_show: true, link_url: '/pages/user/index/index', selectedIconPath: '/static/tabbar/user_' + theme + '.png', text: '我的' } ] }; },
+    currentTheme() {
+      const storeTheme = this.$store?.state?.theme
+      return storeTheme !== undefined && storeTheme !== null ? normalizeTheme(storeTheme) : normalizeTheme(uni.getStorageSync('theme'))
+    },
+    currentThemeColor() {
+      const color = typeof this.getThemeColor === 'function' ? this.getThemeColor() : ''
+      return color || THEME_COLORS[this.currentTheme()] || THEME_COLORS[DEFAULT_THEME]
+    },
+    defaultNav() { const theme = this.currentTheme(); return { backgroundColor: '#FFFFFF', is_auto: '0', textColor: '#000000', textHoverColor: this.currentThemeColor(), type: '0', list: [ { iconPath: '/static/tabbar/home.png', link_url: '/pages/index/index', selectedIconPath: '/static/tabbar/home_' + theme + '.png', text: '首页' }, { iconPath: '/static/tabbar/category.png', link_url: '/pages/product/category', selectedIconPath: '/static/tabbar/category_' + theme + '.png', text: '分类' }, { iconPath: '/static/tabbar/shop.png', is_show: false, link_url: '/pages/shop/shop_list', selectedIconPath: '/static/tabbar/shop_' + theme + '.png', text: '商户' }, { iconPath: '/static/tabbar/cart.png', is_show: true, link_url: '/pages/cart/cart', selectedIconPath: '/static/tabbar/cart_' + theme + '.png', text: '购物车' }, { iconPath: '/static/tabbar/user.png', is_show: true, link_url: '/pages/user/index/index', selectedIconPath: '/static/tabbar/user_' + theme + '.png', text: '我的' } ] }; },
     isMerchantVisible(item) { return item.is_show === true || item.is_show === 1 || item.is_show === '1'; },
     shouldUseRemoteNav(remote) { return remote && String(remote.is_auto) !== '0'; },
     getData() { this.detail = this.defaultNav(); uni.setStorageSync('TabBar', this.detail); },

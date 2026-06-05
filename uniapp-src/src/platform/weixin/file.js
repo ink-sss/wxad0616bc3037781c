@@ -1,7 +1,7 @@
 import { getGlobalUni, getWeixinApi, promisifyApi, unsupportedError } from './runtime'
 
 export function chooseAddress(options = {}) {
-  return promisifyApi('chooseAddress', options, { preferUni: true })
+  return promisifyApi('chooseAddress', options)
 }
 
 export function chooseImage(options = {}) {

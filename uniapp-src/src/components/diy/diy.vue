@@ -40,14 +40,8 @@
       </block>
     </view>
 
-    <view v-else class="nav-product" style="width:750rpx">
-      <view class="product-list">
-        <view v-for="(product, index) in listData" :key="product.product_id" :class="['product_item', 'o-h', index % 2 === 1 && 'product_item_right']" @tap="gotoProduct(product.product_id)">
-          <image lazy-load mode="aspectFill" :src="product.product_image" style="width:345rpx;height:345rpx"></image>
-          <view class="text-ellipsis-2 f26 pro_name p-0-20 mt20">{{ product.product_name }}</view>
-          <view class="mt36 mb20 p-0-20"><text class="f20 fb redF6">￥</text><text class="f32 fb redF6">{{ product.product_sku && product.product_sku.product_price }}</text><block v-if="product.product_sku && Number(product.product_sku.line_price || 0) > 0"><text class="text-d-line f20 gray9 ml10">￥</text><text class="text-d-line f24 gray9">{{ product.product_sku.line_price }}</text></block></view>
-        </view>
-      </view>
+    <view v-else class="nav-product">
+      <diy-product v-if="listData.length" :item-data="defaultProductItem" />
       <view v-if="!listData.length && no_more" class="d-c-c p30"><text class="iconfont icon-wushuju"></text><text class="cont">亲，暂无相关记录哦</text></view>
       <uni-load-more v-else :status="loadingType === 1 ? 'loading' : loadingType === 2 ? 'noMore' : 'more'" />
     </view>
@@ -83,13 +77,31 @@ import DiyTopMerge from './topMerge/topMerge.vue';
 import DiyVideos from './videos/videos.vue';
 import DiyWindow from './window/window.vue';
 import { fetchProducts, normalizeProductList } from '../../services/miniprogram-products.js';
+import { defaultHomeData } from '../../utils/default-style-data.js';
+
+function getDefaultProductItem() {
+  const items = defaultHomeData().items || {}
+  return Object.keys(items)
+    .map((key) => items[key])
+    .find((item) => item && item.type === 'product') || { type: 'product', data: [] }
+}
+
 export default {
   name: 'Diy',
   components: { DiyArticle, DiyAssembleProduct, DiyBanner, DiyBargainProduct, DiyBase, DiyBlank, DiyCoupon, DiyGuide, DiyImagesingle, DiyLive, DiyNavBar, DiyNotice, DiyOption, DiyOrder, DiyPreviewProduct, DiyProduct, DiyRichText, DiySearch, DiySeckillProduct, DiyService, DiyShipinLive, DiySpecial, DiyStore, DiySurface, DiyTitle, DiyTopMerge, DiyVideos, DiyWindow },
   props: ['diyItems', 'userInfo', 'serviceUserId', 'diytop', 'storeInfo'],
   emits: ['scanQrcode', 'stopPush', 'getData', 'bg', 'openSearch'],
   data() { return { thisindex: 0, category_id: '', listData: [], page: 1, last_page: 0, no_more: false, loading: true, defaultProductsLoaded: false }; },
-  computed: { loadingType() { return this.loading ? 1 : this.listData.length && this.no_more ? 2 : 0; }, scrolltop() { const value = 80 - 2 * (this.diytop || 0); return value <= 0 ? 0 : value; } },
+  computed: {
+    loadingType() { return this.loading ? 1 : this.listData.length && this.no_more ? 2 : 0; },
+    scrolltop() { const value = 80 - 2 * (this.diytop || 0); return value <= 0 ? 0 : value; },
+    defaultProductItem() {
+      return {
+        ...getDefaultProductItem(),
+        data: this.listData
+      }
+    }
+  },
   watch: {
     diyItems: {
       handler() {
@@ -116,9 +128,6 @@ export default {
 </script>
 <style scoped>
 .diy-container { width: 100%; }
-.product-list { align-items: center; display: flex; flex-wrap: wrap; justify-content: space-between; position: relative; z-index: 1; }
-.product_item { background-color: #fff; border-radius: 12rpx; margin: 20rpx 20rpx 0; width: 345rpx; }
-.product_item.product_item_right { margin-left: 0; }
-.product_item .pro_name { height: 68rpx; line-height: 34rpx; }
+.nav-product { width: 750rpx; }
 .diy-unsupported { display: none; }
 </style>

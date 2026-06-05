@@ -1,11 +1,25 @@
 <template>
-  <view class="migration-component guarantee">
-    <!-- TODO:migration: Recovered from compiled guarantee.wxml/js; original template semantics need validation. -->
-    <slot />
-    <view v-if="itemData" class="migration-fallback">
-      <image v-if="coverImage" class="migration-fallback__image" :src="coverImage" mode="aspectFill" lazy-load @tap="openLink(primaryLink)" />
-      <view v-if="displayTitle" class="migration-fallback__title">{{ displayTitle }}</view>
-      <view v-if="displayText" class="migration-fallback__text">{{ displayText }}</view>
+  <view v-if="visible" :class="['bottom-panel', visible ? 'open' : 'close']" @tap="closePopup">
+    <view class="popup-bg"></view>
+    <view class="content" @tap.stop>
+      <view class="module-box module-share">
+        <view class="hd d-c-c">
+          <text>基础服务</text>
+          <text class="iconfont icon-guanbi" @tap.stop="closePopup"></text>
+        </view>
+        <scroll-view scroll-y style="height:600rpx;min-height:300rpx">
+          <view v-for="(item, index) in serviceList" :key="index" class="service-item">
+            <view class="d-s-s">
+              <view><view class="icon iconfont icon-tijiaochenggong"></view></view>
+              <view class="ml30 flex-1">
+                <view class="f26 gray3 mb10">{{ item.name }}</view>
+                <view class="f22 gray9">{{ item.describe }}</view>
+              </view>
+            </view>
+          </view>
+          <view v-if="serviceList.length === 0" class="empty-service">暂无服务说明</view>
+        </scroll-view>
+      </view>
     </view>
   </view>
 </template>
@@ -13,154 +27,63 @@
 <script>
 export default {
   name: 'Guarantee',
-  props: ["itemData","config","currentI","navList","color","activeText","optionType","activeColorF","activeColorS","defaultColor","marginRight","isAppShare","appParams","isMpShare","location","diyItems","userInfo","serviceUserId","diytop","storeInfo","isScroll","wxPhoneCompulsory"],
-  emits: ['close', 'returnVal', 'setIndex', 'parentFunc', 'scanQrcode', 'onConfirm', 'onCancel', 'onChange', 'currentIndex', 'bg', 'stopPush', 'getData'],
+  props: {
+    isguarantee: {
+      type: Boolean,
+      default: false
+    },
+    server: {
+      type: [Array, String],
+      default: () => []
+    }
+  },
+  emits: ['close'],
+  data() {
+    return {
+      visible: false
+    }
+  },
   computed: {
-    source() {
-      return this.itemData || this.config || {};
-    },
-    displayTitle() {
-      return this.source?.params?.title || this.source?.style?.title || this.source?.title || this.source?.name || '';
-    },
-    displayText() {
-      return this.source?.params?.text || this.source?.text || this.source?.desc || '';
-    },
-    coverImage() {
-      const data = Array.isArray(this.source?.data) ? this.source.data[0] : this.source?.data;
-      return data?.imgUrl || data?.image || data?.imageUrl || data?.product_image || this.source?.imgUrl || this.source?.image || '';
-    },
-    primaryLink() {
-      const data = Array.isArray(this.source?.data) ? this.source.data[0] : this.source?.data;
-      return data?.linkUrl || data?.link_url || this.source?.linkUrl || this.source?.link_url || '';
+    serviceList() {
+      return Array.isArray(this.server) ? this.server : []
+    }
+  },
+  watch: {
+    isguarantee: {
+      immediate: true,
+      handler(value) {
+        this.visible = !!value
+      }
     }
   },
   methods: {
-    openLink(url) {
-      if (!url) return;
-      if (typeof this.gotoPage === 'function') this.gotoPage(url);
-      else uni.navigateTo({ url: url.startsWith('/') ? url : '/' + url });
+    closePopup() {
+      this.visible = false
+      this.$emit('close', { type: 1 })
     }
   }
-};
+}
 </script>
 
 <style scoped>
-.migration-component { width: 100%; box-sizing: border-box; }
-.migration-fallback { width: 100%; box-sizing: border-box; }
-.migration-fallback__image { width: 100%; height: 240rpx; display: block; }
-.migration-fallback__title { padding: 16rpx 24rpx 0; font-size: 28rpx; color: #222; }
-.migration-fallback__text { padding: 8rpx 24rpx 16rpx; font-size: 24rpx; color: #666; }
-.bottom-panel .popup-bg {
-    background: rgba(0,0,0,.6);
-    bottom: 0;
-    left: 0;
-    position: fixed;
-    right: 0;
-    top: 0;
-    z-index: 98
-}
-
-.bottom-panel .popup-bg .wechat-box {
-    padding-top: var(--window-top)
-}
-
-.bottom-panel .popup-bg .wechat-box image {
-    width: 100%
-}
-
-.bottom-panel .content {
-    background-color: #fff;
-    border-radius: 12rpx;
-    left: 0;
-    margin: auto;
-    max-height: 900rpx;
-    min-height: 200rpx;
-    position: fixed;
-    right: 0;
-    top: 20vh;
-    -webkit-transform: translate3d(0,1980rpx,0);
-    transform: translate3d(0,1980rpx,0);
-    transition: -webkit-transform .2s cubic-bezier(0,0,.25,1);
-    transition: transform .2s cubic-bezier(0,0,.25,1);
-    transition: transform .2s cubic-bezier(0,0,.25,1),-webkit-transform .2s cubic-bezier(0,0,.25,1);
-    width: 80%;
-    z-index: 99
-}
-
-.bottom-panel.open .content {
-    -webkit-transform: translateZ(0);
-    transform: translateZ(0)
-}
-
-.bottom-panel.close .popup-bg {
-    display: none
-}
-
-.module-share .hd {
-    font-size: 36rpx;
-    height: 90rpx;
-    line-height: 90rpx
-}
-
-.module-share .item button,.module-share .item button:after {
-    background: none;
-    border: none
-}
-
-.module-share .icon-box {
-    background: #f6bd1d;
-    border-radius: 50%;
-    height: 100rpx;
-    width: 100rpx
-}
-
-.module-share .icon-box .iconfont {
-    color: #fff;
-    font-size: 60rpx
-}
-
-.module-share .btns {
-    margin-top: 30rpx
-}
-
-.module-share .btns button {
-    border-radius: 0;
-    border-top: 1px solid #eee;
-    height: 90rpx;
-    line-height: 90rpx
-}
-
-.module-share .btns button:after {
-    border-radius: 0
-}
-
-.module-share .share-friend {
-    background: #04be01
-}
-
-.icon-tijiaochenggong {
-    border: 1rpx solid #f63;
-    border-radius: 50%;
-    color: #f63;
-    -webkit-flex-shrink: initial;
-    flex-shrink: 1;
-    font-size: 20rpx;
-    height: 28rpx;
-    line-height: 28rpx;
-    margin-top: 7rpx;
-    text-align: center;
-    width: 28rpx
-}
-
-.mb10 {
-    margin-bottom: 10rpx
-}
-
-.iconfont.icon-guanbi {
-    color: #999;
-    font-size: 32rpx;
-    position: absolute;
-    right: 20rpx;
-    top: 0
-}
+.bottom-panel { position: fixed; inset: 0; z-index: 82; pointer-events: none; opacity: 0; transition: opacity .2s; }
+.bottom-panel.open { pointer-events: auto; opacity: 1; }
+.bottom-panel.close .popup-bg { display: none; }
+.popup-bg { position: absolute; inset: 0; background: rgba(0,0,0,.6); }
+.content { position: absolute; left: 50%; top: 20vh; width: 80%; max-height: 900rpx; min-height: 200rpx; transform: translate(-50%, 1980rpx); transition: transform .2s cubic-bezier(0,0,.25,1); border-radius: 12rpx; background: #fff; overflow: hidden; }
+.bottom-panel.open .content { transform: translate(-50%, 0); }
+.hd { position: relative; height: 90rpx; font-size: 36rpx; line-height: 90rpx; font-weight: 700; }
+.d-c-c { display: flex; align-items: center; justify-content: center; }
+.d-s-s { display: flex; align-items: flex-start; justify-content: flex-start; }
+.flex-1 { flex: 1; min-width: 0; }
+.service-item { padding: 30rpx; box-sizing: border-box; }
+.ml30 { margin-left: 30rpx; }
+.mb10 { margin-bottom: 10rpx; }
+.f26 { font-size: 26rpx; }
+.f22 { font-size: 22rpx; }
+.gray3 { color: #333; }
+.gray9 { color: #999; }
+.icon-tijiaochenggong { border: 1rpx solid #f63; border-radius: 50%; color: #f63; flex-shrink: 0; font-size: 20rpx; height: 28rpx; line-height: 28rpx; margin-top: 7rpx; text-align: center; width: 28rpx; }
+.iconfont.icon-guanbi { position: absolute; right: 20rpx; top: 0; color: #999; font-size: 32rpx; }
+.empty-service { padding: 80rpx 30rpx; color: #999; font-size: 26rpx; text-align: center; }
 </style>

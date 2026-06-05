@@ -68,13 +68,14 @@ function requestDisplayApi(path, data = {}) {
 }
 
 export function normalizeCategory(item = {}) {
-  const children = Array.isArray(item.children) ? item.children.map(normalizeCategory) : []
+  const rawChildren = Array.isArray(item.children) ? item.children : item.child
+  const children = Array.isArray(rawChildren) ? rawChildren.map(normalizeCategory) : []
   return {
     ...item,
-    category_id: firstValue(item.category_id, item.id, 0),
-    name: firstValue(item.name, '未命名分类'),
+    category_id: firstValue(item.category_id, item.categoryId, item.id, 0),
+    name: firstValue(item.name, item.category_name, item.categoryName, item.title, item.label, '未命名分类'),
     images: {
-      file_path: firstValue(item.images?.file_path, item.icon, '')
+      file_path: firstValue(item.images?.file_path, item.image, item.icon, '')
     },
     child: children
   }

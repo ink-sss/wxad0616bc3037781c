@@ -1,5 +1,5 @@
 <template>
-  <view :class="['bottom-panel', visible ? 'open' : 'close']" @tap="closePopup">
+  <view v-if="visible" :class="['bottom-panel', visible ? 'open' : 'close']" @tap="closePopup">
     <view class="content" @tap.stop>
       <view class="module-box module-share">
         <view class="hd d-c-c">分享</view>

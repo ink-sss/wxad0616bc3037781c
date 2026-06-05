@@ -47,7 +47,7 @@
             <video v-else class="video" autoplay :src="detail.video_link" :controls="isMPH5" :show-center-play-btn="isMPH5" :show-play-btn="isMPH5" :enable-progress-gesture="false" @tap="isVideoPlay = false" />
           </swiper-item>
           <swiper-item v-for="(image, index) in detail.image" :key="index">
-            <image mode="aspectFit" :src="image.file_path" @tap="yulan(detail.image, index)" />
+            <image mode="aspectFill" :src="image.file_path" @tap="yulan(detail.image, index)" />
           </swiper-item>
         </swiper>
       </view>
@@ -125,42 +125,53 @@
 
       <view v-if="!ispresale && is_preview !== 1" class="bg-white p30 product-info mb22">
         <view class="price-wrap">
-          <view class="new-price theme-price">
-            <text v-if="detail.is_user_grade" class="fn mr10 fb">会员价</text>
-            <text>¥</text>
-            <text class="num">{{ detail.product_sku.product_price }}</text>
-            <text v-if="detail.spec_type === 20 && detail.product_sku.product_price !== detail.product_max_price" class="num"> - {{ detail.product_max_price }}</text>
-          </view>
-          <view class="share-box">
-            <button class="d-c d-c-c" @tap="showShare">
-              <image class="share_img" mode="aspectFit" src="https://man.lqjy.cc/static/icon/fx.png" />
-            </button>
-          </view>
-            <view v-if="showFavorite" class="sc-box">
-              <button class="d-c d-c-c" @tap="favorite">
-                <image class="share_img" :class="{ img_gray: !is_fav }" mode="aspectFit" src="https://man.lqjy.cc/static/icon/sc.png" />
-              </button>
+          <view class="d-s-s d-c ww100">
+            <view class="d-s-c pr ww100 mb16">
+              <view class="new-price theme-price">
+                <text v-if="detail.is_user_grade" class="fn mr10 fb">会员价</text>
+                <text>¥</text>
+                <text class="num">{{ detail.product_sku.product_price }}</text>
+                <text v-if="detail.spec_type === 20 && detail.product_sku.product_price !== detail.product_max_price" class="num"> - {{ detail.product_max_price }}</text>
+              </view>
+              <view class="share-box">
+                <button class="d-c d-c-c" @tap="showShare">
+                  <image class="share_img" mode="aspectFit" src="https://man.lqjy.cc/static/icon/fx.png" />
+                </button>
+              </view>
+              <view v-if="showFavorite" class="sc-box">
+                <button class="d-c d-c-c" @tap="favorite">
+                  <image class="share_img" :class="{ img_gray: !is_fav }" mode="aspectFit" src="https://man.lqjy.cc/static/icon/sc.png" />
+                </button>
+              </view>
             </view>
-          <view class="gray9 f22 mt10">
-            <text v-if="detail.product_sku && detail.product_sku.line_price > 0">原价<text class="old-price">¥{{ detail.product_sku.line_price }}</text><text class="mr10 ml10">|</text></text>
-            <text>已售{{ detail.product_sales }}件</text>
+            <view class="d-s-c">
+              <view v-if="detail.product_sku && detail.product_sku.line_price > 0" class="gray9 f22">
+                原价<text class="old-price">¥{{ detail.product_sku.line_price }}</text><text class="mr10 ml10">|</text>
+              </view>
+              <text class="already-sale">已售{{ detail.product_sales }}件</text>
+            </view>
           </view>
         </view>
 
-        <view v-if="show_discount" class="discount-box">
-          <view v-if="discount.give_points > 0" class="p-10-0 line-h-50 f22 gray9">
-            <text class="text-box">返{{ points_name() }}</text>商城购物返{{ points_name() }}，订单完成后最高返{{ discount.give_points }}{{ points_name() }}
+        <view v-if="show_discount" class="d-e-c">
+          <view class="flex-1">
+            <view v-if="discount.give_points > 0" class="p-10-0 line-h-50 f22 gray9 text-ellipsis">
+              <text class="text-box">返{{ points_name() }}</text>商城购物返{{ points_name() }}，订单完成后最高返{{ discount.give_points }}{{ points_name() }}
+            </view>
+            <view v-if="discount.product_reduce.length > 0" class="f26 gray3 line-h-50">
+              <text v-for="(item, index) in discount.product_reduce" :key="index" class="manjian-box">
+                <block v-if="item.full_type === 1">满{{ item.full_value }}元</block>
+                <block v-if="item.full_type === 2">满{{ item.full_value }}件</block>
+                <block v-if="item.reduce_type === 1">减{{ item.reduce_value }}元</block>
+                <block v-if="item.reduce_type === 2">{{ (100 - item.reduce_value) / 10 }}折</block>
+              </text>
+            </view>
           </view>
-          <view v-if="discount.product_reduce.length > 0" class="f26 gray3 line-h-50">
-            <text v-for="(item, index) in discount.product_reduce" :key="index" class="manjian-box">
-              <block v-if="item.full_type === 1">满{{ item.full_value }}元</block>
-              <block v-if="item.full_type === 2">满{{ item.full_value }}件</block>
-              <block v-if="item.reduce_type === 1">减{{ item.reduce_value }}元</block>
-              <block v-if="item.reduce_type === 2">{{ (100 - item.reduce_value) / 10 }}折</block>
-            </text>
-          </view>
-          <view v-if="discount.product_coupon.length > 0" class="coupon-entry" @tap="openCoupon">
-            <text>领券</text><text class="icon iconfont icon-you"></text>
+          <view v-if="discount.product_coupon.length > 0">
+            <view class="text-box-coupon" @tap="openCoupon">
+              <text>领券</text>
+              <text class="icon iconfont icon-you"></text>
+            </view>
           </view>
         </view>
 
@@ -247,29 +258,48 @@
     </scroll-view>
 
     <view class="btns-wrap">
-      <view class="icon-box d-c-c" @tap="gotoPage('/pages/index/index')">
-        <button class="d-c-c d-c bg-white"><text class="btn_btom pr icon iconfont icon-Homehomepagemenu gray3"></text><text class="f22 gray3">首页</text></button>
+      <view class="icon-box d-c-c">
+        <button class="d-c-c d-c bg-white" @tap="gotoPage('/pages/index/index')">
+          <text class="btn_btom pr icon iconfont icon-Homehomepagemenu gray3" style="height:50rpx;line-height:60rpx"></text>
+          <text class="f22 gray3" style="height:50rpx;line-height:40rpx">首页</text>
+        </button>
       </view>
-      <view class="icon-box d-c-c" @tap="gotocart">
-        <button class="pr d-c-c d-c bg-white"><text class="gray3 icon iconfont icon-gouwuche1"></text><text class="f22 gray3">购物车</text><text v-if="cart_total_num > 0" class="cart_num">{{ cart_total_num }}</text></button>
+      <view class="icon-box d-c-c">
+        <button class="pr d-c-c d-c bg-white" @tap="gotocart">
+          <text class="gray3 icon iconfont icon-gouwuche1" style="font-size:36rpx;height:50rpx;line-height:60rpx"></text>
+          <text class="f22 gray3" style="height:50rpx;line-height:40rpx">购物车</text>
+          <text v-if="cart_total_num > 0" class="cart_num">{{ cart_total_num }}</text>
+        </button>
       </view>
       <view v-if="chatSetting !== null && chatSetting.type === 10" class="icon-box d-c-c">
-        <button v-if="chatSetting.type === 10" class="d-c-c d-c bg-white" open-type="contact" @contact="contackBack"><text class="icon iconfont icon-kefu3 gray3"></text><text class="f22 gray3">客服</text></button>
+        <button v-if="chatSetting.type === 10" class="d-c-c d-c bg-white" open-type="contact" @contact="contackBack">
+          <text class="icon iconfont icon-kefu3 gray3" style="height:50rpx;line-height:60rpx"></text>
+          <text class="f22 gray3" style="height:50rpx;line-height:40rpx">客服</text>
+        </button>
       </view>
-      <view v-if="chatSetting !== null && chatSetting.type === 20 && chatSetting.link" class="icon-box d-c-c" @tap="onKefuClick">
-        <button class="d-c-c d-c bg-white"><text class="icon iconfont icon-kefu3 gray3"></text><text class="f22 gray3">客服</text></button>
+      <view v-if="chatSetting !== null && chatSetting.type === 20 && chatSetting.link" class="icon-box d-c-c">
+        <button class="d-c-c d-c bg-white" @tap="onKefuClick">
+          <text class="icon iconfont icon-kefu3 gray3" style="height:50rpx;line-height:60rpx"></text>
+          <text class="f22 gray3" style="height:50rpx;line-height:40rpx">客服</text>
+        </button>
       </view>
-      <view v-if="chatSetting !== null && chatSetting.type === 30 && chatSetting.url && chatSetting.corpId" class="icon-box d-c-c" @tap="onWxKefuClick">
-        <button class="d-c-c d-c bg-white"><text class="icon iconfont icon-kefu3 gray3"></text><text class="f22 gray3">客服</text></button>
+      <view v-if="chatSetting !== null && chatSetting.type === 30 && chatSetting.url && chatSetting.corpId" class="icon-box d-c-c">
+        <button class="d-c-c d-c bg-white" @tap="onWxKefuClick">
+          <text class="icon iconfont icon-kefu3 gray3" style="height:50rpx;line-height:60rpx"></text>
+          <text class="f22 gray3" style="height:50rpx;line-height:40rpx">客服</text>
+        </button>
       </view>
-      <view v-if="chatSetting !== null && chatSetting.type === 40 && chatSetting.pic" class="icon-box d-c-c" @tap="onCodeKefuClick">
-        <button class="d-c-c d-c bg-white"><text class="icon iconfont icon-kefu3 gray3"></text><text class="f22 gray3">客服</text></button>
+      <view v-if="chatSetting !== null && chatSetting.type === 40 && chatSetting.pic" class="icon-box d-c-c">
+        <button class="d-c-c d-c bg-white" @tap="onCodeKefuClick">
+          <text class="icon iconfont icon-kefu3 gray3" style="height:50rpx;line-height:60rpx"></text>
+          <text class="f22 gray3" style="height:50rpx;line-height:40rpx">客服</text>
+        </button>
       </view>
       <button v-if="is_preview === 1" class="add-cart-no">暂未开始售卖</button>
       <block v-else>
-        <button v-if="!room_id && !is_virtual && !ispresale && !detail.custom_form" class="add-cart" @tap="openPopup('card')">加入购物车</button>
-        <button v-else class="add-cart-no">加入购物车</button>
-        <button v-if="!ispresale" class="buy disabled-buy" @tap="showPurchaseDisabled">立即购买</button>
+        <button v-if="!ispresale && !detail.custom_form" class="add-cart" @tap="handleAddCartClick">加入购物车</button>
+        <button v-else class="add-cart-no" @tap="handleAddCartClick">加入购物车</button>
+        <button v-if="!ispresale" class="buy" @tap="handleBuyNowClick">立即购买</button>
         <button v-else class="buy ispresale" @tap="openPopup('deposit')">
           <block v-if="activeName === 'advance'"><view class="f28">支付定金</view><view class="f22">￥{{ detail[activeName].money }}</view></block>
           <block v-else>立即购买</block>
@@ -315,8 +345,10 @@ import share from './popup/share.vue'
 import coupon from './popup/coupon.vue'
 import previewProduct from './productinfo/previewProduct.vue'
 import countdown from '../../../components/countdown/countdown-presale.vue'
+import guarantee from '../../../components/guarantee.vue'
 import { openCustomerServiceChat } from '../../../platform/weixin/navigation.js'
 import { fetchProductDetail, normalizeProductDetail } from '../../../services/miniprogram-products.js'
+import { addLocalCartItem } from '../../../services/local-cart.js'
 
 function sceneDecode(scene) {
   if (scene === undefined) return {}
@@ -345,7 +377,8 @@ export default {
     share,
     coupon,
     countdown,
-    previewProduct
+    previewProduct,
+    guarantee
   },
   data() {
     return {
@@ -605,6 +638,88 @@ export default {
       this.productModel = model
       this.isPopup = true
     },
+    handleAddCartClick() {
+      if (this.ispresale) {
+        uni.showToast({ title: '预售商品请点击立即购买', icon: 'none' })
+        return
+      }
+      if (this.detail.custom_form) {
+        uni.showToast({ title: '该商品需填写表单，暂不支持加入购物车', icon: 'none' })
+        return
+      }
+      if (this.detail.spec_type !== 20 || !this.specData) {
+        this.addCurrentProductToCart()
+        return
+      }
+      this.openPopup('card')
+    },
+    addCurrentProductToCart() {
+      const sku = this.detail.product_sku || {}
+      const image = Array.isArray(this.detail.image) && this.detail.image[0] ? this.detail.image[0].file_path : this.detail.product_image
+      const totalNum = this.detail.single_num > 0 ? this.detail.single_num : 1
+      const summary = addLocalCartItem({
+        ...this.detail,
+        product_image: image,
+        product_price: sku.product_price || this.detail.product_price,
+        line_price: sku.line_price || this.detail.line_price,
+        stock_num: sku.stock_num || this.detail.product_stock,
+        spec_sku_id: sku.spec_sku_id || sku.product_sku_id || 0,
+        product_attr: sku.product_attr || ''
+      }, totalNum)
+      this.cart_total_num = summary.totalNum
+      uni.showToast({ title: '已加入购物车', icon: 'success' })
+    },
+    handleBuyNowClick() {
+      if (this.detail.custom_form) {
+        uni.showToast({ title: '该商品需填写表单，暂不支持直接购买', icon: 'none' })
+        return
+      }
+      if (this.detail.spec_type === 20 && this.specData) {
+        this.openPopup('order')
+        return
+      }
+      this.gotoBuyConfirm()
+    },
+    buildLiveQuery() {
+      const params = []
+      if (this.room_id !== 0 && this.room_id !== '') {
+        params.push(['roomId', this.room_id])
+        params.push(['room_id', this.room_id])
+        params.push(['liveRoomId', this.room_id])
+        params.push(['live_room_id', this.room_id])
+      }
+      if (this.room_code !== '') {
+        params.push(['roomCode', this.room_code])
+        params.push(['room_code', this.room_code])
+      }
+      if (this.term_id !== 0 && this.term_id !== '') {
+        params.push(['termId', this.term_id])
+        params.push(['term_id', this.term_id])
+        params.push(['liveTermId', this.term_id])
+        params.push(['live_term_id', this.term_id])
+      }
+      if (this.tenant_id !== 0 && this.tenant_id !== '') {
+        params.push(['tenantId', this.tenant_id])
+        params.push(['tenant_id', this.tenant_id])
+      }
+      if (this.share_code !== '') {
+        params.push(['shareCode', this.share_code])
+        params.push(['share_code', this.share_code])
+      }
+      return params
+        .filter(([, value]) => value !== undefined && value !== null && value !== '')
+        .map(([key, value]) => `${key}=${encodeURIComponent(String(value))}`)
+        .join('&')
+    },
+    gotoBuyConfirm() {
+      const sku = this.detail.product_sku || {}
+      const productId = this.detail.product_id
+      const totalNum = this.detail.single_num > 0 ? this.detail.single_num : 1
+      const specSkuId = sku.spec_sku_id || sku.product_sku_id || 0
+      const liveQuery = this.buildLiveQuery()
+      const livePart = liveQuery ? `&${liveQuery}` : ''
+      this.gotoPage(`/pages/order/confirm?product_id=${productId}&productId=${productId}&product_num=${totalNum}&quantity=${totalNum}&product_sku_id=${specSkuId}&skuId=${specSkuId}&order_type=buy${livePart}`)
+    },
     closePopup(specData, cartTotalNum) {
       this.isPopup = false
       if (specData && specData.spec_attr) {
@@ -659,9 +774,6 @@ export default {
     },
     showShare() {
       this.isbottmpanel = true
-    },
-    showPurchaseDisabled() {
-      uni.showToast({ title: '暂不支持直接购买', icon: 'none' })
     },
     closeAppShare() {
       this.isAppShare = false
@@ -751,7 +863,51 @@ export default {
 
 <style scoped>
 .product-detail { min-height: 100vh; background: #f7f7f7; padding-bottom: 120rpx; }
-.disabled-buy { opacity: .55; }
+.pr { position: relative; }
+.ww100 { width: 100%; }
+.flex-1 { flex: 1; min-width: 0; }
+.d-c { display: flex; flex-direction: column; }
+.d-s-c { display: flex; align-items: center; justify-content: flex-start; }
+.d-s-s { display: flex; align-items: flex-start; justify-content: flex-start; }
+.d-c-c { display: flex; align-items: center; justify-content: center; }
+.d-e-c { display: flex; align-items: center; justify-content: flex-end; }
+.d-b-c { display: flex; align-items: center; justify-content: space-between; }
+.d-b-s { display: flex; align-items: flex-start; justify-content: space-between; }
+.tc { text-align: center; }
+.bg-white { background: #fff; }
+.p30 { padding: 30rpx; }
+.p20 { padding: 20rpx; }
+.p-0-30 { padding-left: 30rpx; padding-right: 30rpx; }
+.p-0-20 { padding-left: 20rpx; padding-right: 20rpx; }
+.p-10-0 { padding-top: 10rpx; padding-bottom: 10rpx; }
+.mb16 { margin-bottom: 16rpx; }
+.mb20 { margin-bottom: 20rpx; }
+.mb21 { margin-bottom: 21rpx; }
+.mb22 { margin-bottom: 22rpx; }
+.mt20 { margin-top: 20rpx; }
+.mt-down-box { margin-top: -80rpx; }
+.ml10 { margin-left: 10rpx; }
+.mr10 { margin-right: 10rpx; }
+.f22 { font-size: 22rpx; }
+.f24 { font-size: 24rpx; }
+.f26 { font-size: 26rpx; }
+.f28 { font-size: 28rpx; }
+.f30 { font-size: 30rpx; }
+.f32 { font-size: 32rpx; }
+.f42 { font-size: 42rpx; }
+.fb { font-weight: 700; }
+.fn { font-weight: 400; }
+.gray3 { color: #333; }
+.gray6 { color: #666; }
+.gray9 { color: #999; }
+.redF11 { color: #f11e0b; }
+.line-h-50 { line-height: 50rpx; }
+.lh150 { line-height: 1.5; }
+.o-h { overflow: hidden; }
+.text-ellipsis { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.text-ellipsis-2 { display: -webkit-box; overflow: hidden; text-overflow: ellipsis; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.border-b-e { border-bottom: 1rpx solid #eee; }
+.border-b-d9 { border-bottom: 1rpx solid #d9d9d9; }
 .header { position: fixed; left: 0; right: 0; top: 0; z-index: 30; pointer-events: none; }
 .header image { width: 48rpx; height: 48rpx; }
 .reg180 { display: flex; align-items: center; justify-content: center; width: 88rpx; pointer-events: auto; }
@@ -759,20 +915,6 @@ export default {
 .product-pic { position: relative; background: #fff; }
 .swiper, .swiper image, .swiper video { width: 100%; height: 750rpx; }
 .play-icon { position: absolute; left: 50%; top: 50%; z-index: 2; transform: translate(-50%,-50%); width: 96rpx; height: 96rpx; border-radius: 50%; background: rgba(0,0,0,.45); color: #fff; line-height: 96rpx; text-align: center; font-size: 54rpx; }
-.bg-white { background: #fff; }
-.product-info { position: relative; }
-.new-price { color: #e2231a; font-size: 32rpx; font-weight: 700; }
-.new-price .num { font-size: 48rpx; }
-.old-price { color: #999; text-decoration: line-through; }
-.operate-icons { position: absolute; right: 24rpx; top: 24rpx; display: flex; gap: 16rpx; }
-.icon-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 78rpx; background: transparent; color: #666; font-size: 22rpx; line-height: 1.3; }
-.discount-box { position: relative; margin-top: 18rpx; padding-right: 110rpx; }
-.text-box, .manjian-box { display: inline-block; margin-right: 12rpx; padding: 2rpx 10rpx; border-radius: 4rpx; background: #fff2ed; color: #ff5704; }
-.coupon-entry { position: absolute; right: 0; top: 8rpx; color: #ff5704; font-size: 24rpx; }
-.product-name { margin-top: 18rpx; color: #333; font-size: 32rpx; font-weight: 700; line-height: 44rpx; }
-.product-describe { margin-top: 12rpx; color: #999; font-size: 26rpx; line-height: 38rpx; }
-.store_type { display: inline-block; margin-right: 10rpx; padding: 2rpx 8rpx; border-radius: 4rpx; background: #ff5704; color: #fff; font-size: 22rpx; }
-.migration-note { margin-bottom: 12rpx; padding: 16rpx; border-radius: 8rpx; background: #fff7e8; color: #8a5a00; font-size: 24rpx; line-height: 36rpx; }
 .product-comment { margin-bottom: 20rpx; background: #fff; }
 .already-choice { min-height: 88rpx; padding: 0 30rpx; display: flex; align-items: center; border-bottom: 1rpx solid #f5f5f5; }
 .group-hd { display: flex; align-items: center; flex: 1; }
@@ -789,14 +931,7 @@ export default {
 .contentVideo { position: relative; width: 100%; min-height: 360rpx; background: #111; }
 .contentVideo image, .contentVideo video { width: 100%; height: 420rpx; }
 .sage-bottom { height: 120rpx; }
-.btns-wrap { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; display: flex; align-items: center; min-height: calc(96rpx + env(safe-area-inset-bottom)); padding: 10rpx 20rpx calc(10rpx + env(safe-area-inset-bottom)); background: #fff; box-shadow: 0 -2rpx 8rpx rgba(0,0,0,.08); box-sizing: border-box; }
-.btns-wrap .icon-box { width: 96rpx; }
-.btns-wrap button { margin: 0; }
 .cart_num { position: absolute; right: 6rpx; top: 2rpx; min-width: 28rpx; height: 28rpx; padding: 0 6rpx; border-radius: 14rpx; background: #ff5704; color: #fff; font-size: 20rpx; line-height: 28rpx; }
-.add-cart, .add-cart-no, .buy { flex: 1; height: 76rpx; margin-left: 14rpx; border-radius: 40rpx; color: #fff; font-size: 28rpx; line-height: 76rpx; }
-.add-cart { background: #333; }
-.add-cart-no { background: #bbb; }
-.buy { background: #ff5704; }
 .create-img image { width: 70vw; }
 .btn-red { background: #ff5704; color: #fff; }
 .kf-pop-view { padding: 30rpx; text-align: center; background: #fff; border-radius: 16rpx; }
@@ -1841,5 +1976,127 @@ button.active-btn:after {
     font-size: 24rpx;
     padding-top: 30rpx;
     text-align: center
+}
+
+/* Final uni-app overrides for the legacy detail layout. */
+.product-detail .product-pic,
+.product-detail .product-pic .swiper,
+.product-detail .product-pic image {
+    display: block;
+    height: 750rpx;
+    max-width: 100vw;
+    width: 100%;
+}
+
+.product-detail .product-info {
+    margin-bottom: 16rpx;
+    padding: 22rpx 30rpx 26rpx;
+}
+
+.product-detail .price-wrap {
+    display: block;
+}
+
+.product-detail .price-wrap > .d-s-s {
+    position: relative;
+}
+
+.product-detail .price-wrap .mb16 {
+    min-height: 48rpx;
+    padding-right: 76rpx;
+}
+
+.product-detail .price-wrap .new-price {
+    align-items: baseline;
+    display: flex;
+    margin-right: 0;
+    min-width: 0;
+}
+
+.product-detail .price-wrap .new-price .num {
+    line-height: 1;
+}
+
+.product-detail .price-wrap .share-box,
+.product-detail .price-wrap .sc-box {
+    bottom: -14rpx;
+    position: absolute;
+}
+
+.product-detail .price-wrap .share-box {
+    right: 0;
+}
+
+.product-detail .price-wrap .sc-box {
+    right: 78rpx;
+}
+
+.product-detail .price-wrap .share-box button,
+.product-detail .price-wrap .sc-box button {
+    align-items: center;
+    background: transparent;
+    border-radius: 0;
+    display: flex;
+    height: 58rpx;
+    justify-content: center;
+    line-height: 1;
+    padding: 0;
+    width: 58rpx;
+}
+
+.product-detail .price-wrap .share_img {
+    height: 38rpx;
+    margin: 0;
+    width: 38rpx;
+}
+
+.product-detail .product-name {
+    clear: both;
+    line-height: 42rpx;
+    padding-top: 22rpx;
+}
+
+.product-detail .product-content {
+    margin-top: 16rpx;
+}
+
+.product-detail .product-content > .p-0-30 {
+    height: 74rpx;
+}
+
+.product-detail .product-content .group-hd {
+    height: 74rpx;
+}
+
+.product-detail .product-content .content-box {
+    font-size: 0;
+    padding: 0;
+}
+
+.product-detail .content-box image,
+.product-detail .content-box rich-text,
+.product-detail .content-box .ww100 {
+    max-width: 100%;
+    width: 100%;
+}
+
+.btns-wrap {
+    box-sizing: content-box;
+    overflow: hidden;
+}
+
+.btns-wrap .icon-box button {
+    color: #333;
+    height: 100rpx;
+}
+
+.btns-wrap .icon-box text {
+    line-height: 1.2;
+}
+
+.btns-wrap button.add-cart,
+.btns-wrap button.add-cart-no,
+.btns-wrap button.buy {
+    flex-shrink: 0;
 }
 </style>
