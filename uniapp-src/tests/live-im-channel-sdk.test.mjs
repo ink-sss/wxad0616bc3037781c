@@ -229,3 +229,58 @@ test("live IM channel prefers miniprogram IM login fields over generic user and 
     "main_chatroom_id",
   ]);
 });
+
+test("live IM channel can use persisted miniprogram IM session when live token lacks IM login fields", async () => {
+  const openParams = [];
+  const storage = new Map([
+    ["im_user_id", "stored_customer_870"],
+    ["im_user_sig", "stored-easemob-token"],
+  ]);
+  globalThis.getApp = () => ({ globalData: {} });
+  globalThis.uni = {
+    getStorageSync(key) {
+      return storage.get(key) || "";
+    },
+  };
+  globalThis.__getImToken = async () => ({
+    appKey: "org#app",
+    username: "customer_870",
+    token: "business-token",
+    mainChatroomId: "room_870",
+  });
+  globalThis.__useUserStore = () => ({ userInfo: {}, token: "viewer-token" });
+  globalThis.__EC = {
+    logger: { disableAll() {} },
+    message: { create(payload) { return payload; } },
+    connection: class MockConnection {
+      constructor() {
+        this.handlers = {};
+      }
+      addEventHandler(_, handlers) {
+        this.handlers = handlers;
+      }
+      async open(params) {
+        openParams.push(params);
+        this.handlers.onConnected?.();
+      }
+      async joinChatRoom() {}
+      isOpened() {
+        return true;
+      }
+      close() {}
+    },
+  };
+
+  const { useIMChannel } = await loadIMChannelModule();
+  const channel = useIMChannel({
+    liveId: { value: 870 },
+    loadCommentHistory() {},
+    handleWsMessage() {},
+    onOpen() {},
+  });
+
+  assert.equal(await channel.initWebSocket(), true);
+  assert.equal(openParams[0].user, "stored_customer_870");
+  assert.equal(openParams[0].accessToken, "stored-easemob-token");
+  assert.equal(channel.imDebugState.value.credentialSource, "login_session");
+});

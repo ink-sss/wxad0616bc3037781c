@@ -93,27 +93,55 @@ function toDebugError(error) {
   };
 }
 
+function readStorageValue(...keys) {
+  try {
+    for (const key of keys) {
+      const value = uni.getStorageSync(key);
+      if (value !== undefined && value !== null && value !== "") return value;
+    }
+  } catch (_) {}
+  return "";
+}
+
+function readLoginIMSession() {
+  let globalData = {};
+  try {
+    globalData = getApp()?.globalData || {};
+  } catch (_) {}
+  return {
+    imUserId: String(globalData.imUserId || readStorageValue("im_user_id", "imUserId") || ""),
+    imUserSig: String(globalData.imUserSig || readStorageValue("im_user_sig", "imUserSig") || ""),
+  };
+}
+
 function normalizeIMInfo(raw = {}) {
   const source = raw?.data && typeof raw.data === "object" && !Array.isArray(raw.data) ? raw.data : raw;
-  const imUser =
+  const loginIMSession = readLoginIMSession();
+  const explicitImUser =
     source.imUserId ||
     source.im_user_id ||
     source.imUserID ||
     source.imUsername ||
     source.im_username ||
     source.imUser ||
-    source.im_user ||
-    source.username ||
-    source.userName ||
-    source.user_name ||
-    (typeof source.user === "string" || typeof source.user === "number" ? source.user : "");
-  const imToken =
+    source.im_user;
+  const explicitImToken =
     source.imUserSig ||
     source.im_user_sig ||
     source.im_user_token ||
     source.imUserToken ||
     source.imToken ||
-    source.im_token ||
+    source.im_token;
+  const imUser =
+    explicitImUser ||
+    loginIMSession.imUserId ||
+    source.username ||
+    source.userName ||
+    source.user_name ||
+    (typeof source.user === "string" || typeof source.user === "number" ? source.user : "");
+  const imToken =
+    explicitImToken ||
+    (explicitImUser ? "" : loginIMSession.imUserSig) ||
     source.accessToken ||
     source.access_token ||
     source.token;
@@ -126,6 +154,7 @@ function normalizeIMInfo(raw = {}) {
     subChatroomId: String(source.subChatroomId || source.sub_chatroom_id || ""),
     clientIp: String(source.clientIp || source.client_ip || ""),
     rawFieldKeys: source && typeof source === "object" ? Object.keys(source) : [],
+    credentialSource: explicitImUser && explicitImToken ? "im_token_api" : (loginIMSession.imUserId && loginIMSession.imUserSig ? "login_session" : "im_token_api"),
   };
 }
 
@@ -222,6 +251,7 @@ export function useIMChannel({ liveId, loadCommentHistory, handleWsMessage, onOp
     mainChatroomId: "",
     subChatroomId: "",
     rawFieldKeys: [],
+    credentialSource: "",
     hasToken: false,
     tokenFetched: false,
     tokenError: "",
@@ -436,6 +466,7 @@ export function useIMChannel({ liveId, loadCommentHistory, handleWsMessage, onOp
       mainChatroomId: "",
       subChatroomId: "",
       rawFieldKeys: [],
+      credentialSource: "",
       hasToken: false,
       lastSendSkipReason: "",
       lastClose: "",
@@ -471,6 +502,7 @@ export function useIMChannel({ liveId, loadCommentHistory, handleWsMessage, onOp
           appKey: nextImInfo.appKey,
         imUsername: nextImInfo.imUsername,
         rawFieldKeys: nextImInfo.rawFieldKeys || [],
+        credentialSource: nextImInfo.credentialSource || "",
         hasToken: !!nextImInfo.imToken,
       });
         return false;
@@ -487,6 +519,7 @@ export function useIMChannel({ liveId, loadCommentHistory, handleWsMessage, onOp
         mainChatroomId: nextImInfo.mainChatroomId,
         subChatroomId: nextImInfo.subChatroomId,
         rawFieldKeys: nextImInfo.rawFieldKeys || [],
+        credentialSource: nextImInfo.credentialSource || "",
         hasToken: !!nextImInfo.imToken,
       });
     } catch (error) {
