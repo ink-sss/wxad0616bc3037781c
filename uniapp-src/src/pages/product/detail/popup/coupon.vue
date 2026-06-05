@@ -1,5 +1,5 @@
 <template>
-  <view :class="['usable-coupon', Visible ? 'open' : 'close']">
+  <view v-if="Visible" :class="['usable-coupon', Visible ? 'open' : 'close']">
     <view class="popup-bg" @tap="closePopup"></view>
     <view class="main" @tap.stop>
       <view class="pop-title">

@@ -1,5 +1,5 @@
 <template>
-  <view :class="Visible ? 'product-popup open' : 'product-popup close'" @tap="closePopup">
+  <view v-if="Visible" :class="Visible ? 'product-popup open' : 'product-popup close'" @tap="closePopup">
     <view class="popup-bg"></view>
     <view class="main" @tap.stop>
       <view class="header">
@@ -127,15 +127,13 @@ export default {
     }
   },
   watch: {
-    isPopup(newValue, oldValue) {
-      if (newValue !== oldValue) {
-        this.Visible = newValue
-        if (!this.isOpenSpec || (this.isOpenSpec && this.isCategory)) {
-          this.form = this.productModel || cloneFallbackModel()
-          this.isOpenSpec = true
-          this.initShowSku()
-        }
-        this.form.type = this.productModel.type
+    isPopup(newValue) {
+      this.Visible = newValue
+      if (newValue) {
+        this.form = this.productModel || cloneFallbackModel()
+        this.isOpenSpec = true
+        this.initShowSku()
+        this.form.type = this.productModel?.type || ''
       }
     },
     'form.specData': {
@@ -364,7 +362,7 @@ export default {
 </script>
 
 <style scoped>
-.product-popup { position: fixed; inset: 0; z-index: 90; pointer-events: none; opacity: 0; transition: opacity .2s; }
+.product-popup { position: fixed; inset: 0; z-index: 120; pointer-events: none; opacity: 0; transition: opacity .2s; }
 .product-popup.open { pointer-events: auto; opacity: 1; }
 .popup-bg { position: absolute; inset: 0; background: rgba(0,0,0,.45); }
 .main { position: absolute; left: 0; right: 0; bottom: 0; border-radius: 28rpx 28rpx 0 0; background: #fff; overflow: hidden; }

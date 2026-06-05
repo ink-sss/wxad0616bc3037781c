@@ -1,7 +1,7 @@
 <template>
   <view class="cart-page" :data-theme="theme && theme()">
     <view v-if="!loadding" class="card">
-      <view :class="{ pb100: totalNum > 0 }" style="position:relative">
+      <view class="cart-content" :class="{ pb100: totalNum > 0 && isEdit }">
         <template v-if="totalNum > 0">
           <view class="address-bar d-b-c">
             <view class="f24 gray3">
@@ -17,7 +17,7 @@
             <view v-for="(supplierItem, supplierIndex) in tableData" :key="supplierIndex">
               <view class="supplier_list">
                 <view class="supplier_list_tit">
-                  <checkbox-group @change="checkStprItem(supplierItem, supplierIndex)">
+                  <checkbox-group v-if="isEdit" @change="checkStprItem(supplierItem, supplierIndex)">
                     <label class="d-c-c">
                       <checkbox class="checkbox" color="red" :checked="supplierItem.checked" value="cb" />
                     </label>
@@ -29,7 +29,7 @@
                 </view>
 
                 <view v-for="(item, productIndex) in supplierItem.productList" :key="item.cart_id || productIndex" class="item">
-                  <checkbox-group @change="checkItem(item, supplierIndex, productIndex)">
+                  <checkbox-group v-if="isEdit" @change="checkItem(item, supplierIndex, productIndex)">
                     <label class="d-c-c">
                       <checkbox class="checkbox" color="red" :checked="item.checked" value="cb" />
                     </label>
@@ -67,19 +67,13 @@
           <button class="theme-btn mt30 none_btn" @tap="gotoShop">去逛逛</button>
         </view>
 
-        <view v-if="totalNum > 0" class="bottom-btns f28">
+        <view v-if="totalNum > 0 && isEdit" class="bottom-btns f28">
           <checkbox-group @change="onCheckedAll">
             <label class="d-c-c mr20 w-nr">
               <checkbox class="checkbox" color="red" :checked="checkedAll" value="cb" />全选
             </label>
           </checkbox-group>
-          <view v-if="!isEdit" class="d-e-c pr20">
-            <view class="total d-s-c flex-1 mr20">
-              <text class="f28 gray3 w-nr">合计：</text>
-              <view class="price fb f26">¥<text class="num f40">{{ totalPrice }}</text></view>
-            </view>
-          </view>
-          <view v-else class="pr20">
+          <view class="bottom-action pr20">
             <button class="delete-btn theme-btn mr20" type="primary" @tap="onDelete">删除</button>
           </view>
         </view>
@@ -215,9 +209,6 @@ export default {
       })
       this.totalPrice = total.toFixed(2)
     },
-    Submit() {
-      uni.showToast({ title: '购物车暂不支持结算', icon: 'none' })
-    },
     addFunc(item) {
       incrementLocalCartItem(item)
       this.getData()
@@ -278,31 +269,300 @@ export default {
 </script>
 
 <style scoped>
-.cart-page { min-height: 100vh; background: #f2f2f2; }
-.card { padding-bottom: 50px; }
-.pb100 { padding-bottom: 100rpx; }
-.checkbox { transform: scale(.7); }
-.address-bar { height: 92rpx; padding: 0 45rpx; background: #fff; }
-.section { padding: 20rpx; background: #f2f2f2; }
-.supplier_list { margin-bottom: 30rpx; border-radius: 15rpx; background: #fff; overflow: hidden; }
-.supplier_list_tit { display: flex; align-items: center; height: 90rpx; margin: 0 23rpx; border-bottom: 1px solid #eee; }
-.icon-stores { color: #333; font-size: 34rpx; margin: 0 17rpx; }
-.item { display: flex; align-items: center; margin: 0 26rpx; padding-top: 29rpx; padding-bottom: 29rpx; }
-.cover-box { overflow: hidden; }
-.cover { width: 102rpx; height: 102rpx; border-radius: 25rpx; }
-.info { flex: 1; min-width: 0; overflow: hidden; padding-left: 30rpx; box-sizing: border-box; }
-.title { display: -webkit-box; overflow: hidden; -webkit-line-clamp: 2; -webkit-box-orient: vertical; width: 100%; font-size: 26rpx; }
-.describe { display: -webkit-box; overflow: hidden; -webkit-line-clamp: 3; -webkit-box-orient: vertical; margin-top: 20rpx; color: #999; font-size: 24rpx; }
-.level-box { display: flex; align-items: center; justify-content: space-between; margin-top: 20rpx; }
-.price { color: #e2231a; font-size: 30rpx; }
-.price .num { font-size: 38rpx; }
-.num-wrap { display: flex; align-items: center; justify-content: flex-end; }
-.text-wrap { width: 66rpx; height: 46rpx; margin: 0 10rpx; border-radius: 10rpx; background: #f4f4f4; line-height: 46rpx; text-align: center; font-size: 24rpx; }
-.bottom-btns { position: fixed; left: 0; bottom: calc(50px + env(safe-area-inset-bottom)); z-index: 1000; display: flex; align-items: center; justify-content: space-between; width: 100%; height: 90rpx; padding: 0 0 0 20rpx; background: #fff; box-shadow: 0 -2rpx 8rpx rgba(0,0,0,.1); box-sizing: border-box; white-space: nowrap; }
-.bottom-btns .w-nr { white-space: nowrap; }
-.buy-btn, .delete-btn { width: 222rpx; height: 68rpx; margin: 0; border-radius: 68rpx; line-height: 68rpx; font-size: 28rpx; }
-.buy-btn { display: flex; align-items: center; justify-content: center; text-align: center; }
-.cart_none .cart_none_img { width: 348rpx; height: 222rpx; }
-.none_btn { width: 342rpx; height: 88rpx; border-radius: 44rpx; line-height: 88rpx; font-size: 30rpx; }
-.add_icon, .reduce_icon { width: 18rpx; height: 18rpx; }
+.cart-page {
+  background: #f2f2f2;
+  min-height: 100vh;
+}
+
+.card {
+  box-sizing: border-box;
+  min-height: calc(100vh - 50px - env(safe-area-inset-bottom));
+  padding-bottom: calc(50px + env(safe-area-inset-bottom));
+}
+
+.cart-content {
+  box-sizing: border-box;
+  min-height: calc(100vh - 50px - env(safe-area-inset-bottom));
+  position: relative;
+}
+
+.pb100 {
+  padding-bottom: 100rpx;
+}
+
+.d-b-c {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.d-c-c {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+.d-a-c,
+.d-s-c {
+  align-items: center;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.d-e-c {
+  align-items: center;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.flex-1 {
+  flex: 1;
+  min-width: 0;
+}
+
+.f24 { font-size: 24rpx; }
+.f26 { font-size: 26rpx; }
+.f28 { font-size: 28rpx; }
+.f40 { font-size: 40rpx; }
+.fb { font-weight: 700; }
+.gray3 { color: #333; }
+.gray9 { color: #999; }
+.mr20 { margin-right: 20rpx; }
+.mt30 { margin-top: 30rpx; }
+.pr20 { padding-right: 20rpx; }
+.pt10 { padding-top: 10rpx; }
+.w-nr { white-space: nowrap; }
+
+.theme-price,
+.price {
+  color: #ff5704;
+}
+
+.theme-btn {
+  background: #ff5704;
+  border: none;
+  color: #fff;
+}
+
+.theme-btn::after {
+  border: 0;
+}
+
+.checkbox {
+  transform: scale(.7);
+}
+
+.address-bar {
+  background: #fff;
+  box-sizing: border-box;
+  height: 92rpx;
+  padding: 0 45rpx;
+}
+
+.section {
+  background: #f2f2f2;
+  box-sizing: border-box;
+  padding: 20rpx;
+}
+
+.supplier_list {
+  background: #fff;
+  border-radius: 15rpx;
+  margin-bottom: 30rpx;
+  overflow: hidden;
+}
+
+.supplier_list_tit {
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  height: 90rpx;
+  margin: 0 23rpx;
+}
+
+.icon-stores {
+  color: #333;
+  font-size: 34rpx;
+  margin: 0 17rpx;
+}
+
+.item {
+  align-items: center;
+  display: flex;
+  margin: 0 26rpx;
+  padding: 29rpx 0;
+}
+
+.cover-box {
+  border-radius: 25rpx;
+  flex: 0 0 102rpx;
+  height: 102rpx;
+  overflow: hidden;
+  width: 102rpx;
+}
+
+.cover {
+  border-radius: 25rpx;
+  height: 102rpx;
+  width: 102rpx;
+}
+
+.info {
+  box-sizing: border-box;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  padding-left: 30rpx;
+}
+
+.title {
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  display: -webkit-box;
+  font-size: 26rpx;
+  line-height: 34rpx;
+  overflow: hidden;
+  width: 100%;
+}
+
+.text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.describe {
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  color: #999;
+  display: -webkit-box;
+  font-size: 24rpx;
+  line-height: 32rpx;
+  margin-top: 20rpx;
+  min-height: 32rpx;
+  overflow: hidden;
+}
+
+.level-box {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20rpx;
+}
+
+.price {
+  font-size: 30rpx;
+}
+
+.price .num {
+  font-size: 38rpx;
+}
+
+.num-wrap {
+  align-items: center;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.text-wrap {
+  background: #f4f4f4;
+  border-radius: 10rpx;
+  font-size: 24rpx;
+  height: 46rpx;
+  line-height: 46rpx;
+  margin: 0 10rpx;
+  text-align: center;
+  width: 66rpx;
+}
+
+.bottom-btns {
+  align-items: center;
+  background: #fff;
+  bottom: calc(50px + env(safe-area-inset-bottom));
+  box-shadow: 0 -2rpx 8rpx rgba(0, 0, 0, .1);
+  box-sizing: border-box;
+  display: flex;
+  height: 90rpx;
+  justify-content: space-between;
+  left: 0;
+  padding: 0 0 0 20rpx;
+  position: fixed;
+  white-space: nowrap;
+  width: 100%;
+  z-index: 80;
+}
+
+.bottom-action {
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.total {
+  min-width: 0;
+}
+
+.delete-btn {
+  border-radius: 68rpx;
+  box-sizing: border-box;
+  font-size: 28rpx;
+  height: 68rpx;
+  line-height: 68rpx;
+  margin: 0;
+  padding: 0;
+  width: 222rpx;
+}
+
+.none-data-box {
+  align-items: center;
+  box-sizing: border-box;
+  color: #999;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: calc(100vh - 50px - env(safe-area-inset-bottom));
+  padding: 120rpx 40rpx calc(50px + 120rpx + env(safe-area-inset-bottom));
+  text-align: center;
+  width: 100%;
+}
+
+.cart_none .cart_none_img {
+  height: 222rpx;
+  width: 348rpx;
+}
+
+.none_btn {
+  border-radius: 44rpx;
+  font-size: 30rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+  width: 342rpx;
+}
+
+.add_icon,
+.reduce_icon {
+  height: 18rpx;
+  width: 18rpx;
+}
+
+[data-theme=theme0] .theme-price,
+[data-theme=theme0] .price { color: #ff5704 !important; }
+[data-theme=theme1] .theme-price,
+[data-theme=theme1] .price { color: #19ad57 !important; }
+[data-theme=theme2] .theme-price,
+[data-theme=theme2] .price { color: #ffcc00 !important; }
+[data-theme=theme3] .theme-price,
+[data-theme=theme3] .price { color: #33a7ff !important; }
+[data-theme=theme4] .theme-price,
+[data-theme=theme4] .price { color: #e4e4e4 !important; }
+[data-theme=theme5] .theme-price,
+[data-theme=theme5] .price { color: #c8ba97 !important; }
+[data-theme=theme6] .theme-price,
+[data-theme=theme6] .price { color: #623ceb !important; }
+
+[data-theme=theme0] .theme-btn { background-color: #ff5704 !important; }
+[data-theme=theme1] .theme-btn { background-color: #19ad57 !important; }
+[data-theme=theme2] .theme-btn { background-color: #ffcc00 !important; }
+[data-theme=theme3] .theme-btn { background-color: #33a7ff !important; }
+[data-theme=theme4] .theme-btn { background-color: #e4e4e4 !important; }
+[data-theme=theme5] .theme-btn { background-color: #c8ba97 !important; }
+[data-theme=theme6] .theme-btn { background-color: #623ceb !important; }
 </style>
