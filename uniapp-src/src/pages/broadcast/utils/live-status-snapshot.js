@@ -125,13 +125,35 @@ function updatePlayerSources(player, newPullUrl, playbackOptions) {
   }
 }
 
-function shouldKeepActivePlaybackSource(ctx, player, options = {}) {
+function inferSourceComponentFromUrl(url = "") {
+  const value = String(url || "").toLowerCase();
+  if (value.startsWith("rtmp://") || value.includes(".flv")) return "live-player";
+  if (value.includes(".m3u8") || value.includes(".mp4")) return "video";
+  return "";
+}
+
+function inferSourceTypeFromUrl(url = "") {
+  const value = String(url || "").toLowerCase();
+  if (value.startsWith("rtmp://")) return "rtmp";
+  if (value.includes(".flv")) return "flv";
+  if (value.includes(".m3u8")) return "hls";
+  if (value.includes(".mp4")) return "mp4";
+  return "";
+}
+
+function shouldKeepActivePlaybackSource(ctx, player, options = {}, playbackOptions = {}) {
   if (!player?.url) return false;
   if (options.source !== "poll") return false;
   if (options.forceSwitchSameKey) return false;
   if (options.reason !== "playback_resume") return false;
   if (ctx.isPlaying?.value !== true) return false;
   if (ctx.videoFrameReady && ctx.videoFrameReady.value !== true) return false;
+  const playerComponent = player.sourceComponent || inferSourceComponentFromUrl(player.url);
+  const nextComponent = playbackOptions.sourceComponent || inferSourceComponentFromUrl(options.nextUrl);
+  if (nextComponent && playerComponent && nextComponent !== playerComponent) return false;
+  const playerType = player.sourceType || inferSourceTypeFromUrl(player.url);
+  const nextType = playbackOptions.sourceType || inferSourceTypeFromUrl(options.nextUrl);
+  if (nextType && playerType && nextType !== playerType) return false;
   return true;
 }
 
@@ -222,7 +244,7 @@ export function applyLiveStatusSnapshot(ctx, payload, options = {}) {
     ctx.initVideoPlayer?.(newPullUrl, playbackOptions);
   } else if (newPullUrl && oldPullUrl && newSourceKey && oldSourceKey !== newSourceKey) {
     const player = ctx.getVideoPlayer?.();
-    if (shouldKeepActivePlaybackSource(ctx, player, options)) {
+    if (shouldKeepActivePlaybackSource(ctx, player, { ...options, nextUrl: newPullUrl }, playbackOptions)) {
       ctx.pullUrl.value = newPullUrl;
       updatePlayerSources(player, newPullUrl, playbackOptions);
       ctx.recordPlaybackDebugEvent?.(`${eventPrefix}_source_keep_active`, {

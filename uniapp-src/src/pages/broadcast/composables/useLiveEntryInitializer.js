@@ -16,7 +16,7 @@ import { resolveLiveEntryOptions } from "../utils/entry-init.js";
 import { prepareLandingDomains } from "../utils/domain-ready.js";
 import { resolveIOSWechatRefreshSoundIntent } from "../utils/refresh-sound-intent.js";
 import { consumePreloadedLiveDetail } from "./useLiveEntryBootstrap.js";
-import { buildLivePlayerSource, getLiveStreamInfWithRetry, isIOSRuntime, isLiveNotStartedDetail, isReplayPortraitEntryMode, normalizeLiveSourceUrlKey, normalizeReplayFirstVideoPayload, summarizeLiveSourcePayload } from "./live-entry-initializer-helpers.js";
+import { buildLivePlayerSource, getLiveStreamInfWithRetry, isIOSRuntime, isLiveNotStartedDetail, isReplayPortraitEntryMode, normalizeLiveSourceUrlKey, normalizeReplayFirstVideoPayload, shouldPreferMiniProgramHlsPlayback, summarizeLiveSourcePayload } from "./live-entry-initializer-helpers.js";
 
 /**
  * 直播间详情初始化与入口恢复。
@@ -291,7 +291,7 @@ export function useLiveEntryInitializer(ctx) {
       }
       earlyLiveStreamInfo = streamInfo || null;
       setPullStreams(streamInfo);
-      const source = buildLivePlayerSource(streamInfo, isIOSRuntime(), getPreferredLiveQuality());
+      const source = buildLivePlayerSource(streamInfo, shouldPreferMiniProgramHlsPlayback(), getPreferredLiveQuality());
       if (!source.key) return false;
       const streamPushStatus = streamInfo?.pushStatus ?? streamInfo?.liveStatus ?? streamInfo?.status;
       if (streamPushStatus !== undefined && streamPushStatus !== null && Number(streamPushStatus || 0) !== 1) {
@@ -482,11 +482,6 @@ export function useLiveEntryInitializer(ctx) {
     return firstPresent(
       detail.roomId,
       detail.room_id,
-      detail.liveId,
-      detail.live_id,
-      detail.id,
-      detail.live?.id,
-      detail.room?.id,
       liveId.value,
     );
   }
@@ -593,7 +588,7 @@ export function useLiveEntryInitializer(ctx) {
     if (liveStatusText) liveStatusText.value = firstPresent(d.liveStatusText, d.live_status_text, d.statusText, d.status_text, "");
     setPullStreams(d);
     const detailLivePlayerSource = detailPushStatus === 1
-      ? buildLivePlayerSource(d, isIOSRuntime(), getPreferredLiveQuality(), earlyLiveStreamInfo || {})
+      ? buildLivePlayerSource(d, shouldPreferMiniProgramHlsPlayback(), getPreferredLiveQuality(), earlyLiveStreamInfo || {})
       : { key: "", mainUrl: "", options: {}, rtcConfig: null };
     recordPlaybackDebugEvent("detail_source", summarizeLiveSourcePayload(d, detailLivePlayerSource));
     pullUrl.value = detailLivePlayerSource.mainUrl || (detailPushStatus === 1 ? pullUrl.value : "");
@@ -1175,15 +1170,13 @@ export function useLiveEntryInitializer(ctx) {
     }
     const source = playbackState.detailLivePlayerSource?.key
       ? playbackState.detailLivePlayerSource
-      : buildLivePlayerSource(d, isIOSRuntime(), getPreferredLiveQuality());
+      : buildLivePlayerSource(d, shouldPreferMiniProgramHlsPlayback(), getPreferredLiveQuality());
     initVideoPlayer(source.mainUrl || pullUrl.value, source.options || {});
   }
 
   async function finishDetailInit() {
     const wsUrl = ctx.buildWsUrl(liveId.value);
-    if (wsUrl) {
-      await initWebSocket(wsUrl);
-    }
+    await initWebSocket(wsUrl);
     if (!isReplay.value && roomSetting.value.showHistory === 1) {
       loadCommentHistory();
     }

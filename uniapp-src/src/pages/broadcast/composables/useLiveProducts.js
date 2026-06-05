@@ -53,68 +53,85 @@ function isPlainObject(value) {
   return !!value && typeof value === "object" && !Array.isArray(value);
 }
 
-function unwrapProductResponse(response = {}) {
-  if (Array.isArray(response)) return response;
-  if (!isPlainObject(response)) return {};
-  const data = isPlainObject(response.data) ? response.data : {};
-  const payload = isPlainObject(response.payload) ? response.payload : {};
-  const dataPayload = isPlainObject(data.payload) ? data.payload : {};
-  return {
-    ...response,
-    ...payload,
-    ...data,
-    ...dataPayload,
-  };
+const PRODUCT_RESPONSE_CONTAINER_KEYS = [
+  "data",
+  "payload",
+  "result",
+  "page",
+  "pager",
+  "pagination",
+];
+
+const PRODUCT_RESPONSE_LIST_KEYS = [
+  "list",
+  "records",
+  "rows",
+  "items",
+  "products",
+  "productList",
+  "product_list",
+  "goodsList",
+  "goods_list",
+  "goods",
+  "dataList",
+  "data_list",
+];
+
+function collectProductResponsePayloads(response = {}, maxDepth = 4) {
+  const payloads = [];
+  const visited = new Set();
+
+  function walk(value, depth) {
+    if (Array.isArray(value) || !isPlainObject(value) || visited.has(value)) return;
+    visited.add(value);
+    payloads.push(value);
+    if (depth >= maxDepth) return;
+
+    PRODUCT_RESPONSE_CONTAINER_KEYS.forEach((key) => {
+      const nextValue = value[key];
+      if (isPlainObject(nextValue)) walk(nextValue, depth + 1);
+    });
+  }
+
+  walk(response, 0);
+  return payloads;
 }
 
 function pickProductResponseList(response = {}) {
   if (Array.isArray(response)) return response;
-  const payload = unwrapProductResponse(response);
-  const direct = firstValue(
-    payload,
-    "list",
-    "records",
-    "rows",
-    "items",
-    "products",
-    "productList",
-    "product_list",
-    "goodsList",
-    "goods_list",
-    "goods",
-    "dataList",
-    "data_list"
-  );
-  if (Array.isArray(direct)) return direct;
-  const page = firstValue(payload, "page", "pager", "pagination");
-  if (isPlainObject(page)) {
-    const pageList = firstValue(page, "list", "records", "rows", "items", "products", "goodsList", "goods_list");
-    if (Array.isArray(pageList)) return pageList;
+
+  const payloads = collectProductResponsePayloads(response);
+  for (const payload of payloads) {
+    const direct = firstValue(payload, ...PRODUCT_RESPONSE_LIST_KEYS);
+    if (Array.isArray(direct)) return direct;
   }
-  const product = firstValue(payload, "product", "currentProduct", "current_product", "goods", "currentGoods", "current_goods");
-  if (isPlainObject(product)) return [product];
+
+  for (const payload of payloads) {
+    const product = firstValue(payload, "product", "currentProduct", "current_product", "goods", "currentGoods", "current_goods");
+    if (isPlainObject(product)) return [product];
+  }
+
   return [];
 }
 
 function pickProductResponseTotal(response = {}, fallbackLength = 0) {
-  const payload = unwrapProductResponse(response);
-  const page = firstValue(payload, "page", "pager", "pagination");
-  const total = firstValue(
-    payload,
-    "total",
-    "count",
-    "totalCount",
-    "total_count",
-    "totalRows",
-    "total_rows",
-    "recordCount",
-    "record_count"
-  );
-  const pageTotal = isPlainObject(page)
-    ? firstValue(page, "total", "count", "totalCount", "total_count", "totalRows", "total_rows")
-    : undefined;
-  const n = Number(total ?? pageTotal);
-  return Number.isFinite(n) && n >= 0 ? n : fallbackLength;
+  const payloads = collectProductResponsePayloads(response);
+  for (const payload of payloads) {
+    const total = firstValue(
+      payload,
+      "total",
+      "count",
+      "totalCount",
+      "total_count",
+      "totalRows",
+      "total_rows",
+      "recordCount",
+      "record_count"
+    );
+    const n = Number(total);
+    if (Number.isFinite(n) && n >= 0) return n;
+  }
+  return fallbackLength;
 }
 
 export function getHotSalesBase(item = {}) {
@@ -211,12 +228,6 @@ export function useLiveProducts({
   replayCurrentVideoId,
   getLiveProducts,
   getCurrentProduct,
-  roomCode,
-  liveTenantId,
-  shareCode,
-  liveBindId,
-  myUserId,
-  getEffectiveTermId,
 }) {
   const currentProduct = ref({
     image: "",
@@ -267,6 +278,64 @@ export function useLiveProducts({
 
   function mapListItem(item = {}) {
     return preserveSoldOutState(item, mapItem(item));
+  }
+
+  function patchProductObject(target = {}, next = {}) {
+    if (!target || typeof target !== "object") return false;
+    let changed = false;
+    Object.keys(next).forEach((key) => {
+      if (target[key] === next[key]) return;
+      target[key] = next[key];
+      changed = true;
+    });
+    return changed;
+  }
+
+  function setCurrentProduct(next = {}) {
+    const nextId = getProductId(next);
+    if (nextId > 0 && getProductId(currentProduct.value) === nextId) {
+      patchProductObject(currentProduct.value, next);
+      return currentProduct.value;
+    }
+    currentProduct.value = next;
+    return currentProduct.value;
+  }
+
+  function setProductListStable(nextList = []) {
+    const currentList = productList.value;
+    const sameOrder =
+      currentList.length === nextList.length &&
+      currentList.every((item, index) => getProductId(item) === getProductId(nextList[index]));
+
+    if (!sameOrder) {
+      productList.value = nextList;
+      return productList.value;
+    }
+
+    currentList.forEach((item, index) => {
+      patchProductObject(item, nextList[index]);
+    });
+    return currentList;
+  }
+
+  function appendProductListItems(items = []) {
+    if (!items.length) return;
+    items.forEach((item) => {
+      productList.value.push(item);
+    });
+  }
+
+  function patchProductCurrentFlags(idSet, firstItem = null) {
+    productList.value.forEach((item) => {
+      const pid = getProductId(item);
+      const patch = {
+        isCurrent: idSet.has(pid),
+      };
+      if (firstItem && pid === getProductId(firstItem)) {
+        Object.assign(patch, firstItem);
+      }
+      patchProductObject(item, patch);
+    });
   }
 
   function syncProductCardIndex(preferredId = 0) {
@@ -345,53 +414,18 @@ export function useLiveProducts({
     productLoading.value = true;
     try {
       const nextPage = reset ? 1 : productPage.value;
-      const termId = typeof getEffectiveTermId === "function" ? getEffectiveTermId() : 0;
-      const replayVideoId = Number(replayCurrentVideoId?.value || 0);
-      const liveType = isReplay?.value ? "replay" : "live";
-      const customerId = Number(myUserId?.value || 0);
-      const res = await getLiveProducts({
-        roomId: liveId.value,
-        room_id: liveId.value,
-        liveId: liveId.value,
-        live_id: liveId.value,
-        roomCode: roomCode?.value || "",
-        room_code: roomCode?.value || "",
-        tenantId: liveTenantId?.value || 0,
-        tenant_id: liveTenantId?.value || 0,
-        shareCode: shareCode?.value || "",
-        share_code: shareCode?.value || "",
-        bindId: liveBindId?.value || 0,
-        bind_id: liveBindId?.value || 0,
-        liveType,
-        live_type: liveType,
-        termId,
-        term_id: termId,
-        liveTermId: termId,
-        live_term_id: termId,
-        customerId,
-        customer_id: customerId,
-        userId: customerId,
-        user_id: customerId,
-        videoId: replayVideoId,
-        video_id: replayVideoId,
-        replayVideoId,
-        replay_video_id: replayVideoId,
-        page: nextPage,
-        current: nextPage,
-        pageSize: productPageSize,
-        page_size: productPageSize,
-      });
+      const res = await getLiveProducts(liveId.value, nextPage, productPageSize);
       const rawList = pickProductResponseList(res);
       const list = rawList.map(mapListItem);
       const total = pickProductResponseTotal(res, list.length);
 
       productTotal.value = total;
       if (reset) {
-        productList.value = list;
+        setProductListStable(list);
       } else {
         const existIds = new Set(productList.value.map((p) => getProductId(p)));
         const newItems = list.filter((p) => !existIds.has(getProductId(p)));
-        productList.value = [...productList.value, ...newItems];
+        appendProductListItems(newItems);
       }
       productPage.value = nextPage + 1;
       productFinished.value =
@@ -411,38 +445,7 @@ export function useLiveProducts({
     if (!liveId.value) return;
 
     try {
-      const termId = typeof getEffectiveTermId === "function" ? getEffectiveTermId() : 0;
-      const replayVideoId = Number(replayCurrentVideoId?.value || 0);
-      const liveType = isReplay?.value ? "replay" : "live";
-      const customerId = Number(myUserId?.value || 0);
-      const res = await getCurrentProduct({
-        roomId: liveId.value,
-        room_id: liveId.value,
-        liveId: liveId.value,
-        live_id: liveId.value,
-        roomCode: roomCode?.value || "",
-        room_code: roomCode?.value || "",
-        tenantId: liveTenantId?.value || 0,
-        tenant_id: liveTenantId?.value || 0,
-        shareCode: shareCode?.value || "",
-        share_code: shareCode?.value || "",
-        bindId: liveBindId?.value || 0,
-        bind_id: liveBindId?.value || 0,
-        liveType,
-        live_type: liveType,
-        termId,
-        term_id: termId,
-        liveTermId: termId,
-        live_term_id: termId,
-        customerId,
-        customer_id: customerId,
-        userId: customerId,
-        user_id: customerId,
-        videoId: replayVideoId,
-        video_id: replayVideoId,
-        replayVideoId,
-        replay_video_id: replayVideoId,
-      });
+      const res = await getCurrentProduct(liveId.value);
       const list = pickProductResponseList(res);
       if (list.length === 0) return;
 
@@ -467,24 +470,19 @@ export function useLiveProducts({
       }
 
       const firstItem = { ...mapItem(filtered[0]), isCurrent: true };
-      currentProduct.value = firstItem;
+      setCurrentProduct(firstItem);
       showProduct.value = true;
       explainingProductId.value = firstItem.id;
 
       const idSet = new Set(filtered.map((item) => getProductId(item)));
 
       if (productList.value.length > 0) {
-        productList.value = productList.value.map((item) => ({
-          ...item,
-          isCurrent: idSet.has(getProductId(item)),
-          isSoldOut: getProductId(item) === firstItem.id ? firstItem.isSoldOut : item.isSoldOut,
-          soldOut: getProductId(item) === firstItem.id ? firstItem.soldOut : item.soldOut,
-        }));
+        patchProductCurrentFlags(idSet, firstItem);
       } else {
-        productList.value = list.map((item) => ({
+        setProductListStable(list.map((item) => ({
           ...mapItem(item),
           isCurrent: idSet.has(getProductId(item)),
-        }));
+        })));
         productTotal.value = Math.max(productTotal.value, list.length);
         productFinished.value = true;
       }

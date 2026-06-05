@@ -72,15 +72,13 @@
             <text class="complaint-section-title__text">举报说明</text>
           </view>
           <view class="report-desc-wrap">
-            <wd-textarea
-              v-model="complaintDesc"
+            <textarea
+              class="report-desc-textarea"
+              :value="complaintDesc"
               placeholder="描述您要举报的具体情况，有助于客服更快的处理投诉（必填）"
-              clearable
               :adjust-position="false"
-              size="small"
-              custom-class="report-desc-textarea"
-              custom-style="margin: 0; height:200rpx;background:transparent;border-radius:16rpx"
-              @input="descError = ''"
+              maxlength="500"
+              @input="onComplaintDescInput"
             />
           </view>
           <text v-if="descError" class="complaint-field-error">{{ descError }}</text>
@@ -124,17 +122,13 @@
           </view>
         </scroll-view>
         <view class="complaint-submit-bar">
-          <wd-button
-            type="primary"
-            block
-            round
-            size="large"
-            custom-class="theme-primary-btn"
-            :loading="complaintSubmitting"
+          <view
+            class="complaint-submit-btn"
+            :class="{ 'complaint-submit-btn--loading': complaintSubmitting }"
             @click="submitComplaint"
           >
-            提交
-          </wd-button>
+            {{ complaintSubmitting ? '提交中...' : '提交' }}
+          </view>
         </view>
       </view>
     </wd-popup>
@@ -166,7 +160,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useToast } from 'wot-design-uni'
 import { createComplaint, uploadComplaintImage } from '@/services/live-report'
 
@@ -246,10 +240,7 @@ const complaintTypes = [
   { label: '其他问题', value: 'other' },
 ]
 
-const showTypePopup = computed({
-  get: () => props.visible,
-  set: (value) => emit('update:visible', value),
-})
+const showTypePopup = ref(false)
 const showFormPopup = ref(false)
 const showSuccessPopup = ref(false)
 const complaintType = ref('')
@@ -263,7 +254,16 @@ const descError = ref('')
 const phoneError = ref('')
 let complaintUploadIdCounter = 0
 
+watch(() => props.visible, (visible) => {
+  if (visible) {
+    showTypePopup.value = true
+    return
+  }
+  resetComplaintForm()
+}, { immediate: true })
+
 function resetComplaintForm() {
+  showTypePopup.value = false
   showFormPopup.value = false
   showSuccessPopup.value = false
   complaintType.value = ''
@@ -278,10 +278,14 @@ function resetComplaintForm() {
 }
 
 function handleTypePopupClose() {
+  if (showFormPopup.value || showSuccessPopup.value) return
   showTypePopup.value = false
+  emit('update:visible', false)
+  resetComplaintForm()
 }
 
 function handleFormPopupClose() {
+  if (showTypePopup.value || showSuccessPopup.value) return
   showFormPopup.value = false
   emit('update:visible', false)
   resetComplaintForm()
@@ -303,6 +307,11 @@ function onSelectComplaintType(item) {
 function openComplaintTypeFromForm() {
   showFormPopup.value = false
   showTypePopup.value = true
+}
+
+function onComplaintDescInput(event = {}) {
+  complaintDesc.value = event?.detail?.value || ''
+  descError.value = ''
 }
 
 function numberOrZero(value) {
@@ -661,11 +670,15 @@ async function submitComplaint() {
 }
 
 .report-desc-textarea {
-  padding: 0 !important;
-  margin: 0 !important;
-  box-shadow: none !important;
-  border: none !important;
-  background: #f8f8f8 !important;
+  width: 100%;
+  height: 200rpx;
+  box-sizing: border-box;
+  padding: 24rpx 28rpx;
+  border: none;
+  background: #f8f8f8;
+  color: rgba(0, 0, 0, 0.88);
+  font-size: 26rpx;
+  line-height: 1.5;
 }
 
 .complaint-field-error {
@@ -748,6 +761,23 @@ async function submitComplaint() {
   background: #fff;
   box-shadow: 0 -8rpx 24rpx rgba(0, 0, 0, 0.04);
   flex-shrink: 0;
+}
+
+.complaint-submit-btn {
+  width: 100%;
+  height: 88rpx;
+  border-radius: 44rpx;
+  background: linear-gradient(90deg, #fd7e19 0%, #ff6b2e 100%);
+  box-shadow: 0 18rpx 36rpx rgba(255, 107, 46, 0.24);
+  color: #fff;
+  font-size: 30rpx;
+  font-weight: 600;
+  line-height: 88rpx;
+  text-align: center;
+}
+
+.complaint-submit-btn--loading {
+  opacity: 0.72;
 }
 
 .complaint-success {

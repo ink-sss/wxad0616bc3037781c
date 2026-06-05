@@ -158,3 +158,33 @@ test("product list websocket aliases replace the shelf in real time", async () =
   assert.equal(ctx.currentProduct.value.id, 902);
   assert.equal(ctx.showProduct.value, true);
 });
+
+test("same product list websocket refresh patches existing card objects in place", async () => {
+  const { createLiveWsMessageHandler } = await loadWsHandlerModule();
+  const initialProducts = [
+    { id: 901, productId: 901, product_id: 901, title: "货架商品 A", stock: 5, isCurrent: false },
+    { id: 902, productId: 902, product_id: 902, title: "货架商品 B", stock: 6, isCurrent: true },
+  ];
+  const ctx = createCtx(initialProducts);
+  ctx.currentProduct.value = initialProducts[1];
+  const handleWsMessage = createLiveWsMessageHandler(ctx);
+
+  handleWsMessage({
+    event: "goods_shelf",
+    data: {
+      goodsList: [
+        { goods_id: 901, goods_name: "货架商品 A+", stock: 4 },
+        { goods_id: 902, goods_name: "货架商品 B+", stock: 3, isCurrent: true },
+      ],
+    },
+  });
+
+  assert.equal(ctx.productList.value, initialProducts);
+  assert.equal(ctx.productList.value[0], initialProducts[0]);
+  assert.equal(ctx.productList.value[1], initialProducts[1]);
+  assert.equal(ctx.currentProduct.value, initialProducts[1]);
+  assert.equal(ctx.productList.value[0].title, "货架商品 A+");
+  assert.equal(ctx.productList.value[1].title, "货架商品 B+");
+  assert.equal(ctx.productList.value[1].isCurrent, true);
+  assert.equal(ctx.productCardIndexSyncedWith, 902);
+});

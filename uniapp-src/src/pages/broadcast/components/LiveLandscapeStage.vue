@@ -702,6 +702,7 @@ import LiveProductShelf from "./LiveProductShelf.vue";
 import { isLiveCoverOnlyStatusText } from "../utils/entry-format.js";
 import { LIVE_PLAYER_READY_CODES, hasLivePlayerNetActivity } from "../utils/live-player-status.js";
 import { isLivePlayerSource } from "@/utils/live-route.js";
+import { shouldPreferMiniProgramHlsPlayback } from "../utils/live-source.js";
 
 const props = defineProps({
   s: { type: Object, required: true },
@@ -799,6 +800,7 @@ const isLiveLandscapeStyle = computed(() => isLiveVisualMode.value)
 const shouldUseLivePlayer = computed(() => {
   const url = String(displayVideoUrl.value || "");
   if (!url || isReplay.value) return false;
+  if (shouldPreferMiniProgramHlsPlayback()) return false;
   if (isWaitingSchedule.value && warmUpVideoUrl.value) return false;
   if (mediaSourceComponent.value === "video") return false;
   if (mediaSourceComponent.value === "live-player") return true;
@@ -1015,6 +1017,10 @@ function markVideoFrameReady(event) {
 
 function handleVideoPlay(event) {
   setIsPlaying(true);
+  if (!isReplay.value && !videoFrameReady.value) {
+    setVideoFrameReady(true);
+    markPlaybackReady?.(event?.type || "play");
+  }
   recordPlaybackDebugEvent("stage_video_play", {
     mode: "landscape",
     type: event?.type || "",
@@ -1119,9 +1125,6 @@ function createMediaContext(id = "liveVideo", type = "video") {
     }
     if (typeof uni.createVideoContext === "function") {
       return uni.createVideoContext(id, component);
-    }
-    if (type !== "live-player" && typeof uni.createLivePlayerContext === "function") {
-      return uni.createLivePlayerContext(id, component);
     }
   } catch (e) {}
   return null;

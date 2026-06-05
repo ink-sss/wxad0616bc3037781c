@@ -3,7 +3,7 @@ import { reportViewProgress } from "@/api/live.js";
 import { createVideoPlayer } from "@/utils/videoPlay.js";
 import { isLivePlayerSource } from "@/utils/live-route.js";
 import { getReplayVideoEndTime, safeParseReplayTime } from "../utils/entry-format.js";
-import { isWeChatDevtoolsRuntime } from "../utils/live-source.js";
+import { shouldPreferMiniProgramHlsPlayback } from "../utils/live-source.js";
 import { applyMiniProgramSoundPlayback } from "./useMiniProgramSoundPlayback.js";
 
 function redactPlaybackUrl(url = "") {
@@ -37,7 +37,7 @@ function buildFallbackCandidates(primaryUrl = "", opts = {}) {
   add(opts.backupFlvUrl, { type: "flv", component: "live-player" });
   add(opts.backupHlsUrl, { type: "hls", component: "video" });
   add(opts.backupUrl, { type: opts.backupType || "", component: opts.backupComponent || "" });
-  if (isWeChatDevtoolsRuntime()) {
+  if (shouldPreferMiniProgramHlsPlayback()) {
     return candidates
       .filter((candidate) => candidate.component === "video")
       .sort((a, b) => (a.type === "hls" ? 0 : 1) - (b.type === "hls" ? 0 : 1));
@@ -87,7 +87,7 @@ function createPlaybackFailureHandler(player, initVideoPlayer, opts = {}, onExha
 }
 
 function updateMiniProgramMuted(id = "liveVideo", muted = false, preferLivePlayer = false, createMediaContext) {
-  if (isWeChatDevtoolsRuntime()) return false;
+  if (shouldPreferMiniProgramHlsPlayback()) return false;
   if (muted) return false;
   return applyMiniProgramSoundPlayback({ id, preferLivePlayer, createMediaContext });
 }
@@ -105,14 +105,14 @@ function normalizePlaybackUrl(url, opts = {}) {
 }
 
 function shouldPreferLivePlayerContext(url = "", opts = {}) {
-  if (isWeChatDevtoolsRuntime()) return false;
+  if (shouldPreferMiniProgramHlsPlayback()) return false;
   if (opts.isReplay || opts.sourceComponent === "video") return false;
   if (opts.sourceComponent === "live-player") return true;
   return isLivePlayerSource(url);
 }
 
 function resolveMediaSourceComponent(url = "", opts = {}) {
-  if (isWeChatDevtoolsRuntime()) return "video";
+  if (shouldPreferMiniProgramHlsPlayback()) return "video";
   if (opts.isReplay || opts.sourceComponent === "video") return "video";
   if (opts.sourceComponent === "live-player") return "live-player";
   return isLivePlayerSource(url) ? "live-player" : "video";

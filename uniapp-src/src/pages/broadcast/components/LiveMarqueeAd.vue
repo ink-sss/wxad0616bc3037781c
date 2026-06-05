@@ -75,7 +75,7 @@ watch(
 }
 
 .live-marquee-ad--top {
-  top: 156rpx;
+  top: calc(156rpx + var(--broadcast-nav-height, 0px));
 }
 
 .live-marquee-ad--middle {

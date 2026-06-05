@@ -18,6 +18,7 @@ export function useLiveLoadBootstrap(ctx) {
     resumeVideoPlayback,
     handlePageHide,
     handlePageBackground,
+    onOptions,
     setPageVisible,
     refreshLiveStatusNow,
     isWeChatIOSH5,
@@ -32,11 +33,10 @@ export function useLiveLoadBootstrap(ctx) {
     setShowWxAddrDonePlayBtn,
     setSafeBottom,
     setIsIOSKeyboardMode,
-    setPlaybackDebugRouteOptions,
   } = ctx;
 
   onLoad(async (options) => {
-    setPlaybackDebugRouteOptions?.(options || {});
+    onOptions?.(options || {});
     const shouldStop = await runLiveEntryBootstrap(options || {}, {
       getLiveDetail,
       initLive,
@@ -84,6 +84,7 @@ export function useLiveLoadBootstrapRegistration(ctx) {
     resumeVideoPlayback: ctx.resumeVideoPlayback,
     handlePageHide: ctx.handlePageHide,
     handlePageBackground: ctx.handlePageBackground,
+    onOptions: ctx.onOptions,
     setPageVisible: ctx.setPageVisible,
     refreshLiveStatusNow: ctx.refreshLiveStatusNow,
     isWeChatIOSH5: ctx.isWeChatIOSH5,
@@ -106,6 +107,5 @@ export function useLiveLoadBootstrapRegistration(ctx) {
     setIsIOSKeyboardMode(value) {
       ctx.isIOSKeyboardMode.value = value;
     },
-    setPlaybackDebugRouteOptions: ctx.setPlaybackDebugRouteOptions,
   });
 }

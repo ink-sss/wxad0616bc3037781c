@@ -61,6 +61,7 @@
           <!-- <view style="color:red">123</view> -->
           <view class="goods-all-box">
             <product-list
+              class="popup-product-list"
               variant="popup"
               :list="productList"
               :loading="productLoading"
@@ -268,6 +269,15 @@ function openSuccessNoticeProduct() {
 }
 .goods-all-box :deep(.product-scroll) {
   height: 100%;
+}
+.goods-all-box :deep(.product-scroll::-webkit-scrollbar) {
+  display: none;
+}
+.popup-product-list {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  flex: 1;
 }
 .product-success-notice {
   position: absolute;

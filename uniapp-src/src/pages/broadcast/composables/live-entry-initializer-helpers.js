@@ -9,9 +9,10 @@ import {
   normalizePullStreams,
   selectMiniProgramLiveCandidate,
   selectDefaultStream,
+  shouldPreferMiniProgramHlsPlayback,
 } from "../utils/live-source.js";
 
-export { isIOSRuntime, normalizeLiveSourceUrlKey };
+export { isIOSRuntime, normalizeLiveSourceUrlKey, shouldPreferMiniProgramHlsPlayback };
 
 const LIVE_STREAM_INFO_RETRY_COUNT = 5;
 const LIVE_STREAM_INFO_RETRY_DELAY = 300;
@@ -89,7 +90,7 @@ export function resolveLivePullUrl(detail, preferHls) {
     detail.url,
   );
   if (preferHls) {
-    return normalHlsUrl || adaptiveHlsUrl || flvUrl || rtmpUrl || genericUrl || "";
+    return normalHlsUrl || adaptiveHlsUrl || "";
   }
   return rtmpUrl || flvUrl || normalHlsUrl || adaptiveHlsUrl || genericUrl || "";
 }
@@ -166,7 +167,11 @@ export function buildLivePlayerSource(detail, preferHls, preferredQuality = "", 
   const backupRtmpUrl = findCandidateUrl(liveCandidates, "rtmp", rawMainUrl);
   const backupFlvUrl = findCandidateUrl(liveCandidates, "flv", rawMainUrl);
   const backupHlsUrl = findCandidateUrl(liveCandidates, "hls", rawMainUrl);
-  const nextCandidateUrl = liveCandidates.find((candidate) => candidate.url && candidate.url !== rawMainUrl)?.url || "";
+  const nextCandidateUrl = liveCandidates.find((candidate) => (
+    candidate.url &&
+    candidate.url !== rawMainUrl &&
+    (!preferHls || candidate.component === "video")
+  ))?.url || "";
   const mainKey = normalizeLiveSourceUrlKey(rawMainUrl);
   const backupRtmpKey = normalizeLiveSourceUrlKey(backupRtmpUrl);
   const backupFlvKey = normalizeLiveSourceUrlKey(backupFlvUrl);
@@ -176,8 +181,8 @@ export function buildLivePlayerSource(detail, preferHls, preferredQuality = "", 
     mainUrl: rawMainUrl,
     options: {
       backupUrl: nextCandidateUrl || (preferHls ? backupHlsUrl : (backupFlvUrl || backupHlsUrl || "")),
-      backupRtmpUrl,
-      backupFlvUrl,
+      backupRtmpUrl: preferHls ? "" : backupRtmpUrl,
+      backupFlvUrl: preferHls ? "" : backupFlvUrl,
       backupHlsUrl,
       rtcConfig: rtc,
       pullStreams,
@@ -213,7 +218,7 @@ export function summarizeLiveSourcePayload(payload = {}, source = {}) {
 }
 
 export function hasPlayableLiveStreamInfo(info) {
-  const source = buildLivePlayerSource(info, isIOSRuntime());
+  const source = buildLivePlayerSource(info, shouldPreferMiniProgramHlsPlayback());
   return !!source.key;
 }
 

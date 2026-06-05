@@ -580,47 +580,38 @@ export class MiniLiveSocket {
     })
   }
 
+  sendRaw(payload = {}) {
+    if (!this.socket || !this.open) return Promise.resolve(false)
+    const data = wrapMessage(payload, this.signKey || undefined)
+    return new Promise((resolve) => {
+      const send = this.socket && typeof this.socket.send === 'function'
+        ? this.socket.send.bind(this.socket)
+        : typeof uni.sendSocketMessage === 'function'
+          ? uni.sendSocketMessage.bind(uni)
+          : null
+      if (!send) {
+        resolve(false)
+        return
+      }
+      send({
+        data,
+        success: () => resolve(true),
+        fail: () => resolve(false),
+      })
+    })
+  }
+
   sendChat(content, data, options = {}) {
     const msgId = options?.msgId || Math.random().toString(36).slice(2, 10)
-    const roomId = Number(this.liveId || 0)
-    const roomPayload = buildRoomPayload(roomId)
-    const audiencePayload = this.getAudiencePayload()
-    const extraPayload = data && typeof data === 'object' && !Array.isArray(data) ? data : {}
-    const contextPayload = normalizeSocketContext({
-      ...this.context,
-      ...extraPayload,
-    })
     const text = String(content || data?.content || data?.comment || data?.message || data?.text || '')
     const payload = {
       type: TYPE.CHAT,
-      ...roomPayload,
-      ...contextPayload,
-      ...audiencePayload,
       content: text,
-      comment: text,
-      message: text,
-      text,
       msgId,
-      msg_id: msgId,
-      clientMsgId: msgId,
-      client_msg_id: msgId,
-      data: {
-        ...roomPayload,
-        ...contextPayload,
-        ...audiencePayload,
-        ...extraPayload,
-        content: text,
-        comment: text,
-        message: text,
-        text,
-        msgId,
-        msg_id: msgId,
-        clientMsgId: msgId,
-        client_msg_id: msgId,
-      },
     }
+    if (data) payload.data = data
     if (options?.msgId) payload.msgId = options.msgId
-    return this.send(payload)
+    return this.sendRaw(payload)
   }
 
   sendLike(count = 1, context = {}) {

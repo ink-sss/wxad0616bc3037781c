@@ -92,7 +92,7 @@ export function getReplayFirstVideo(roomCode) {
 }
 
 export function getLiveStatus(roomId) {
-  return h5Get('/h5/live/status', withLiveAliases({ roomId: Number(roomId || 0) }))
+  return h5Get('/h5/live/status', { roomId: Number(roomId || 0) })
 }
 
 export function enterLiveRoom(roomId, sessionId, shareCode, termId) {
@@ -126,25 +126,20 @@ export function getLiveProducts(roomId, page = 1, pageSize = 20) {
   const resolvedRoomId = firstValue(meta, 'roomId', 'room_id', 'liveId', 'live_id') || (isObjectParam ? 0 : roomId) || 0
   const resolvedPage = firstValue(meta, 'page', 'current') || page
   const resolvedPageSize = firstValue(meta, 'pageSize', 'page_size', 'limit') || pageSize
-  return h5Get('/h5/live/products', withLiveAliases({
-    ...meta,
+  return h5Get('/h5/live/products', {
     roomId: Number(resolvedRoomId || 0),
     page: Number(resolvedPage || 1),
-    current: Number(resolvedPage || 1),
     pageSize: Number(resolvedPageSize || 20),
-    page_size: Number(resolvedPageSize || 20),
-    limit: Number(resolvedPageSize || 20),
-  }))
+  })
 }
 
 export function getCurrentProduct(roomId, context = {}) {
   const isObjectParam = roomId && typeof roomId === 'object'
   const meta = isObjectParam ? roomId : context
   const resolvedRoomId = firstValue(meta, 'roomId', 'room_id', 'liveId', 'live_id') || (isObjectParam ? 0 : roomId) || 0
-  return h5Get('/h5/live/currentProduct', withLiveAliases({
-    ...meta,
+  return h5Get('/h5/live/currentProduct', {
     roomId: Number(resolvedRoomId || 0),
-  }))
+  })
 }
 
 export function getCommentHistory(roomId, limit = 30, replayVideoId = 0, context = {}) {
@@ -152,19 +147,16 @@ export function getCommentHistory(roomId, limit = 30, replayVideoId = 0, context
   const meta = isObjectParam ? roomId : context
   const resolvedRoomId = firstValue(meta, 'roomId', 'room_id', 'liveId', 'live_id') || (isObjectParam ? 0 : roomId) || 0
   const resolvedLimit = firstValue(meta, 'limit', 'pageSize', 'page_size') || limit
-  const resolvedPage = firstValue(meta, 'page', 'current') || 1
   const resolvedReplayVideoId =
     firstValue(meta, 'replayVideoId', 'replay_video_id', 'videoId', 'video_id') || replayVideoId || 0
-  return h5Get('/h5/live/commentHistory', withLiveAliases({
-    ...meta,
+  const resolvedMode = firstValue(meta, 'mode')
+  const data = {
     roomId: Number(resolvedRoomId || 0),
     limit: Number(resolvedLimit || 30),
-    page: Number(resolvedPage || 1),
-    current: Number(resolvedPage || 1),
-    pageSize: Number(resolvedLimit || 30),
-    page_size: Number(resolvedLimit || 30),
     replayVideoId: Number(resolvedReplayVideoId || 0),
-  }))
+  }
+  if (resolvedMode) data.mode = resolvedMode
+  return h5Get('/h5/live/commentHistory', data)
 }
 
 export function sendLike(roomId, count = 1, context = {}) {
@@ -172,94 +164,17 @@ export function sendLike(roomId, count = 1, context = {}) {
   const meta = isObjectParam ? roomId : context
   const resolvedRoomId = firstValue(meta, 'roomId', 'room_id', 'liveId', 'live_id') || (isObjectParam ? 0 : roomId) || 0
   const resolvedCount = firstValue(meta, 'count', 'likeCount', 'like_count') || count
-  const payload = withLiveAliases({
-    ...meta,
+  return h5Post('/h5/live/like', {
     roomId: Number(resolvedRoomId || 0),
     count: Number(resolvedCount || 1) > 0 ? Number(resolvedCount || 1) : 1,
   })
-  payload.data = {
-    ...(payload.data && typeof payload.data === 'object' && !Array.isArray(payload.data) ? payload.data : {}),
-    roomId: payload.roomId,
-    room_id: payload.room_id,
-    liveId: payload.liveId,
-    live_id: payload.live_id,
-    roomCode: payload.roomCode,
-    room_code: payload.room_code,
-    tenantId: payload.tenantId,
-    tenant_id: payload.tenant_id,
-    shareCode: payload.shareCode,
-    share_code: payload.share_code,
-    bindId: payload.bindId,
-    bind_id: payload.bind_id,
-    liveType: payload.liveType,
-    live_type: payload.live_type,
-    termId: payload.termId,
-    term_id: payload.term_id,
-    liveTermId: payload.liveTermId,
-    live_term_id: payload.live_term_id,
-    customerId: payload.customerId,
-    customer_id: payload.customer_id,
-    userId: payload.userId,
-    user_id: payload.user_id,
-    count: payload.count,
-    likeCount: payload.likeCount,
-    like_count: payload.like_count,
-  }
-  return h5Post('/h5/live/like', payload)
 }
 
 export function sendBuyReminder(data = {}) {
-  const payload = withLiveAliases({
-    ...data,
+  return h5Post('/h5/live/buyReminder', {
     roomId: Number(firstValue(data, 'roomId', 'room_id', 'liveId', 'live_id') || 0),
     productId: Number(firstValue(data, 'productId', 'product_id', 'goodsId', 'goods_id') || 0),
   })
-  payload.data = {
-    ...(payload.data && typeof payload.data === 'object' && !Array.isArray(payload.data) ? payload.data : {}),
-    roomId: payload.roomId,
-    room_id: payload.room_id,
-    liveId: payload.liveId,
-    live_id: payload.live_id,
-    roomCode: payload.roomCode,
-    room_code: payload.room_code,
-    tenantId: payload.tenantId,
-    tenant_id: payload.tenant_id,
-    shareCode: payload.shareCode,
-    share_code: payload.share_code,
-    bindId: payload.bindId,
-    bind_id: payload.bind_id,
-    liveType: payload.liveType,
-    live_type: payload.live_type,
-    termId: payload.termId,
-    term_id: payload.term_id,
-    liveTermId: payload.liveTermId,
-    live_term_id: payload.live_term_id,
-    videoId: payload.videoId,
-    video_id: payload.video_id,
-    replayVideoId: payload.replayVideoId,
-    replay_video_id: payload.replay_video_id,
-    productId: payload.productId,
-    product_id: payload.product_id,
-    goodsId: payload.goodsId,
-    goods_id: payload.goods_id,
-    skuId: payload.skuId,
-    sku_id: payload.sku_id,
-    productSkuId: payload.productSkuId,
-    product_sku_id: payload.product_sku_id,
-    customerId: payload.customerId,
-    customer_id: payload.customer_id,
-    userId: payload.userId,
-    user_id: payload.user_id,
-    productName: payload.productName,
-    product_name: payload.product_name,
-    goodsName: payload.goodsName,
-    goods_name: payload.goods_name,
-    productImage: payload.productImage,
-    product_image: payload.product_image,
-    goodsPic: payload.goodsPic,
-    goods_pic: payload.goods_pic,
-  }
-  return h5Post('/h5/live/buyReminder', payload)
 }
 
 function buildLiveCommentPayload(roomId, comment, data = {}) {

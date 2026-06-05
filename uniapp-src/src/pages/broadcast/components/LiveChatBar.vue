@@ -6,6 +6,7 @@
     class="bottom-bar"
     :class="[
       { 'bottom-bar--focused': focused },
+      { 'bottom-bar--live-toolbar': useLiveToolbar },
       variant === 'landscape' ? 'bottom-bar--landscape' : 'bottom-bar--portrait',
     ]"
     :style="bottomStyle"
@@ -92,7 +93,7 @@
     <view v-else class="toolbar-icons">
       <view
         v-if="roomSetting.showUserCenter !== 0"
-        class="tool-btn"
+        class="tool-btn live-toolbar-center-btn"
         @click="emit('center')"
         ><image
           class="tool-icon-img"
@@ -691,6 +692,97 @@ defineExpose({
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.bottom-bar--portrait.bottom-bar--live-toolbar {
+  padding-bottom: calc(10rpx + env(safe-area-inset-bottom));
+  gap: 8rpx;
+}
+.bottom-bar--portrait.bottom-bar--live-toolbar .bottom-bar-input-row {
+  border-radius: 12rpx;
+}
+.bottom-bar--portrait.bottom-bar--live-toolbar.bottom-bar--focused .bottom-bar-input-row {
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.bottom-bar--portrait.bottom-bar--live-toolbar .quick-replies-inner {
+  gap: 20rpx;
+  padding: 10rpx 0 12rpx;
+}
+.bottom-bar--portrait.bottom-bar--live-toolbar .quick-reply-tag {
+  height: 40rpx;
+  max-width: 252rpx;
+  padding: 6rpx 16rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.7);
+  border-radius: 28rpx;
+  background: rgba(0, 0, 0, 0.2);
+  color: #fff;
+  font-size: 28rpx;
+  backdrop-filter: blur(10rpx);
+}
+.bottom-bar--portrait.bottom-bar--live-toolbar .input-wrap {
+  height: 72rpx;
+  padding: 0 18rpx;
+  border: none;
+  border-radius: 46rpx;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+.bottom-bar--portrait.bottom-bar--live-toolbar.bottom-bar--focused .input-wrap {
+  background: #f0f0f4;
+}
+.bottom-bar--portrait.bottom-bar--live-toolbar .msg-input {
+  height: 72rpx;
+  color: #fff;
+  font-size: 26rpx;
+  line-height: 72rpx;
+}
+.bottom-bar--portrait.bottom-bar--live-toolbar.bottom-bar--focused .msg-input {
+  color: #333;
+}
+.bottom-bar--portrait.bottom-bar--live-toolbar .toolbar-icons {
+  gap: 8rpx;
+}
+.bottom-bar--portrait.bottom-bar--live-toolbar .goods-box-left {
+  width: 80rpx;
+  height: 80rpx;
+}
+.bottom-bar--portrait.bottom-bar--live-toolbar .tool-btn {
+  width: 72rpx;
+  height: 72rpx;
+  border: none;
+  border-radius: 50%;
+  background-color: transparent;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+.bottom-bar--portrait.bottom-bar--live-toolbar .live-toolbar-center-btn {
+  background-image: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-public-home-images-ebusiness-ebu-add-86ea0992.png");
+}
+.bottom-bar--portrait.bottom-bar--live-toolbar .invite-icon-btn {
+  width: 72rpx;
+  height: 72rpx;
+}
+.bottom-bar--portrait.bottom-bar--live-toolbar .tool-btn-like {
+  background-image: url("https://man.lqjy.cc/static/zan/zan_1.png");
+}
+.bottom-bar--portrait.bottom-bar--live-toolbar .tool-icon-img {
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+}
+.bottom-bar--portrait.bottom-bar--live-toolbar .send-btn {
+  min-width: 112rpx;
+  height: 72rpx;
+  padding: 0 24rpx;
+  border-radius: 36rpx;
+  background: #ff6e2d;
+  color: #fff;
+  font-size: 28rpx;
+  box-shadow: none;
 }
 
 /* 横屏底部栏 */

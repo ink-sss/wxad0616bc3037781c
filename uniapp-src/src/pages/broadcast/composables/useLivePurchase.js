@@ -282,58 +282,7 @@ export function useLivePurchase({
     const roomId = Number(liveId.value || 0);
     const productId = getProductId(item);
     if (!roomId || !productId) return;
-    const termId = typeof getEffectiveTermId === "function" ? getEffectiveTermId() : 0;
-    const skuId = getProductSkuId(item);
-    const replayVideoId = Number(replayCurrentVideoId?.value || 0);
-    const liveType = isReplay?.value ? "replay" : "live";
-    const customerId = userStore.userInfo?.id || userStore.userInfo?.customerId || userStore.userInfo?.customer_id || 0;
-    const userId = userStore.userInfo?.id || userStore.userInfo?.userId || userStore.userInfo?.user_id || customerId;
-    const productName = firstValue(item, "title", "name", "productName", "product_name", "goodsName", "goods_name") || "";
-    const productImage = firstValue(item, "image", "coverImage", "cover_image", "productImage", "product_image", "goodsPic", "goods_pic") || "";
-    sendBuyReminder({
-      roomId,
-      room_id: roomId,
-      liveId: roomId,
-      live_id: roomId,
-      roomCode: roomCode?.value || "",
-      room_code: roomCode?.value || "",
-      tenantId: liveTenantId?.value || 0,
-      tenant_id: liveTenantId?.value || 0,
-      shareCode: shareCode?.value || "",
-      share_code: shareCode?.value || "",
-      bindId: liveBindId?.value || 0,
-      bind_id: liveBindId?.value || 0,
-      liveType,
-      live_type: liveType,
-      termId,
-      term_id: termId,
-      liveTermId: termId,
-      live_term_id: termId,
-      videoId: replayVideoId,
-      video_id: replayVideoId,
-      replayVideoId,
-      replay_video_id: replayVideoId,
-      productId,
-      product_id: productId,
-      goodsId: productId,
-      goods_id: productId,
-      skuId,
-      sku_id: skuId,
-      productSkuId: skuId,
-      product_sku_id: skuId,
-      customerId,
-      customer_id: customerId,
-      userId,
-      user_id: userId,
-      productName,
-      product_name: productName,
-      goodsName: productName,
-      goods_name: productName,
-      productImage,
-      product_image: productImage,
-      goodsPic: productImage,
-      goods_pic: productImage,
-    }).catch((err) => {
+    sendBuyReminder({ roomId, productId }).catch((err) => {
       logger.warn?.("[Live] sendBuyReminder fail:", err);
     });
   }

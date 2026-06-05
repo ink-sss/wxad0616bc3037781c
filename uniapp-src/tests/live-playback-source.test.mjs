@@ -67,26 +67,6 @@ async function loadLiveStatusSnapshotModule() {
   };
 }
 
-async function loadLivePlaybackDebugModule() {
-  const tempDir = await mkdtemp(join(tmpdir(), "live-playback-debug-"));
-  const liveSource = await loadLiveSourceModule(tempDir);
-  const sourcePath = join(root, "src/pages/broadcast/composables/useLivePlaybackDebug.js");
-  let source = await readFile(sourcePath, "utf8");
-  source = source
-    .replace(
-      'import { computed, ref } from "vue";',
-      `const ref = (value) => ({ value });
-      const computed = (getter) => ({ get value() { return getter(); } });`
-    )
-    .replace(
-      'import { normalizeLiveSourceUrlKey } from "../utils/live-source.js";',
-      `import { normalizeLiveSourceUrlKey } from ${JSON.stringify(pathToFileURL(liveSource.modulePath).href)};`
-    );
-  const modulePath = join(tempDir, "useLivePlaybackDebug.mjs");
-  await writeFile(modulePath, source, "utf8");
-  return await import(pathToFileURL(modulePath).href);
-}
-
 async function loadLiveEntryInitializerHelpersModule() {
   const tempDir = await mkdtemp(join(tmpdir(), "live-entry-helper-"));
   const liveSource = await loadLiveSourceModule(tempDir);
@@ -110,7 +90,7 @@ async function loadLiveEntryInitializerHelpersModule() {
       "const safeParseReplayTime = (value = '') => Date.parse(String(value).replace(/-/g, '/')) || 0;"
     )
     .replace(
-      /import \{\n  buildStreamPlaybackOptions,\n  isIOSRuntime,\n  normalizeLiveSourceUrlKey,\n  normalizePullStreams,\n  selectMiniProgramLiveCandidate,\n  selectDefaultStream,\n\} from "\.\.\/utils\/live-source\.js";/,
+      /import \{\n  buildStreamPlaybackOptions,\n  isIOSRuntime,\n  normalizeLiveSourceUrlKey,\n  normalizePullStreams,\n  selectMiniProgramLiveCandidate,\n  selectDefaultStream,\n  shouldPreferMiniProgramHlsPlayback,\n\} from "\.\.\/utils\/live-source\.js";/,
       `import {
         buildStreamPlaybackOptions,
         isIOSRuntime,
@@ -118,6 +98,7 @@ async function loadLiveEntryInitializerHelpersModule() {
         normalizePullStreams,
         selectMiniProgramLiveCandidate,
         selectDefaultStream,
+        shouldPreferMiniProgramHlsPlayback,
       } from ${JSON.stringify(pathToFileURL(liveSource.modulePath).href)};`
     );
   const modulePath = join(tempDir, "live-entry-initializer-helpers.mjs");
@@ -186,10 +167,13 @@ function setDevtoolsRuntime() {
   };
 }
 
-function setMiniProgramRuntime() {
+function setMiniProgramRuntime(appId = "") {
   globalThis.uni = {
     getSystemInfoSync() {
       return { platform: "android", system: "Android 12" };
+    },
+    getAccountInfoSync() {
+      return { miniProgram: { appId } };
     },
   };
 }
@@ -209,7 +193,7 @@ test("mini-program live source selection prefers HLS video in devtools", async (
   assert.equal(selected.component, "video");
 });
 
-test("mini-program live source selection prefers RTMP before FLV outside devtools", async () => {
+test("mini-program live source selection always prefers HLS video", async () => {
   setMiniProgramRuntime();
   const tempDir = await mkdtemp(join(tmpdir(), "live-source-native-select-"));
   const { module: liveSource } = await loadLiveSourceModule(tempDir);
@@ -220,9 +204,9 @@ test("mini-program live source selection prefers RTMP before FLV outside devtool
     { url: statusPayload.pullRtmpUrl, type: "rtmp", component: "live-player" },
   ]);
 
-  assert.equal(selected.url, statusPayload.pullRtmpUrl);
-  assert.equal(selected.component, "live-player");
-  assert.equal(selected.type, "rtmp");
+  assert.equal(selected.url, statusPayload.pullHlsUrl);
+  assert.equal(selected.component, "video");
+  assert.equal(selected.type, "hls");
 });
 
 test("mini-program live candidates keep normal HLS before adaptive HLS", async () => {
@@ -245,7 +229,7 @@ test("mini-program live candidates keep normal HLS before adaptive HLS", async (
   assert.equal(selected.url, normalHlsUrl);
 });
 
-test("adaptive HLS is selected when it is the only viable HLS source", async () => {
+test("adaptive HLS is selected in devtools when it is the only viable HLS source", async () => {
   setDevtoolsRuntime();
   const tempDir = await mkdtemp(join(tmpdir(), "live-source-adaptive-only-"));
   const { module: liveSource } = await loadLiveSourceModule(tempDir);
@@ -273,9 +257,14 @@ test("live pull URL fallback keeps normal HLS before adaptive HLS", async () => 
     adaptiveHlsUrl,
     pullFlvUrl: statusPayload.pullFlvUrl,
   }, true), adaptiveHlsUrl);
+
+  assert.equal(helpers.resolveLivePullUrl({
+    pullFlvUrl: statusPayload.pullFlvUrl,
+    pullRtmpUrl: statusPayload.pullRtmpUrl,
+  }, true), "");
 });
 
-test("pull stream normalization follows mini-program RTMP/FLV/HLS priority", async () => {
+test("pull stream normalization follows video HLS priority for mini-program playback", async () => {
   setMiniProgramRuntime();
   const tempDir = await mkdtemp(join(tmpdir(), "live-source-streams-"));
   const { module: liveSource } = await loadLiveSourceModule(tempDir);
@@ -287,11 +276,11 @@ test("pull stream normalization follows mini-program RTMP/FLV/HLS priority", asy
       flvUrl: statusPayload.pullFlvUrl,
       hlsUrl: statusPayload.pullHlsUrl,
     }],
-  }, false);
+  }, true);
 
-  assert.equal(stream.playUrl, statusPayload.pullRtmpUrl);
-  assert.equal(stream.sourceType, "rtmp");
-  assert.equal(stream.sourceComponent, "live-player");
+  assert.equal(stream.playUrl, statusPayload.pullHlsUrl);
+  assert.equal(stream.sourceType, "hls");
+  assert.equal(stream.sourceComponent, "video");
 });
 
 test("pull stream normalization keeps default HLS before adaptive HLS", async () => {
@@ -313,7 +302,7 @@ test("pull stream normalization keeps default HLS before adaptive HLS", async ()
   assert.equal(stream.adaptiveHlsUrl, adaptiveHlsUrl);
 });
 
-test("status source selection keeps origin HLS before adaptive HLS", async () => {
+test("status source selection keeps origin HLS before adaptive HLS in devtools", async () => {
   setDevtoolsRuntime();
   const tempDir = await mkdtemp(join(tmpdir(), "live-source-status-"));
   const { module: liveSource } = await loadLiveSourceModule(tempDir);
@@ -331,6 +320,57 @@ test("status source selection keeps origin HLS before adaptive HLS", async () =>
   assert.equal(selected, statusPayload.pullHlsUrl);
 });
 
+test("native mini-program runtime prefers HLS video regardless of appId", async () => {
+  setMiniProgramRuntime("wx-live-enabled");
+  const tempDir = await mkdtemp(join(tmpdir(), "live-source-blocked-appid-"));
+  const { module: liveSource } = await loadLiveSourceModule(tempDir);
+
+  const selected = liveSource.resolveStatusPullUrl(statusPayloadWithAdaptive);
+  const options = liveSource.buildStatusPlaybackOptions(statusPayloadWithAdaptive, selected);
+
+  assert.equal(selected, statusPayload.pullHlsUrl);
+  assert.equal(options.sourceComponent, "video");
+  assert.equal(options.sourceType, "hls");
+  assert.equal(options.backupUrl, statusPayloadWithAdaptive.adaptiveHlsUrl);
+  assert.equal(options.backupFlvUrl, "");
+  assert.equal(options.backupRtmpUrl, "");
+});
+
+test("native mini-program runtime does not fall back to live-player-only sources", async () => {
+  setMiniProgramRuntime("wx-live-enabled");
+  const tempDir = await mkdtemp(join(tmpdir(), "live-source-no-hls-"));
+  const { module: liveSource } = await loadLiveSourceModule(tempDir);
+
+  const selected = liveSource.resolveStatusPullUrl({
+    pushStatus: 1,
+    pullRtmpUrl: statusPayload.pullRtmpUrl,
+    pullFlvUrl: statusPayload.pullFlvUrl,
+  });
+  const streams = liveSource.normalizePullStreams({
+    pullStreams: [{
+      quality: "origin",
+      rtmpUrl: statusPayload.pullRtmpUrl,
+      flvUrl: statusPayload.pullFlvUrl,
+    }],
+  });
+
+  assert.equal(selected, "");
+  assert.equal(streams.length, 0);
+});
+
+test("native mini-program runtime only accepts HLS video for live playback", async () => {
+  setMiniProgramRuntime("wx-live-enabled");
+  const tempDir = await mkdtemp(join(tmpdir(), "live-source-video-only-"));
+  const { module: liveSource } = await loadLiveSourceModule(tempDir);
+
+  const selected = liveSource.selectMiniProgramLiveCandidate([
+    { url: "https://hls.yaakoo123.cn/live/room_235.mp4?auth_key=new", type: "mp4", component: "video" },
+    { url: statusPayload.pullRtmpUrl, type: "rtmp", component: "live-player" },
+  ]);
+
+  assert.equal(selected, null);
+});
+
 test("playback-resume status polling refreshes same HLS source without reinitializing", async () => {
   setDevtoolsRuntime();
   const { liveStatusSnapshot } = await loadLiveStatusSnapshotModule();
@@ -345,7 +385,7 @@ test("playback-resume status polling refreshes same HLS source without reinitial
   assert.equal(harness.sourceUpdates.length, 1);
   assert.equal(harness.sourceUpdates[0].url, statusPayload.pullHlsUrl);
   assert.equal(harness.sourceUpdates[0].options.sourceComponent, "video");
-  assert.equal(harness.events.some((event) => event.type === "status_poll_source_keep_active"), false);
+  assert.equal(harness.sourceUpdates[0].options.sourceType, "hls");
 });
 
 test("status polling keeps same HLS source before playback is ready", async () => {
@@ -362,6 +402,7 @@ test("status polling keeps same HLS source before playback is ready", async () =
   assert.equal(harness.initCalls.length, 0);
   assert.equal(harness.sourceUpdates[0].url, statusPayload.pullHlsUrl);
   assert.equal(harness.sourceUpdates[0].options.sourceComponent, "video");
+  assert.equal(harness.sourceUpdates[0].options.sourceType, "hls");
 });
 
 test("portrait playback uses cover crop with inherited object position and stable media id", async () => {
@@ -373,61 +414,4 @@ test("portrait playback uses cover crop with inherited object position and stabl
   assert.match(stage, /<video[\s\S]*?id="liveVideo"[\s\S]*?object-fit="cover"/);
   assert.match(style, /\.live-portrait\s+\.live-video\s+:deep\(\.uni-video-video\)[\s\S]*?object-fit:\s*cover;/);
   assert.match(style, /\.live-portrait\s+\.live-video\s+:deep\(\.uni-video-video\)[\s\S]*?object-position:\s*inherit;/);
-});
-
-test("playback debug report includes active media identity and dimensions", async () => {
-  globalThis.uni = {
-    getSystemInfoSync() {
-      return {
-        platform: "devtools",
-        system: "iOS 10.0.1",
-        windowWidth: 390,
-        windowHeight: 844,
-        screenWidth: 390,
-        screenHeight: 844,
-        pixelRatio: 3,
-        safeArea: { top: 47, bottom: 810, width: 390, height: 763 },
-      };
-    },
-  };
-  const { useLivePlaybackDebug } = await loadLivePlaybackDebugModule();
-  const debug = useLivePlaybackDebug({
-    enabled: true,
-    getSnapshot: () => ({
-      mode: "portrait",
-      isReplay: false,
-      mediaSourceComponent: "video",
-      mediaSourceType: "hls",
-      displayVideoUrl: statusPayload.pullHlsUrl,
-      pullUrl: statusPayload.pullHlsUrl,
-      videoUrl: statusPayload.pullHlsUrl,
-    }),
-    getVideoPlayer: () => ({
-      url: statusPayload.pullHlsUrl,
-      sourceComponent: "video",
-      sourceType: "hls",
-      muted: true,
-      live: false,
-      liveCandidates: [
-        { url: statusPayload.pullHlsUrl, type: "hls", component: "video", field: "pullHlsUrl" },
-        { url: statusPayloadWithAdaptive.adaptiveHlsUrl, type: "hls", component: "video", field: "adaptiveHlsUrl", isAdaptiveHls: true },
-      ],
-    }),
-  });
-
-  debug.probePlaybackUrl(statusPayloadWithAdaptive.adaptiveHlsUrl, "adaptive");
-  const report = JSON.parse(debug.playbackDebugReport.value);
-
-  assert.equal(report.media.activeComponent, "video");
-  assert.equal(report.media.sourceType, "hls");
-  assert.equal(report.media.currentUrl.sourceKey, "https://hls.yaakoo123.cn/live/room_235.m3u8");
-  assert.equal(report.media.container.mediaId, "liveVideo");
-  assert.equal(report.media.container.viewportWidth, 390);
-  assert.equal(report.media.container.viewportHeight, 844);
-  assert.equal(report.media.container.videoObjectFit, "cover");
-  assert.equal(report.media.container.livePlayerObjectFit, "fillCrop");
-  assert.equal(report.videoPlayer.activeComponent, "video");
-  assert.equal(report.videoPlayer.liveCandidates[1].isAdaptiveHls, true);
-  assert.equal(report.urlProbes[0].sourceKey, "https://hls.yaakoo123.cn/live/room_235_abrv2.m3u8");
-  assert.match(report.urlProbes[0].sanitizedUrl, /auth_key=\*\*\*/);
 });

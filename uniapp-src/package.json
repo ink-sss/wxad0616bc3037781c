@@ -16,6 +16,7 @@
     "@dcloudio/uni-mp-weixin": "3.0.0-alpha-5010120260525001",
     "@huolala-tech/page-spy-wechat": "^2.2.5",
     "@tencentcloud/chat": "3.5.7",
+    "easemob-websdk": "^4.21.1",
     "pinia": "2.1.7",
     "qrcode": "^1.5.4",
     "tim-upload-plugin": "1.4.2",

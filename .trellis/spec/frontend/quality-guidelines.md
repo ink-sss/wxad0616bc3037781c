@@ -184,62 +184,151 @@ await wechatSilentLogin({ code, sourceClient: "mp-weixin" });
 
 ### 3. Contracts
 
-- Live source order must prefer RTMP before FLV. HLS/m3u8 is a fallback only
-  when routed to a component that can render it.
-- WeChat Developer Tools and explicit HLS/video debug paths may prefer HLS
-  through `video`, but normal HLS fields (`pullHlsUrl`, `httpHlsUrl`,
-  `m3u8Url`) must stay ahead of adaptive HLS fields (`adaptiveHlsUrl`,
-  `liveAdaptiveHlsUrl`) unless adaptive HLS is the only viable HLS candidate.
-- Live candidates must carry `{ url, type, component }`, where RTMP/FLV use
-  `live-player`; replay uses `video`.
+- Current Mini Program appIds do not have `live-player` permission. Broadcast
+  live playback in `mp-weixin` must use the `video` component with HLS/m3u8
+  sources; do not select RTMP/FLV or initialize `live-player` as a fallback.
+- Normal HLS fields (`pullHlsUrl`, `httpHlsUrl`, `m3u8Url`) must stay ahead of
+  adaptive HLS fields (`adaptiveHlsUrl`, `liveAdaptiveHlsUrl`) unless adaptive
+  HLS is the only viable HLS candidate.
+- Live candidates must carry `{ url, type, component }`. RTMP/FLV candidates may
+  be parsed for diagnostics or non-mini-program reference paths, but `mp-weixin`
+  source selection must ignore them. Replay uses `video`.
 - Live candidates from adaptive HLS fields must carry `isAdaptiveHls` so source
   selection and playback debug output can distinguish ABR streams from the
   origin/default HLS stream.
 - `/h5/live/streamInf` is not just a fallback for missing detail URLs. Fetch it
-  for live rooms when `roomCode` exists so a bad detail FLV cannot mask a usable
-  RTMP stream.
+  for live rooms when `roomCode` exists so detail data missing HLS cannot mask a
+  usable HLS source from stream info.
 
 ### 4. Validation & Error Matrix
 
-- `live-player` state `-2301` or related play/network failure -> switch to the
-  next live candidate.
+- HLS `video` failure -> switch to the next HLS/video candidate when available.
 - Candidate list exhausted -> show a user-visible playback failure state.
-- No live candidates -> show a user-visible "no playable line" state.
+- No HLS/video live candidates -> show a user-visible "no playable line" state;
+  do not fall back to RTMP/FLV in `mp-weixin`.
 - Replay `video` error -> show replay failure state; do not try live sources.
 
 ### 5. Good/Base/Bad Cases
 
-- Good: detail has FLV and streamInf has RTMP -> selected URL is RTMP.
-- Base: only FLV is available -> selected URL is FLV and failed state retries
-  later candidates if any are discovered.
-- Bad: selecting `pullFlvUrl` before `pullRtmpUrl`, or ending with an error on
-  the first `-2301` without trying the remaining candidates.
+- Good: detail has HLS and adaptive HLS -> selected URL is normal HLS, backup is
+  adaptive HLS.
+- Base: stream info has HLS and detail only has FLV/RTMP -> selected URL is the
+  stream-info HLS source.
+- Bad: selecting `pullRtmpUrl`/`pullFlvUrl`, initializing `live-player`, or
+  retrying a live-player-only candidate in `mp-weixin`.
 
 ### 6. Tests Required
 
 - `npm run build:mp-weixin` passes from `uniapp-src/`.
 - Static scan of broadcast source and `src/utils/live-route.js` finds no H5
   browser globals/packages.
-- Focused source-order sanity check confirms RTMP sorts before FLV and HLS.
-- Focused HLS sanity check confirms normal HLS sorts before adaptive HLS in
-  Developer Tools/video paths, with adaptive HLS used only when no normal HLS
-  source exists.
+- Focused HLS sanity check confirms normal HLS sorts before adaptive HLS, with
+  adaptive HLS used only when no normal HLS source exists.
+- Focused no-HLS check confirms RTMP/FLV-only live payloads do not initialize
+  playback in `mp-weixin`.
 - WeChat Developer Tools and real-device validation remain required for actual
-  `live-player` playback.
+  Mini Program video playback.
 
 ### 7. Wrong vs Correct
 
 Wrong:
 
 ```js
-return detail.pullFlvUrl || detail.pullRtmpUrl || "";
+return detail.pullRtmpUrl || detail.pullFlvUrl || "";
 ```
 
 Correct:
 
 ```js
 const candidates = getMiniProgramLiveCandidates(detail, streamInfo);
-return candidates[0]?.url || "";
+return selectMiniProgramLiveCandidate(candidates, { preferHls: true })?.url || "";
+```
+
+## Scenario: Broadcast Live Easemob IM Channel
+
+### 1. Scope / Trigger
+
+- Trigger: `pages/broadcast/entry` sends and receives live-room chat for
+  `groupType=0` rooms in mp-weixin.
+- Scope: `src/pages/broadcast/composables/useMessageChannel.js`,
+  `useIMChannel.js`, live comment composables, and the IM debug surface.
+
+### 2. Signatures
+
+- `useMessageChannel({ roomGroupType, liveId, ... })` chooses the active
+  message transport.
+- `useIMChannel({ liveId, loadCommentHistory, handleWsMessage, onOpen })`
+  connects to Easemob by using `easemob-websdk/uniApp/Easemob-chat`.
+- `getImToken(liveId)` returns Easemob `appKey`, `imUsername`, `imToken`, and
+  chatroom ids.
+- `getLiveSocket().sendChat(content, data, options)` sends chat through the
+  active transport.
+
+### 3. Contracts
+
+- `groupType=0` live rooms use Easemob IM only. Do not start the backend live
+  websocket as a parallel upstream channel, and do not fall back to it when IM
+  init fails.
+- `groupType=1` replay rooms keep using the backend websocket for timeline
+  comments.
+- The Easemob SDK entry for uni-app is
+  `easemob-websdk/uniApp/Easemob-chat`; assign it to `uni.WebIM` before using
+  the SDK in mp-weixin.
+- Open the SDK with `{ user: imUsername, accessToken: imToken }`, then
+  `joinChatRoom({ roomId, leaveOtherRooms: false })`.
+- Repeated init for the same `liveId` while connecting or already open must
+  reuse the current connection. Closing a same-room connection causes the
+  network panel to show `[3000, "normal closed"]` and loses the chat path.
+- Client-initiated closes must be marked in debug state with
+  `expectedClose=true` and `closeRequestedBy`, so normal lifecycle cleanup can
+  be separated from SDK/server disconnects.
+
+### 4. Validation & Error Matrix
+
+- IM token missing `appKey`, user, or token -> report IM init failure; do not
+  start backend websocket fallback for `groupType=0`.
+- IM open/join fails -> keep the IM channel selected and expose the error in
+  debug state; do not silently switch to backend websocket.
+- Same live room init repeats while pending/open -> return the existing init
+  result; do not call `conn.close()`.
+- Different live room init -> leave chatrooms, close the stale SDK connection,
+  and mark the close as expected.
+- SDK disconnect event with `[3000, "normal closed"]` and no matching expected
+  close marker -> treat as a real investigation target.
+
+### 5. Good/Base/Bad Cases
+
+- Good: live room gets IM token, opens Easemob, joins the chatroom, and
+  `sendChat` sends a custom IM message.
+- Base: replay room keeps the old websocket behavior.
+- Bad: live room starts both IM and backend websocket, sends chat through the
+  backend websocket, or falls back to backend websocket after IM failure.
+
+### 6. Tests Required
+
+- `npm run build:mp-weixin` passes from `uniapp-src/`.
+- Focused tests assert `groupType=0` initializes only IM, keeps IM selected on
+  IM failure, and suppresses fallback enter on the IM path.
+- Focused tests assert same-liveId IM init reuses pending/open SDK connections
+  without closing them.
+- Real-device or WeChat Developer Tools validation remains required for the
+  actual Easemob websocket lifecycle.
+
+### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+await imChannel.initWebSocket(wsUrl);
+await wsChannel.initWebSocket(wsUrl);
+return wsChannel.getLiveSocket().sendChat(text);
+```
+
+Correct:
+
+```js
+await imChannel.initWebSocket();
+return imChannel.getLiveSocket().sendChat(text);
 ```
 
 ---

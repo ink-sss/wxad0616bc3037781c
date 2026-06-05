@@ -728,7 +728,7 @@ function handleProductMessage(ctx, data) {
   if (payload && typeof payload === "object" && Object.keys(payload).length > 0) {
     const curId = getProductId(payload);
     const current = { ...ctx.mapProductItem(payload), isCurrent: curId > 0 };
-    ctx.currentProduct.value = current;
+    setCurrentProductStable(ctx, current);
     ctx.showProduct.value = true;
     if (curId > 0) upsertProductListItem(ctx, payload, { isCurrent: true, clearCurrent: true });
     ctx.explainingProductId.value = curId;
@@ -736,7 +736,7 @@ function handleProductMessage(ctx, data) {
     return;
   }
   ctx.showProduct.value = false;
-  ctx.productList.value = ctx.productList.value.map((p) => ({ ...p, isCurrent: false }));
+  patchProductCurrentFlags(ctx, () => false);
   ctx.explainingProductId.value = 0;
 }
 
@@ -753,7 +753,7 @@ function handleExplainingMulti(ctx, data) {
       upsertProductListItem(ctx, item, { isCurrent: true });
     }
   });
-  ctx.productList.value = ctx.productList.value.map((p) => ({ ...p, isCurrent: idSet.has(getProductId(p)) }));
+  patchProductCurrentFlags(ctx, (p) => idSet.has(getProductId(p)));
   if (ids.length <= 0) {
     ctx.showProduct.value = false;
     ctx.explainingProductId.value = 0;
@@ -762,10 +762,56 @@ function handleExplainingMulti(ctx, data) {
   let first = ctx.productList.value.find((p) => idSet.has(getProductId(p)));
   if (!first && wsList.length > 0) first = { ...ctx.mapProductItem(wsList[0]), isCurrent: true };
   if (!first) return;
-  ctx.currentProduct.value = first;
+  setCurrentProductStable(ctx, first);
   ctx.showProduct.value = true;
   ctx.explainingProductId.value = first.id;
   ctx.syncProductCardIndex(first.id);
+}
+
+function patchObjectStable(target = {}, next = {}) {
+  if (!target || typeof target !== "object") return false;
+  let changed = false;
+  Object.keys(next).forEach((key) => {
+    if (target[key] === next[key]) return;
+    target[key] = next[key];
+    changed = true;
+  });
+  return changed;
+}
+
+function setCurrentProductStable(ctx, next = {}) {
+  const nextId = getProductId(next);
+  if (nextId > 0 && sameProductId(ctx.currentProduct.value, nextId)) {
+    patchObjectStable(ctx.currentProduct.value, next);
+    return ctx.currentProduct.value;
+  }
+  ctx.currentProduct.value = next;
+  return ctx.currentProduct.value;
+}
+
+function patchProductCurrentFlags(ctx, isCurrentForItem) {
+  ctx.productList.value.forEach((item) => {
+    patchObjectStable(item, {
+      isCurrent: Boolean(isCurrentForItem(item)),
+    });
+  });
+}
+
+function setProductListStable(ctx, nextList = []) {
+  const currentList = ctx.productList.value;
+  const sameOrder =
+    currentList.length === nextList.length &&
+    currentList.every((item, index) => sameProductId(item, getProductId(nextList[index])));
+
+  if (!sameOrder) {
+    ctx.productList.value = nextList;
+    return ctx.productList.value;
+  }
+
+  currentList.forEach((item, index) => {
+    patchObjectStable(item, nextList[index]);
+  });
+  return currentList;
 }
 
 function upsertProductListItem(ctx, rawItem = {}, options = {}) {
@@ -773,15 +819,14 @@ function upsertProductListItem(ctx, rawItem = {}, options = {}) {
     const pid = getProductId(rawItem);
     if (!pid) return null;
     let matched = null;
-    ctx.productList.value = ctx.productList.value.map((item) => {
+    ctx.productList.value.forEach((item) => {
       if (!sameProductId(item, pid)) {
-        return options.clearCurrent ? { ...item, isCurrent: false } : item;
+        if (options.clearCurrent) patchObjectStable(item, { isCurrent: false });
+        return;
       }
-      matched = {
-        ...item,
-        ...(options.isCurrent !== undefined ? { isCurrent: options.isCurrent } : {}),
-      };
-      return matched;
+      const patch = options.isCurrent !== undefined ? { isCurrent: options.isCurrent } : {};
+      patchObjectStable(item, patch);
+      matched = item;
     });
     return matched;
   }
@@ -793,22 +838,20 @@ function upsertProductListItem(ctx, rawItem = {}, options = {}) {
     ...(options.isCurrent !== undefined ? { isCurrent: options.isCurrent } : {}),
   };
   let found = false;
-  ctx.productList.value = ctx.productList.value.map((item) => {
+  ctx.productList.value.forEach((item) => {
     if (!sameProductId(item, pid)) {
-      return options.clearCurrent ? { ...item, isCurrent: false } : item;
+      if (options.clearCurrent) patchObjectStable(item, { isCurrent: false });
+      return;
     }
     found = true;
-    return {
-      ...item,
+    patchObjectStable(item, {
       ...nextItem,
       isCurrent: options.isCurrent !== undefined ? options.isCurrent : item.isCurrent,
-    };
+    });
   });
   if (!found) {
-    const appended = options.clearCurrent
-      ? ctx.productList.value.map((item) => ({ ...item, isCurrent: false }))
-      : ctx.productList.value;
-    ctx.productList.value = [...appended, nextItem];
+    if (options.clearCurrent) patchProductCurrentFlags(ctx, () => false);
+    ctx.productList.value.push(nextItem);
   }
   if (ctx.productTotal) {
     ctx.productTotal.value = Math.max(Number(ctx.productTotal.value || 0), ctx.productList.value.length);
@@ -820,22 +863,21 @@ function handleSoldOutUpdate(ctx, data, pid) {
   const payload = getDataPayload(data);
   const raw = payload.isSoldOut ?? payload.extra?.isSoldOut;
   const isSoldOut = raw === true || raw === 1;
-  ctx.productList.value = ctx.productList.value.map((p) =>
-    p.id === pid ? { ...p, isSoldOut, soldOut: isSoldOut || Number(p.stock || 0) <= 0 } : p,
-  );
+  ctx.productList.value.forEach((p) => {
+    if (p.id !== pid) return;
+    patchObjectStable(p, { isSoldOut, soldOut: isSoldOut || Number(p.stock || 0) <= 0 });
+  });
   if (ctx.currentProduct.value?.id === pid) {
-    ctx.currentProduct.value = {
-      ...ctx.currentProduct.value,
+    patchObjectStable(ctx.currentProduct.value, {
       isSoldOut,
       soldOut: isSoldOut || Number(ctx.currentProduct.value.stock || 0) <= 0,
-    };
+    });
   }
   if (ctx.buyProduct?.value?.id === pid) {
-    ctx.buyProduct.value = {
-      ...ctx.buyProduct.value,
+    patchObjectStable(ctx.buyProduct.value, {
       isSoldOut,
       soldOut: isSoldOut || Number(ctx.buyProduct.value.stock || 0) <= 0,
-    };
+    });
   }
   ctx.syncProductCardIndex();
   // [2026-05-23] 场控手动"标记售罄"是后台操作，H5端不需弹 toast（避免干扰观众）
@@ -865,7 +907,7 @@ function handleProductStatusUpdate(ctx, data) {
       const upserted = upsertProductListItem(ctx, payload, { isCurrent: true, clearCurrent: true });
       const explainingProduct = upserted || ctx.productList.value.find((p) => sameProductId(p, pid));
       if (explainingProduct) {
-        ctx.currentProduct.value = { ...explainingProduct, isCurrent: true };
+        setCurrentProductStable(ctx, { ...explainingProduct, isCurrent: true });
         ctx.showProduct.value = true;
         ctx.syncProductCardIndex(pid);
       }
@@ -877,7 +919,9 @@ function handleProductStatusUpdate(ctx, data) {
     }
   } else if (action === "top" && pid) {
     const isTop = payload.isTop || 0;
-    ctx.productList.value = ctx.productList.value.map((p) => (sameProductId(p, pid) ? { ...p, isTop } : p));
+    ctx.productList.value.forEach((p) => {
+      if (sameProductId(p, pid)) patchObjectStable(p, { isTop });
+    });
   } else if (action === "sold_out" && pid) {
     handleSoldOutUpdate(ctx, data, pid);
   }
@@ -897,7 +941,7 @@ function syncCurrentProductFromList(ctx, list) {
     ctx.syncProductCardIndex();
     return;
   }
-  ctx.currentProduct.value = current;
+  setCurrentProductStable(ctx, current);
   ctx.showProduct.value = true;
   ctx.explainingProductId.value = current.id;
   ctx.syncProductCardIndex(current.id);
@@ -937,7 +981,7 @@ function handleProductList(ctx, data) {
   }
   const list = rawList.map((item) => preserveKnownManualSoldOut(ctx, item, ctx.mapProductItem(item)));
   const useReplayFilter = ctx.isReplay.value && Number(ctx.replayCurrentVideoId.value || 0) > 0;
-  ctx.productList.value = useReplayFilter ? markReplayProductCurrent(ctx, list) : list;
+  setProductListStable(ctx, useReplayFilter ? markReplayProductCurrent(ctx, list) : list);
   ctx.productTotal.value = list.length;
   ctx.productFinished.value = true;
   syncCurrentProductFromList(ctx, ctx.productList.value);
@@ -949,15 +993,14 @@ function handleProductStock(ctx, data) {
   const stock = payload.stock ?? 0;
   const stockSoldOut = !!payload.soldOut;
   if (!pid) return;
-  ctx.productList.value = ctx.productList.value.map((p) =>
-    sameProductId(p, pid) ? { ...p, stock, soldOut: !!p.isSoldOut || stockSoldOut } : p,
-  );
+  ctx.productList.value.forEach((p) => {
+    if (sameProductId(p, pid)) patchObjectStable(p, { stock, soldOut: !!p.isSoldOut || stockSoldOut });
+  });
   if (sameProductId(ctx.currentProduct.value, pid)) {
-    ctx.currentProduct.value = {
-      ...ctx.currentProduct.value,
+    patchObjectStable(ctx.currentProduct.value, {
       stock,
       soldOut: !!ctx.currentProduct.value.isSoldOut || stockSoldOut,
-    };
+    });
   }
   if (payload.sales !== undefined) {
     ctx.setProductSales?.(pid, payload.sales);

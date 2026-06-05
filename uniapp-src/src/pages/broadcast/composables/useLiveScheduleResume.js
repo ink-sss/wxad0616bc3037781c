@@ -98,13 +98,11 @@ export function useLiveScheduleResume(ctx) {
       pushStatus.value = 1;
     }
 
-    // WebSocket
+    // 消息通道：直播间 IM 不依赖后端 WS URL，统一交给 useMessageChannel 判断。
     const wsUrl = buildWsUrl(liveId.value);
-    if (wsUrl) {
-      initWebSocket(wsUrl).catch((e) =>
-        console.warn("[Live][schedule] initWebSocket fail:", e),
-      );
-    }
+    initWebSocket(wsUrl).catch((e) =>
+      console.warn("[Live][schedule] initWebSocket fail:", e),
+    );
     // 历史评论(非录播 + showHistory 开)
     if (!isReplay.value && roomSetting.value.showHistory === 1) {
       try { loadCommentHistory(); } catch (e) {}

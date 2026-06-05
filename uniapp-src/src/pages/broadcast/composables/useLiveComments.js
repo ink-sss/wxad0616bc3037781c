@@ -30,7 +30,6 @@ export function useLiveComments({
   defaultAvatar,
   getCommentHistory,
   getLiveSocket,
-  sendLiveComment,
   userStore,
   roomCode,
   liveTenantId,
@@ -355,6 +354,11 @@ export function useLiveComments({
     if (_sendingMessage) {
       return false;
     }
+    const liveSocket = getLiveSocket();
+    if (!liveSocket || typeof liveSocket.sendChat !== "function") {
+      uni.showToast({ title: "消息发送失败，请稍后重试", icon: "none" });
+      return false;
+    }
     const myNick = userStore.userInfo?.nickname || "我";
     const myAvatar = userStore.userInfo?.avatar || defaultAvatar;
     const tempId = `temp_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
@@ -376,92 +380,18 @@ export function useLiveComments({
 
     // WS 重连窗口期 _isOpen 短暂为 false → _send 立即返回 false。
     // 这里加一次最长 1.2s 的指数退避重试，避免重连瞬间用户感知到"发送失败"。
-    function buildCommentContext() {
-      const customerId = Number(myUserId?.value || userStore.userInfo?.customerId || userStore.userInfo?.customer_id || userStore.userInfo?.id || userStore.userInfo?.userId || userStore.userInfo?.user_id || 0);
-      const termId = typeof getEffectiveTermId === "function" ? Number(getEffectiveTermId() || 0) : 0;
-      return {
-        roomCode: roomCode?.value || "",
-        room_code: roomCode?.value || "",
-        tenantId: liveTenantId?.value || "",
-        tenant_id: liveTenantId?.value || "",
-        shareCode: shareCode?.value || "",
-        share_code: shareCode?.value || "",
-        bindId: liveBindId?.value || "",
-        bind_id: liveBindId?.value || "",
-        liveType: isReplay.value ? "replay" : "live",
-        live_type: isReplay.value ? "replay" : "live",
-        termId,
-        term_id: termId,
-        customerId,
-        customer_id: customerId,
-        userId: customerId,
-        user_id: customerId,
-        nickname: myNick,
-        nick: myNick,
-        userName: myNick,
-        user_name: myNick,
-        customerName: myNick,
-        customer_name: myNick,
-        avatar: myAvatar,
-        headImg: myAvatar,
-        head_img: myAvatar,
-        avatarUrl: myAvatar,
-        avatar_url: myAvatar,
-      };
-    }
-
     async function trySend() {
       const sock = getLiveSocket();
       if (!sock || typeof sock.sendChat !== "function") return false;
-      const context = buildCommentContext();
       if (isReplay.value && replayCurrentVideoId.value) {
         const timelineSeconds = Number(replayLastTime.value || 0);
         const replayVideoId = Number(replayCurrentVideoId.value);
         return sock.sendChat(text, {
-          ...context,
           timelineSeconds,
-          timeline_seconds: timelineSeconds,
           replayVideoId,
-          replay_video_id: replayVideoId,
-          videoId: replayVideoId,
-          video_id: replayVideoId,
         }, { msgId: clientMsgId });
       }
-      return sock.sendChat(text, context, { msgId: clientMsgId });
-    }
-
-    async function trySendByHttp() {
-      if (typeof sendLiveComment !== "function") return false;
-      const data = {
-        ...buildCommentContext(),
-        msgId: clientMsgId,
-        msg_id: clientMsgId,
-        clientMsgId,
-        client_msg_id: clientMsgId,
-      };
-      if (isReplay.value && replayCurrentVideoId.value) {
-        const timelineSeconds = Number(replayLastTime.value || 0);
-        const replayVideoId = Number(replayCurrentVideoId.value);
-        data.timelineSeconds = timelineSeconds;
-        data.timeline_seconds = timelineSeconds;
-        data.replayVideoId = replayVideoId;
-        data.replay_video_id = replayVideoId;
-        data.videoId = replayVideoId;
-        data.video_id = replayVideoId;
-      }
-      const response = await sendLiveComment(liveId.value, text, data);
-      const payload = getCommentData(response || {});
-      upgradeOptimisticMessage({
-        type: "chat",
-        nick: payload.nickname || payload.nick || myNick,
-        content: payload.content || payload.comment || text,
-        avatar: payload.avatar || myAvatar,
-        commentId: getCommentId(payload),
-        msgId: normalizeMessageId(payload) || clientMsgId,
-        seq: payload.seq,
-        isTop: Number(payload.isTop || 0),
-      }, { allowSinglePendingFallback: true });
-      return true;
+      return sock.sendChat(text, undefined, { msgId: clientMsgId });
     }
 
     let sent = false;
@@ -480,13 +410,6 @@ export function useLiveComments({
           }
         } catch (err) {
           console.error("[Live] send chat fail:", err);
-        }
-      }
-      if (!sent) {
-        try {
-          sent = await trySendByHttp();
-        } catch (err) {
-          console.error("[Live] send chat HTTP fallback fail:", err);
         }
       }
     } finally {
@@ -577,27 +500,11 @@ export function useLiveComments({
     }
     // 快照 API 调用前的播放位置（await 期间 replayLastTime 会被 onVideoTimeUpdate 推进）
     const seekTime = Number(replayLastTime.value || 0);
-    const customerId = Number(myUserId?.value || userStore.userInfo?.customerId || userStore.userInfo?.customer_id || userStore.userInfo?.id || userStore.userInfo?.userId || userStore.userInfo?.user_id || 0);
-    const termId = typeof getEffectiveTermId === "function" ? Number(getEffectiveTermId() || 0) : 0;
     try {
       const list = await getCommentHistory(
         liveId.value,
         shouldUseReplayTimeline ? 200 : 30,
         replayCurrentVideoId.value,
-        {
-          roomCode: roomCode?.value || "",
-          room_code: roomCode?.value || "",
-          termId,
-          term_id: termId,
-          customerId,
-          customer_id: customerId,
-          userId: customerId,
-          user_id: customerId,
-          replayVideoId: Number(replayCurrentVideoId.value || 0),
-          replay_video_id: Number(replayCurrentVideoId.value || 0),
-          videoId: Number(replayCurrentVideoId.value || 0),
-          video_id: Number(replayCurrentVideoId.value || 0),
-        },
       );
       if (shouldUseReplayTimeline) {
         replayCommentTimeline.value =

@@ -16,8 +16,8 @@ test("broadcast entry skips mini-program entry overlay and defaults to sound pla
   const displayState = await readSource("src/pages/broadcast/composables/useLiveDisplayState.js");
 
   assert.match(entry, /const\s+isMuted\s*=\s*ref\(false\);/);
-  assert.match(entry, /showEntryOverlay:\s*showEntryOverlay\.value/);
-  assert.match(entry, /shouldShowEntryOverlay:\s*shouldShowEntryOverlay\.value/);
+  assert.match(entry, /showEntryOverlay,\s*\n\s*shouldShowEntryOverlay,/);
+  assert.match(entry, /liveOverlayTitle,\s*shouldShowEntryOverlay,/);
   assert.doesNotMatch(initializer, /isMuted\.value\s*=\s*true/);
   assert.match(initializer, /isMuted\.value\s*=\s*false/);
   assert.match(initializer, /import\s+\{\s*isMpWeixinRuntime\s*\}/);
@@ -76,17 +76,6 @@ test("player wrappers force sound through native playback contexts", async () =>
   assert.doesNotMatch(videoPlay, /context\?\.mute\?\.\(/);
   assert.match(videoPlay, /setVolume\?\.\(1\)/);
   assert.match(videoPlay, /unmute\?\.\(\)/);
-});
-
-test("playback debug report exposes sound policy and restore path", async () => {
-  const debug = await readSource("src/pages/broadcast/composables/useLivePlaybackDebug.js");
-
-  assert.match(debug, /soundPolicy:\s*readSoundPolicy/);
-  assert.match(debug, /requestedMuted:\s*false/);
-  assert.match(debug, /soundMode:\s*"speaker"/);
-  assert.match(debug, /entryOverlayVisible:\s*!!snapshot\.shouldShowEntryOverlay/);
-  assert.match(debug, /nativeRestoreAttempted:\s*!!restoreEvent/);
-  assert.match(debug, /mini_player_sound_restore/);
 });
 
 test("mini-program sound playback applies native unmute and play commands", async () => {

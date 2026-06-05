@@ -81,30 +81,14 @@ export function useLiveEntryActions(ctx) {
     let sentByChannel = false;
     if (liveSocket?.sendLike) {
       try {
-        sentByChannel = await liveSocket.sendLike(count, {
-          roomCode: roomCode?.value || "",
-          tenantId: liveTenantId?.value || 0,
-          shareCode: shareCode?.value || "",
-          bindId: liveBindId?.value || "",
-          liveType: isReplay?.value ? "replay" : "live",
-          termId: getEffectiveTermId?.() || 0,
-          customerId: myUserId?.value || 0,
-        }) === true;
+        sentByChannel = await liveSocket.sendLike(count) === true;
       } catch (err) {
         console.warn("[Live] socket sendLike error:", err);
       }
     }
     if (sentByChannel) return true;
     try {
-      await sendLike(liveId.value, count, {
-        roomCode: roomCode?.value || "",
-        tenantId: liveTenantId?.value || 0,
-        shareCode: shareCode?.value || "",
-        bindId: liveBindId?.value || "",
-        liveType: isReplay?.value ? "replay" : "live",
-        termId: getEffectiveTermId?.() || 0,
-        customerId: myUserId?.value || 0,
-      });
+      await sendLike(liveId.value, count);
     } catch (err) {
       console.error("[Live] sendLike fail:", err);
     }

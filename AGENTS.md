@@ -297,15 +297,6 @@ If you're using Codex or another agent-capable tool, additional project-scoped h
 - `.agents/skills/` — reusable Trellis skills
 - `.codex/agents/` — optional custom subagents
 
-## Subagents
-
-- ALWAYS wait for all subagents to complete before yielding.
-- If a subagent remains idle or unresponsive for a long time, automatically destroy the idle subagent before yielding or continuing with other work, then summarize what was terminated and why.
-- Spawn subagents automatically when:
-  - Parallelizable work (e.g., install + verify, npm test + typecheck, multiple tasks from plan)
-  - Long-running or blocking tasks where a worker can run independently.
-  - Isolation for risky changes or checks
-
 Managed by Trellis. Edits outside this block are preserved; edits inside may be overwritten by a future `trellis update`.
 
 <!-- TRELLIS:END -->

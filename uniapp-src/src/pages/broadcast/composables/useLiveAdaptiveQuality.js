@@ -61,7 +61,6 @@ export function useLiveAdaptiveQuality(options = {}) {
   refreshNetworkHint();
   const streams = ref([]);
   const currentQuality = ref("");
-  const manualLocked = ref(false);
   const switching = ref(false);
   const lastReason = ref("");
   const lastSample = ref(null);
@@ -74,30 +73,6 @@ export function useLiveAdaptiveQuality(options = {}) {
   const failedAtByQuality = new Map();
 
   const currentStream = computed(() => selectStreamByQuality(streams.value, currentQuality.value));
-  const controls = computed(() => [
-    { quality: "auto", label: "自动", active: !manualLocked.value, disabled: switching.value },
-    ...streams.value.map((stream) => ({
-      quality: stream.quality,
-      label: stream.label,
-      active: currentQuality.value === stream.quality,
-      disabled: switching.value,
-      bitrateKbps: stream.bitrateKbps || Math.round(estimatedBitrateByQuality.value[stream.quality] || 0),
-    })),
-  ]);
-  const debugState = computed(() => ({
-    currentQuality: currentQuality.value || "",
-    currentLabel: currentStream.value?.label || "",
-    mode: manualLocked.value ? "manual" : "auto",
-    switching: switching.value,
-    lastReason: lastReason.value,
-    sample: lastSample.value,
-    streams: streams.value.map((stream) => ({
-      quality: stream.quality,
-      label: stream.label,
-      bitrateKbps: stream.bitrateKbps || Math.round(estimatedBitrateByQuality.value[stream.quality] || 0),
-      isDefault: stream.isDefault,
-    })),
-  }));
 
   function getPreferredQuality() {
     return currentQuality.value || selectDefaultStream(streams.value)?.quality || "";
@@ -157,7 +132,7 @@ export function useLiveAdaptiveQuality(options = {}) {
     return streams.value[index - 1] || null;
   }
 
-  async function switchToStream(stream, reason, manual = false) {
+  async function switchToStream(stream, reason) {
     if (!stream || switching.value) return false;
     if (failedAtByQuality.has(stream.quality) && nowMs() - failedAtByQuality.get(stream.quality) < SWITCH_FAIL_COOLDOWN_MS) {
       return false;
@@ -172,12 +147,10 @@ export function useLiveAdaptiveQuality(options = {}) {
         lastSwitchTs = nowMs();
         poorScore = 0;
         stableSince = 0;
-        if (manual) manualLocked.value = true;
         options.recordPlaybackDebugEvent?.("live_quality_switch_success", {
           quality: stream.quality,
           label: stream.label,
           reason,
-          manual,
         });
         return true;
       }
@@ -226,7 +199,7 @@ export function useLiveAdaptiveQuality(options = {}) {
     if (!streams.value.length || !currentQuality.value) return;
     rememberSampleBitrate(sample);
     lastSample.value = summarizeSample(sample);
-    if (manualLocked.value || switching.value) return;
+    if (switching.value) return;
     const current = currentStream.value;
     const targetBitrate = getTargetBitrate(current);
     const lower = getLowerStream();
@@ -253,28 +226,13 @@ export function useLiveAdaptiveQuality(options = {}) {
     }
   }
 
-  function handleDebugQualityClick(quality) {
-    if (quality === "auto") {
-      manualLocked.value = false;
-      lastReason.value = "debug_auto_enabled";
-      options.recordPlaybackDebugEvent?.("live_quality_auto_enabled", {});
-      return;
-    }
-    const stream = selectStreamByQuality(streams.value, quality);
-    switchToStream(stream, "debug_manual_switch", true);
-  }
-
   return {
     streams,
     currentQuality,
     currentStream,
-    controls,
-    debugState,
-    manualLocked,
     setPullStreams,
     updateSignedStreams,
     getPreferredQuality,
     handleQualitySample,
-    handleDebugQualityClick,
   };
 }

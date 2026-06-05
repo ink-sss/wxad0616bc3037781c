@@ -3,6 +3,8 @@ import { getRuntimeConfig } from '../utils/runtime-config.js'
 
 export const MINIPROGRAM_LOGIN_APP_ID = 'wx3bf933f8a2018d8d'
 const OPEN_ID_KEYS = ['mini_program_open_id', 'open_id', 'openId', 'openid']
+const IM_USER_ID_KEYS = ['im_user_id', 'imUserId']
+const IM_USER_SIG_KEYS = ['im_user_sig', 'imUserSig']
 
 export function getMiniProgramAppId() {
   const runtimeConfig = getRuntimeConfig()
@@ -62,6 +64,19 @@ export function persistMiniProgramOpenId(openId) {
 export function persistMiniProgramLoginSession(data = {}) {
   const openId = data.open_id || data.openId || data.openid || ''
   persistMiniProgramOpenId(openId)
+  const imUserId = data.im_user_id || data.imUserId || ''
+  const imUserSig = data.im_user_sig || data.imUserSig || ''
+  try {
+    if (imUserId) IM_USER_ID_KEYS.forEach((key) => uni.setStorageSync(key, imUserId))
+    if (imUserSig) IM_USER_SIG_KEYS.forEach((key) => uni.setStorageSync(key, imUserSig))
+  } catch (error) {}
+  try {
+    const app = getApp()
+    if (app?.globalData) {
+      if (imUserId) app.globalData.imUserId = imUserId
+      if (imUserSig) app.globalData.imUserSig = imUserSig
+    }
+  } catch (error) {}
   return data
 }
 

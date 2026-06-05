@@ -181,6 +181,11 @@ function spacerStyle(height) {
   height: 0;
   overflow: hidden;
 }
+.product-list--popup {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
 
 .product-scroll {
   height: 100%;

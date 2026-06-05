@@ -28,7 +28,7 @@ export function useLiveVideoRuntime(ctx) {
     if (isReplay?.value) return true;
     if (mediaSourceComponent?.value === "video") return true;
     if (mediaSourceComponent?.value === "live-player") return false;
-    return false;
+    return true;
   }
 
   function getKnownMediaComponent() {

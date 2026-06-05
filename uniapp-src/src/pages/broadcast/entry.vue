@@ -14,14 +14,11 @@
     :marketing-runtime="marketingRuntime"
     @copy-uid="copyAccessDeniedUid"
   />
-  <LivePlaybackDebugFloat
-    :show="showPlaybackDebugFloat"
-    :summary="playbackDebugSummary"
-    :copy-status="playbackDebugCopyStatus"
-    :quality-controls="liveQualityControls"
-    :quality-text="liveQualityDebugText"
-    @copy="copyPlaybackDebugReport"
-    @quality="handleQualityDebugClick"
+  <LiveImDebugFloat
+    :show="imDebugVisible"
+    :summary="imDebugSummary"
+    :copy-status="imDebugCopyStatus"
+    @copy="copyImDebugInfo"
   />
 </template>
 <script setup>
@@ -29,8 +26,8 @@ import { computed, nextTick, onBeforeUnmount, ref, watch } from "vue";
 import { onShareAppMessage, onShareTimeline } from "@dcloudio/uni-app";
 defineOptions({ inheritAttrs: false });
 import LiveBroadcastStageHost from "./components/LiveBroadcastStageHost.vue";
-import LivePlaybackDebugFloat from "./components/LivePlaybackDebugFloat.vue";
-import { enterLiveRoom, getCommentHistory, getCurrentProduct, getLiveDetail, getLiveProducts, getLiveStatus, leaveLiveRoom, liveHeartbeat, sendBuyReminder, sendLike, sendLiveComment, checkSigned, reportViewProgress } from "@/api/live.js";
+import LiveImDebugFloat from "./components/LiveImDebugFloat.vue";
+import { enterLiveRoom, getCommentHistory, getCurrentProduct, getLiveDetail, getLiveProducts, getLiveStatus, leaveLiveRoom, liveHeartbeat, sendBuyReminder, sendLike, checkSigned, reportViewProgress } from "@/api/live.js";
 import { confirmOrder, createOrder, getOrderDetail, getOrderUnreadStats } from "@/api/order";
 import { getUsableCoupons } from "@/api/coupon";
 import { getCenter } from "@/api/user";
@@ -49,7 +46,7 @@ import { useUserStore } from "@/stores/user";
 import { pinia } from "@/stores";
 import { useDomainStore } from "@/stores/domain";
 import { getCustomNavBarHeightStyle } from "@/utils/navigation-bar";
-import { getApiBaseUrl, isLocalDevelopmentHost } from "@/utils/url-helpers";
+import { getApiBaseUrl } from "@/utils/url-helpers";
 import { buildBroadcastReturnPath } from "./utils/live-route-context.js";
 import { useLiveChatInput } from "./composables/useLiveChatInput.js";
 import { useLiveComments } from "./composables/useLiveComments.js";
@@ -68,9 +65,7 @@ import { useLiveMuteState } from "./composables/useLiveMuteState.js";
 import { useLiveMarketingRuntime } from "./composables/useLiveMarketingRuntime.js";
 import { useLiveHeartbeatStatus } from "./composables/useLiveHeartbeatStatus.js";
 import { useLivePageLeave } from "./composables/useLivePageLeave.js";
-import { useLivePlaybackDebug } from "./composables/useLivePlaybackDebug.js";
 import { useLivePlaybackWiring } from "./composables/useLivePlaybackWiring.js";
-import { isWeChatDevtoolsRuntime } from "./utils/live-source.js";
 import { useLiveProgressReport } from "./composables/useLiveProgressReport.js";
 import { useLiveScheduleResume } from "./composables/useLiveScheduleResume.js";
 import { useLiveScreenWakeLock } from "./composables/useLiveScreenWakeLock.js";
@@ -82,6 +77,7 @@ import { useLiveVideoRuntime } from "./composables/useLiveVideoRuntime.js";
 import { useMessageChannel } from "./composables/useMessageChannel.js";
 import { createLiveWsMessageHandler } from "./composables/useLiveWsMessageHandler.js";
 import { defaultAvatar, detectIOSH5, detectWeChatIOSH5 } from "./utils/entry-format.js";
+import { shouldPreferMiniProgramHlsPlayback } from "./utils/live-source.js";
 const isWeChatIOSH5 = detectWeChatIOSH5();
 const isIOSH5 = detectIOSH5();
 const stageHostRef = ref(null);
@@ -143,6 +139,8 @@ const entryInitRuntime = {
   liveInitToken: "",
   pendingSubscribeBack: false,
 };
+const liveDebugOptions = ref({});
+const imDebugCopyStatus = ref("");
 let isScheduleWarmupMode = false;
 const roomSetting = ref({
   enableChat: 1,
@@ -274,7 +272,6 @@ const playbackErrorVisible = ref(false);
 const playbackErrorText = ref("");
 const mediaSourceComponent = ref("");
 const mediaSourceType = ref("");
-const playbackDebugRouteOptions = ref({});
 let switchToFirstAvailableTab = () => {};
 let videoPlayer = null;
 let weixinBridgeReadyHandler = null;
@@ -325,6 +322,28 @@ function setLandscapeMiniActive(value) {
 function markStatusPushReceived() {
   lastStatusPushAt.value = Date.now();
 }
+function setLiveDebugOptions(options = {}) {
+  liveDebugOptions.value = { ...(options || {}) };
+}
+function safeStringify(value) {
+  try {
+    return JSON.stringify(value, null, 2);
+  } catch (_) {
+    return String(value || "");
+  }
+}
+function getCurrentRouteInfo() {
+  try {
+    const pages = typeof getCurrentPages === "function" ? getCurrentPages() : [];
+    const page = pages[pages.length - 1];
+    return {
+      route: page?.route || "",
+      options: page?.options || {},
+    };
+  } catch (_) {
+    return { route: "", options: {} };
+  }
+}
 let scheduleLiveSoundIntentRestore = () => {};
 let hasPendingUnmute = () => false;
 let markStoredSoundIntentRestore = () => {};
@@ -334,7 +353,6 @@ let stopLiveSoundIntentRestore = () => {};
 let syncScreenWakeLock = () => {};
 let releaseScreenWakeLock = () => {};
 let stopScreenWakeLock = () => {};
-let getLiveQualityDebugSnapshot = () => null;
 function syncStageVideoElement() {
   nextTick(() => {
     if (!displayVideoUrl.value) return;
@@ -414,20 +432,26 @@ watch([displayVideoUrl, mode, isReplay], ([url, nextMode, replay]) => {
     showReplayFirstVideoLoading.value = false;
   }
 });
+watch([displayVideoUrl, videoRenderKey, isReplay], ([url, renderKey, replay]) => {
+  if (!url || replay || !shouldPreferMiniProgramHlsPlayback()) return;
+  nextTick(() => {
+    if (!displayVideoUrl.value || videoRenderKey.value !== renderKey || isReplay.value) return;
+    resumeVideoPlayback(80, { force: true });
+  });
+}, { flush: "post" });
 const {
   currentProduct, productTotal, productPage, productPageSize, productLoading, productFinished, productList, explainingProductId,
   productCardActiveIndex, productCardItems, mapProductItem, syncProductCardIndex, onProductCardChange, incrementProductHotOrder, setProductSales, loadProductList,
   loadCurrentProduct,
 	} = useLiveProducts({
 	  liveId, showProduct, isReplay, replayCurrentVideoId, getLiveProducts, getCurrentProduct,
-	  roomCode, liveTenantId, shareCode, liveBindId, myUserId, getEffectiveTermId,
 	});
 applyProductHotOrder = incrementProductHotOrder;
 const liveComments = useLiveComments({
   videoUrl, isPlaying, isReplay, roomGroupType, roomSetting, pushStatus, liveStatusText, hasReplay, liveId, replayCurrentVideoId,
   replayLastTime, chatDisabled, inputText, inputFocused, keyboardHeight,
   blurInput, defaultAvatar, getCommentHistory, getLiveSocket: () => getLiveSocket(),
-  userStore, sendLiveComment, roomCode, liveTenantId, shareCode, liveBindId, getEffectiveTermId, myUserId,
+  userStore, roomCode, liveTenantId, shareCode, liveBindId, getEffectiveTermId, myUserId,
 });
 const {
   scrollToId, commentScrollWithAnimation, messages, visibleMessages, pinnedMessage, refreshPinnedMessage, replayCommentTimeline, replayCommentCursor, shouldShowComments,
@@ -468,196 +492,18 @@ const videoRuntime = useLiveVideoRuntime({
 getLiveVideoElement = videoRuntime.getLiveVideoElement;
 applyInlineVideoAttrs = videoRuntime.applyInlineVideoAttrs;
 resumeVideoPlayback = videoRuntime.resumeVideoPlayback;
-const playbackDebug = useLivePlaybackDebug({
-  enabled: isPlaybackDebugFloatEnabled,
-  getSnapshot: () => ({
-    roomCode: roomCode.value,
-    liveId: liveId.value,
-    roomGroupType: roomGroupType.value,
-    roomBroadcastMethod: roomBroadcastMethod.value,
-    pushStatus: pushStatus.value,
-    liveStatusText: liveStatusText.value,
-    isReplay: isReplay.value,
-    isPlaying: isPlaying.value,
-    isMuted: isMuted.value,
-    showEntryOverlay: showEntryOverlay.value,
-    shouldShowEntryOverlay: shouldShowEntryOverlay.value,
-    videoFrameReady: videoFrameReady.value,
-    pullUrl: pullUrl.value,
-    videoUrl: videoUrl.value,
-    displayVideoUrl: displayVideoUrl.value,
-    mediaSourceComponent: mediaSourceComponent.value,
-    mediaSourceType: mediaSourceType.value,
-    playbackErrorVisible: playbackErrorVisible.value,
-    playbackErrorText: playbackErrorText.value,
-    routeOptions: playbackDebugRouteOptions.value,
-    mode: mode.value,
-    isIOSH5,
-    isWeChatIOSH5,
-    videoDebugInfo: videoDebugInfo.value,
-    liveQuality: getLiveQualityDebugSnapshot(),
-    rtcConfig: rtcConfig.value
-      ? {
-          appId: rtcConfig.value.appId || "",
-          channel: rtcConfig.value.channel || "",
-          uid: rtcConfig.value.uid || "",
-          tokenLength: String(rtcConfig.value.token || "").length,
-        }
-      : null,
-  }),
-  getVideoElement: () => getLiveVideoElement(),
-  getVideoPlayer: () => videoPlayer,
-});
-const {
-  playbackDebugReport,
-  playbackDebugSummary,
-  recordPlaybackDebugEvent,
-  probePlaybackUrl,
-} = playbackDebug;
-const playbackDebugCopyStatus = ref("");
-const showPlaybackDebugFloat = computed(isPlaybackDebugFloatEnabled);
+const recordPlaybackDebugEvent = () => {};
+const probePlaybackUrl = () => {};
 const liveAdaptiveQuality = useLiveAdaptiveQuality({
   switchStream: (stream, reason) => switchLiveStreamQuality(stream, reason),
   recordPlaybackDebugEvent,
 });
 const {
-  controls: liveQualityControls,
-  debugState: liveQualityDebugState,
   setPullStreams,
   updateSignedStreams,
   getPreferredQuality: getPreferredLiveQuality,
   handleQualitySample,
-  handleDebugQualityClick,
 } = liveAdaptiveQuality;
-getLiveQualityDebugSnapshot = () => liveQualityDebugState.value;
-const liveQualityDebugText = computed(() => {
-  const state = liveQualityDebugState.value || {};
-  const sample = state.sample || {};
-  const label = state.currentLabel || state.currentQuality || "未选择";
-  const modeText = state.mode === "manual" ? "手动" : "自动";
-  const throughput = Number(sample.throughputKbps || 0) > 0 ? `${sample.throughputKbps}kbps` : "--";
-  const bufferSeconds = Number(sample.bufferSeconds || 0);
-  const buffer = bufferSeconds > 0 ? `${bufferSeconds.toFixed(1)}s` : "--";
-  const stallRatio = Math.round(Number(sample.rebufferRatio || 0) * 100);
-  return `${modeText}/${label} 速率:${throughput} 缓冲:${buffer} 卡顿:${stallRatio}%`;
-});
-
-function handleQualityDebugClick(quality) {
-  handleDebugQualityClick(quality);
-}
-
-function isTruthyDebugFlag(value) {
-  return value === "1" || value === "true" || value === "yes";
-}
-
-function isFalsyDebugFlag(value) {
-  return value === "0" || value === "false" || value === "no";
-}
-
-function readDebugFlag(params) {
-  if (!params) return "";
-  return (
-    params.get("live_debug") ||
-    params.get("playback_debug") ||
-    params.get("debug") ||
-    ""
-  ).trim().toLowerCase();
-}
-
-function isPlaybackDebugEnabled() {
-  const routeFlag = readDebugFlag({
-    get(key) {
-      return playbackDebugRouteOptions.value?.[key] || "";
-    },
-  });
-  if (isFalsyDebugFlag(routeFlag)) return false;
-  if (isTruthyDebugFlag(routeFlag)) return true;
-  const flag = readDebugFlag({
-    get(key) {
-      try {
-        return uni.getStorageSync(key) || "";
-      } catch (e) {
-        return "";
-      }
-    },
-  });
-  if (isFalsyDebugFlag(flag)) return false;
-  if (isTruthyDebugFlag(flag)) return true;
-  try {
-    return (
-      uni.getStorageSync("_debug") === "1" ||
-      uni.getStorageSync("_playback_debug") === "1"
-    );
-  } catch (e) {
-    return false;
-  }
-}
-
-function isPlaybackDebugFloatEnabled() {
-  return isWeChatDevtoolsRuntime() || isLocalDevelopmentHost() || isPlaybackDebugEnabled();
-}
-
-function copyTextWithUniClipboard(text) {
-  if (typeof uni.setClipboardData !== "function") {
-    return Promise.reject(new Error("uni.setClipboardData unavailable"));
-  }
-  return new Promise((resolve, reject) => {
-    uni.setClipboardData({
-      data: text,
-      showToast: false,
-      success: resolve,
-      fail: reject,
-    });
-  });
-}
-
-function copyTextWithWxClipboard(text) {
-  if (typeof wx === "undefined" || typeof wx.setClipboardData !== "function") {
-    return Promise.reject(new Error("wx.setClipboardData unavailable"));
-  }
-  return new Promise((resolve, reject) => {
-    wx.setClipboardData({
-      data: text,
-      success: resolve,
-      fail: reject,
-    });
-  });
-}
-
-async function copyTextToClipboard(text) {
-  try {
-    await copyTextWithUniClipboard(text);
-    return;
-  } catch (e) {
-    await copyTextWithWxClipboard(text);
-  }
-}
-
-async function copyPlaybackDebugReport() {
-  const text = playbackDebugReport.value || "";
-  playbackDebugCopyStatus.value = "复制中...";
-  recordPlaybackDebugEvent("debug_copy_requested", {
-    length: text.length,
-  });
-  try {
-    await copyTextToClipboard(text);
-    playbackDebugCopyStatus.value = "已复制";
-    try {
-      uni.showToast({ title: "调试信息已复制", icon: "none" });
-    } catch (e) {}
-    setTimeout(() => {
-      if (playbackDebugCopyStatus.value === "已复制") playbackDebugCopyStatus.value = "";
-    }, 1800);
-  } catch (e) {
-    playbackDebugCopyStatus.value = "复制失败";
-    try {
-      uni.showToast({ title: "复制失败，请看控制台", icon: "none" });
-    } catch (toastError) {}
-    recordPlaybackDebugEvent("debug_copy_failed", {
-      message: e?.message || String(e || ""),
-    });
-  }
-}
 const iosWechatBridge = useIOSWechatBridgeAutoPlay({
   isWeChatIOSH5, isMuted,
   getVideoPlayer: () => videoPlayer,
@@ -827,6 +673,78 @@ initWebSocket = webSocket.initWebSocket;
 getLiveSocket = webSocket.getLiveSocket;
 closeLiveSocket = webSocket.closeLiveSocket;
 sendFallbackEnter = webSocket.sendFallbackEnter;
+const imDebugVisible = computed(() => {
+  const options = liveDebugOptions.value || {};
+  const forceOff = options.debug === "0" || options.live_debug === "0" || options.im_debug === "0";
+  return !forceOff;
+});
+const imDebugSummary = computed(() => {
+  const state = webSocket.channelDebugState.value || {};
+  const im = state.im || {};
+  const err = im.openError || im.joinError || im.tokenError || im.lastSendSkipReason || "";
+  const close = im.lastClose || {};
+  const closeReason = close.code || close.reason ? `${close.code || "-"}:${close.reason || "-"}` : "-";
+  return `mode:${state.mode || "-"} im:${im.state || "-"} open:${im.isOpened ? "Y" : "N"} token:${im.tokenFetched ? "Y" : "N"} join:${im.mainJoined ? "Y" : "N"} send:${im.lastSendOk === null ? "-" : (im.lastSendOk ? "Y" : "N")} event:${im.lastEvent || "-"} close:${closeReason}${im.expectedClose ? "(expected)" : ""} err:${err || "-"}`;
+});
+const imDebugReport = computed(() => safeStringify({
+  generatedAt: new Date().toISOString(),
+  route: getCurrentRouteInfo(),
+  live: {
+    liveId: liveId.value,
+    roomCode: roomCode.value,
+    roomGroupType: roomGroupType.value,
+    roomBroadcastMethod: roomBroadcastMethod.value,
+    pushStatus: pushStatus.value,
+    isReplay: isReplay.value,
+    replayCurrentVideoId: replayCurrentVideoId.value,
+    tokenPresent: Boolean(userStore.token),
+  },
+  messageChannel: webSocket.channelDebugState.value,
+}));
+function copyImDebugInfo() {
+  const report = imDebugReport.value;
+  imDebugCopyStatus.value = "复制中...";
+  function markCopied() {
+    imDebugCopyStatus.value = "已复制";
+  }
+  function fallbackCopy(reason = "") {
+    const nav = typeof navigator !== "undefined" ? navigator : null;
+    if (nav?.clipboard?.writeText) {
+      nav.clipboard.writeText(report).then(markCopied).catch(() => {
+        imDebugCopyStatus.value = reason ? `复制失败:${reason}` : "复制失败";
+      });
+      return;
+    }
+    if (typeof document !== "undefined") {
+      try {
+        const textarea = document.createElement("textarea");
+        textarea.value = report;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.select();
+        const copied = document.execCommand("copy");
+        document.body.removeChild(textarea);
+        imDebugCopyStatus.value = copied ? "已复制" : (reason ? `复制失败:${reason}` : "复制失败");
+        return;
+      } catch (_) {}
+    }
+    imDebugCopyStatus.value = reason ? `复制失败:${reason}` : "复制失败";
+  }
+  if (!uni?.setClipboardData) {
+    fallbackCopy("noapi");
+    return;
+  }
+  uni.setClipboardData({
+    data: report,
+    success() {
+      markCopied();
+    },
+    fail(error) {
+      fallbackCopy(error?.errMsg || "uni");
+    },
+  });
+}
 const heartbeatStatus = useLiveHeartbeatStatus({
   liveId, sessionId,
   getEnterTimestamp: () => enterTimestamp,
@@ -1036,6 +954,7 @@ watch(isPlaying, (next, prev) => {
 useLiveLoadBootstrapRegistration({
   getLiveDetail, initLive, scrollToBottom, isDebugLocalLogin, syncKeyboardViewportBaseHeight, getLiveVideoElement, applyInlineVideoAttrs, resumeVideoPlayback,
   handlePageHide, handlePageBackground,
+  onOptions: setLiveDebugOptions,
   setPageVisible: (value) => { pageVisible.value = !!value; },
   refreshLiveStatusNow: (...args) => refreshLiveStatusNow(...args),
   isWeChatIOSH5,
@@ -1044,9 +963,6 @@ useLiveLoadBootstrapRegistration({
   getVisibilityResumeHandler: () => visibilityResumeHandler,
   setVisibilityResumeHandler: (handler) => { visibilityResumeHandler = handler; },
   userStore, pendingRecoverBuyCtx, setPendingSubscribeBack, showEntryOverlay, showWxAddrDonePlayBtn, safeBottom, isIOSKeyboardMode,
-  setPlaybackDebugRouteOptions: (options) => {
-    playbackDebugRouteOptions.value = options || {};
-  },
 });
 </script>
 <style lang="scss" scoped>
