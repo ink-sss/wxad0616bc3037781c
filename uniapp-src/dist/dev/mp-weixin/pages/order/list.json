@@ -1,7 +1,0 @@
-{
-  "navigationBarTitleText": "订单",
-  "usingComponents": {
-    "order-logistics-sheet": "./components/order-logistics-sheet",
-    "live-mini-window": "../../components/live-mini-window"
-  }
-}

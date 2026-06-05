@@ -1,1 +1,0 @@
-<view class="{{['data-v-a921837b', 'bottom-panel', b]}}" bindtap="{{c}}"><view class="popup-bg data-v-a921837b"><view class="wechat-box data-v-a921837b"><image class="data-v-a921837b" mode="widthFix" lazy-load src="{{a}}"></image></view></view></view>

@@ -1,1 +1,0 @@
-"use strict";const r=require("./runtime.js");exports.requestMerchantTransfer=function(e={}){return r.canIUse("requestMerchantTransfer")?r.promisifyApi("requestMerchantTransfer",e):Promise.reject(r.unsupportedError("requestMerchantTransfer"))},exports.requestPayment=function(e={}){return r.promisifyApi("requestPayment",e,{preferUni:!0})};

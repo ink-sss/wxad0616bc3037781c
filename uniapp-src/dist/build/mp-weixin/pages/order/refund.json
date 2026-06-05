@@ -1,6 +1,0 @@
-{
-  "navigationBarTitleText": "申请退款",
-  "usingComponents": {
-    "bottom-sheet-popup": "../../components/bottom-sheet-popup"
-  }
-}

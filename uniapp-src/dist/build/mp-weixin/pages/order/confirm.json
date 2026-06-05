@@ -1,9 +1,0 @@
-{
-  "navigationBarTitleText": "确认订单",
-  "usingComponents": {
-    "bottom-sheet-popup": "../../components/bottom-sheet-popup",
-    "address-list-panel": "../../components/address-list-panel",
-    "address-form-popup": "../../components/address-form-popup",
-    "live-mini-window": "../../components/live-mini-window"
-  }
-}

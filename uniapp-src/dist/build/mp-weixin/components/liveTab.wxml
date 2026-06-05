@@ -1,1 +1,0 @@
-<view wx:if="{{a}}" class="live-tab data-v-55cec171"><view class="tabMain data-v-55cec171" bindtap="{{e}}"><image class="option-pic data-v-55cec171" src="{{b}}"></image><view class="data-v-55cec171">返回</view><image wx:if="{{c}}" class="liveImg data-v-55cec171" mode="aspectFill" src="{{d}}"></image></view></view>

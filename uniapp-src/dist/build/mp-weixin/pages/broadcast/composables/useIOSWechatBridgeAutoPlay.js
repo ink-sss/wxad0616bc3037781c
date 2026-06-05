@@ -1,1 +1,0 @@
-"use strict";exports.useIOSWechatBridgeAutoPlay=function(){return{tryIOSWechatBridgeAutoPlay:function(){return!1},tryIOSWechatBridgeMutedPlay:function(){return!1},setIOSWechatBridgeSoundAutoPlayAllowed:function(){}}};

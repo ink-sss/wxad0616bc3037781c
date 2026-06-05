@@ -1,8 +1,0 @@
-{
-  "navigationBarTitleText": "商户首页",
-  "navigationStyle": "custom",
-  "enablePullDownRefresh": false,
-  "usingComponents": {
-    "uni-load-more": "../../components/uni-load-more"
-  }
-}

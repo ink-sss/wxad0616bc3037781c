@@ -1,1 +1,0 @@
-"use strict";const e=require("../../../common/vendor.js"),o={onLoad(o={}){const r=o.orderNo||o.order_no||"",d=o.id||o.orderId||o.order_id||"";e.index.redirectTo({url:`/pages/order/pay?orderNo=${encodeURIComponent(r)}&id=${encodeURIComponent(d)}`})}};const r=e._export_sfc(o,[["render",function(e,o,r,d,n,c){return{}}],["__scopeId","data-v-8cba8959"]]);wx.createPage(r);

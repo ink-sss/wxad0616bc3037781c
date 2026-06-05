@@ -1,5 +1,5 @@
 {
-  "miniprogramRoot": "dist/build/mp-weixin/",
+  "miniprogramRoot": "dist/dev/mp-weixin/",
   "__compileDebugInfo__": {
     "useSummer": true
   },
@@ -30,7 +30,28 @@
   "compileType": "miniprogram",
   "simulatorPluginLibVersion": {},
   "packOptions": {
-    "ignore": [],
+    "ignore": [
+      {
+        "type": "folder",
+        "value": "src"
+      },
+      {
+        "type": "folder",
+        "value": "node_modules"
+      },
+      {
+        "type": "folder",
+        "value": "dist/build"
+      },
+      {
+        "type": "folder",
+        "value": "tests"
+      },
+      {
+        "type": "folder",
+        "value": "dosc"
+      }
+    ],
     "include": []
   },
   "editorSetting": {},

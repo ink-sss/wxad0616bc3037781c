@@ -1,1 +1,0 @@
-<view class="diy-block data-v-57f41905" style="{{b}}"><view class="diy-list data-v-57f41905"><text wx:for="{{a}}" wx:for-item="item" wx:key="b" class="nav-item data-v-57f41905" bindtap="{{item.c}}">{{item.a}}</text></view></view>

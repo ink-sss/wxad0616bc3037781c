@@ -1,7 +1,0 @@
-{
-  "component": true,
-  "usingComponents": {
-    "wd-popup": "../node-modules/wot-design-uni/components/wd-popup/wd-popup",
-    "coupon-select-popup": "./coupon-select-popup"
-  }
-}

@@ -1,1 +1,0 @@
-"use strict";const e=require("../../../common/vendor.js");exports.useIMChannel=function(){const n=e.ref("unsupported");return{imState:n,initWebSocket:async function(){return n.value="unsupported",!1},getLiveSocket:function(){return null},closeLiveSocket:function(){n.value="closed"}}};

@@ -1,6 +1,0 @@
-.tabMain.data-v-f419a4cb { position: fixed; right: 24rpx; bottom: 180rpx; z-index: 90; width: 96rpx; min-height: 112rpx; border-radius: 48rpx; background: rgba(0,0,0,.65); color: #fff; font-size: 24rpx; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4rpx;
-}
-.option-pic.data-v-f419a4cb { width: 36rpx; height: 36rpx;
-}
-.liveImg.data-v-f419a4cb { width: 56rpx; height: 56rpx; border-radius: 50%; margin-top: 6rpx;
-}

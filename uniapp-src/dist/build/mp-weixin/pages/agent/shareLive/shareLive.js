@@ -1,1 +1,0 @@
-"use strict";const e=require("../../../common/vendor.js"),r=require("../../../utils/live-route.js"),o={onLoad(o={}){e.index.redirectTo({url:r.buildBroadcastEntryUrl(r.normalizeLiveRouteOptions(o))})}};const t=e._export_sfc(o,[["render",function(e,r,o,t,n,i){return{}}],["__scopeId","data-v-045ba2fc"]]);wx.createPage(t);

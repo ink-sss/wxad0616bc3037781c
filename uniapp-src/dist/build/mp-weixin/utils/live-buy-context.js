@@ -1,1 +1,0 @@
-"use strict";const t=require("../common/vendor.js"),e="h5_live_buy_context";exports.clearBuyContext=function(){try{t.index.removeStorageSync(e)}catch(n){}},exports.loadBuyContext=function(){try{return t.index.getStorageSync(e)||null}catch(n){return null}},exports.saveBuyContext=function(n={}){try{t.index.setStorageSync(e,{...n,updatedAt:Date.now()})}catch(o){}};

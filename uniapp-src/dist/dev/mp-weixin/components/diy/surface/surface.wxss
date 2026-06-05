@@ -1,8 +1,0 @@
-.diy-surface.data-v-4aafb21a { bottom: 0; display: block; height: 120rpx; position: fixed; right: 0; transition: all .5s; width: 120rpx; z-index: 99;
-}
-.diy-surface.close.data-v-4aafb21a { display: none;
-}
-.diy-surface .surface-icon.data-v-4aafb21a { height: 120rpx; width: 120rpx;
-}
-.diy-surface .surface-icon image.data-v-4aafb21a { height: 100%; width: 100%;
-}

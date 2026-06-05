@@ -1,1 +1,0 @@
-<view wx:if="{{a}}" class="uni-popup data-v-526cda1c" bindtap="{{d}}"><view class="uni-popup__mask data-v-526cda1c"/><view class="{{['data-v-526cda1c', 'uni-popup__content', b]}}" catchtap="{{c}}"><slot/></view></view>

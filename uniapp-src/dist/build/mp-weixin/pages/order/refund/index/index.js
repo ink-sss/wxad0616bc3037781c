@@ -1,1 +1,0 @@
-"use strict";const e=require("../../../../common/vendor.js"),o={onLoad(o={}){const n=Object.keys(o).map(e=>`${e}=${encodeURIComponent(o[e])}`).join("&");e.index.redirectTo({url:"/pages/order/refund-list"+(n?`?${n}`:"")})}};const n=e._export_sfc(o,[["render",function(e,o,n,r,t,c){return{}}],["__scopeId","data-v-7d83835d"]]);wx.createPage(n);

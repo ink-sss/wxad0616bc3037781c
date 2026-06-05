@@ -1,4 +1,0 @@
-.uni-notice-bar.data-v-15b4e47c { min-height: 72rpx; padding: 0 24rpx; display: flex; align-items: center; gap: 12rpx; font-size: 26rpx; box-sizing: border-box;
-}
-.uni-notice-bar__content.data-v-15b4e47c { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
-}

@@ -1,1 +1,0 @@
-<view class="{{['data-v-79c06c35', d]}}" style="{{e}}"><view wx:if="{{a}}" class="{{['data-v-79c06c35', 'wd-tab__body', b]}}" style="{{c}}"><slot/></view></view>

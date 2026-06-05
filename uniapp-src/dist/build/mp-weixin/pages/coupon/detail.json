@@ -1,7 +1,0 @@
-{
-  "navigationBarTitleText": "优惠券详情",
-  "enablePullDownRefresh": false,
-  "usingComponents": {
-    "uni-load-more": "../../components/uni-load-more"
-  }
-}

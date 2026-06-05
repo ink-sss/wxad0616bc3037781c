@@ -1,7 +1,0 @@
-/* uni-app automatically injects uni.scss into every component style block.
-   Keep this file for variables/mixins only; global CSS rules live in
-   app-global.scss so they do not become invalid component WXSS selectors. */
-.address-list-page.data-v-15db8353 {
-  min-height: 100vh;
-  background: #f7f7f7;
-}

@@ -1,1 +1,0 @@
-"use strict";const e=require("../../../../common/vendor.js"),d={onLoad(d={}){const r=d.id||d.refundId||d.refund_id||"";e.index.redirectTo({url:`/pages/order/refund-detail?id=${encodeURIComponent(r)}`})}};const r=e._export_sfc(d,[["render",function(e,d,r,n,o,t){return{}}],["__scopeId","data-v-c2344dea"]]);wx.createPage(r);

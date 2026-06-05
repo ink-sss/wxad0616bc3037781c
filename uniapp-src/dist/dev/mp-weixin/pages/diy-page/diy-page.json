@@ -1,8 +1,0 @@
-{
-  "navigationBarTitleText": "页面",
-  "usingComponents": {
-    "diy": "../../components/diy/diy",
-    "mp-share": "../../components/mp-share",
-    "app-share": "../../components/app-share"
-  }
-}

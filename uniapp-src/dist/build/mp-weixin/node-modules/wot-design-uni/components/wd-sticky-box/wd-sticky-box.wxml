@@ -1,1 +1,0 @@
-<view class="data-v-8ee480dc" style="position:relative"><view class="{{['data-v-8ee480dc', b]}}" style="{{c}}" id="{{d}}"><wd-resize class="data-v-8ee480dc" u-s="{{['d']}}" bindresize="{{a}}" u-i="8ee480dc-0" bind:__l="__l"><slot/></wd-resize></view></view>

@@ -1,1 +1,0 @@
-<view class="diy-page data-v-5f98a132"><diy wx:if="{{b}}" class="data-v-5f98a132" bindscanQrcode="{{a}}" u-i="5f98a132-0" bind:__l="__l" u-p="{{b}}"/><mp-share wx:if="{{d}}" class="data-v-5f98a132" bindclose="{{c}}" u-i="5f98a132-1" bind:__l="__l" u-p="{{d}}"/><app-share wx:if="{{f}}" class="data-v-5f98a132" bindclose="{{e}}" u-i="5f98a132-2" bind:__l="__l" u-p="{{f}}"/></view>

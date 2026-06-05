@@ -1,1 +1,0 @@
-<view class="application-status-page data-v-66fca2c7"><view wx:if="{{a}}" class="status-card data-v-66fca2c7"><view class="title data-v-66fca2c7">{{b}}</view><view class="desc data-v-66fca2c7">{{c}}</view><button wx:if="{{d}}" class="primary data-v-66fca2c7" bindtap="{{e}}">去申请</button></view><view wx:else class="empty data-v-66fca2c7">加载中...</view></view>

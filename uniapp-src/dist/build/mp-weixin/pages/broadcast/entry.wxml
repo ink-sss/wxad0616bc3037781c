@@ -1,1 +1,0 @@
-<live-broadcast-stage-host wx:if="{{c}}" class="r data-v-75baeadd" u-r="stageHostRef" bindcopyUid="{{b}}" u-i="75baeadd-0" bind:__l="__l" u-p="{{c}}"/><live-playback-debug-float wx:if="{{f}}" class="data-v-75baeadd" bindcopy="{{d}}" bindquality="{{e}}" u-i="75baeadd-1" bind:__l="__l" u-p="{{f}}"/>

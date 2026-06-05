@@ -1,7 +1,0 @@
-{
-  "navigationBarTitleText": "积分",
-  "usingComponents": {
-    "uni-load-more": "../../../components/uni-load-more",
-    "recharge": "./part/recharge"
-  }
-}

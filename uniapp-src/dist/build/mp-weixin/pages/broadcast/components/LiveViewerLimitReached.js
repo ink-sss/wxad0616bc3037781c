@@ -1,1 +1,0 @@
-"use strict";const e=require("../../../common/vendor.js"),t=require("../../../common/assets.js"),s={__name:"LiveViewerLimitReached",props:{text:{type:String,default:"观看人数已达上限"}},setup:s=>(o,r)=>({a:t._imports_0$1,b:e.t(s.text||"观看人数已达上限")})},o=e._export_sfc(s,[["__scopeId","data-v-b8c49414"]]);wx.createComponent(o);

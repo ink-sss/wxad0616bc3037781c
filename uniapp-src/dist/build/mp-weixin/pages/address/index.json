@@ -1,7 +1,0 @@
-{
-  "navigationBarTitleText": "地址管理",
-  "enablePullDownRefresh": false,
-  "usingComponents": {
-    "address-list-panel": "../../components/address-list-panel"
-  }
-}

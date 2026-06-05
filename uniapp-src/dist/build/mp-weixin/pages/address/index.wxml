@@ -1,1 +1,0 @@
-<view class="address-list-page data-v-1ade80e7"><address-list-panel wx:if="{{g}}" class="data-v-1ade80e7" bindselect="{{a}}" bindsave="{{b}}" bindedit="{{c}}" bindadd="{{d}}" binddelete="{{e}}" bindimportWx="{{f}}" u-i="1ade80e7-0" bind:__l="__l" u-p="{{g}}"/></view>

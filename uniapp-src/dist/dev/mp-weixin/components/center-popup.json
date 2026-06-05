@@ -1,7 +1,0 @@
-{
-  "component": true,
-  "usingComponents": {
-    "bottom-sheet-popup": "./bottom-sheet-popup",
-    "center-section-card": "./center-section-card"
-  }
-}

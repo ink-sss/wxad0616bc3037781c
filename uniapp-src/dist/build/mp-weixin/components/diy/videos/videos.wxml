@@ -1,1 +1,0 @@
-<view class="diy-block data-v-a36f087d" style="{{d}}"><video wx:if="{{a}}" class="data-v-a36f087d" src="{{b}}" poster="{{c}}" controls/></view>
