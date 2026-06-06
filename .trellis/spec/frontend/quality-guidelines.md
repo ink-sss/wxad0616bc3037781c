@@ -333,6 +333,18 @@ return imChannel.getLiveSocket().sendChat(text);
 
 ---
 
+## Mini Program Production Package Hygiene
+
+- Production `mp-weixin` builds must force debug-only SDKs such as PageSpy to a
+  stub module at build time. Runtime-only flags are not enough: if the real SDK
+  import remains statically reachable, it can still enter `common/vendor.js` and
+  inflate the main package.
+- After package-size work, inspect `dist/build/mp-weixin/common/vendor.js` for
+  debug SDK names and measure the main package from `app.json` while excluding
+  subpackage roots.
+
+---
+
 ## Code Review Checklist
 
 - Build passes for `mp-weixin`.

@@ -8,6 +8,7 @@
     "dev:mp-weixin": "uni -p mp-weixin",
     "prebuild:mp-weixin": "node scripts/patch-wot-tabs-mp-weixin.mjs",
     "build:mp-weixin": "uni build -p mp-weixin",
+    "postbuild:mp-weixin": "node scripts/minify-mp-weixin-wxss.mjs",
     "diagnose:mp-weixin-hot-reload": "node scripts/diagnose-mp-weixin-hot-reload.mjs",
     "test:live-entry-bootstrap": "node --test tests/live-entry-bootstrap.test.mjs"
   },
@@ -18,7 +19,6 @@
     "@tencentcloud/chat": "3.5.7",
     "easemob-websdk": "^4.21.1",
     "pinia": "2.1.7",
-    "qrcode": "^1.5.4",
     "tim-upload-plugin": "1.4.2",
     "vue": "3.4.21",
     "vuex": "4.1.0",
@@ -29,6 +29,7 @@
     "@dcloudio/vite-plugin-uni": "3.0.0-alpha-5010120260525001",
     "@vue/compiler-sfc": "3.4.21",
     "sass": "1.100.0",
+    "terser": "^5.48.0",
     "vite": "5.2.8"
   }
 }
