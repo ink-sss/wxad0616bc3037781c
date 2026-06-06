@@ -106,7 +106,7 @@ test("runtime config falls back when env config import is missing", async () => 
 
   assert.equal(config.app_url, "https://api.guankeyun.net");
   assert.equal(config.h5_api_url, "https://man.lqjy.cc/api");
-  assert.equal(config.appid, "wx3bf933f8a2018d8d");
+  assert.equal(config.appid, "wx9ea83e805b82f59d");
 });
 
 test("h5 api base URL falls back when env config import is missing", async () => {
