@@ -1,89 +1,98 @@
 <template>
-  <view
-    v-if="visible"
-    class="live-mini"
-    :style="miniStyle"
-    @touchstart.stop="onDragStart"
-    @touchmove.stop.prevent="onDragMove"
-    @touchend.stop="onDragEnd"
-  >
-    <view class="live-mini__video-wrap" @tap.stop="restoreLive">
-      <video
-        v-if="hasPlayableSource"
-        id="liveMiniVideo"
-        class="live-mini__video"
-        :src="playUrl"
-        :poster="poster"
-        :controls="false"
-        :show-play-btn="false"
-        :show-center-play-btn="false"
-        :show-fullscreen-btn="false"
-        :enable-progress-gesture="false"
-        object-fit="cover"
-        :muted="muted"
-        :autoplay="true"
-        :enable-play-gesture="true"
-        playsinline
-        webkit-playsinline
-        x5-playsinline
-        x5-video-player-type="h5"
-        x5-video-player-fullscreen="false"
-        @play="onMiniPlay"
-        @pause="onMiniPause"
-        @timeupdate="onMiniTimeUpdate"
-      />
-      <image
-        v-if="hasPlayableSource && poster && !isPlaying"
-        class="live-mini__poster live-mini__poster--cover"
-        :src="poster"
-        mode="aspectFill"
-      />
-      <image
-        v-else-if="!hasPlayableSource && poster"
-        class="live-mini__poster"
-        :src="poster"
-        mode="aspectFill"
-      />
-      <view v-else class="live-mini__empty">
-        <text class="live-mini__empty-text">直播间</text>
-      </view>
+  <view class="live-mini-host">
+    <view
+      v-if="visible"
+      class="live-mini"
+      :style="miniStyle"
+      @touchstart.stop="onDragStart"
+      @touchmove.stop.prevent="onDragMove"
+      @touchend.stop="onDragEnd"
+    >
+      <view class="live-mini__video-wrap" @tap.stop="restoreLive">
+        <video
+          v-if="hasPlayableSource"
+          id="liveMiniVideo"
+          class="live-mini__video"
+          :src="playUrl"
+          :poster="poster"
+          :controls="false"
+          :show-play-btn="false"
+          :show-center-play-btn="false"
+          :show-fullscreen-btn="false"
+          :enable-progress-gesture="false"
+          object-fit="cover"
+          :muted="muted"
+          :autoplay="true"
+          :enable-play-gesture="true"
+          playsinline
+          webkit-playsinline
+          x5-playsinline
+          x5-video-player-type="h5"
+          x5-video-player-fullscreen="false"
+          @play="onMiniPlay"
+          @pause="onMiniPause"
+          @timeupdate="onMiniTimeUpdate"
+        />
+        <image
+          v-if="hasPlayableSource && poster && !isPlaying"
+          class="live-mini__poster live-mini__poster--cover"
+          :src="poster"
+          mode="aspectFill"
+        />
+        <image
+          v-else-if="!hasPlayableSource && poster"
+          class="live-mini__poster"
+          :src="poster"
+          mode="aspectFill"
+        />
+        <view v-else class="live-mini__empty">
+          <text class="live-mini__empty-text">直播间</text>
+        </view>
 
-      <view class="live-mini__touch-layer"></view>
-      <view
-        class="live-mini__badge"
-        @touchstart.stop="noopMiniTouch"
-        @touchend.stop="restoreLive"
-        @tap.stop="restoreLive"
-      >
-        <text class="live-mini__badge-text">返回直播</text>
+        <view class="live-mini__touch-layer"></view>
+        <view
+          class="live-mini__badge"
+          @touchstart.stop="noopMiniTouch"
+          @touchend.stop="restoreLive"
+          @tap.stop="restoreLive"
+        >
+          <text class="live-mini__badge-text">返回直播</text>
+        </view>
+        <view
+          class="live-mini__close"
+          @touchstart.stop="noopMiniTouch"
+          @touchend.stop="closeMini"
+          @tap.stop="closeMini"
+        >
+          ×
+        </view>
+        <view
+          class="live-mini__play-state"
+          v-if="hasPlayableSource && !isPlaying"
+          @touchstart.stop="noopMiniTouch"
+          @touchend.stop="playMini"
+          @tap.stop="playMini"
+        >
+          <text class="live-mini__play-text">▶</text>
+        </view>
       </view>
-      <view
-        class="live-mini__close"
-        @touchstart.stop="noopMiniTouch"
-        @touchend.stop="closeMini"
-        @tap.stop="closeMini"
-      >
-        ×
-      </view>
-      <view
-        class="live-mini__play-state"
-        v-if="hasPlayableSource && !isPlaying"
-        @touchstart.stop="noopMiniTouch"
-        @touchend.stop="playMini"
-        @tap.stop="playMini"
-      >
-        <text class="live-mini__play-text">▶</text>
-      </view>
+      <!-- <view class="live-mini__footer" @click.stop="restoreLive">
+        <text class="live-mini__title">{{ displayTitle }}</text>
+        <text class="live-mini__restore">返回直播</text>
+      </view> -->
     </view>
-    <!-- <view class="live-mini__footer" @click.stop="restoreLive">
-      <text class="live-mini__title">{{ displayTitle }}</text>
-      <text class="live-mini__restore">返回直播</text>
-    </view> -->
+    <live-mini-debug-float
+      :show="debugVisible"
+      :summary="debugSummary"
+      :copy-status="debugCopyStatus"
+      @copy="copyDebugInfo"
+    />
   </view>
 </template>
 
 <script setup>
 import { useLiveMiniWindow } from "@/composables/useLiveMiniWindow";
+import LiveMiniDebugFloat from "@/components/live-mini-debug-float.vue";
 
 const props = defineProps({
   roomCode: {
@@ -123,12 +132,21 @@ const {
   onDragStart,
   onDragMove,
   onDragEnd,
+  debugVisible,
+  debugSummary,
+  debugCopyStatus,
+  copyDebugInfo,
 } = useLiveMiniWindow(props);
 
 function noopMiniTouch() {}
 </script>
 
 <style lang="scss" scoped>
+.live-mini-host {
+  width: 0;
+  height: 0;
+}
+
 .live-mini {
   position: fixed;
   width: 224rpx;

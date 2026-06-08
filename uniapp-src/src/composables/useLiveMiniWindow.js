@@ -18,6 +18,7 @@ const CLOSED_KEY = 'live_mini_window_closed_room_v1'
 const CLOSED_MAX_AGE = 30 * 60 * 1000
 const MINI_WIDTH_RPX = 224
 const MINI_HEIGHT_RPX = 316
+const DEBUG_EVENTS_LIMIT = 20
 
 function rpxToPx(value) {
   try {
@@ -73,6 +74,40 @@ function safeString(value) {
 function safeNumber(value, fallback = 0) {
   const next = Number(value)
   return Number.isFinite(next) ? next : fallback
+}
+
+function safeJson(value) {
+  try {
+    return JSON.stringify(value, null, 2)
+  } catch (error) {
+    return String(value || '')
+  }
+}
+
+function maskUrl(value = '') {
+  return String(value || '')
+    .replace(/([?&](?:token|access_token|auth_key|key|sign|signature|wx_token)=)[^&#]*/gi, '$1***')
+    .replace(/(\/)([A-Za-z0-9_-]{24,})(?=\/|$)/g, '$1***')
+}
+
+function snapshotStorage() {
+  let miniState = null
+  let liveContext = null
+  let closedState = null
+  try {
+    miniState = loadLiveMiniState()
+  } catch (error) {}
+  try {
+    liveContext = loadLiveRoomContext()
+  } catch (error) {}
+  try {
+    closedState = uni.getStorageSync(CLOSED_KEY)
+  } catch (error) {}
+  return {
+    miniState,
+    liveContext,
+    closedState,
+  }
 }
 
 function getCachedMiniRoomCode() {
@@ -195,6 +230,10 @@ export function useLiveMiniWindow(props = {}) {
   const title = ref('直播间')
   const stateRoomCode = ref('')
   const position = ref(getFallbackPosition())
+  const hideReason = ref('init')
+  const lastError = ref('')
+  const debugCopyStatus = ref('')
+  const debugEvents = ref([])
 
   let activePlayState = null
   let dragStart = null
@@ -219,6 +258,31 @@ export function useLiveMiniWindow(props = {}) {
     left: `${position.value.left}px`,
     top: `${position.value.top}px`,
   }))
+  const debugVisible = computed(() => true)
+  const debugSummary = computed(() => [
+    `visible:${visible.value ? 1 : 0}`,
+    `reason:${hideReason.value || '-'}`,
+    `prop:${safeString(props.roomCode) || '-'}`,
+    `room:${stateRoomCode.value || resolveRoomCode() || '-'}`,
+    `url:${playUrl.value ? 'yes' : 'no'}`,
+    `playing:${isPlaying.value ? 1 : 0}`,
+    `err:${lastError.value || '-'}`,
+  ].join(' '))
+
+  function recordDebug(event, payload = {}) {
+    const item = {
+      at: new Date().toISOString(),
+      event,
+      payload,
+    }
+    debugEvents.value = [...debugEvents.value.slice(-(DEBUG_EVENTS_LIMIT - 1)), item]
+  }
+
+  function setHidden(reason, payload = {}) {
+    hideReason.value = reason
+    visible.value = false
+    recordDebug('hidden', { reason, ...payload })
+  }
 
   function resolveRoomCode() {
     const propCode = safeString(props.roomCode)
@@ -239,6 +303,14 @@ export function useLiveMiniWindow(props = {}) {
     playUrl.value = state.playUrl || ''
     muted.value = true
     isPlaying.value = false
+    hideReason.value = state.playUrl ? 'state_applied' : 'state_no_url'
+    recordDebug('state_applied', {
+      roomCode: stateRoomCode.value,
+      hasPlayUrl: !!playUrl.value,
+      isLive: state.isLive === true,
+      isReplay: state.isReplay === true,
+      pushStatus: state.pushStatus,
+    })
   }
 
   function initPosition() {
@@ -309,10 +381,15 @@ export function useLiveMiniWindow(props = {}) {
 
   function playMini() {
     if (!visible.value || !hasPlayableSource.value) {
+      recordDebug('play_skip', {
+        visible: visible.value,
+        hasPlayableSource: hasPlayableSource.value,
+      })
       scheduleRefreshMini()
       return
     }
     try {
+      recordDebug('play_command', { playUrl: maskUrl(playUrl.value) })
       createMiniVideoContext()?.play?.()
     } catch (error) {}
   }
@@ -342,12 +419,20 @@ export function useLiveMiniWindow(props = {}) {
       createMiniVideoContext()?.pause?.()
     } catch (error) {}
     isPlaying.value = false
+    recordDebug('playback_stopped')
   }
 
   function applyMiniDetail(detail = {}, streamInfo = {}) {
     const source = selectMiniPlayableSource(detail, streamInfo)
     const room = safeString(firstValue(detail, 'roomCode', 'room_code') || resolveRoomCode())
-    if (!room || !source.url) return false
+    if (!room || !source.url) {
+      recordDebug('detail_no_source', {
+        room,
+        hasSourceUrl: !!source.url,
+        pushStatus: source.pushStatus,
+      })
+      return false
+    }
     const nextState = saveLiveMiniState({
       roomCode: room,
       liveId: firstValue(detail, 'roomId', 'room_id', 'liveId', 'live_id', 'id'),
@@ -372,16 +457,34 @@ export function useLiveMiniWindow(props = {}) {
 
   async function refreshMini() {
     const code = resolveRoomCode()
-    if (props.enabled === false || !code || isLiveRoute() || isClosedRoom(code)) {
-      visible.value = false
+    if (props.enabled === false) {
+      setHidden('disabled')
+      stopMiniPlayback()
+      return
+    }
+    if (!code) {
+      setHidden('no_room_code')
+      stopMiniPlayback()
+      return
+    }
+    if (isLiveRoute()) {
+      setHidden('live_route', { route: getCurrentRoute() })
+      stopMiniPlayback()
+      return
+    }
+    if (isClosedRoom(code)) {
+      setHidden('closed_room', { roomCode: code })
       stopMiniPlayback()
       return
     }
     const seq = ++loadSeq
+    hideReason.value = 'loading'
+    recordDebug('refresh_start', { roomCode: code, seq })
     const cachedState = loadLiveMiniState(code)
     if (cachedState?.playUrl) {
       applyMiniState(cachedState)
       visible.value = true
+      hideReason.value = 'visible_cached'
       initPosition()
       await nextTick()
       seekMiniVideo(cachedState.currentTime)
@@ -396,18 +499,20 @@ export function useLiveMiniWindow(props = {}) {
       ])
       if (seq !== loadSeq) return
       if (!detail || detail.needReLogin || !applyMiniDetail(detail, streamInfo || {})) {
-        visible.value = false
+        setHidden(!detail ? 'detail_empty' : detail.needReLogin ? 'need_relogin' : 'detail_no_playable_source', { roomCode: code })
         stopMiniPlayback()
         return
       }
       visible.value = true
+      hideReason.value = 'visible_detail'
       initPosition()
       await nextTick()
       schedulePlayMini()
       startProgressSync()
     } catch (error) {
+      lastError.value = error?.message || error?.errMsg || String(error || 'load fail')
       console.warn('[LiveMiniWindow] load detail fail:', error)
-      visible.value = false
+      setHidden('load_error', { error: lastError.value })
       stopMiniPlayback()
     }
   }
@@ -436,7 +541,7 @@ export function useLiveMiniWindow(props = {}) {
     if (code) markClosedRoom(code)
     closedByUser = true
     activePlayState = null
-    visible.value = false
+    setHidden('closed_by_user', { roomCode: code })
     stopMiniPlayback()
     clearLiveMiniState(stateRoomCode.value || code)
   }
@@ -505,16 +610,75 @@ export function useLiveMiniWindow(props = {}) {
 
   function onMiniPlay() {
     isPlaying.value = true
+    hideReason.value = visible.value ? 'playing' : hideReason.value
+    recordDebug('video_play')
     startProgressSync()
   }
 
   function onMiniPause() {
     isPlaying.value = false
+    recordDebug('video_pause')
     stopProgressSync()
   }
 
   function onMiniTimeUpdate(event = {}) {
     syncMiniProgress(event.detail?.currentTime)
+  }
+
+  function buildDebugReport() {
+    const storage = snapshotStorage()
+    return safeJson({
+      timestamp: new Date().toISOString(),
+      route: getCurrentRoute(),
+      props: {
+        roomCode: safeString(props.roomCode),
+        enabled: props.enabled !== false,
+        bottomOffset: props.bottomOffset,
+        returnOrigin: props.returnOrigin,
+      },
+      state: {
+        visible: visible.value,
+        hideReason: hideReason.value,
+        stateRoomCode: stateRoomCode.value,
+        resolvedRoomCode: resolveRoomCode(),
+        hasPlayableSource: hasPlayableSource.value,
+        playUrl: maskUrl(playUrl.value),
+        poster: maskUrl(poster.value),
+        muted: muted.value,
+        isPlaying: isPlaying.value,
+        title: title.value,
+        lastError: lastError.value,
+      },
+      storage: {
+        miniState: storage.miniState ? {
+          ...storage.miniState,
+          playUrl: maskUrl(storage.miniState.playUrl),
+          backupUrl: maskUrl(storage.miniState.backupUrl),
+          backupFlvUrl: maskUrl(storage.miniState.backupFlvUrl),
+          backupHlsUrl: maskUrl(storage.miniState.backupHlsUrl),
+          poster: maskUrl(storage.miniState.poster),
+        } : null,
+        liveContext: storage.liveContext,
+        closedState: storage.closedState,
+      },
+      events: debugEvents.value,
+    })
+  }
+
+  function copyDebugInfo() {
+    const report = buildDebugReport()
+    debugCopyStatus.value = '复制中...'
+    uni.setClipboardData({
+      data: report,
+      showToast: false,
+      success() {
+        debugCopyStatus.value = '已复制'
+      },
+      fail(error) {
+        debugCopyStatus.value = '复制失败'
+        recordDebug('copy_failed', { error: error?.errMsg || String(error || '') })
+      },
+    })
   }
 
   onMounted(() => {
@@ -567,5 +731,9 @@ export function useLiveMiniWindow(props = {}) {
     onDragStart,
     onDragMove,
     onDragEnd,
+    debugVisible,
+    debugSummary,
+    debugCopyStatus,
+    copyDebugInfo,
   }
 }

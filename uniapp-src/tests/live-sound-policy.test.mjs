@@ -147,3 +147,24 @@ test("live mini-window can recover room code from cached mini state", async () =
   assert.match(globalMini, /loadLiveRoomContext\(\)\?\.roomCode\)\s*\|\|\s*getCachedMiniRoomCode\(\)/);
   assert.match(globalMini, /return\s+getCachedMiniRoomCode\(\)/);
 });
+
+test("live mini-window exposes secondary page debug report", async () => {
+  const globalMini = await readSource("src/composables/useLiveMiniWindow.js");
+  const globalMiniComponent = await readSource("src/components/live-mini-window.vue");
+  const debugFloat = await readSource("src/components/live-mini-debug-float.vue");
+  const userCenter = await readSource("src/pages/user/index/index.vue");
+
+  assert.match(globalMiniComponent, /<live-mini-debug-float/);
+  assert.match(globalMiniComponent, /:show="debugVisible"/);
+  assert.match(globalMiniComponent, /@copy="copyDebugInfo"/);
+  assert.match(globalMini, /const\s+debugVisible\s*=\s*computed\(\(\)\s*=>\s*true\)/);
+  assert.match(globalMini, /function\s+buildDebugReport\(\)/);
+  assert.match(globalMini, /hideReason/);
+  assert.match(globalMini, /snapshotStorage\(\)/);
+  assert.match(globalMini, /route:\s*getCurrentRoute\(\)/);
+  assert.match(globalMini, /uni\.setClipboardData/);
+  assert.match(debugFloat, /小窗调试/);
+  assert.match(debugFloat, /复制信息/);
+  assert.match(userCenter, /<live-mini-window\s+:room-code="liveRoomCode"/);
+  assert.match(userCenter, /liveRoomCode\(\)\s*\{\s*\n\s*return\s+this\.liveRoomContext\?\.roomCode/);
+});

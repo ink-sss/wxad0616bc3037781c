@@ -54,6 +54,7 @@
       </view>
     </view>
     <request-loading v-if="isloadding" :loadding="isloadding" />
+    <live-mini-window :room-code="liveRoomCode" :bottom-offset="140" />
     <live-tab />
     <tab-bar />
   </view>
@@ -68,6 +69,7 @@ import { normalizeLiveRouteOptions } from '../../../utils/live-route.js'
 import { appendLiveRoomQuery, loadLiveRoomContext, mergeLiveRoomContext, saveLiveRoomContext } from '../../../utils/live-room-context.js'
 import RequestLoading from '../../../components/liveloading.vue'
 import LiveTab from '../../../components/liveTab.vue'
+import LiveMiniWindow from '../../../components/live-mini-window.vue'
 import TabBar from '../../../components/tabbar/footTabbar.vue'
 
 
@@ -155,6 +157,7 @@ export default {
   components: {
     RequestLoading,
     LiveTab,
+    LiveMiniWindow,
     TabBar
   },
   data() {
@@ -212,6 +215,9 @@ export default {
       const grade = this.detail?.grade
       if (typeof grade === 'string' && grade) return grade
       return grade?.name || this.detail?.gradeName || this.detail?.grade_name || '普通会员'
+    },
+    liveRoomCode() {
+      return this.liveRoomContext?.roomCode || ''
     },
   },
   onReady() {
