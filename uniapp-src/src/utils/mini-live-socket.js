@@ -917,9 +917,9 @@ export class MiniLiveSocket {
     this.heartbeatTimer = setInterval(() => {
       const now = Date.now()
       if (this.open && this.lastPongAt && now - this.lastPongAt > this.heartbeatTimeout) {
-        this.open = false
         this.stopHeartbeat()
-        this.safeCloseSocket('heartbeat_timeout', true)
+        this.safeCloseSocket('heartbeat_timeout')
+        this.open = false
         this.scheduleReconnect()
         return
       }
@@ -964,15 +964,23 @@ export class MiniLiveSocket {
   }
 
   close() {
+    const shouldCloseSocketTask = !!this.socket && (this.open || this.state === 'connecting' || this.state === 'reconnecting')
     if (this.socket && this.open) this.sendLeave().catch?.(() => {})
     this.closed = true
-    this.open = false
     this.enterSentOnce = false
     this.stopHeartbeat()
     this.clearEnterSendTimer()
     if (this.reconnectTimer) clearTimeout(this.reconnectTimer)
     this.reconnectTimer = null
-    this.safeCloseSocket('manual_close', true)
+    if (shouldCloseSocketTask) {
+      this.safeCloseSocket('manual_close')
+    } else {
+      this.recordDebug('close_socket_skip', {
+        closeReason: 'manual_close',
+        lastCloseFail: this.socket ? 'not_open' : 'no_socket',
+      })
+    }
+    this.open = false
     this.clearSocketEvents()
     this.socket = null
     this.setState('closed')

@@ -10,7 +10,7 @@ async function readSource(path) {
   return readFile(join(root, path), "utf8");
 }
 
-test("broadcast entry skips mini-program overlay and starts muted autoplay before sound intent", async () => {
+test("broadcast entry skips mini-program overlay and starts sound autoplay before fallback", async () => {
   const entry = await readSource("src/pages/broadcast/entry.vue");
   const initializer = await readSource("src/pages/broadcast/composables/useLiveEntryInitializer.js");
   const displayState = await readSource("src/pages/broadcast/composables/useLiveDisplayState.js");
@@ -18,7 +18,7 @@ test("broadcast entry skips mini-program overlay and starts muted autoplay befor
   assert.match(entry, /const\s+isMuted\s*=\s*ref\(false\);/);
   assert.match(entry, /showEntryOverlay,\s*\n\s*shouldShowEntryOverlay,/);
   assert.match(entry, /liveOverlayTitle,\s*shouldShowEntryOverlay,/);
-  assert.match(initializer, /isMuted\.value\s*=\s*isMpWeixinRuntime\(\)\s*&&\s*!\s*refreshSoundIntent\.shouldRestoreSound/);
+  assert.match(initializer, /isMuted\.value\s*=\s*false/);
   assert.match(initializer, /import\s+\{\s*isMpWeixinRuntime\s*\}/);
   assert.match(initializer, /!\s*isWeChatIOSH5\s*&&\s*!\s*isMpWeixinRuntime\(\)/);
   assert.match(initializer, /function\s+isEntryOverlayVisible\(\)/);

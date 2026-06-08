@@ -312,3 +312,18 @@ test("mini live socket swallows close task not found failures", () => {
   assert.equal(socket.getDebugState().closeFailCount, 1);
   assert.match(socket.getDebugState().lastCloseFail, /task not found/);
 });
+
+test("mini live socket skips close when socket task was never opened", () => {
+  let closeCalled = 0;
+  const socket = new MiniLiveSocket({ liveId: 123 });
+  socket.socket = {
+    close() {
+      closeCalled += 1;
+    },
+  };
+
+  assert.doesNotThrow(() => socket.close());
+  assert.equal(closeCalled, 0);
+  assert.equal(socket.getState(), "closed");
+  assert.equal(socket.getDebugState().lastCloseFail, "not_open");
+});

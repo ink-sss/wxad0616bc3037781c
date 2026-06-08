@@ -217,9 +217,8 @@ export function useLiveEntryInitializer(ctx) {
     } else {
       clearStoredSoundIntentRestore?.();
     }
-    // 小程序端未经过用户手势时，有声 autoplay 会被拦截；先静音拉起画面，
-    // 用户点击进入/从小窗返回再通过 sound intent 恢复有声。
-    isMuted.value = isMpWeixinRuntime() && !refreshSoundIntent.shouldRestoreSound;
+    // 首次进入直播间保持原有自动播放策略：直接尝试有声播放；平台拦截时再走播放兜底。
+    isMuted.value = false;
   }
 
   function applyResolvedEntryOptions(resolvedOptions, entryLiveType) {
