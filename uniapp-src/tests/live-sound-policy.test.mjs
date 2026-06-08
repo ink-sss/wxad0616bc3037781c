@@ -10,7 +10,7 @@ async function readSource(path) {
   return readFile(join(root, path), "utf8");
 }
 
-test("broadcast entry skips mini-program entry overlay and defaults to sound playback", async () => {
+test("broadcast entry skips mini-program overlay and starts muted autoplay before sound intent", async () => {
   const entry = await readSource("src/pages/broadcast/entry.vue");
   const initializer = await readSource("src/pages/broadcast/composables/useLiveEntryInitializer.js");
   const displayState = await readSource("src/pages/broadcast/composables/useLiveDisplayState.js");
@@ -18,8 +18,7 @@ test("broadcast entry skips mini-program entry overlay and defaults to sound pla
   assert.match(entry, /const\s+isMuted\s*=\s*ref\(false\);/);
   assert.match(entry, /showEntryOverlay,\s*\n\s*shouldShowEntryOverlay,/);
   assert.match(entry, /liveOverlayTitle,\s*shouldShowEntryOverlay,/);
-  assert.doesNotMatch(initializer, /isMuted\.value\s*=\s*true/);
-  assert.match(initializer, /isMuted\.value\s*=\s*false/);
+  assert.match(initializer, /isMuted\.value\s*=\s*isMpWeixinRuntime\(\)\s*&&\s*!\s*refreshSoundIntent\.shouldRestoreSound/);
   assert.match(initializer, /import\s+\{\s*isMpWeixinRuntime\s*\}/);
   assert.match(initializer, /!\s*isWeChatIOSH5\s*&&\s*!\s*isMpWeixinRuntime\(\)/);
   assert.match(initializer, /function\s+isEntryOverlayVisible\(\)/);
@@ -28,14 +27,14 @@ test("broadcast entry skips mini-program entry overlay and defaults to sound pla
   assert.match(displayState, /!\s*isMpWeixinRuntime\(\)\s*&&\s*showEntryOverlay\.value/);
 });
 
-test("broadcast stages keep media components sound-enabled", async () => {
+test("broadcast stages bind media mute state for mini-program autoplay", async () => {
   const portrait = await readSource("src/pages/broadcast/components/LivePortraitStage.vue");
   const landscape = await readSource("src/pages/broadcast/components/LiveLandscapeStage.vue");
   const landscapeControls = await readSource("src/pages/broadcast/styles/entry-landscape-live-controls.scss");
 
   for (const source of [portrait, landscape]) {
-    assert.doesNotMatch(source, /:muted="isMuted"/);
-    assert.match(source, /:muted="false"/);
+    assert.match(source, /:muted="isMuted"/);
+    assert.doesNotMatch(source, /:muted="false"/);
     assert.match(source, /sound-mode="speaker"/);
     assert.match(source, /:mute-on-audio-conflict="false"/);
     assert.match(source, /:show-mute-btn="false"/);
@@ -46,23 +45,27 @@ test("broadcast stages keep media components sound-enabled", async () => {
   assert.doesNotMatch(landscapeControls, /video-mini-controls__mute/);
 });
 
-test("player wrappers force sound through native playback contexts", async () => {
+test("player wrappers support muted autoplay and native sound restore", async () => {
   const playerInitializer = await readSource("src/pages/broadcast/composables/useLivePlayerInitializer.js");
   const videoRuntime = await readSource("src/pages/broadcast/composables/useLiveVideoRuntime.js");
   const miniProgramSound = await readSource("src/pages/broadcast/composables/useMiniProgramSoundPlayback.js");
   const stageBinding = await readSource("src/pages/broadcast/composables/useLiveStageBinding.js");
   const videoPlay = await readSource("src/utils/videoPlay.js");
 
-  assert.doesNotMatch(playerInitializer, /player\.muted\s*=\s*!!isMuted\.value/);
-  assert.doesNotMatch(playerInitializer, /this\.muted\s*=\s*!!value/);
-  assert.match(playerInitializer, /this\.muted\s*=\s*false/);
+  assert.match(playerInitializer, /function\s+resolvePlaybackMuted\(opts\s*=\s*\{\},\s*isMuted\)/);
+  assert.match(playerInitializer, /opts\.forceSoundPlayback/);
+  assert.match(playerInitializer, /shouldPreferMiniProgramHlsPlayback\(\)\s*&&\s*isMuted\?\.value\s*!==\s*false/);
+  assert.match(playerInitializer, /muted:\s*resolvePlaybackMuted\(opts,\s*isMuted\)/);
+  assert.match(playerInitializer, /muted:\s*opts\.muted\s*===\s*true/);
+  assert.match(playerInitializer, /function\s+playNativePlayer\(player,\s*preferLivePlayer,\s*opts\s*=\s*\{\},\s*reason\s*=\s*"init"\)/);
+  assert.match(playerInitializer, /mini_player_muted_autoplay/);
+  assert.match(playerInitializer, /this\.muted\s*=\s*value\s*===\s*true/);
   assert.match(playerInitializer, /applyMiniProgramSoundPlayback/);
   assert.match(playerInitializer, /mini_player_sound_restore/);
   assert.match(playerInitializer, /mini_player_reuse_same_source/);
   assert.match(playerInitializer, /oldPlayer\.url\s*===\s*playUrl/);
   assert.match(playerInitializer, /return\s+oldPlayer/);
   assert.match(playerInitializer, /soundMode:\s*"speaker"/);
-  assert.match(playerInitializer, /muted:\s*false/);
   assert.match(videoRuntime, /applyMiniProgramSoundPlayback/);
   assert.match(miniProgramSound, /safeCall\(context,\s*"unmute"\)/);
   assert.match(miniProgramSound, /safeCall\(context,\s*"setSoundMode",\s*\["speaker"\]\)/);
@@ -122,13 +125,28 @@ test("live mini-window state keeps sound intent but autoplays muted", async () =
   const globalMini = await readSource("src/composables/useLiveMiniWindow.js");
   const globalMiniComponent = await readSource("src/components/live-mini-window.vue");
 
-  assert.match(broadcastMini, /muted:\s*false/);
-  assert.match(broadcastMini, /canPlayWithSound:\s*true/);
-  assert.match(broadcastMini, /soundMutedByUser:\s*false/);
+  assert.match(broadcastMini, /muted:\s*extra\.muted\s*===\s*true/);
+  assert.match(broadcastMini, /canPlayWithSound:\s*extra\.canPlayWithSound\s*===\s*true\s*\|\|\s*extra\.muted\s*!==\s*true/);
+  assert.match(broadcastMini, /muted:\s*isMuted\.value\s*!==\s*false/);
+  assert.match(broadcastMini, /canPlayWithSound:\s*isMuted\.value\s*===\s*false/);
   assert.doesNotMatch(broadcastMini, /setMuted\(true\)/);
   assert.match(globalMini, /const\s+muted\s*=\s*ref\(true\)/);
   assert.match(globalMini, /muted\.value\s*=\s*true/);
   assert.match(globalMiniComponent, /:muted="muted"/);
+});
+
+test("live mini-window return recreates live player instead of resuming stale node", async () => {
+  const broadcastMini = await readSource("src/pages/broadcast/composables/useLiveMiniWindow.js");
+  const lifecycle = await readSource("src/pages/broadcast/composables/useLiveEntryLifecycle.js");
+  const entry = await readSource("src/pages/broadcast/entry.vue");
+
+  assert.match(broadcastMini, /initVideoPlayer,/);
+  assert.match(broadcastMini, /state\.isReplay\s*!==\s*true/);
+  assert.match(broadcastMini, /forceRecreate:\s*true/);
+  assert.match(broadcastMini, /muted:\s*state\.canPlayWithSound\s*\?\s*false\s*:\s*isMuted\.value\s*!==\s*false/);
+  assert.match(entry, /initVideoPlayer:\s*\(\.\.\.args\)\s*=>\s*initVideoPlayer\(\.\.\.args\)/);
+  assert.match(lifecycle, /const\s+restoredFromMiniWindow\s*=\s*restoreLivePlaybackFromMiniWindow\(\)/);
+  assert.match(lifecycle, /if\s*\(!restoredFromMiniWindow\)\s*\{\s*\n\s*resumeVideoPlayback\(80,\s*\{\s*force:\s*true\s*\}\)/);
 });
 
 test("live mini-window persists only video-compatible sources for secondary pages", async () => {

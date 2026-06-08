@@ -36,7 +36,7 @@
         mode="live"
         object-fit="contain"
         :autoplay="true"
-        :muted="false"
+        :muted="isMuted"
         sound-mode="speaker"
         :mute-on-audio-conflict="false"
         :min-cache="1"
@@ -74,7 +74,7 @@
           backgroundRepeat: 'no-repeat',
           backgroundColor: '#000',
         }"
-        :muted="false"
+        :muted="isMuted"
         :autoplay="true"
         preload="auto"
         :poster="showLivePoster ? videoPoster : ''"

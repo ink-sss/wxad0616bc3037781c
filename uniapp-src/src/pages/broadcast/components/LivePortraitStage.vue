@@ -77,7 +77,7 @@
       mode="live"
       object-fit="fillCrop"
       :autoplay="true"
-      :muted="false"
+      :muted="isMuted"
       sound-mode="speaker"
       :mute-on-audio-conflict="false"
       :min-cache="1"
@@ -114,7 +114,7 @@
         backgroundPosition: 'center',
         backgroundColor: '#000',
       }"
-      :muted="false"
+      :muted="isMuted"
       :autoplay="true"
       preload="auto"
       :poster="videoPoster"

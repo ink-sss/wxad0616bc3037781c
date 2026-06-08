@@ -217,8 +217,9 @@ export function useLiveEntryInitializer(ctx) {
     } else {
       clearStoredSoundIntentRestore?.();
     }
-    // 直播间当前策略：默认有声播放，不再用静音自动播放兜底。
-    isMuted.value = false;
+    // 小程序端未经过用户手势时，有声 autoplay 会被拦截；先静音拉起画面，
+    // 用户点击进入/从小窗返回再通过 sound intent 恢复有声。
+    isMuted.value = isMpWeixinRuntime() && !refreshSoundIntent.shouldRestoreSound;
   }
 
   function applyResolvedEntryOptions(resolvedOptions, entryLiveType) {

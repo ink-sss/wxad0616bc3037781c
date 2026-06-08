@@ -63,9 +63,11 @@ export function useLiveEntryLifecycle(ctx) {
   onShow(() => {
     setPageVisible?.(true);
     applyMiniResumeOptions(getLastInitOptions());
-    restoreLivePlaybackFromMiniWindow();
+    const restoredFromMiniWindow = restoreLivePlaybackFromMiniWindow();
     syncScreenWakeLock?.();
-    resumeVideoPlayback(80, { force: true });
+    if (!restoredFromMiniWindow) {
+      resumeVideoPlayback(80, { force: true });
+    }
     refreshLiveStatusNow?.({ reason: "page_show" });
     if (!isMuted.value || hasPendingUnmute()) {
       scheduleLiveSoundIntentRestore();

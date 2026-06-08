@@ -439,6 +439,18 @@ function normalizeSocketContext(context = {}) {
   }
 }
 
+function safeJsonParse(text = '') {
+  try {
+    return JSON.parse(text)
+  } catch (error) {
+    return text
+  }
+}
+
+function maskDebugText(text = '') {
+  return String(text || '').replace(/(token=)[^&"]+/gi, '$1***')
+}
+
 export class MiniLiveSocket {
   constructor(options = {}) {
     this.url = options.url || ''
@@ -447,6 +459,9 @@ export class MiniLiveSocket {
     this.context = normalizeSocketContext(options.context || {})
     this.user = options.user || {}
     this.signKey = options.signKey || ''
+    this.sendEnterOnOpen = options.sendEnterOnOpen === true
+    this.enterSendDelay = Number(options.enterSendDelay || 80)
+    this.enterRetryDelay = Number(options.enterRetryDelay || 300)
     this.onOpen = options.onOpen || null
     this.onMessage = options.onMessage || null
     this.onClose = options.onClose || null
@@ -463,15 +478,82 @@ export class MiniLiveSocket {
     this.closed = false
     this.open = false
     this.connectedOnce = false
+    this.enterSentOnce = false
     this.reconnectCount = 0
     this.lastPongAt = 0
     this.lastSeq = 0
+    this.enterSendTimer = null
+    this.debugEvents = []
+    this.debugState = {
+      state: 'idle',
+      url: maskDebugText(this.url),
+      connectUrl: '',
+      liveId: this.liveId,
+      hasToken: !!this.token,
+      hasSignKey: !!this.signKey,
+      sendEnterOnOpen: this.sendEnterOnOpen,
+      sendEnterDelay: this.enterSendDelay,
+      sendEnterRetryDelay: this.enterRetryDelay,
+      openCount: 0,
+      implicitOpenCount: 0,
+      sendCount: 0,
+      sendOkCount: 0,
+      sendFailCount: 0,
+      lastEvent: 'init',
+      lastSendType: '',
+      lastSendOk: null,
+      lastSendMethod: '',
+      lastSendPayload: null,
+      lastSendPayloadText: '',
+      lastSendFail: '',
+      closeFailCount: 0,
+      lastCloseFail: '',
+      lastEnterMsgId: '',
+      lastEnterAttempt: 0,
+      lastEnterScheduledAt: '',
+      lastEnterSentAt: '',
+      lastError: '',
+      events: this.debugEvents,
+    }
     this.unbindSocketEvents = []
     this.state = 'idle'
+    this.recordDebug('init', { url: this.url, hasToken: !!this.token, hasSignKey: !!this.signKey })
+  }
+
+  recordDebug(event, payload = {}) {
+    const item = {
+      at: new Date().toISOString(),
+      event,
+      ...payload,
+    }
+    this.debugEvents.push(item)
+    if (this.debugEvents.length > 30) this.debugEvents.splice(0, this.debugEvents.length - 30)
+    this.debugState = {
+      ...this.debugState,
+      state: this.state,
+      lastEvent: event,
+      events: this.debugEvents,
+      ...payload,
+    }
+  }
+
+  getDebugState() {
+    return {
+      ...this.debugState,
+      state: this.state,
+      open: this.open,
+      closed: this.closed,
+      liveId: this.liveId,
+      hasToken: !!this.token,
+      hasSignKey: !!this.signKey,
+      sendEnterOnOpen: this.sendEnterOnOpen,
+      events: this.debugEvents.slice(),
+    }
   }
 
   setState(state) {
     this.state = state || this.state
+    this.debugState.state = this.state
     this.onStateChange?.(state)
   }
 
@@ -489,14 +571,18 @@ export class MiniLiveSocket {
 
     const joiner = this.url.includes('?') ? '&' : '?'
     const url = this.token ? `${this.url}${joiner}token=${encodeURIComponent(this.token)}` : this.url
+    this.recordDebug('connect_start', { connectUrl: maskDebugText(url) })
     this.socket = uni.connectSocket({ url })
     this.unbindSocketEvents = [
       bindSocketTaskEvent(this.socket, 'onOpen', 'onSocketOpen', 'offSocketOpen', () => {
         this.open = true
+        this.enterSentOnce = false
         this.lastPongAt = Date.now()
         this.reconnectCount = 0
         this.setState('open')
+        this.recordDebug('open', { openCount: Number(this.debugState.openCount || 0) + 1 })
         this.startHeartbeat()
+        if (this.sendEnterOnOpen) this.sendOpenEnter()
         this.onOpen?.({ isReconnect: this.connectedOnce })
         if (this.connectedOnce && this.lastSeq > 0) this.requestReplay(this.lastSeq)
         this.connectedOnce = true
@@ -518,6 +604,7 @@ export class MiniLiveSocket {
           this.send({ type: TYPE.PING, content: 'pong' })
           return
         }
+        if (!this.open) this.markOpenFromMessage(message)
         const incomingRoomId = getMessageRoomId(message)
         const currentRoomId = Number(this.liveId || 0)
         if (incomingRoomId > 0 && currentRoomId > 0 && incomingRoomId !== currentRoomId) return
@@ -527,6 +614,7 @@ export class MiniLiveSocket {
       bindSocketTaskEvent(this.socket, 'onClose', 'onSocketClose', 'offSocketClose', (event) => {
         this.open = false
         this.stopHeartbeat()
+        this.recordDebug('close', { lastClose: event || '' })
         this.onClose?.(event)
         if (this.closed) this.setState('closed')
         else this.scheduleReconnect()
@@ -534,10 +622,24 @@ export class MiniLiveSocket {
       bindSocketTaskEvent(this.socket, 'onError', 'onSocketError', 'offSocketError', (event) => {
         this.open = false
         this.stopHeartbeat()
+        this.recordDebug('error', { lastError: event?.errMsg || event?.message || event || '' })
         this.onError?.(event)
         this.scheduleReconnect()
       }),
     ]
+  }
+
+  markOpenFromMessage(message = {}) {
+    this.open = true
+    this.closed = false
+    this.lastPongAt = Date.now()
+    this.setState('open')
+    this.recordDebug('implicit_open_from_message', {
+      implicitOpenCount: Number(this.debugState.implicitOpenCount || 0) + 1,
+      lastMessageType: message.type || '',
+    })
+    this.startHeartbeat()
+    if (this.sendEnterOnOpen) this.sendOpenEnter()
   }
 
   send(payload = {}) {
@@ -581,8 +683,25 @@ export class MiniLiveSocket {
   }
 
   sendRaw(payload = {}) {
-    if (!this.socket || !this.open) return Promise.resolve(false)
+    if (!this.socket || !this.open) {
+      this.recordDebug('send_skipped', {
+        lastSendType: payload.type,
+        lastSendOk: false,
+        lastSendFail: !this.socket ? 'no_socket' : 'not_open',
+      })
+      return Promise.resolve(false)
+    }
     const data = wrapMessage(payload, this.signKey || undefined)
+    const parsedPayload = safeJsonParse(data)
+    this.recordDebug('send_start', {
+      sendCount: Number(this.debugState.sendCount || 0) + 1,
+      lastSendType: payload.type,
+      lastSendOk: null,
+      lastSendMethod: this.socket && typeof this.socket.send === 'function' ? 'socket.send' : (typeof uni.sendSocketMessage === 'function' ? 'uni.sendSocketMessage' : 'none'),
+      lastSendPayload: parsedPayload,
+      lastSendPayloadText: maskDebugText(data),
+      lastSendFail: '',
+    })
     return new Promise((resolve) => {
       const send = this.socket && typeof this.socket.send === 'function'
         ? this.socket.send.bind(this.socket)
@@ -590,13 +709,31 @@ export class MiniLiveSocket {
           ? uni.sendSocketMessage.bind(uni)
           : null
       if (!send) {
+        this.recordDebug('send_no_method', {
+          lastSendOk: false,
+          lastSendFail: 'no_send_method',
+          sendFailCount: Number(this.debugState.sendFailCount || 0) + 1,
+        })
         resolve(false)
         return
       }
       send({
         data,
-        success: () => resolve(true),
-        fail: () => resolve(false),
+        success: () => {
+          this.recordDebug('send_success', {
+            lastSendOk: true,
+            sendOkCount: Number(this.debugState.sendOkCount || 0) + 1,
+          })
+          resolve(true)
+        },
+        fail: (error) => {
+          this.recordDebug('send_fail', {
+            lastSendOk: false,
+            lastSendFail: error?.errMsg || error?.message || error || 'send_fail',
+            sendFailCount: Number(this.debugState.sendFailCount || 0) + 1,
+          })
+          resolve(false)
+        },
       })
     })
   }
@@ -640,19 +777,50 @@ export class MiniLiveSocket {
     })
   }
 
-  sendEnter() {
-    const roomPayload = buildRoomPayload(this.liveId)
-    const contextPayload = normalizeSocketContext(this.context)
-    return this.send({
-      type: TYPE.ENTER,
-      ...roomPayload,
-      ...contextPayload,
-      data: {
-        ...roomPayload,
-        ...contextPayload,
-        ...this.getAudiencePayload(),
-      },
+  sendEnter(options = {}) {
+    const msgId = options?.msgId || Math.random().toString(36).slice(2, 10)
+    this.recordDebug('send_enter_call', {
+      lastEnterMsgId: msgId,
+      lastEnterAttempt: options?.attempt || 0,
     })
+    return this.sendRaw({
+      type: TYPE.ENTER,
+      msgId,
+    })
+  }
+
+  sendOpenEnter() {
+    if (this.enterSentOnce) {
+      this.recordDebug('send_enter_skip_duplicate', { lastEnterMsgId: this.debugState.lastEnterMsgId || '' })
+      return
+    }
+    this.enterSentOnce = true
+    this.clearEnterSendTimer()
+    const msgId = Math.random().toString(36).slice(2, 10)
+    const delay = Number.isFinite(this.enterSendDelay) && this.enterSendDelay >= 0 ? this.enterSendDelay : 80
+    this.recordDebug('send_enter_scheduled', {
+      lastEnterMsgId: msgId,
+      lastEnterAttempt: 1,
+      lastEnterScheduledAt: new Date().toISOString(),
+    })
+    this.enterSendTimer = setTimeout(async () => {
+      this.enterSendTimer = null
+      if (this.closed || !this.open) return
+      this.recordDebug('send_enter_attempt', { lastEnterMsgId: msgId, lastEnterAttempt: 1, lastEnterSentAt: new Date().toISOString() })
+      const firstOk = await this.sendEnter({ msgId, attempt: 1 })
+      if (firstOk !== false || this.closed || !this.open) return
+      const retryDelay = Number.isFinite(this.enterRetryDelay) && this.enterRetryDelay >= 0 ? this.enterRetryDelay : 300
+      this.recordDebug('send_enter_retry_scheduled', { lastEnterMsgId: msgId, lastEnterAttempt: 2 })
+      this.enterSendTimer = setTimeout(async () => {
+        this.enterSendTimer = null
+        if (this.closed || !this.open) return
+        this.recordDebug('send_enter_attempt', { lastEnterMsgId: msgId, lastEnterAttempt: 2, lastEnterSentAt: new Date().toISOString() })
+        const retryOk = await this.sendEnter({ msgId, attempt: 2 })
+        if (retryOk === false) {
+          console.warn('[MiniLiveSocket] enter send failed')
+        }
+      }, retryDelay)
+    }, delay)
   }
 
   sendLeave() {
@@ -708,6 +876,42 @@ export class MiniLiveSocket {
     })
   }
 
+  safeCloseSocket(reason = 'close', force = false) {
+    if (!this.socket) {
+      this.recordDebug('close_socket_skip', { closeReason: reason, lastCloseFail: 'no_socket' })
+      return false
+    }
+    if (!force && !this.open && this.state !== 'connecting' && this.state !== 'reconnecting') {
+      this.recordDebug('close_socket_skip', { closeReason: reason, lastCloseFail: 'not_open' })
+      return false
+    }
+    const socket = this.socket
+    if (typeof socket.close !== 'function') {
+      this.recordDebug('close_socket_skip', { closeReason: reason, lastCloseFail: 'no_close_method' })
+      return false
+    }
+    try {
+      this.recordDebug('close_socket_request', { closeReason: reason, lastCloseFail: '' })
+      socket.close({
+        fail: (error) => {
+          this.recordDebug('close_socket_fail', {
+            closeReason: reason,
+            lastCloseFail: error?.errMsg || error?.message || error || 'close_fail',
+            closeFailCount: Number(this.debugState.closeFailCount || 0) + 1,
+          })
+        },
+      })
+      return true
+    } catch (error) {
+      this.recordDebug('close_socket_fail', {
+        closeReason: reason,
+        lastCloseFail: error?.errMsg || error?.message || error || 'close_throw',
+        closeFailCount: Number(this.debugState.closeFailCount || 0) + 1,
+      })
+      return false
+    }
+  }
+
   startHeartbeat() {
     this.stopHeartbeat()
     this.heartbeatTimer = setInterval(() => {
@@ -715,7 +919,7 @@ export class MiniLiveSocket {
       if (this.open && this.lastPongAt && now - this.lastPongAt > this.heartbeatTimeout) {
         this.open = false
         this.stopHeartbeat()
-        this.socket?.close?.({})
+        this.safeCloseSocket('heartbeat_timeout', true)
         this.scheduleReconnect()
         return
       }
@@ -726,6 +930,11 @@ export class MiniLiveSocket {
   stopHeartbeat() {
     if (this.heartbeatTimer) clearInterval(this.heartbeatTimer)
     this.heartbeatTimer = null
+  }
+
+  clearEnterSendTimer() {
+    if (this.enterSendTimer) clearTimeout(this.enterSendTimer)
+    this.enterSendTimer = null
   }
 
   clearSocketEvents() {
@@ -758,16 +967,12 @@ export class MiniLiveSocket {
     if (this.socket && this.open) this.sendLeave().catch?.(() => {})
     this.closed = true
     this.open = false
+    this.enterSentOnce = false
     this.stopHeartbeat()
+    this.clearEnterSendTimer()
     if (this.reconnectTimer) clearTimeout(this.reconnectTimer)
     this.reconnectTimer = null
-    if (this.socket) {
-      if (typeof this.socket.close === 'function') {
-        this.socket.close({})
-      } else if (typeof uni.closeSocket === 'function') {
-        uni.closeSocket({})
-      }
-    }
+    this.safeCloseSocket('manual_close', true)
     this.clearSocketEvents()
     this.socket = null
     this.setState('closed')

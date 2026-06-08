@@ -87,9 +87,14 @@ function createPlaybackFailureHandler(player, initVideoPlayer, opts = {}, onExha
 }
 
 function updateMiniProgramMuted(id = "liveVideo", muted = false, preferLivePlayer = false, createMediaContext) {
-  if (shouldPreferMiniProgramHlsPlayback()) return false;
   if (muted) return false;
   return applyMiniProgramSoundPlayback({ id, preferLivePlayer, createMediaContext });
+}
+
+function resolvePlaybackMuted(opts = {}, isMuted) {
+  if (opts.forceSoundPlayback) return false;
+  if (opts.muted !== undefined) return opts.muted === true;
+  return shouldPreferMiniProgramHlsPlayback() && isMuted?.value !== false;
 }
 
 function normalizePlaybackUrl(url, opts = {}) {
@@ -225,6 +230,7 @@ export function useLivePlayerInitializer(ctx) {
   }
 
   function refreshMiniWindowState(url, opts = {}) {
+    const muted = opts.muted === true;
     syncLiveMiniWindowState?.({
       force: true,
       playUrl: url,
@@ -234,9 +240,9 @@ export function useLivePlayerInitializer(ctx) {
       isLive: !opts.isReplay,
       isReplay: !!opts.isReplay,
       currentTime: Number(opts.seekTo || 0),
-      muted: false,
-      canPlayWithSound: true,
-      soundMutedByUser: false,
+      muted,
+      canPlayWithSound: opts.canPlayWithSound === true || opts.forceSoundPlayback === true || muted === false,
+      soundMutedByUser: opts.soundMutedByUser === true,
     });
   }
 
@@ -262,7 +268,7 @@ export function useLivePlayerInitializer(ctx) {
       id: "liveVideo",
       url,
       createMediaContext,
-      muted: false,
+      muted: opts.muted === true,
       autoplay: true,
       live: useLivePlayerContext,
       onEnded: handleVideoPlayerEnded,
@@ -285,7 +291,7 @@ export function useLivePlayerInitializer(ctx) {
       liveCandidates: player.liveCandidates,
     };
     player.live = useLivePlayerContext;
-    player.muted = false;
+    player.muted = opts.muted === true;
     player.onEnded = handleVideoPlayerEnded;
     player.handlePlaybackFailure = createPlaybackFailureHandler(player, initVideoPlayer, opts, showPlaybackFailureState);
     player.updateSources = function updateSources(nextUrl = "", nextOpts = {}) {
@@ -319,9 +325,11 @@ export function useLivePlayerInitializer(ctx) {
         liveCandidates: this.liveCandidates.length,
       });
     };
-    player.setMuted = function setMuted() {
-      this.muted = false;
-      updateMiniProgramMuted(this.id, false, this.live && isLivePlayerSource(this.url), createMediaContext);
+    player.setMuted = function setMuted(value = false) {
+      this.muted = value === true;
+      if (!this.muted) {
+        updateMiniProgramMuted(this.id, false, this.live && isLivePlayerSource(this.url), createMediaContext);
+      }
     };
     player.unmute = function unmute() {
       this.setMuted(false);
@@ -331,6 +339,65 @@ export function useLivePlayerInitializer(ctx) {
     return player;
   }
 
+  function playNativePlayer(player, preferLivePlayer, opts = {}, reason = "init") {
+    if (opts.muted === true) {
+      let played = false;
+      try {
+        if (typeof player?.play === "function") {
+          player.play();
+          played = true;
+        }
+      } catch (error) {
+        played = false;
+      }
+      recordPlaybackDebugEvent("mini_player_muted_autoplay", {
+        reason,
+        played,
+        muted: true,
+        preferLivePlayer,
+        knownComponent: opts.sourceComponent || "",
+        sourceComponent: opts.sourceComponent || "",
+        sourceType: opts.sourceType || "",
+      });
+      recordPlaybackDebugEvent("mini_player_play_command", {
+        played,
+        muted: true,
+        preferLivePlayer,
+        sourceComponent: opts.sourceComponent || "",
+        sourceType: opts.sourceType || "",
+      });
+      return played;
+    }
+    const played = applyMiniProgramSoundPlayback({
+      id: "liveVideo",
+      preferLivePlayer,
+      knownComponent: opts.sourceComponent || "",
+      createMediaContext,
+    });
+    recordPlaybackDebugEvent("mini_player_sound_restore", {
+      reason,
+      attempted: true,
+      applied: played,
+      muted: false,
+      soundMode: "speaker",
+      preferLivePlayer,
+      knownComponent: opts.sourceComponent || "",
+      sourceComponent: opts.sourceComponent || "",
+      sourceType: opts.sourceType || "",
+    });
+    recordPlaybackDebugEvent("mini_player_play_command", {
+      played,
+      muted: false,
+      preferLivePlayer,
+      sourceComponent: opts.sourceComponent || "",
+      sourceType: opts.sourceType || "",
+    });
+    if (!played) {
+      try { player?.play?.(); } catch (e) {}
+    }
+    return played;
+  }
+
   function initVideoPlayer(url, opts = {}) {
     const playUrl = normalizePlaybackUrl(url, opts);
     const preferLivePlayer = shouldPreferLivePlayerContext(playUrl, opts);
@@ -338,6 +405,7 @@ export function useLivePlayerInitializer(ctx) {
     const normalizedOptions = {
       ...opts,
       playUrl,
+      muted: resolvePlaybackMuted(opts, isMuted),
       sourceComponent: resolvedSourceComponent,
       sourceType: opts.sourceType || (resolvedSourceComponent === "live-player" ? "live" : "video"),
     };
@@ -363,12 +431,7 @@ export function useLivePlayerInitializer(ctx) {
         sourceComponent: normalizedOptions.sourceComponent || "",
       });
       nextTick(() => {
-        applyMiniProgramSoundPlayback({
-          id: "liveVideo",
-          preferLivePlayer,
-          knownComponent: normalizedOptions.sourceComponent,
-          createMediaContext,
-        });
+        playNativePlayer(oldPlayer, preferLivePlayer, normalizedOptions, "reuse_same_source");
       });
       return oldPlayer;
     }
@@ -411,38 +474,14 @@ export function useLivePlayerInitializer(ctx) {
       sourceType: normalizedOptions.sourceType || "",
       sourceComponent: normalizedOptions.sourceComponent || "",
       liveCandidates: Array.isArray(opts.liveCandidates) ? opts.liveCandidates.length : 0,
+      muted: normalizedOptions.muted === true,
     });
     nextTick(() => {
       if (!playUrl) return;
       if (opts.isReplay && Number(opts.seekTo || 0) > 0) {
         try { player.seek(Number(opts.seekTo || 0)); } catch (e) {}
       }
-      const played = applyMiniProgramSoundPlayback({
-        id: "liveVideo",
-        preferLivePlayer,
-        knownComponent: normalizedOptions.sourceComponent || "",
-        createMediaContext,
-      });
-      recordPlaybackDebugEvent("mini_player_sound_restore", {
-        reason: "init",
-        attempted: true,
-        applied: played,
-        muted: false,
-        soundMode: "speaker",
-        preferLivePlayer,
-        knownComponent: normalizedOptions.sourceComponent || "",
-        sourceComponent: normalizedOptions.sourceComponent || "",
-        sourceType: normalizedOptions.sourceType || "",
-      });
-      recordPlaybackDebugEvent("mini_player_play_command", {
-        played,
-        preferLivePlayer,
-        sourceComponent: normalizedOptions.sourceComponent || "",
-        sourceType: normalizedOptions.sourceType || "",
-      });
-      if (!played) {
-        try { player.play?.(); } catch (e) {}
-      }
+      playNativePlayer(player, preferLivePlayer, normalizedOptions, "init");
       if (hasPendingUnmute?.() || hasStoredSoundIntentRestore?.()) {
         scheduleLiveSoundIntentRestore?.();
       }

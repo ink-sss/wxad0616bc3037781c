@@ -29,6 +29,7 @@ export function useLiveMiniWindow(ctx) {
     isPlaying,
     getVideoPlayer,
     scheduleLiveSoundIntentRestore,
+    initVideoPlayer,
     playReplayVideoByIndex,
     setSeekTarget,
     verifySeekResult,
@@ -138,9 +139,9 @@ export function useLiveMiniWindow(ctx) {
       duration: Number(currentVideo.duration || 0),
       isReplay: extra.isReplay ?? isReplay.value,
       isLive: extra.isLive ?? !isReplay.value,
-      muted: false,
-      canPlayWithSound: true,
-      soundMutedByUser: false,
+      muted: extra.muted === true,
+      canPlayWithSound: extra.canPlayWithSound === true || extra.muted !== true,
+      soundMutedByUser: extra.soundMutedByUser === true,
       pushStatus: pushStatus.value,
       updatedAt: now,
     });
@@ -151,8 +152,8 @@ export function useLiveMiniWindow(ctx) {
     syncLiveMiniWindowState({
       force: true,
       currentTime,
-      muted: false,
-      canPlayWithSound: true,
+      muted: isMuted.value !== false,
+      canPlayWithSound: isMuted.value === false,
       soundMutedByUser: false,
     });
     try {
@@ -170,12 +171,29 @@ export function useLiveMiniWindow(ctx) {
 
   function restoreLivePlaybackFromMiniWindow() {
     const state = consumeLiveMiniReturnState(roomCode.value) || loadLiveMiniState(roomCode.value);
-    if (!state) return;
+    if (!state) return false;
     if (state.canPlayWithSound) {
       scheduleLiveSoundIntentRestore();
     }
+    if (state.isReplay !== true) {
+      const liveUrl = state.playUrl || displayVideoUrl.value || pullUrl.value || "";
+      if (!liveUrl || typeof initVideoPlayer !== "function") return false;
+      initVideoPlayer(liveUrl, {
+        backupUrl: state.backupUrl || "",
+        backupFlvUrl: state.backupFlvUrl || "",
+        backupHlsUrl: state.backupHlsUrl || "",
+        sourceType: state.sourceType || "hls",
+        sourceComponent: state.sourceComponent || "video",
+        isReplay: false,
+        isLive: true,
+        forceRecreate: true,
+        muted: state.canPlayWithSound ? false : isMuted.value !== false,
+        canPlayWithSound: state.canPlayWithSound === true,
+      });
+      return true;
+    }
     const target = Number(state.currentTime || 0);
-    if (!state.isReplay || target <= 0) return;
+    if (target <= 0) return false;
     const targetVideoId = String(state.videoId || "");
     let targetIndex = -1;
     if (targetVideoId) {
@@ -195,7 +213,7 @@ export function useLiveMiniWindow(ctx) {
         );
       } catch (e) {}
       playReplayVideoByIndex(targetIndex, target);
-      return;
+      return true;
     }
     const videoEl = getLiveVideoElement();
     const current = Number(videoEl?.currentTime || 0);
@@ -214,6 +232,7 @@ export function useLiveMiniWindow(ctx) {
     if (typeof loadCommentHistory === "function") {
       loadCommentHistory();
     }
+    return true;
   }
 
   function applyMiniResumeOptions(options = {}) {

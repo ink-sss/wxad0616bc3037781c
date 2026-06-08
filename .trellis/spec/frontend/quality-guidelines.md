@@ -213,6 +213,13 @@ await wechatSilentLogin({ code, sourceClient: "mp-weixin" });
   click/close/return interactions.
 
 ### 4. Validation & Error Matrix
+- In `mp-weixin`, do not start broadcast HLS `video` with unmuted autoplay
+  before a user gesture. Initialize the native media node muted so the first
+  frame can render, then restore sound only from explicit user intent such as
+  entering the room, manual play, or tapping the mini-window return control.
+- Returning from a secondary-page live mini-window to an active live room must
+  recreate the live HLS player at the live edge instead of resuming the stale
+  paused page video node and waiting for it to drift back into sync.
 
 - HLS `video` failure -> switch to the next HLS/video candidate when available.
 - Candidate list exhausted -> show a user-visible playback failure state.
@@ -239,6 +246,8 @@ await wechatSilentLogin({ code, sourceClient: "mp-weixin" });
 
 ### 6. Tests Required
 
+- Bad: live room auto-entry forces `muted=false` on the native media component,
+  so WeChat blocks autoplay until the user taps the screen.
 - `npm run build:mp-weixin` passes from `uniapp-src/`.
 - Static scan of broadcast source and `src/utils/live-route.js` finds no H5
   browser globals/packages.
