@@ -398,6 +398,16 @@ export function useLivePlayerInitializer(ctx) {
     return played;
   }
 
+  function scheduleNativePlayRetries(player, preferLivePlayer, opts = {}, reason = "init") {
+    if (!player?.url || opts.isReplay || videoFrameReady?.value) return;
+    [80, 240, 600].forEach((delay) => {
+      setTimeout(() => {
+        if (videoFrameReady?.value || player !== getVideoPlayer?.()) return;
+        playNativePlayer(player, preferLivePlayer, opts, `${reason}_retry_${delay}`);
+      }, delay);
+    });
+  }
+
   function initVideoPlayer(url, opts = {}) {
     const playUrl = normalizePlaybackUrl(url, opts);
     const preferLivePlayer = shouldPreferLivePlayerContext(playUrl, opts);
@@ -432,6 +442,7 @@ export function useLivePlayerInitializer(ctx) {
       });
       nextTick(() => {
         playNativePlayer(oldPlayer, preferLivePlayer, normalizedOptions, "reuse_same_source");
+        scheduleNativePlayRetries(oldPlayer, preferLivePlayer, normalizedOptions, "reuse_same_source");
       });
       return oldPlayer;
     }
@@ -482,6 +493,7 @@ export function useLivePlayerInitializer(ctx) {
         try { player.seek(Number(opts.seekTo || 0)); } catch (e) {}
       }
       playNativePlayer(player, preferLivePlayer, normalizedOptions, "init");
+      scheduleNativePlayRetries(player, preferLivePlayer, normalizedOptions, "init");
       if (hasPendingUnmute?.() || hasStoredSoundIntentRestore?.()) {
         scheduleLiveSoundIntentRestore?.();
       }

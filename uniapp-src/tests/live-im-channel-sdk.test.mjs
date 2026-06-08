@@ -127,6 +127,67 @@ test("live IM channel reuses same-liveId init without closing connecting or open
   assert.equal(channel.imDebugState.value.lastEvent, "init_reused_same_room");
 });
 
+test("live IM channel skips SDK close before connection is opened", async () => {
+  const calls = [];
+  const openGate = createDeferred();
+  globalThis.uni = {};
+  globalThis.__getImToken = async () => ({
+    appKey: "org#app",
+    imUsername: "viewer_2",
+    imToken: "token",
+    mainChatroomId: "room_2",
+  });
+  globalThis.__useUserStore = () => ({ userInfo: {}, token: "viewer-token" });
+  globalThis.__EC = {
+    logger: { disableAll() {} },
+    message: { create(payload) { return payload; } },
+    connection: class MockConnection {
+      constructor() {
+        calls.push("conn:new");
+        this.handlers = {};
+      }
+      addEventHandler(_, handlers) {
+        this.handlers = handlers;
+      }
+      async open() {
+        calls.push("conn:open");
+        await openGate.promise;
+      }
+      async joinChatRoom() {
+        calls.push("conn:join");
+      }
+      async leaveChatRoom() {
+        calls.push("conn:leave");
+      }
+      close() {
+        calls.push("conn:close");
+        throw new Error("closeSocket:fail task not found");
+      }
+      isOpened() {
+        return false;
+      }
+    },
+  };
+
+  const { useIMChannel } = await loadIMChannelModule();
+  const channel = useIMChannel({
+    liveId: { value: 123 },
+    loadCommentHistory() {},
+    handleWsMessage() {},
+    onOpen() {},
+  });
+
+  const firstInit = channel.initWebSocket();
+  await waitUntil(() => calls.includes("conn:open"), "first init did not reach SDK open");
+  await channel.closeLiveSocket();
+  openGate.resolve();
+  await firstInit;
+
+  assert.equal(calls.includes("conn:close"), false);
+  assert.equal(calls.includes("conn:leave"), false);
+  assert.equal(channel.imDebugState.value.lastEvent, "manual_closed");
+});
+
 test("live IM channel does not use object-shaped user fields as Easemob username", async () => {
   const openParams = [];
   globalThis.uni = {};

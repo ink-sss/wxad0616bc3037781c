@@ -327,3 +327,20 @@ test("mini live socket skips close when socket task was never opened", () => {
   assert.equal(socket.getState(), "closed");
   assert.equal(socket.getDebugState().lastCloseFail, "not_open");
 });
+
+test("mini live socket skips close while task is still connecting", () => {
+  let closeCalled = 0;
+  const socket = new MiniLiveSocket({ liveId: 123 });
+  socket.socket = {
+    close() {
+      closeCalled += 1;
+    },
+  };
+  socket.setState("connecting");
+
+  socket.close();
+
+  assert.equal(closeCalled, 0);
+  assert.equal(socket.getState(), "closed");
+  assert.equal(socket.getDebugState().lastCloseFail, "not_open");
+});

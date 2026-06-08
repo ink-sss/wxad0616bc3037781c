@@ -881,7 +881,7 @@ export class MiniLiveSocket {
       this.recordDebug('close_socket_skip', { closeReason: reason, lastCloseFail: 'no_socket' })
       return false
     }
-    if (!force && !this.open && this.state !== 'connecting' && this.state !== 'reconnecting') {
+    if (!force && !this.open) {
       this.recordDebug('close_socket_skip', { closeReason: reason, lastCloseFail: 'not_open' })
       return false
     }
@@ -964,7 +964,7 @@ export class MiniLiveSocket {
   }
 
   close() {
-    const shouldCloseSocketTask = !!this.socket && (this.open || this.state === 'connecting' || this.state === 'reconnecting')
+    const shouldCloseSocketTask = !!this.socket && this.open
     if (this.socket && this.open) this.sendLeave().catch?.(() => {})
     this.closed = true
     this.enterSentOnce = false

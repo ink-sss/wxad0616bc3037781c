@@ -58,6 +58,9 @@ test("player wrappers support muted autoplay and native sound restore", async ()
   assert.match(playerInitializer, /muted:\s*resolvePlaybackMuted\(opts,\s*isMuted\)/);
   assert.match(playerInitializer, /muted:\s*opts\.muted\s*===\s*true/);
   assert.match(playerInitializer, /function\s+playNativePlayer\(player,\s*preferLivePlayer,\s*opts\s*=\s*\{\},\s*reason\s*=\s*"init"\)/);
+  assert.match(playerInitializer, /function\s+scheduleNativePlayRetries\(player,\s*preferLivePlayer,\s*opts\s*=\s*\{\},\s*reason\s*=\s*"init"\)/);
+  assert.match(playerInitializer, /\[80,\s*240,\s*600\]\.forEach/);
+  assert.match(playerInitializer, /opts\.isReplay\s*\|\|\s*videoFrameReady\?\.value/);
   assert.match(playerInitializer, /mini_player_muted_autoplay/);
   assert.match(playerInitializer, /this\.muted\s*=\s*value\s*===\s*true/);
   assert.match(playerInitializer, /applyMiniProgramSoundPlayback/);

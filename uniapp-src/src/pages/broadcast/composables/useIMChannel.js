@@ -274,15 +274,19 @@ export function useIMChannel({ liveId, loadCommentHistory, handleWsMessage, onOp
     sdkEntry: "easemob-websdk/uniApp/Easemob-chat",
   });
 
-  function getIsOpened() {
-    if (!conn) return false;
+  function readConnectionOpened(targetConn = conn, fallbackOpened = imOpened) {
+    if (!targetConn) return false;
     try {
-      if (typeof conn.isOpened === "function") return !!conn.isOpened();
-      if ("isOpened" in conn) return !!conn.isOpened;
-      return imOpened;
+      if (typeof targetConn.isOpened === "function") return !!targetConn.isOpened() || !!fallbackOpened;
+      if ("isOpened" in targetConn) return !!targetConn.isOpened || !!fallbackOpened;
+      return !!fallbackOpened;
     } catch (_) {
-      return imOpened;
+      return !!fallbackOpened;
     }
+  }
+
+  function getIsOpened() {
+    return readConnectionOpened(conn, imOpened);
   }
 
   function updateDebug(patch = {}) {
@@ -348,6 +352,49 @@ export function useIMChannel({ liveId, loadCommentHistory, handleWsMessage, onOp
     }
   }
 
+  async function leaveOpenedChatrooms(targetConn, targetInfo, fallbackOpened = false) {
+    if (!targetConn || !targetInfo || !readConnectionOpened(targetConn, fallbackOpened)) return;
+    try {
+      if (targetInfo?.mainChatroomId) {
+        await targetConn.leaveChatRoom({ roomId: String(targetInfo.mainChatroomId) });
+      }
+      if (targetInfo?.subChatroomId) {
+        await targetConn.leaveChatRoom({ roomId: String(targetInfo.subChatroomId) });
+      }
+    } catch (_) {}
+  }
+
+  function closeOpenedConnection(targetConn, reason = "close", fallbackOpened = false) {
+    if (!targetConn || typeof targetConn.close !== "function") return false;
+    if (!readConnectionOpened(targetConn, fallbackOpened)) {
+      updateDebug({
+        lastEvent: "sdk_close_skipped",
+        lastClose: {
+          type: "client_close_skip",
+          reason,
+          message: "skip Easemob close before SDK connection is opened",
+        },
+        closeRequestedBy: reason,
+        expectedClose: true,
+        isOpened: false,
+      });
+      return false;
+    }
+    try {
+      targetConn.close();
+      return true;
+    } catch (error) {
+      updateDebug({
+        lastEvent: "sdk_close_error",
+        lastClose: toDebugError(error),
+        closeRequestedBy: reason,
+        expectedClose: true,
+        lastError: toDebugError(error),
+      });
+      return false;
+    }
+  }
+
   function buildAdapter() {
     const userStore = useUserStore();
     const uid = userStore.userInfo?.id || userStore.userInfo?.customerId || userStore.userInfo?.customer_id || 0;
@@ -403,6 +450,7 @@ export function useIMChannel({ liveId, loadCommentHistory, handleWsMessage, onOp
     if (!conn) return;
     const staleConn = conn;
     const staleInfo = imInfo;
+    const staleOpened = getIsOpened();
     conn = null;
     imInfo = null;
     imLiveId = "";
@@ -423,15 +471,8 @@ export function useIMChannel({ liveId, loadCommentHistory, handleWsMessage, onOp
       mainJoined: false,
       subJoined: false,
     });
-    try {
-      if (staleInfo?.mainChatroomId) {
-        await staleConn.leaveChatRoom({ roomId: String(staleInfo.mainChatroomId) });
-      }
-      if (staleInfo?.subChatroomId) {
-        await staleConn.leaveChatRoom({ roomId: String(staleInfo.subChatroomId) });
-      }
-    } catch (_) {}
-    staleConn.close();
+    await leaveOpenedChatrooms(staleConn, staleInfo, staleOpened);
+    closeOpenedConnection(staleConn, reason, staleOpened);
   }
 
   async function initWebSocket() {
@@ -656,6 +697,7 @@ export function useIMChannel({ liveId, loadCommentHistory, handleWsMessage, onOp
     if (!conn || !imInfo) return;
     const closingConn = conn;
     const closingInfo = imInfo;
+    const closingOpened = getIsOpened();
     updateDebug({
       lastEvent: "manual_close_start",
       lastClose: {
@@ -667,17 +709,12 @@ export function useIMChannel({ liveId, loadCommentHistory, handleWsMessage, onOp
       expectedClose: true,
     });
     buildAdapter().sendLeave();
-    if (closingInfo.mainChatroomId) {
-      await closingConn.leaveChatRoom({ roomId: String(closingInfo.mainChatroomId) }).catch(() => {});
-    }
-    if (closingInfo.subChatroomId) {
-      await closingConn.leaveChatRoom({ roomId: String(closingInfo.subChatroomId) }).catch(() => {});
-    }
+    await leaveOpenedChatrooms(closingConn, closingInfo, closingOpened);
     conn = null;
     imInfo = null;
     imLiveId = "";
     imOpened = false;
-    closingConn.close();
+    closeOpenedConnection(closingConn, "manual_close", closingOpened);
     imState.value = "closed";
     updateDebug({ state: "closed", lastEvent: "manual_closed", isOpened: false, mainJoined: false, subJoined: false });
   }

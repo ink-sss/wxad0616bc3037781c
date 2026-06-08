@@ -218,6 +218,12 @@ await wechatSilentLogin({ code, sourceClient: "mp-weixin" });
   commands. If the platform blocks that attempt, use the playback fallback/debug
   path rather than pre-muting the main room. Secondary-page mini-window playback
   may still autoplay muted and restore sound when returning to the room.
+- In `mp-weixin`, do not call native websocket or Easemob SDK `close()` before
+  the connection has reached an opened state. Closing a connecting or stale task
+  can surface as `closeSocket:fail task not found` from the WeChat SDK.
+- After creating the native HLS `video` node, replay the native sound/play
+  command on short timers until a frame is ready. A single play command in the
+  same tick as node creation can be too early and leave the poster visible.
 - Returning from a secondary-page live mini-window to an active live room must
   recreate the live HLS player at the live edge instead of resuming the stale
   paused page video node and waiting for it to drift back into sync.
