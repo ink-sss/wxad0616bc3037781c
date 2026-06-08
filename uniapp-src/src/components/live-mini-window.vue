@@ -7,7 +7,7 @@
     @touchmove.stop.prevent="onDragMove"
     @touchend.stop="onDragEnd"
   >
-    <view class="live-mini__video-wrap" @click.stop="restoreLive">
+    <view class="live-mini__video-wrap" @tap.stop="restoreLive">
       <video
         v-if="hasPlayableSource"
         id="liveMiniVideo"
@@ -20,15 +20,17 @@
         :show-fullscreen-btn="false"
         :enable-progress-gesture="false"
         object-fit="cover"
-        :muted="false"
+        :muted="muted"
         :autoplay="true"
+        :enable-play-gesture="true"
         playsinline
         webkit-playsinline
         x5-playsinline
         x5-video-player-type="h5"
         x5-video-player-fullscreen="false"
-        @play="isPlaying = true"
-        @pause="isPlaying = false"
+        @play="onMiniPlay"
+        @pause="onMiniPause"
+        @timeupdate="onMiniTimeUpdate"
       />
       <image
         v-if="hasPlayableSource && poster && !isPlaying"
@@ -37,7 +39,7 @@
         mode="aspectFill"
       />
       <image
-        v-else-if="poster"
+        v-else-if="!hasPlayableSource && poster"
         class="live-mini__poster"
         :src="poster"
         mode="aspectFill"
@@ -46,11 +48,30 @@
         <text class="live-mini__empty-text">直播间</text>
       </view>
 
-      <view class="live-mini__badge" @click.stop="restoreLive">
+      <view class="live-mini__touch-layer"></view>
+      <view
+        class="live-mini__badge"
+        @touchstart.stop="noopMiniTouch"
+        @touchend.stop="restoreLive"
+        @tap.stop="restoreLive"
+      >
         <text class="live-mini__badge-text">返回直播</text>
       </view>
-      <view class="live-mini__close" @click.stop="closeMini">×</view>
-      <view class="live-mini__play-state" v-if="hasPlayableSource && !isPlaying" @click.stop="playMini">
+      <view
+        class="live-mini__close"
+        @touchstart.stop="noopMiniTouch"
+        @touchend.stop="closeMini"
+        @tap.stop="closeMini"
+      >
+        ×
+      </view>
+      <view
+        class="live-mini__play-state"
+        v-if="hasPlayableSource && !isPlaying"
+        @touchstart.stop="noopMiniTouch"
+        @touchend.stop="playMini"
+        @tap.stop="playMini"
+      >
         <text class="live-mini__play-text">▶</text>
       </view>
     </view>
@@ -96,10 +117,15 @@ const {
   closeMini,
   restoreLive,
   playMini,
+  onMiniPlay,
+  onMiniPause,
+  onMiniTimeUpdate,
   onDragStart,
   onDragMove,
   onDragEnd,
 } = useLiveMiniWindow(props);
+
+function noopMiniTouch() {}
 </script>
 
 <style lang="scss" scoped>
@@ -131,11 +157,27 @@ const {
   z-index: 0;
 }
 
-.live-mini__poster--cover {
+.live-mini__video {
+  pointer-events: none;
+}
+
+.live-mini__poster,
+.live-mini__poster--cover,
+.live-mini__empty {
   position: absolute;
   left: 0;
   top: 0;
   z-index: 1;
+}
+
+.live-mini__touch-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 3;
+  width: 224rpx;
+  height: 316rpx;
+  background: transparent;
 }
 
 .live-mini__empty {
@@ -153,7 +195,7 @@ const {
   position: absolute;
   left: 10rpx;
   top: 10rpx;
-  z-index: 2;
+  z-index: 5;
   height: 34rpx;
   padding: 0 12rpx;
   border-radius: 17rpx;
@@ -180,7 +222,7 @@ const {
   position: absolute;
   right: 8rpx;
   top: 8rpx;
-  z-index: 2;
+  z-index: 5;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -196,7 +238,7 @@ const {
   position: absolute;
   left: 50%;
   top: 50%;
-  z-index: 2;
+  z-index: 5;
   width: 54rpx;
   height: 54rpx;
   transform: translate(-50%, -50%);

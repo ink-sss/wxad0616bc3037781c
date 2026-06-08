@@ -117,7 +117,7 @@ test("mini-program sound playback applies native unmute and play commands", asyn
   ]);
 });
 
-test("live mini-window state is saved as sound-enabled", async () => {
+test("live mini-window state keeps sound intent but autoplays muted", async () => {
   const broadcastMini = await readSource("src/pages/broadcast/composables/useLiveMiniWindow.js");
   const globalMini = await readSource("src/composables/useLiveMiniWindow.js");
   const globalMiniComponent = await readSource("src/components/live-mini-window.vue");
@@ -126,6 +126,15 @@ test("live mini-window state is saved as sound-enabled", async () => {
   assert.match(broadcastMini, /canPlayWithSound:\s*true/);
   assert.match(broadcastMini, /soundMutedByUser:\s*false/);
   assert.doesNotMatch(broadcastMini, /setMuted\(true\)/);
-  assert.match(globalMini, /const\s+muted\s*=\s*ref\(false\)/);
-  assert.match(globalMiniComponent, /:muted="false"/);
+  assert.match(globalMini, /const\s+muted\s*=\s*ref\(true\)/);
+  assert.match(globalMini, /muted\.value\s*=\s*true/);
+  assert.match(globalMiniComponent, /:muted="muted"/);
+});
+
+test("live mini-window removes poster overlay after playback starts", async () => {
+  const globalMiniComponent = await readSource("src/components/live-mini-window.vue");
+
+  assert.match(globalMiniComponent, /v-if="hasPlayableSource && poster && !isPlaying"/);
+  assert.match(globalMiniComponent, /v-else-if="!hasPlayableSource && poster"/);
+  assert.doesNotMatch(globalMiniComponent, /v-else-if="poster"/);
 });

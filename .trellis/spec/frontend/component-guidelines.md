@@ -69,3 +69,8 @@ Components in the uni-app source project are Vue single-file components under
   layout. In the uni-app source tree, those classes may not exist globally, so
   logo/search rows or tab rows can collapse into vertical block layout unless
   the component declares its own flex contract.
+- Letting a generic poster fallback keep covering a playable `<video>` after
+  playback starts. For mini-window or layered media components, gate poster
+  overlays with the actual playback state, for example
+  `hasPlayableSource && poster && !isPlaying`, and only use the static poster
+  fallback when there is no playable source.

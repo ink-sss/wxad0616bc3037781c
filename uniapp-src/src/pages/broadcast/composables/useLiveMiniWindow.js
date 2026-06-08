@@ -5,7 +5,7 @@ import {
 } from "@/utils/live-mini-state";
 
 /**
- * H5 小窗/离页播放状态同步。
+ * 小窗/离页播放状态同步。
  * 职责边界：保存/恢复悬浮播放相关上下文；不决定直播或录播应该播放哪一条源。
  */
 export function useLiveMiniWindow(ctx) {
@@ -44,7 +44,6 @@ export function useLiveMiniWindow(ctx) {
   }
 
   function syncLiveMiniWindowState(extra = {}) {
-    // #ifdef H5
     const force = extra.force === true;
     const now = Date.now();
     if (!force && now - lastLiveMiniStateSyncAt < 1500) return;
@@ -96,11 +95,9 @@ export function useLiveMiniWindow(ctx) {
       pushStatus: pushStatus.value,
       updatedAt: now,
     });
-    // #endif
   }
 
   function pauseLivePlaybackForMiniWindow() {
-    // #ifdef H5
     const currentTime = getCurrentMiniWindowTime();
     syncLiveMiniWindowState({
       force: true,
@@ -120,11 +117,9 @@ export function useLiveMiniWindow(ctx) {
       }
     } catch (e) {}
     isPlaying.value = false;
-    // #endif
   }
 
   function restoreLivePlaybackFromMiniWindow() {
-    // #ifdef H5
     const state = consumeLiveMiniReturnState(roomCode.value) || loadLiveMiniState(roomCode.value);
     if (!state) return;
     if (state.canPlayWithSound) {
@@ -170,7 +165,6 @@ export function useLiveMiniWindow(ctx) {
     if (typeof loadCommentHistory === "function") {
       loadCommentHistory();
     }
-    // #endif
   }
 
   function applyMiniResumeOptions(options = {}) {
