@@ -31,3 +31,15 @@ export default {
 </script>
 
 <style src="./app-global.scss" lang="scss"></style>
+<style lang="scss">
+  @import './static/style/common.scss';
+
+  @font-face {
+    font-family: 'DIN';
+    src: url('https://man.lqjy.cc/static/welfare/DIN.ttf') format('truetype');
+  }
+  @font-face {
+    font-family: 'Medium';
+    src: url('https://man.lqjy.cc/static/welfare/DIN-Medium.otf') format('truetype');
+  }
+</style>

@@ -154,7 +154,7 @@ const props = defineProps({
   commentLotteryWinners: { type: Array, default: () => [] },
   commentLotteryParticipants: { type: Array, default: () => [] },
   commentLotteryWinRecord: { type: Object, default: null },
-  prizeRecordUrl: { type: String, default: "/pages/prize-record/index" }
+  prizeRecordUrl: { type: String, default: "/pagesPlus/main/prize-record/index" }
 });
 
 const emit = defineEmits([

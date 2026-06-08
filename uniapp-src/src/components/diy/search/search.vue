@@ -59,7 +59,7 @@ export default {
     topBarTopSafe() { return typeof this.topBarTop === 'function' ? this.topBarTop() : 0 },
     topBarRightSafe() { return typeof this.topBarRight === 'function' ? this.topBarRight() : '0rpx' },
     gotoSearch() {
-      if (typeof this.gotoPage === 'function') this.gotoPage('/pages/product/search/search')
+      if (typeof this.gotoPage === 'function') this.gotoPage('/pagesPlus/main/product/search/search')
     }
   }
 }

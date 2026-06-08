@@ -47,12 +47,18 @@ function stripCssComments(source) {
   return output
 }
 
-function canOmitSpace(previous, next) {
+function canOmitSpace(previous, next, { insideCalc = false } = {}) {
   if (!previous) return true
+  if (insideCalc && ('+-'.includes(previous) || '+-'.includes(next))) return false
   if ('{}:;,>)'.includes(next)) return true
   if ('{}:;,(>'.includes(previous)) return true
   if ('+~'.includes(previous) || '+~'.includes(next)) return true
   return false
+}
+
+function getTrailingIdentifier(source) {
+  const match = source.match(/[-_a-zA-Z0-9]+$/)
+  return match ? match[0].toLowerCase() : ''
 }
 
 function minifyWxss(source) {
@@ -61,6 +67,8 @@ function minifyWxss(source) {
   let quote = ''
   let escaped = false
   let pendingSpace = false
+  let parenDepth = 0
+  const calcDepths = []
 
   for (const char of sourceWithoutComments) {
     if (quote) {
@@ -76,7 +84,7 @@ function minifyWxss(source) {
     }
 
     if (char === '"' || char === "'") {
-      if (pendingSpace && !canOmitSpace(output[output.length - 1], char)) output += ' '
+      if (pendingSpace && !canOmitSpace(output[output.length - 1], char, { insideCalc: calcDepths.length > 0 })) output += ' '
       pendingSpace = false
       quote = char
       output += char
@@ -88,12 +96,28 @@ function minifyWxss(source) {
       continue
     }
 
-    if (pendingSpace && !canOmitSpace(output[output.length - 1], char)) output += ' '
+    if (pendingSpace && !canOmitSpace(output[output.length - 1], char, { insideCalc: calcDepths.length > 0 })) output += ' '
     pendingSpace = false
+
+    if (char === '(') {
+      const startsCalc = getTrailingIdentifier(output) === 'calc'
+      output += char
+      parenDepth += 1
+      if (startsCalc) calcDepths.push(parenDepth)
+      continue
+    }
+
+    if (char === ')') {
+      output += char
+      if (calcDepths[calcDepths.length - 1] === parenDepth) calcDepths.pop()
+      parenDepth = Math.max(0, parenDepth - 1)
+      continue
+    }
+
     output += char
   }
 
-  return `${output.trim().replace(/;}/g, '}')}\n`
+  return output.trim().replace(/;}/g, '}')
 }
 
 function stripWxmlComments(source) {

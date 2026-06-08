@@ -20,28 +20,43 @@ async function loadMessageChannelModule() {
   return import(pathToFileURL(modulePath).href);
 }
 
-function installChannelStubs(calls) {
+function installChannelStubs(calls, options = {}) {
   globalThis.__useIMChannel = () => ({
-    imState: { value: "idle" },
+    imState: { value: options.imState || "idle" },
     async initWebSocket() {
       calls.push("im:init");
-      return true;
+      return options.imInitResult ?? true;
     },
     getLiveSocket() {
-      return { channel: "im" };
+      return {
+        channel: "im",
+        sendEnter() {
+          calls.push("im:enter");
+        },
+      };
     },
     closeLiveSocket() {
       calls.push("im:close");
     },
   });
   globalThis.__useLiveWebSocket = () => ({
-    wsState: { value: "idle" },
+    wsState: { value: options.wsState || "idle" },
+    wsDebugState: { value: options.wsDebugState || { lastEvent: "stub", lastSendOk: null } },
     async initWebSocket() {
       calls.push("ws:init");
-      return true;
+      return options.wsInitResult ?? true;
     },
     getLiveSocket() {
-      return { channel: "ws" };
+      return {
+        channel: "ws",
+        open: options.wsOpen ?? true,
+        getState() {
+          return options.wsSocketState || (options.wsOpen === false ? "connecting" : "open");
+        },
+        sendEnter() {
+          calls.push("ws:enter");
+        },
+      };
     },
     closeLiveSocket() {
       calls.push("ws:close");
@@ -49,7 +64,7 @@ function installChannelStubs(calls) {
   });
 }
 
-test("live groupType uses the third-party IM adapter for chat sending", async () => {
+test("live groupType matches H5 dual channel and sends chat through backend websocket", async () => {
   const calls = [];
   installChannelStubs(calls);
   const { useMessageChannel } = await loadMessageChannelModule();
@@ -61,13 +76,37 @@ test("live groupType uses the third-party IM adapter for chat sending", async ()
 
   await channel.initWebSocket("wss://live-ws");
 
-  assert.deepEqual(calls, ["im:init"]);
-  assert.deepEqual(channel.getLiveSocket(), { channel: "im" });
+  assert.deepEqual(calls, ["im:init", "ws:init"]);
+  assert.equal(channel.getLiveSocket()?.channel, "ws");
+  assert.equal(channel.channelDebugState.value.dualMode, true);
+  assert.equal(channel.channelDebugState.value.mode, "dual");
+  assert.equal(channel.channelDebugState.value.active, "im+ws");
+  assert.equal(channel.channelDebugState.value.sendChannel, "ws");
+  assert.equal(channel.channelDebugState.value.ws.lastEvent, "stub");
 });
 
-test("live groupType still initializes IM when backend websocket url is empty", async () => {
+test("live groupType uses IM send adapter while backend websocket is still connecting", async () => {
   const calls = [];
-  installChannelStubs(calls);
+  installChannelStubs(calls, { wsState: "connecting", wsOpen: false });
+  const { useMessageChannel } = await loadMessageChannelModule();
+
+  const channel = useMessageChannel({
+    roomGroupType: { value: 0 },
+    liveId: { value: 123 },
+  });
+
+  await channel.initWebSocket("wss://live-ws");
+
+  assert.deepEqual(calls, ["im:init", "ws:init"]);
+  assert.equal(channel.getLiveSocket()?.channel, "im");
+  assert.equal(channel.channelDebugState.value.dualMode, true);
+  assert.equal(channel.channelDebugState.value.wsState, "connecting");
+  assert.equal(channel.channelDebugState.value.sendChannel, "im");
+});
+
+test("live groupType keeps IM selected if backend websocket init returns false", async () => {
+  const calls = [];
+  installChannelStubs(calls, { wsInitResult: false });
   const { useMessageChannel } = await loadMessageChannelModule();
 
   const channel = useMessageChannel({
@@ -78,23 +117,15 @@ test("live groupType still initializes IM when backend websocket url is empty", 
   const result = await channel.initWebSocket("");
 
   assert.equal(result, true);
-  assert.deepEqual(calls, ["im:init"]);
-  assert.deepEqual(channel.getLiveSocket(), { channel: "im" });
+  assert.deepEqual(calls, ["im:init", "ws:init"]);
+  assert.equal(channel.getLiveSocket()?.channel, "im");
+  assert.equal(channel.channelDebugState.value.dualMode, false);
+  assert.equal(channel.channelDebugState.value.mode, "im");
 });
 
-test("live groupType does not fall back to backend websocket when IM init fails", async () => {
+test("live groupType falls back to backend websocket when IM init fails", async () => {
   const calls = [];
-  installChannelStubs(calls);
-  globalThis.__useIMChannel = () => ({
-    imState: { value: "error" },
-    async initWebSocket() {
-      calls.push("im:init");
-      return false;
-    },
-    getLiveSocket() {
-      return { channel: "im" };
-    },
-  });
+  installChannelStubs(calls, { imInitResult: false, imState: "error" });
   const { useMessageChannel } = await loadMessageChannelModule();
 
   const channel = useMessageChannel({
@@ -104,28 +135,16 @@ test("live groupType does not fall back to backend websocket when IM init fails"
 
   const result = await channel.initWebSocket("wss://live-ws");
 
-  assert.equal(result, false);
-  assert.deepEqual(calls, ["im:init"]);
-  assert.deepEqual(channel.getLiveSocket(), { channel: "im" });
+  assert.equal(result, true);
+  assert.deepEqual(calls, ["im:init", "ws:init"]);
+  assert.equal(channel.getLiveSocket()?.channel, "ws");
+  assert.equal(channel.channelDebugState.value.dualMode, false);
+  assert.equal(channel.channelDebugState.value.mode, "ws");
 });
 
-test("live groupType suppresses fallback enter on IM path", async () => {
+test("live groupType sends fallback enter through IM in dual mode", async () => {
   const calls = [];
-  installChannelStubs(calls);
-  globalThis.__useIMChannel = () => ({
-    imState: { value: "open" },
-    async initWebSocket() {
-      calls.push("im:init");
-      return true;
-    },
-    getLiveSocket() {
-      return {
-        sendEnter() {
-          calls.push("im:enter");
-        },
-      };
-    },
-  });
+  installChannelStubs(calls, { imState: "open" });
   const { useMessageChannel } = await loadMessageChannelModule();
 
   const channel = useMessageChannel({
@@ -136,7 +155,24 @@ test("live groupType suppresses fallback enter on IM path", async () => {
   await channel.initWebSocket("wss://live-ws");
   channel.sendFallbackEnter();
 
-  assert.deepEqual(calls, ["im:init"]);
+  assert.deepEqual(calls, ["im:init", "ws:init", "im:enter"]);
+});
+
+test("live groupType closes both channels in dual mode", async () => {
+  const calls = [];
+  installChannelStubs(calls);
+  const { useMessageChannel } = await loadMessageChannelModule();
+
+  const channel = useMessageChannel({
+    roomGroupType: { value: 0 },
+    liveId: { value: 123 },
+  });
+
+  await channel.initWebSocket("wss://live-ws");
+  channel.closeLiveSocket();
+
+  assert.deepEqual(calls, ["im:init", "ws:init", "im:close", "ws:close"]);
+  assert.equal(channel.channelDebugState.value.dualMode, false);
 });
 
 test("replay groupType keeps using websocket for timeline comments", async () => {
@@ -152,5 +188,5 @@ test("replay groupType keeps using websocket for timeline comments", async () =>
   await channel.initWebSocket("wss://live-ws");
 
   assert.deepEqual(calls, ["ws:init"]);
-  assert.deepEqual(channel.getLiveSocket(), { channel: "ws" });
+  assert.equal(channel.getLiveSocket()?.channel, "ws");
 });

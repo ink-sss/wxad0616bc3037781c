@@ -4,7 +4,11 @@
       <text class="section-title">{{ title }}</text>
       <view v-if="showLink" class="section-link" @click="emit('link')">
         <text class="section-link-text">{{ linkText }}</text>
-        <text class="section-link-arrow">&gt;</text>
+        <image
+          class="section-link-arrow"
+          src="https://man.lqjy.cc/static/icons/right.svg"
+          mode="aspectFit"
+        />
       </view>
     </view>
 
@@ -97,10 +101,14 @@ const variantClass = computed(() => {
   gap: 4rpx;
 }
 
-.section-link-text,
-.section-link-arrow {
+.section-link-text {
   font-size: 26rpx;
   color: #333937;
+}
+
+.section-link-arrow {
+  width: 22rpx;
+  height: 22rpx;
 }
 
 .section-grid {

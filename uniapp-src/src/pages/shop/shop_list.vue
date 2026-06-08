@@ -135,7 +135,7 @@ export default {
       else this.no_more = true
     },
     gotoShop(shopSupplierId) {
-      const url = '/pages/shop/shop?shop_supplier_id=' + shopSupplierId
+      const url = '/pagesPlus/main/shop/shop?shop_supplier_id=' + shopSupplierId
       if (typeof this.gotoPage === 'function') this.gotoPage(url)
       else uni.navigateTo({ url })
     }

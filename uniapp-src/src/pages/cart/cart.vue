@@ -22,7 +22,7 @@
                       <checkbox class="checkbox" color="red" :checked="supplierItem.checked" value="cb" />
                     </label>
                   </checkbox-group>
-                  <view v-if="store_open" class="d-a-c" @tap="gotoPage('/pages/shop/shop?shop_supplier_id=' + supplierItem.supplier.shop_supplier_id)">
+                  <view v-if="store_open" class="d-a-c" @tap="gotoPage('/pagesPlus/main/shop/shop?shop_supplier_id=' + supplierItem.supplier.shop_supplier_id)">
                     <view class="icon iconfont icon-stores"></view>
                     <text class="f28 fb gray3">{{ supplierItem.supplier.name }}</text>
                   </view>
@@ -288,36 +288,6 @@ export default {
 
 .pb100 {
   padding-bottom: 100rpx;
-}
-
-.d-b-c {
-  align-items: center;
-  display: flex;
-  justify-content: space-between;
-}
-
-.d-c-c {
-  align-items: center;
-  display: flex;
-  justify-content: center;
-}
-
-.d-a-c,
-.d-s-c {
-  align-items: center;
-  display: flex;
-  justify-content: flex-start;
-}
-
-.d-e-c {
-  align-items: center;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.flex-1 {
-  flex: 1;
-  min-width: 0;
 }
 
 .f24 { font-size: 24rpx; }

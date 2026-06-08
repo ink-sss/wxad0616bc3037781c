@@ -15,6 +15,6 @@ export async function logoutAndRedirect(redirectUrl = '', targetTenantId = 0) {
   const queryParts = []
   if (redirectUrl) queryParts.push(`redirect=${encodeURIComponent(redirectUrl)}`)
   if (targetTenantId) queryParts.push(`tenantId=${encodeURIComponent(targetTenantId)}`)
-  const url = `/pages/login/login${queryParts.length ? `?${queryParts.join('&')}` : ''}`
+  const url = `/pagesPlus/main/login/login${queryParts.length ? `?${queryParts.join('&')}` : ''}`
   uni.reLaunch({ url })
 }

@@ -34,19 +34,19 @@
         <view :class="['bg-base', 'bg-base-' + styleType]"></view>
         <view class="diy-Base" :style="baseStyle">
           <view class="list column-4">
-            <view class="item" @tap="openLink('/pages/user/my-wallet/my-wallet')">
+            <view class="item" @tap="openLink('/pagesPlus/main/user/my-wallet/my-wallet')">
               <view class="item-text num">{{ hasUser ? detail.balance : 0 }}</view>
               <view class="item-text text-ellipsis">账户余额</view>
             </view>
-            <view class="item item-center" @tap="openLink('/pages/user/points/points')">
+            <view class="item item-center" @tap="openLink('/pagesPlus/main/user/points/points')">
               <view class="item-text num">{{ hasUser ? detail.points : 0 }}</view>
               <view class="item-text text-ellipsis">{{ pointsText }}</view>
             </view>
-            <view class="item" @tap="openLink('/pages/user/my-coupon/my-coupon')">
+            <view class="item" @tap="openLink('/pagesPlus/main/user/my-coupon/my-coupon')">
               <view class="item-text num">{{ userInfo.coupon || 0 }}</view>
               <view class="item-text text-ellipsis">优惠券</view>
             </view>
-            <view class="item" @tap="openLink('/pages/user/myStoreCoupon/myStoreCoupon')">
+            <view class="item" @tap="openLink('/pagesPlus/main/user/myStoreCoupon/myStoreCoupon')">
               <view class="item-text num">{{ userInfo.storeCouponCount || 0 }}</view>
               <view class="item-text text-ellipsis">福利券</view>
             </view>
@@ -130,7 +130,7 @@ export default {
       else uni.navigateTo({ url })
     },
     openProfile() {
-      this.openLink('/pages/user/set/set')
+      this.openLink('/pagesPlus/main/user/set/set')
     },
     login() {
       if (typeof this.doLogin === 'function') this.doLogin()
@@ -324,9 +324,4 @@ export default {
   color: #fff;
 }
 
-.text-ellipsis {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
 </style>

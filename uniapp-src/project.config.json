@@ -1,5 +1,5 @@
 {
-  "miniprogramRoot": "dist/dev/mp-weixin/",
+  "miniprogramRoot": "dist/build/mp-weixin/",
   "__compileDebugInfo__": {
     "useSummer": true
   },
@@ -7,9 +7,9 @@
     "es6": false,
     "postcss": false,
     "compileWorklet": false,
-    "minified": false,
-    "uglifyFileName": false,
-    "uploadWithSourceMap": true,
+    "minified": true,
+    "uglifyFileName": true,
+    "uploadWithSourceMap": false,
     "enhance": false,
     "packNpmManually": false,
     "packNpmRelationList": [],
@@ -41,7 +41,7 @@
       },
       {
         "type": "folder",
-        "value": "dist/build"
+        "value": "dist/dev"
       },
       {
         "type": "folder",

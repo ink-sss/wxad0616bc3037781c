@@ -73,9 +73,6 @@ export default {
 .content { position: absolute; left: 50%; top: 20vh; width: 80%; max-height: 900rpx; min-height: 200rpx; transform: translate(-50%, 1980rpx); transition: transform .2s cubic-bezier(0,0,.25,1); border-radius: 12rpx; background: #fff; overflow: hidden; }
 .bottom-panel.open .content { transform: translate(-50%, 0); }
 .hd { position: relative; height: 90rpx; font-size: 36rpx; line-height: 90rpx; font-weight: 700; }
-.d-c-c { display: flex; align-items: center; justify-content: center; }
-.d-s-s { display: flex; align-items: flex-start; justify-content: flex-start; }
-.flex-1 { flex: 1; min-width: 0; }
 .service-item { padding: 30rpx; box-sizing: border-box; }
 .ml30 { margin-left: 30rpx; }
 .mb10 { margin-bottom: 10rpx; }

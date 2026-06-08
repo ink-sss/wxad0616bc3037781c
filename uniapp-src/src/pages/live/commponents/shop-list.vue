@@ -75,7 +75,7 @@ export default {
       if (item.product_id > 0) {
         this.$emit('goShop', item.product_id, item.spec_sku_id)
       } else if (item.link_type === 1 && item.link_url) {
-        uni.navigateTo({ url: `/pages/webview/webview?url=${encodeURIComponent(item.link_url)}` })
+        uni.navigateTo({ url: `/pagesPlus/main/webview/webview?url=${encodeURIComponent(item.link_url)}` })
       } else if (item.link_url) {
         // TODO:migration Validate shortLink/appId route split for live external products.
         navigateToMiniProgram({

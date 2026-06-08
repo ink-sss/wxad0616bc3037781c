@@ -30,7 +30,7 @@ const TOKEN_PARAM_KEYS = [
   "xToken",
 ];
 const CUSTOMER_KEYS = ["h5_user_info", "h5Customer", "customer", "userInfo", "user_info"];
-const LOGIN_ROUTES = ["pages/login/login", "pages/login/weblogin", "pages/login/openlogin"];
+const LOGIN_ROUTES = ["pagesPlus/main/login/login", "pagesPlus/main/login/weblogin", "pagesPlus/main/login/openlogin"];
 const QUERY_SOURCE_KEYS = ["redirect", "url", "href", "path", "scene", "query", "queryString", "rawQuery"];
 
 // Mini Program has no H5 DTE/cross-domain iframe equivalent. We keep bindId as
@@ -403,7 +403,7 @@ export function clearH5AuthSession() {
   } catch (error) {}
 }
 
-export function normalizeRedirectUrl(rawUrl = "", fallback = "/pages/center/index") {
+export function normalizeRedirectUrl(rawUrl = "", fallback = "/pagesPlus/main/center/index") {
   if (!rawUrl) return fallback;
 
   let value = decodeRepeatedly(rawUrl);
@@ -504,7 +504,7 @@ export function clearH5AuthContext() {
   removeStorage(AUTH_CONTEXT_KEY);
 }
 
-export function getCurrentPageUrl(fallback = "/pages/center/index") {
+export function getCurrentPageUrl(fallback = "/pagesPlus/main/center/index") {
   try {
     const pages = getCurrentPages();
     const currentPage = pages[pages.length - 1];
@@ -517,7 +517,7 @@ export function getCurrentPageUrl(fallback = "/pages/center/index") {
   }
 }
 
-export function saveCurrentPageForNativeLogin(fallback = "/pages/center/index") {
+export function saveCurrentPageForNativeLogin(fallback = "/pagesPlus/main/center/index") {
   try {
     const pages = getCurrentPages();
     const currentPage = pages[pages.length - 1];
@@ -561,7 +561,7 @@ export function buildRedirectFromH5AuthContext(input = {}) {
   if (!target && (context.roomCode || context.roomId || context.liveId)) {
     target = buildBroadcastEntryUrl(context);
   }
-  if (!target) target = "/pages/center/index";
+  if (!target) target = "/pagesPlus/main/center/index";
 
   target = appendQuery(target, {
     roomCode: context.roomCode,
@@ -591,12 +591,12 @@ export function buildH5LoginUrl(input = {}) {
     videoId: context.videoId,
   };
   const query = encodeQuery(params);
-  return `/pages/login/login${query ? `?${query}` : ""}`;
+  return `/pagesPlus/main/login/login${query ? `?${query}` : ""}`;
 }
 
 export function redirectToH5Login(input = {}) {
-  saveCurrentPageForNativeLogin(input.redirect || "/pages/center/index");
-  const url = "/pages/login/login";
+  saveCurrentPageForNativeLogin(input.redirect || "/pagesPlus/main/center/index");
+  const url = "/pagesPlus/main/login/login";
   uni.navigateTo({
     url,
     fail() {
@@ -612,10 +612,10 @@ export function redirectToH5Login(input = {}) {
 }
 
 export function redirectToNativeLogin(input = {}) {
-  saveCurrentPageForNativeLogin(input.redirect || "/pages/center/index");
-  let url = "/pages/login/login";
+  saveCurrentPageForNativeLogin(input.redirect || "/pagesPlus/main/center/index");
+  let url = "/pagesPlus/main/login/login";
   try {
-    if (uni.getStorageSync("me")) url = "/pages/login/anchorlogin";
+    if (uni.getStorageSync("me")) url = "/pagesPlus/main/login/anchorlogin";
   } catch (error) {}
 
   uni.navigateTo({
@@ -734,7 +734,7 @@ export function ensureH5Authenticated(input = {}) {
 export function ensureH5PageAuth(query = {}, fallbackRedirect = "") {
   return ensureH5Authenticated({
     ...query,
-    redirect: fallbackRedirect || getCurrentPageUrl("/pages/center/index"),
+    redirect: fallbackRedirect || getCurrentPageUrl("/pagesPlus/main/center/index"),
   });
 }
 

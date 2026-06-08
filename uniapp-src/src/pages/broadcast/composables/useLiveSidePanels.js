@@ -95,7 +95,7 @@ export function resolveCenterAction(type, context = {}) {
       "&avatar=" +
       encodeURIComponent(anchorAvatar || "") +
       (withLiveQuery("").replace(/^\?/, "&"));
-    return { kind: "navigate", url: "/pages/center/index?" + q.replace(/^&/, "") };
+    return { kind: "navigate", url: "/pagesPlus/main/center/index?" + q.replace(/^&/, "") };
   }
   if (type === "complaint") {
     return { kind: "complaint" };
@@ -104,11 +104,11 @@ export function resolveCenterAction(type, context = {}) {
     return { kind: "address" };
   }
   if (type === "prizeRecord") {
-    return { kind: "navigate", url: withLiveQuery("/pages/prize-record/index") };
+    return { kind: "navigate", url: withLiveQuery("/pagesPlus/main/prize-record/index") };
   }
   if (type === "invitationRecord") {
     if (!liveId) return { kind: "toast", title: "请从直播间进入" };
-    return { kind: "navigate", url: withLiveQuery(`/pages/invitation-record/index?roomId=${liveId}`) };
+    return { kind: "navigate", url: withLiveQuery(`/pagesPlus/main/invitation-record/index?roomId=${liveId}`) };
   }
   const q =
     "name=" +
@@ -116,7 +116,7 @@ export function resolveCenterAction(type, context = {}) {
     "&avatar=" +
     encodeURIComponent(anchorAvatar || "") +
     (withLiveQuery("").replace(/^\?/, "&"));
-  return { kind: "navigate", url: `/pages/center/index?${q.replace(/^&/, "")}` };
+  return { kind: "navigate", url: `/pagesPlus/main/center/index?${q.replace(/^&/, "")}` };
 }
 
 export function useLiveSidePanels({
@@ -185,7 +185,7 @@ export function useLiveSidePanels({
         ? `&tenantId=${liveTenantId.value}`
         : "";
       uniRuntime.navigateTo({
-        url: `/pages/login/login?redirect=${redirect}${tenantParam}`,
+        url: `/pagesPlus/main/login/login?redirect=${redirect}${tenantParam}`,
       });
       return;
     }

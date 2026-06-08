@@ -393,7 +393,7 @@ function onExpressNoClick() {
 
 function openAddressSelect() {
   if (!orderDetail.value?.canSelectAddress) return;
-  uni.navigateTo({ url: "/pages/address/index?select=1" });
+  uni.navigateTo({ url: "/pagesPlus/main/address/index?select=1" });
 }
 
 async function onAddressSelected(addressId) {

@@ -128,7 +128,6 @@
 
 <script setup>
 import { ref, computed, watch } from "vue";
-import QRCode from "qrcode";
 import { getLiveDistributorShareUrl } from "@/services/live-share";
 import { readBindId } from "@/services/h5-auth-context";
 import { saveImageUrlToAlbum } from "@/platform/weixin/file";
@@ -250,26 +249,25 @@ const linkStatusText = computed(() => {
 
 const qrcodeSrc = ref("");
 
-// [2026-05-21] 二维码本地生成：跟随 currentLink / resolvedLongLink 变化，调 qrcode 包生成 dataURL
-//   原实现走第三方 api.qrserver.com，国内不稳定且跨域会影响长按保存
+function buildQrcodeImageUrl(text) {
+  const value = String(text || "").trim();
+  if (!value) return "";
+  return `https://api.qrserver.com/v1/create-qr-code/?size=360x360&margin=1&data=${encodeURIComponent(value)}`;
+}
+
+function renderQrcode(text) {
+  if (!text || !props.visible || activePanel.value !== "qrcode") {
+    qrcodeSrc.value = "";
+    return;
+  }
+  qrcodeSrc.value = buildQrcodeImageUrl(text);
+}
+
+// [2026-06-06] 主包不再打包 qrcode 库；打开二维码面板时用图片 URL 渲染。
 watch(
-  [() => currentLink.value, () => resolvedLongLink.value],
-  async ([cur, long]) => {
-    const text = cur || long;
-    if (!text) {
-      qrcodeSrc.value = "";
-      return;
-    }
-    try {
-      qrcodeSrc.value = await QRCode.toDataURL(text, {
-        width: 360,
-        margin: 1,
-        color: { dark: "#000000", light: "#FFFFFF" },
-      });
-    } catch (e) {
-      console.warn("[share-popup] QR generate fail:", e);
-      qrcodeSrc.value = "";
-    }
+  [() => currentLink.value, () => resolvedLongLink.value, () => props.visible, () => activePanel.value],
+  ([cur, long]) => {
+    renderQrcode(cur || long);
   },
   { immediate: true },
 );
@@ -411,10 +409,10 @@ function withReplayParams(url) {
 
 function navigateToInvitation() {
   uni.navigateTo({
-    url: "/pages/invitation/index",
+    url: "/pagesPlus/main/invitation/index",
     fail: () => {
       uni.redirectTo({
-        url: "/pages/invitation/index",
+        url: "/pagesPlus/main/invitation/index",
         fail: () => {
           uni.showToast({ title: "邀请函打开失败", icon: "none" });
         },

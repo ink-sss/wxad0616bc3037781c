@@ -294,7 +294,7 @@ export function useLivePurchase({
         ? `&tenantId=${liveTenantId.value}`
         : "";
       uniRuntime.navigateTo({
-        url: `/pages/login/login?redirect=${redirect}${tenantParam}`,
+        url: `/pagesPlus/main/login/login?redirect=${redirect}${tenantParam}`,
       });
       return;
     }

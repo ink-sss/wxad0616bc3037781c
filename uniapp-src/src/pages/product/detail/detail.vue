@@ -133,11 +133,11 @@
                 <text class="num">{{ detail.product_sku.product_price }}</text>
                 <text v-if="detail.spec_type === 20 && detail.product_sku.product_price !== detail.product_max_price" class="num"> - {{ detail.product_max_price }}</text>
               </view>
-              <view class="share-box">
+              <!-- <view class="share-box">
                 <button class="d-c d-c-c" @tap="showShare">
                   <image class="share_img" mode="aspectFit" src="https://man.lqjy.cc/static/icon/fx.png" />
                 </button>
-              </view>
+              </view> -->
               <view v-if="showFavorite" class="sc-box">
                 <button class="d-c d-c-c" @tap="favorite">
                   <image class="share_img" :class="{ img_gray: !is_fav }" mode="aspectFit" src="https://man.lqjy.cc/static/icon/sc.png" />
@@ -260,14 +260,14 @@
     <view class="btns-wrap">
       <view class="icon-box d-c-c">
         <button class="d-c-c d-c bg-white" @tap="gotoPage('/pages/index/index')">
-          <text class="btn_btom pr icon iconfont icon-Homehomepagemenu gray3" style="height:50rpx;line-height:60rpx"></text>
-          <text class="f22 gray3" style="height:50rpx;line-height:40rpx">首页</text>
+          <image class="detail-tab-icon" mode="aspectFit" src="/static/icon/detail-home.png" />
+          <text class="detail-tab-text f22 gray3">首页</text>
         </button>
       </view>
       <view class="icon-box d-c-c">
         <button class="pr d-c-c d-c bg-white" @tap="gotocart">
-          <text class="gray3 icon iconfont icon-gouwuche1" style="font-size:36rpx;height:50rpx;line-height:60rpx"></text>
-          <text class="f22 gray3" style="height:50rpx;line-height:40rpx">购物车</text>
+          <image class="detail-tab-icon" mode="aspectFit" src="/static/icon/detail-cart.png" />
+          <text class="detail-tab-text f22 gray3">购物车</text>
           <text v-if="cart_total_num > 0" class="cart_num">{{ cart_total_num }}</text>
         </button>
       </view>
@@ -812,7 +812,7 @@ export default {
       this.isCoupon = false
     },
     goto_shop() {
-      this.gotoPage('/pages/shop/shop?shop_supplier_id=' + this.shop_supplier_id)
+      this.gotoPage('/pagesPlus/main/shop/shop?shop_supplier_id=' + this.shop_supplier_id)
     },
     favorite() {
       return false
@@ -841,7 +841,7 @@ export default {
     },
     contackBack() {},
     onKefuClick() {
-      uni.navigateTo({ url: '/pages/webview/webview?url=' + encodeURIComponent(this.chatSetting.link) })
+      uni.navigateTo({ url: '/pagesPlus/main/webview/webview?url=' + encodeURIComponent(this.chatSetting.link) })
     },
     onWxKefuClick() {
       openCustomerServiceChat({
@@ -865,14 +865,6 @@ export default {
 .product-detail { min-height: 100vh; background: #f7f7f7; padding-bottom: 120rpx; }
 .pr { position: relative; }
 .ww100 { width: 100%; }
-.flex-1 { flex: 1; min-width: 0; }
-.d-c { display: flex; flex-direction: column; }
-.d-s-c { display: flex; align-items: center; justify-content: flex-start; }
-.d-s-s { display: flex; align-items: flex-start; justify-content: flex-start; }
-.d-c-c { display: flex; align-items: center; justify-content: center; }
-.d-e-c { display: flex; align-items: center; justify-content: flex-end; }
-.d-b-c { display: flex; align-items: center; justify-content: space-between; }
-.d-b-s { display: flex; align-items: flex-start; justify-content: space-between; }
 .tc { text-align: center; }
 .bg-white { background: #fff; }
 .p30 { padding: 30rpx; }
@@ -903,9 +895,6 @@ export default {
 .redF11 { color: #f11e0b; }
 .line-h-50 { line-height: 50rpx; }
 .lh150 { line-height: 1.5; }
-.o-h { overflow: hidden; }
-.text-ellipsis { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.text-ellipsis-2 { display: -webkit-box; overflow: hidden; text-overflow: ellipsis; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
 .border-b-e { border-bottom: 1rpx solid #eee; }
 .border-b-d9 { border-bottom: 1rpx solid #d9d9d9; }
 .header { position: fixed; left: 0; right: 0; top: 0; z-index: 30; pointer-events: none; }
@@ -2090,8 +2079,16 @@ button.active-btn:after {
     height: 100rpx;
 }
 
-.btns-wrap .icon-box text {
-    line-height: 1.2;
+.btns-wrap .icon-box .detail-tab-text {
+    height: 32rpx;
+    line-height: 32rpx;
+    margin-top: 4rpx;
+}
+
+.btns-wrap .detail-tab-icon {
+    display: block;
+    height: 38rpx;
+    width: 38rpx;
 }
 
 .btns-wrap button.add-cart,

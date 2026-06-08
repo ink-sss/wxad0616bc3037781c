@@ -4,7 +4,7 @@
     class="live-im-debug"
     @click.stop="emitCopy"
   >
-    <cover-view class="live-im-debug__title">IM调试</cover-view>
+    <cover-view class="live-im-debug__title">消息调试</cover-view>
     <cover-view class="live-im-debug__summary">{{ summary }}</cover-view>
     <cover-view class="live-im-debug__actions">
       <cover-view

@@ -3,8 +3,8 @@ import { ref } from "vue";
 import { getImToken } from "@/api/live.js";
 import { useUserStore } from "@/stores/user";
 
-const EASEMOB_WS_URL = "wss://im-api-wechat.easemob.com/websocket";
-const EASEMOB_API_URL = "https://a1.easemob.com";
+const EASEMOB_WS_URL = "wss://ngi-im-api-wechat.easemob.com/websocket";
+const EASEMOB_API_URL = "https://ngi-a1.easemob.com";
 
 function muteEasemobLogger(loggerInstance) {
   if (!loggerInstance) return;
@@ -229,7 +229,8 @@ function normalizeIMMessage(data, customEvent, from) {
 
 /**
  * 环信 IM 消息通道（直播间专用，GroupType=0）。
- * 发送交互与 H5 直播间保持一致：进入环信聊天室，弹幕通过 custom chat 消息直发三方 IM。
+ * 对齐 H5 直播间：负责进入环信聊天室、接收 IM 事件，以及必要时向 IM 补发 enter。
+ * 直播弹幕上行路径由 useMessageChannel 按双通道规则选择。
  */
 export function useIMChannel({ liveId, loadCommentHistory, handleWsMessage, onOpen }) {
   let conn = null;

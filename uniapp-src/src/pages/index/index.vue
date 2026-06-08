@@ -33,8 +33,6 @@
     <home-push v-if="is_homepush" :homepush-data="homepush_data" @close="is_homepush = false" />
     <search-product v-if="showSearch" :is-show="showSearch" @close="closeSearch" />
     <live-tab />
-    <view @click="clickBtn">11234</view>
-
     <tab-bar />
   </view>
 </template>
@@ -228,7 +226,7 @@ export default {
       }
     },
     gotoWriteOff(orderNo) {
-      const url = '/pages/store/clerkorder?order_no=' + encodeURIComponent(orderNo || '')
+      const url = '/pagesPlus/main/store/clerkorder?order_no=' + encodeURIComponent(orderNo || '')
       if (typeof this.gotoPage === 'function') this.gotoPage(url)
       else uni.navigateTo({ url })
     },

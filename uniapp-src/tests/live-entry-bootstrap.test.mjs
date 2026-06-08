@@ -200,7 +200,7 @@ test("missing token redirects to login and keeps original broadcast query", asyn
   assert.equal(initCalls.length, 0);
   assert.equal(redirects.length, 1);
   const url = redirects[0].url;
-  assert.match(url, /^\/pages\/login\/login\?/);
+  assert.match(url, /^\/pagesPlus\/main\/login\/login\?/);
   assert.match(decodeURIComponent(url), /\/pages\/broadcast\/entry\?roomCode=mrdrawwfd4wq/);
   assert.match(decodeURIComponent(url), /tenantId=15/);
   assert.match(decodeURIComponent(url), /liveType=replay/);

@@ -1,3 +1,5 @@
+import PageSpyModule from '@huolala-tech/page-spy-wechat'
+
 let realPageSpy = null
 const pageSpyProxy = {
   showPanel(...args) {
@@ -8,26 +10,19 @@ const pageSpyProxy = {
   },
 }
 let $pageSpy = __ENABLE_PAGE_SPY__ ? pageSpyProxy : null
-let loadingPageSpy = false
 
 export function initPageSpy() {
   if (!__ENABLE_PAGE_SPY__) return null
-  if (realPageSpy || loadingPageSpy) return $pageSpy
-  loadingPageSpy = true
-  import('@huolala-tech/page-spy-wechat')
-    .then((module) => {
-      const PageSpy = module.default || module
-      realPageSpy = new PageSpy({
-        api: 'pagespy.cyfwork.cn',
-      })
-      $pageSpy = pageSpyProxy
+  if (realPageSpy) return $pageSpy
+  try {
+    const PageSpy = PageSpyModule.default || PageSpyModule
+    realPageSpy = new PageSpy({
+      api: 'pagespy.cyfwork.cn',
     })
-    .catch(() => {
-      realPageSpy = null
-    })
-    .finally(() => {
-      loadingPageSpy = false
-    })
+    $pageSpy = pageSpyProxy
+  } catch (error) {
+    realPageSpy = null
+  }
   return $pageSpy
 }
 

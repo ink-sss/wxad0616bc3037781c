@@ -96,7 +96,7 @@ const props = defineProps({
   },
   recordUrl: {
     type: String,
-    default: "/pages/prize-record/index"
+    default: "/pagesPlus/main/prize-record/index"
   }
 });
 

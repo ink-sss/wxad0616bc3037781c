@@ -40,7 +40,7 @@ export function extractMiniProgramRoute(route = '') {
 
 export function normalizeAppRoute(route = '') {
   const value = String(route || '').trim()
-  if (!value) return '/pages/prize-record/index'
+  if (!value) return '/pagesPlus/main/prize-record/index'
   const extracted = extractMiniProgramRoute(value)
   if (extracted) return extracted
   if (/^https?:\/\//i.test(value)) return value
@@ -61,6 +61,6 @@ export function navigateWithH5Fallback(route = '') {
   })
 }
 
-export function navigateToPrizeRecord(route = '/pages/prize-record/index') {
-  navigateWithH5Fallback(route || '/pages/prize-record/index')
+export function navigateToPrizeRecord(route = '/pagesPlus/main/prize-record/index') {
+  navigateWithH5Fallback(route || '/pagesPlus/main/prize-record/index')
 }

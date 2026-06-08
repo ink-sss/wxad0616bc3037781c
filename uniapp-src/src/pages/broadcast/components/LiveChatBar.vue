@@ -93,7 +93,7 @@
     <view v-else class="toolbar-icons">
       <view
         v-if="roomSetting.showUserCenter !== 0"
-        class="tool-btn live-toolbar-center-btn"
+        class="tool-btn d-c-c live-toolbar-center-btn"
         @click="emit('center')"
         ><image
           class="tool-icon-img"
@@ -102,7 +102,7 @@
       /></view>
       <view
         v-if="!useLiveToolbar && variant === 'portrait' && roomSetting.showProduct !== 0"
-        class="tool-btn"
+        class="tool-btn d-c-c"
         @click="emit('product')"
         ><image
           class="tool-icon-img"
@@ -137,7 +137,7 @@
         </view>
         <view
           v-if="useLiveToolbar"
-          class="like sectionli tool-btn tool-btn-like"
+          class="like sectionli tool-btn d-c-c tool-btn-like"
           @click="emit('like')"
         >
           <view class="sectionliImg like_container">
@@ -151,7 +151,7 @@
         </view>
         <view
           v-else
-          class="tool-btn tool-btn-like"
+          class="tool-btn d-c-c tool-btn-like"
           @click="emit('like')"
         >
           <image
@@ -689,9 +689,6 @@ defineExpose({
   height: 74rpx;
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 .bottom-bar--portrait.bottom-bar--live-toolbar {
   padding-bottom: calc(10rpx + env(safe-area-inset-bottom));
@@ -823,8 +820,5 @@ defineExpose({
   height: 74rpx;
   border-radius: 50%;
   background: #f0f0f4;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 </style>

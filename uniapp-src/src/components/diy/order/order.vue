@@ -126,9 +126,4 @@ export default {
   top: -10rpx;
 }
 
-.text-ellipsis {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
 </style>

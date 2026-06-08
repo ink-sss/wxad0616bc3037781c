@@ -36,12 +36,10 @@
             />
           </view>
         </view>
-        <wd-picker
-          v-model="regionValue"
-          :columns="regionColumns"
-          :column-change="onRegionColumnChange"
-          use-default-slot
-          @confirm="onRegionConfirm"
+        <picker
+          mode="region"
+          :value="regionValue"
+          @change="onRegionConfirm"
         >
           <view class="form-row form-row-arrow">
             <text class="row-label">所在地区</text>
@@ -53,7 +51,7 @@
               <text class="row-arrow">›</text>
             </view>
           </view>
-        </wd-picker>
+        </picker>
         <view class="form-row">
           <text class="row-label">详细地址</text>
           <input
@@ -83,7 +81,6 @@
 import { reactive, computed, watch, ref } from "vue";
 import BottomSheetPopup from "@/components/bottom-sheet-popup.vue";
 import { saveAddressForm } from "@/services/address-form";
-import areaData from "@/utils/area.json";
 
 const props = defineProps({
   visible: { type: Boolean, default: false },
@@ -96,82 +93,14 @@ const emit = defineEmits(["close", "saved"]);
 
 const editId = computed(() => props.editData?.id || 0);
 
-function mapAreaOptions(list = []) {
-  return list.map((item) => ({
-    label: item.name,
-    value: item.code,
-  }));
-}
-
-function getProvinceList() {
-  return areaData || [];
-}
-
-function getCityList(provinceCode) {
-  return (
-    getProvinceList().find((item) => item.code === provinceCode)?.children || []
-  );
-}
-
-function getDistrictList(provinceCode, cityCode) {
-  return (
-    getCityList(provinceCode).find((item) => item.code === cityCode)
-      ?.children || []
-  );
-}
-
-function findAreaByCodes(codes = []) {
-  const [provinceCode, cityCode, districtCode] = codes;
-  const province = getProvinceList().find((item) => item.code === provinceCode);
-  const city = (province?.children || []).find(
-    (item) => item.code === cityCode,
-  );
-  const district = (city?.children || []).find(
-    (item) => item.code === districtCode,
-  );
-  return { province, city, district };
-}
-
-function findCodesByNames(provinceName, cityName, districtName) {
-  const province = getProvinceList().find((item) => item.name === provinceName);
-  const city = (province?.children || []).find(
-    (item) => item.name === cityName,
-  );
-  const district = (city?.children || []).find(
-    (item) => item.name === districtName,
-  );
-  if (!province || !city || !district) return [];
-  return [province.code, city.code, district.code];
-}
-
 const regionValue = ref([]);
-const regionColumns = ref([]);
 
-function setRegionColumns(codes = []) {
-  const provinceList = getProvinceList();
-  const provinceCode = codes[0] || provinceList[0]?.code || "";
-  const cityList = getCityList(provinceCode);
-  const cityCode = codes[1] || cityList[0]?.code || "";
-  const districtList = getDistrictList(provinceCode, cityCode);
-  regionColumns.value = [
-    mapAreaOptions(provinceList),
-    mapAreaOptions(cityList),
-    mapAreaOptions(districtList),
-  ];
-}
-
-function syncRegionByCodes(codes = []) {
-  if (!codes.length) {
-    regionValue.value = [];
-    setRegionColumns();
-    return;
-  }
-  setRegionColumns(codes);
-  regionValue.value = codes;
-  const { province, city, district } = findAreaByCodes(codes);
-  form.province = province?.name || "";
-  form.city = city?.name || "";
-  form.district = district?.name || "";
+function syncRegionByNames(names = []) {
+  const [province = "", city = "", district = ""] = names;
+  regionValue.value = [province, city, district].filter(Boolean);
+  form.province = province;
+  form.city = city;
+  form.district = district;
 }
 
 const regionText = computed(() => {
@@ -200,9 +129,7 @@ watch(
       form.district = props.editData.district || "";
       form.detail = props.editData.address || props.editData.detail || "";
       form.isDefault = props.editData.isDefault === 1;
-      syncRegionByCodes(
-        findCodesByNames(form.province, form.city, form.district),
-      );
+      syncRegionByNames([form.province, form.city, form.district]);
     } else if (val) {
       form.name = "";
       form.mobile = "";
@@ -211,38 +138,13 @@ watch(
       form.district = "";
       form.detail = "";
       form.isDefault = false;
-      syncRegionByCodes([]);
+      syncRegionByNames([]);
     }
   },
 );
 
-function onRegionColumnChange(pickerView, value, columnIndex, resolve) {
-  const item = value[columnIndex];
-  if (!item) {
-    resolve();
-    return;
-  }
-
-  if (columnIndex === 0) {
-    const cityList = mapAreaOptions(getCityList(item.value));
-    const firstCityCode = cityList[0]?.value || "";
-    const districtList = mapAreaOptions(
-      getDistrictList(item.value, firstCityCode),
-    );
-    pickerView.setColumnData(1, cityList);
-    pickerView.setColumnData(2, districtList);
-  } else if (columnIndex === 1) {
-    const provinceCode = value[0]?.value || regionValue.value[0] || "";
-    const districtList = mapAreaOptions(
-      getDistrictList(provinceCode, item.value),
-    );
-    pickerView.setColumnData(2, districtList);
-  }
-  resolve();
-}
-
-function onRegionConfirm() {
-  syncRegionByCodes(regionValue.value);
+function onRegionConfirm(event) {
+  syncRegionByNames(event?.detail?.value || []);
 }
 
 async function onSave() {
@@ -314,14 +216,6 @@ async function onSave() {
   background: #fff;
   margin-top: 16rpx;
   flex: 1;
-}
-
-.form-card :deep(.wd-picker) {
-  display: block;
-}
-
-.form-card :deep(.wd-picker__cell) {
-  display: none;
 }
 
 .form-row {

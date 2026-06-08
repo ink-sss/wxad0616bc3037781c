@@ -89,7 +89,7 @@
                 </view>
                 <view class="w-128 h-88 f-vc ml-20">
                   <view
-                    class="bottom-reward-go-watch rounded-28 w-128 h-56 text-24 text-white font-bold f-c-c lh-ny-normal"
+                    class="bottom-reward-go-watch rounded-28 w-128 h-56 text-24 text-white font-bold d-c-c lh-ny-normal"
                     :class="{ 'is-disabled': isActionDisabled(reward), 'is-claimed': Number(reward.claimStatus) === 3 }"
                     @click.stop="handleRewardAction(reward)"
                     @tap.stop="handleRewardAction(reward)"
@@ -111,10 +111,10 @@
                   </view>
                   <view class=" flex flex-col justify-between flex-1 min-w-0 p-16 card-box">
                     <view>
-                      <view class="text-28 text-c333 van-ellipsis mb-2 h-40 leading-80rpx font-bold">
+                      <view class="text-28 text-c333 text-ellipsis mb-2 h-40 leading-80rpx font-bold">
                         {{ formatRewardName(reward) }}
                       </view>
-                      <view class="text-24 text-c666 leading-68rpx van-multi-ellipsis--l2">
+                      <view class="text-24 text-c666 leading-68rpx text-ellipsis-2">
                         {{ formatCouponDesc(reward) }}
                       </view>
                     </view>
@@ -138,7 +138,7 @@
                     />
                   </view>
                   <view class="flex-1 min-w-0 py-16 h-176">
-                    <view class="text-28 text-c333 leading-80rpx van-multi-ellipsis--l2 mb-8">
+                    <view class="text-28 text-c333 leading-80rpx text-ellipsis-2 mb-8">
                       {{ formatRewardName(reward) }}
                     </view>
                     <view class="text-22 text-c999 h-32 leading-64rpx">
@@ -182,7 +182,7 @@ const props = defineProps({
   },
   recordUrl: {
     type: String,
-    default: "/pages/prize-record/index"
+    default: "/pagesPlus/main/prize-record/index"
   }
 });
 
@@ -629,12 +629,6 @@ function formatStock(reward) {
     align-items: center;
   }
 
-  .f-c-c {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
   .border-0 {
     border-width: 0;
   }
@@ -667,20 +661,6 @@ function formatStock(reward) {
 
   .text-right {
     text-align: right;
-  }
-
-  .van-ellipsis {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .van-multi-ellipsis--l2 {
-    display: -webkit-box;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
   }
 
   .van-multi-ellipsis--l3 {

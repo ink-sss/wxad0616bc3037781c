@@ -52,11 +52,11 @@
               </view>
             </view>
           </view>
-          <view v-if="item.apply_range === 20" class="range_item d-b-c" @tap="gotoPage('/pages/coupon/detail?coupon_id=' + item.coupon_id + '&apply_range=' + item.apply_range)">
+          <view v-if="item.apply_range === 20" class="range_item d-b-c" @tap="gotoPage('/pagesPlus/main/coupon/detail?coupon_id=' + item.coupon_id + '&apply_range=' + item.apply_range)">
             <view class="gray9 f24">限指定部分商品<text class="icon iconfont icon-you"></text></view>
             <view class="gray9 f24">本券不支持转赠</view>
           </view>
-          <view v-else-if="item.apply_range === 30" class="range_item d-b-c" @tap="gotoPage('/pages/coupon/detail?coupon_id=' + item.coupon_id + '&apply_range=' + item.apply_range)">
+          <view v-else-if="item.apply_range === 30" class="range_item d-b-c" @tap="gotoPage('/pagesPlus/main/coupon/detail?coupon_id=' + item.coupon_id + '&apply_range=' + item.apply_range)">
             <view class="gray9 f24">限指定分类商品<text class="icon iconfont icon-you"></text></view>
             <view class="gray9 f24">本券不支持转赠</view>
           </view>

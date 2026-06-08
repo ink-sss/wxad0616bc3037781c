@@ -48,7 +48,7 @@ import { pinia } from "@/stores";
 import { useDomainStore } from "@/stores/domain";
 import { getCustomNavBarHeightStyle } from "@/utils/navigation-bar";
 import { getApiBaseUrl } from "@/utils/url-helpers";
-import { buildBroadcastReturnPath } from "./utils/live-route-context.js";
+import { buildBroadcastReturnPath } from "@/utils/live-route-context.js";
 import { useLiveChatInput } from "./composables/useLiveChatInput.js";
 import { useLiveComments } from "./composables/useLiveComments.js";
 import { useLiveDisplayState } from "./composables/useLiveDisplayState.js";
@@ -999,9 +999,6 @@ useLiveLoadBootstrapRegistration({
   userStore, pendingRecoverBuyCtx, setPendingSubscribeBack, showEntryOverlay, showWxAddrDonePlayBtn, safeBottom, isIOSKeyboardMode,
 });
 </script>
-<style lang="scss" scoped>
-@import "./styles/entry.scss";
-</style>
 <style lang="scss">
 @import "./styles/entry-global.scss";
 </style>

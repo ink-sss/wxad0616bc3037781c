@@ -61,6 +61,11 @@ and no dependency on compiled Mini Program output.
   auth backend for the H5 viewer `token`/`customer`, write both `h5_token` and
   compatible `token`, cache the H5 customer, and preserve redirect plus live
   context (`roomCode`, `roomId`, `liveId`, `tenantId`, `bindId`).
+- Mini Program plugin components used by uni-app pages must be declared in both
+  `src/pages.json` `plugins` and the consuming page's `style.usingComponents`.
+  A normal `<button>` that calls local login code is not a substitute for
+  rendering the plugin component, because it cannot invoke plugin UI or emit
+  plugin events such as `loginSuccess`.
 - When Mini Program has no equivalent for H5 DTE or cross-domain bind iframe
   behavior, keep the boundary explicit: persist the context in Mini Program
   storage and pass it to backend H5 auth APIs instead of adding browser-only
@@ -167,6 +172,69 @@ const code = await getMiniProgramWechatCode();
 await wechatSilentLogin({ code, sourceClient: "mp-weixin" });
 ```
 
+## Scenario: Mini Program Developer Tools Login Payload
+
+### 1. Scope / Trigger
+
+- Trigger: the login page's "开发者工具登录" shortcut needs to reuse a stable
+  local Mini Program session for WeChat Developer Tools validation.
+- Scope: `src/pages/login/page-tools.js`.
+
+### 2. Signatures
+
+- `loginWithWechatDevtoolsProfile()` -> local session object ->
+  `saveLoginSession(session)`.
+
+### 3. Contracts
+
+- Developer-tools login must not call `uni.login`/`wx.login` or
+  `/h5/miniprogram/login`.
+- Developer-tools login returns the local reused session fields:
+  `token`, `user_id=874`, `open_id`, `im_user_id="customer_874"`,
+  `im_user_sig`, `shop_supplier_id=15`, and `msg="登录成功"`.
+- The local session still passes through the normal H5 auth sync and
+  mini-program session persistence path.
+
+### 4. Validation & Error Matrix
+
+- Local fixture missing `token` -> keep throwing `登录接口未返回 token`.
+- Reused token expires on later H5 API calls -> existing auth failure handling
+  must clear/redirect; do not add a second developer login network exchange.
+- Plugin login success -> continue using the real Mini Program login code path.
+
+### 5. Good/Base/Bad Cases
+
+- Good: developer button persists the local reused session without any login
+  API request.
+- Base: plugin login still resolves a real login code and posts user profile
+  fields from the plugin event.
+- Bad: developer button calls `loginCode()` or `loginMiniProgram()` before
+  persisting the reused session.
+
+### 6. Tests Required
+
+- Focused unit test asserts developer login does not call the WeChat login
+  wrapper or mini-program login API wrapper.
+- Focused unit test asserts token, `user_id`, `open_id`, IM credentials, and
+  `shop_supplier_id` are passed through the normal persistence path.
+- `npm run build:mp-weixin` passes from `uniapp-src/`.
+
+### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+return loginMiniProgram({ code, nickName, avatarUrl });
+```
+
+Correct:
+
+```js
+const session = { token: DEVTOOLS_TOKEN, user_id: 874, shop_supplier_id: 15 };
+saveLoginSession(session);
+return Promise.resolve(session);
+```
+
 ## Scenario: Mini Program Live Playback Source Selection
 
 ### 1. Scope / Trigger
@@ -211,8 +279,6 @@ await wechatSilentLogin({ code, sourceClient: "mp-weixin" });
 - In `mp-weixin`, tap controls layered over a native `video` mini-window must be
   `cover-view` overlays. Plain `view` overlays are not reliable for native-video
   click/close/return interactions.
-
-### 4. Validation & Error Matrix
 - In `mp-weixin`, broadcast live-room first entry preserves the existing H5
   parity path: keep `isMuted=false` and immediately issue native sound playback
   commands. If the platform blocks that attempt, use the playback fallback/debug
@@ -227,6 +293,8 @@ await wechatSilentLogin({ code, sourceClient: "mp-weixin" });
 - Returning from a secondary-page live mini-window to an active live room must
   recreate the live HLS player at the live edge instead of resuming the stale
   paused page video node and waiting for it to drift back into sync.
+
+### 4. Validation & Error Matrix
 
 - HLS `video` failure -> switch to the next HLS/video candidate when available.
 - Candidate list exhausted -> show a user-visible playback failure state.
@@ -250,11 +318,11 @@ await wechatSilentLogin({ code, sourceClient: "mp-weixin" });
 - Bad: secondary page mini-window has `hasPlayableSource=true` and receives
   `video_play`, but a fallback empty layer still covers the video because the
   empty state was implemented as an unconditional `v-else`.
+- Bad: live room auto-entry starts muted or waits for a tap while a playable HLS
+  source exists, leaving first entry stuck on the poster.
 
 ### 6. Tests Required
 
-- Bad: live room auto-entry starts muted or waits for a tap while a playable HLS
-  source exists, leaving first entry stuck on the poster.
 - `npm run build:mp-weixin` passes from `uniapp-src/`.
 - Static scan of broadcast source and `src/utils/live-route.js` finds no H5
   browser globals/packages.
@@ -304,13 +372,20 @@ return selectMiniProgramLiveCandidate(candidates, { preferHls: true })?.url || "
 - `getImToken(liveId)` returns Easemob `appKey`, `imUsername`, `imToken`, and
   chatroom ids.
 - `getLiveSocket().sendChat(content, data, options)` sends chat through the
-  active transport.
+  backend websocket when the live room is in H5-style dual mode.
 
 ### 3. Contracts
 
-- `groupType=0` live rooms use Easemob IM only. Do not start the backend live
-  websocket as a parallel upstream channel, and do not fall back to it when IM
-  init fails.
+- `groupType=0` live rooms follow the H5 dual-channel contract: Easemob IM
+  receives IM/chatroom events, while the backend live websocket remains the
+  upstream channel for `sendChat`/`sendEnter` business messages.
+- Backend websocket init success only means the socket was created and started
+  connecting. In dual mode, prefer backend websocket for `sendChat` only after
+  its state is `open`; while it is `connecting`/`reconnecting` and IM is open,
+  return the IM send adapter so user danmu is not dropped during the connection
+  window. Expose this as `channelDebugState.sendChannel`.
+- If Easemob IM init returns `false`, fall back to the backend websocket only.
+  This is H5 parity, not an extra compatibility path.
 - `groupType=1` replay rooms keep using the backend websocket for timeline
   comments.
 - The Easemob SDK entry for uni-app is
@@ -327,10 +402,10 @@ return selectMiniProgramLiveCandidate(candidates, { preferHls: true })?.url || "
 
 ### 4. Validation & Error Matrix
 
-- IM token missing `appKey`, user, or token -> report IM init failure; do not
-  start backend websocket fallback for `groupType=0`.
-- IM open/join fails -> keep the IM channel selected and expose the error in
-  debug state; do not silently switch to backend websocket.
+- IM token missing `appKey`, user, or token -> report IM init failure, then
+  initialize backend websocket as the H5 fallback path.
+- IM open/join fails -> expose the error in debug state, then fall back to
+  backend websocket for live chat upstream.
 - Same live room init repeats while pending/open -> return the existing init
   result; do not call `conn.close()`.
 - Different live room init -> leave chatrooms, close the stale SDK connection,
@@ -340,17 +415,26 @@ return selectMiniProgramLiveCandidate(candidates, { preferHls: true })?.url || "
 
 ### 5. Good/Base/Bad Cases
 
-- Good: live room gets IM token, opens Easemob, joins the chatroom, and
-  `sendChat` sends a custom IM message.
+- Good: live room gets IM token, opens Easemob, joins the chatroom, also opens
+  the backend websocket, and `sendChat` goes through the backend websocket.
+- Good: if the backend websocket is still `connecting` after IM joined,
+  `sendChat` temporarily uses the IM adapter and debug state reports
+  `sendChannel=im`; once websocket state is `open`, debug reports
+  `sendChannel=ws`.
 - Base: replay room keeps the old websocket behavior.
-- Bad: live room starts both IM and backend websocket, sends chat through the
-  backend websocket, or falls back to backend websocket after IM failure.
+- Bad: live room opens only Easemob IM and leaves the backend websocket idle,
+  causing the H5 upstream chat path to disappear.
+- Bad: dual-mode `getLiveSocket()` returns a backend websocket object that is
+  still `connecting`, causing `MiniLiveSocket.sendRaw()` to return `false`
+  immediately and the visible danmu send to fail.
 
 ### 6. Tests Required
 
 - `npm run build:mp-weixin` passes from `uniapp-src/`.
-- Focused tests assert `groupType=0` initializes only IM, keeps IM selected on
-  IM failure, and suppresses fallback enter on the IM path.
+- Focused tests assert `groupType=0` initializes both IM and backend websocket,
+  returns the websocket from `getLiveSocket()` when it is open, returns the IM
+  adapter while the websocket is still connecting, falls back to websocket when
+  IM init fails, and sends fallback enter through IM in dual mode.
 - Focused tests assert same-liveId IM init reuses pending/open SDK connections
   without closing them.
 - Real-device or WeChat Developer Tools validation remains required for the
@@ -361,16 +445,102 @@ return selectMiniProgramLiveCandidate(candidates, { preferHls: true })?.url || "
 Wrong:
 
 ```js
-await imChannel.initWebSocket(wsUrl);
-await wsChannel.initWebSocket(wsUrl);
-return wsChannel.getLiveSocket().sendChat(text);
+await imChannel.initWebSocket();
+return imChannel.getLiveSocket().sendChat(text);
 ```
 
 Correct:
 
 ```js
-await imChannel.initWebSocket();
-return imChannel.getLiveSocket().sendChat(text);
+await imChannel.initWebSocket(wsUrl);
+await wsChannel.initWebSocket(wsUrl);
+return wsChannel.getLiveSocket().sendChat(text);
+```
+
+## Scenario: Mini Program Live WebSocket Enter Send Parity
+
+### 1. Scope / Trigger
+
+- Trigger: `pages/broadcast/entry` opens the backend live websocket
+  `/h5/live/ws` in mp-weixin and must actively announce viewer entry.
+- Scope: `src/pages/broadcast/composables/useLiveWebSocket.js`,
+  `src/utils/mini-live-socket.js`, and `src/utils/ws-envelope.js`.
+
+### 2. Signatures
+
+- `useLiveWebSocket(...).initWebSocket(wsUrl)` opens the backend websocket and
+  creates `MiniLiveSocket` with `sendEnterOnOpen: true`.
+- `MiniLiveSocket.sendEnter()` sends the active enter payload.
+- `MiniLiveSocket.sendOpenEnter()` schedules the active enter send after the
+  socket `onOpen` event.
+- `wrapMessage(payload, signKey)` signs websocket payloads as
+  `{ v, ts, nonce, payload, sig, enc: false }` when a sign key exists.
+
+### 3. Contracts
+
+- The active enter payload must match the H5 websocket contract exactly:
+  `{ type: 3, msgId: string }`.
+- Do not inject `roomId`, `liveId`, room context, audience/user fields, or
+  nested `data` into the enter payload. The room is already represented by the
+  websocket URL query and auth token.
+- When a sign key exists, only the H5-compatible enter payload belongs inside
+  `envelope.payload`; the envelope itself may include `v`, `ts`, `nonce`,
+  `sig`, and `enc`.
+- `msgId` is generated client-side for enter messages before wrapping.
+- The socket schedules enter internally after `onOpen`, before delegating to
+  external page-level `onOpen` callbacks. Do not rely on page callbacks to
+  perform the active enter send.
+- If the first enter send fails, retry once with the same `msgId` so backend
+  de-duplication can treat both attempts as one logical enter event.
+
+### 4. Validation & Error Matrix
+
+- Websocket not open -> `sendEnter()` returns `false`; do not fake a local enter
+  message.
+- Sign key missing -> send the same plain JSON payload without an envelope.
+- Sign key present -> send the envelope and keep `payload` limited to `type` and
+  `msgId`.
+- First send fail after `onOpen` -> retry once with the same `msgId`; if retry
+  also fails, log the failure instead of synthesizing a local enter.
+
+### 5. Good/Base/Bad Cases
+
+- Good: websocket open sends `{"type":3,"msgId":"..."}` or an envelope whose
+  payload is exactly that object.
+- Base: chat/replay chat still use the existing H5-compatible chat payload path.
+- Bad: enter sends room, term, tenant, customer, avatar, or nested `data` fields
+  and diverges from H5 backend behavior.
+
+### 6. Tests Required
+
+- Focused tests assert plain `sendEnter()` payload keys are exactly `type` and
+  `msgId`.
+- Focused tests assert signed `sendEnter()` envelope payload keys are exactly
+  `type` and `msgId`.
+- Focused tests assert `MiniLiveSocket` actively sends enter after websocket
+  `onOpen`, and retries once with the same `msgId` after an initial send
+  failure.
+- `npm run build:mp-weixin` passes from `uniapp-src/`.
+
+### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+return this.send({
+  type: TYPE.ENTER,
+  roomId: this.liveId,
+  data: this.getAudiencePayload(),
+});
+```
+
+Correct:
+
+```js
+return this.sendRaw({
+  type: TYPE.ENTER,
+  msgId: Math.random().toString(36).slice(2, 10),
+});
 ```
 
 ---
@@ -381,6 +551,13 @@ return imChannel.getLiveSocket().sendChat(text);
   stub module at build time. Runtime-only flags are not enough: if the real SDK
   import remains statically reachable, it can still enter `common/vendor.js` and
   inflate the main package.
+- Uni-app `dev:mp-weixin` watch builds may still report Vite
+  `command === "build"`. Do not use Vite `command` alone to disable debug SDKs;
+  use the npm lifecycle script or another explicit release-build signal.
+- WXSS minification must preserve CSS-required whitespace inside `calc()`
+  arithmetic, for example `calc(190rpx + env(safe-area-inset-bottom))`.
+  Removing spaces around `+` or binary `-` can invalidate layout-critical
+  positioning in WeChat Developer Tools.
 - After package-size work, inspect `dist/build/mp-weixin/common/vendor.js` for
   debug SDK names and measure the main package from `app.json` while excluding
   subpackage roots.

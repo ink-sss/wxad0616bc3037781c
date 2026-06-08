@@ -38,7 +38,7 @@
         </view>
       </view>
 
-      <view class="module-card">
+      <view class="module-card" v-if="false">
         <view class="module-head">
           <text class="module-title">直播服务</text>
         </view>
@@ -306,10 +306,10 @@ export default {
         if (typeof this.doLogin === 'function') this.doLogin()
         return
       }
-      this.gotoPage('/pages/user/set/set')
+      this.gotoPage('/pagesPlus/main/user/set/set')
     },
     bindMobile() {
-      this.gotoPage('/pages/user/modify-phone/modify-phone')
+      this.gotoPage('/pagesPlus/main/user/modify-phone/modify-phone')
     },
     getPhoneNumber(event) {
       if (event?.detail?.errMsg && event.detail.errMsg !== 'getPhoneNumber:ok') return false
@@ -340,10 +340,10 @@ export default {
         unsend: this.withLiveQuery('/pages/order/list?status=unsend'),
         unreceive: this.withLiveQuery('/pages/order/list?status=unreceive'),
         refund: this.withLiveQuery('/pages/order/refund-list'),
-        prizeRecord: this.withLiveQuery('/pages/prize-record/index'),
-        invitationRecord: this.withLiveQuery(`/pages/invitation-record/index?roomId=${encodeURIComponent(roomId)}`),
-        complaint: this.withLiveQuery('/pages/report/report-type?fromPath=%2Fpages%2Fcenter%2Findex'),
-        address: this.withLiveQuery('/pages/address/index'),
+        prizeRecord: this.withLiveQuery('/pagesPlus/main/prize-record/index'),
+        invitationRecord: this.withLiveQuery(`/pagesPlus/main/invitation-record/index?roomId=${encodeURIComponent(roomId)}`),
+        complaint: this.withLiveQuery('/pagesPlus/main/report/report-type?fromPath=%2Fpages%2Fcenter%2Findex'),
+        address: this.withLiveQuery('/pagesPlus/main/address/index'),
       }
       const url = routes[type]
       if (url) uni.navigateTo({ url })

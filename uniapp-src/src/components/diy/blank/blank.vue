@@ -13,12 +13,3 @@ export default {
   methods: { toRpx(v) { return v === undefined || v === '' ? '' : (String(v).includes('rpx') || String(v).includes('px') ? String(v) : (Number(v) * 2 || 0) + 'rpx'); }, openLink(url) { if (!url) return; if (typeof this.gotoPage === 'function') this.gotoPage(url); else uni.navigateTo({ url: url.startsWith('/') ? url : '/' + url }); } }
 };
 </script>
-<style scoped>
-.diy-block { width: 100%; box-sizing: border-box; overflow: hidden; }
-.diy-list { display: flex; flex-wrap: wrap; gap: 16rpx; }
-.diy-card { background: #fff; border-radius: 8rpx; overflow: hidden; }
-.diy-image { width: 100%; display: block; }
-.diy-title { font-size: 30rpx; color: #222; font-weight: 600; }
-.diy-text { font-size: 26rpx; color: #666; line-height: 1.5; }
-.diy-price { color: #f03b2f; font-weight: 700; }
-</style>

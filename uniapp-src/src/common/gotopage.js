@@ -44,7 +44,7 @@ export function gotopage(url, navType) {
 
   if (url.indexOf('https://') === 0) {
     uni.navigateTo({
-      url: `/pages/webview/webview?url=${encodeURIComponent(url)}`,
+      url: `/pagesPlus/main/webview/webview?url=${encodeURIComponent(url)}`,
     });
     return true;
   }

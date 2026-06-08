@@ -61,7 +61,7 @@ const props = defineProps({
   },
   recordUrl: {
     type: String,
-    default: "/pages/prize-record/index"
+    default: "/pagesPlus/main/prize-record/index"
   }
 });
 
@@ -80,7 +80,7 @@ const prizeImage = computed(() => props.winRecord?.rewardImage || props.prize?.p
 const prizeLevelText = computed(() => props.winRecord?.levelText || props.winRecord?.prizeLevelText || props.prize?.levelText || props.prize?.prizeLevelText || props.winRecord?.prizeLevel || props.prize?.prizeLevel || "1");
 
 function openPrizeRecord() {
-  const route = normalizeAppRoute(props.recordUrl || "/pages/prize-record/index");
+  const route = normalizeAppRoute(props.recordUrl || "/pagesPlus/main/prize-record/index");
   if (!route) {
     uni.showToast({ title: "暂无可查看内容", icon: "none" });
     return;

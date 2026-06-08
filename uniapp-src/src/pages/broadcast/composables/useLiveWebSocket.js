@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { computed, shallowRef, ref } from "vue";
 import { getWsSignKey } from "@/api/live.js";
 import { useUserStore } from "@/stores/user";
 import { MiniLiveSocket as LiveSocket } from "@/utils/mini-live-socket.js";
@@ -79,9 +79,10 @@ export function useLiveWebSocket({
   handleWsMessage,
   onOpen,
 }) {
-  let liveSocket = null;
+  const liveSocketRef = shallowRef(null);
   let wsConnectedOnce = false;
   const wsState = ref("idle");
+  const wsDebugState = computed(() => liveSocketRef.value?.getDebugState?.() || null);
 
   async function initWebSocket(wsUrl) {
     if (!wsUrl) return false;
@@ -99,7 +100,7 @@ export function useLiveWebSocket({
     }
 
     const userStore = useUserStore();
-    liveSocket = new LiveSocket({
+    const socket = new LiveSocket({
       url: wsUrl,
       liveId: liveId.value,
       context: buildLiveSocketContext({
@@ -115,8 +116,8 @@ export function useLiveWebSocket({
       token: userStore.token,
       user: userStore.userInfo || {},
       signKey: wsSignKey,
+      sendEnterOnOpen: true,
       onOpen() {
-        liveSocket.sendEnter();
         onOpen?.();
         if (wsConnectedOnce) {
           // 重连成功后补加载最近的历史消息
@@ -135,23 +136,25 @@ export function useLiveWebSocket({
         wsState.value = state;
       },
     });
-    liveSocket.connect();
+    liveSocketRef.value = socket;
+    socket.connect();
     return true;
   }
 
   function getLiveSocket() {
-    return liveSocket;
+    return liveSocketRef.value;
   }
 
   function closeLiveSocket() {
-    if (liveSocket) {
-      liveSocket.close();
-      liveSocket = null;
+    if (liveSocketRef.value) {
+      liveSocketRef.value.close();
+      liveSocketRef.value = null;
     }
   }
 
   return {
     wsState,
+    wsDebugState,
     initWebSocket,
     getLiveSocket,
     closeLiveSocket,

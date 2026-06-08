@@ -93,15 +93,13 @@
             </picker>
 
             <!-- 城市 -->
-            <wd-picker
+            <picker
               v-else-if="field.type === 'city'"
-              v-model="regionPickerValue"
-              :columns="regionColumns"
-              :column-change="onRegionColumnChange"
-              use-default-slot
-              @confirm="onRegionConfirm(field)"
+              mode="region"
+              :value="getRegionPickerValue(field)"
+              @change="onRegionConfirm(field, $event)"
             >
-              <view class="field-picker" @click="openRegionPicker(field)">
+              <view class="field-picker">
                 <text :class="{ 'picker-placeholder': !formData[field.key] }">
                   {{
                     formData[field.key] ||
@@ -113,7 +111,7 @@
                 </text>
                 <text class="picker-arrow">▾</text>
               </view>
-            </wd-picker>
+            </picker>
 
             <!-- 多行文本 -->
             <textarea
@@ -219,7 +217,6 @@
 <script setup>
 import { ref, reactive, watch } from "vue";
 import { submitLiveSign } from "@/services/live-sign";
-import areaData from "@/utils/area.json";
 
 const props = defineProps({
   roomId: { type: [Number, String], default: 0 },
@@ -255,9 +252,6 @@ const emit = defineEmits(["signed", "skip"]);
 const hasSigned = ref(props.signed);
 const submitting = ref(false);
 const formData = reactive({});
-const activeRegionField = ref(null);
-const regionPickerValue = ref([]);
-const regionColumns = ref([]);
 
 // 初始化表单数据
 watch(
@@ -293,130 +287,18 @@ function onDateChange(key, e) {
   formData[key] = e.detail?.value || "";
 }
 
-function mapAreaOptions(list = []) {
-  return list.map((item) => ({
-    label: item.name,
-    value: item.code,
-  }));
-}
-
-function getProvinceList() {
-  return areaData || [];
-}
-
-function getCityList(provinceCode) {
-  return (
-    getProvinceList().find((item) => item.code === provinceCode)?.children || []
-  );
-}
-
-function getDistrictList(provinceCode, cityCode) {
-  return (
-    getCityList(provinceCode).find((item) => item.code === cityCode)
-      ?.children || []
-  );
-}
-
-function findAreaByCodes(codes = []) {
-  const [provinceCode, cityCode, districtCode] = codes;
-  const province = getProvinceList().find((item) => item.code === provinceCode);
-  const city = (province?.children || []).find(
-    (item) => item.code === cityCode,
-  );
-  const district = (city?.children || []).find(
-    (item) => item.code === districtCode,
-  );
-  return { province, city, district };
-}
-
-function findCodesByNames(provinceName, cityName, districtName) {
-  const province = getProvinceList().find((item) => item.name === provinceName);
-  const city = (province?.children || []).find(
-    (item) => item.name === cityName,
-  );
-  const district = (city?.children || []).find(
-    (item) => item.name === districtName,
-  );
-  if (!province || !city) return [];
-  if (districtName && !district) return [];
-  return district
-    ? [province.code, city.code, district.code]
-    : [province.code, city.code];
-}
-
-function setRegionColumns(codes = []) {
-  const provinceList = getProvinceList();
-  const provinceCode = codes[0] || provinceList[0]?.code || "";
-  const cityList = getCityList(provinceCode);
-  const cityCode = codes[1] || cityList[0]?.code || "";
-  const districtList = getDistrictList(provinceCode, cityCode);
-  if (activeRegionField.value?.subType === "province-city") {
-    regionColumns.value = [
-      mapAreaOptions(provinceList),
-      mapAreaOptions(cityList),
-    ];
-    return;
-  }
-  regionColumns.value = [
-    mapAreaOptions(provinceList),
-    mapAreaOptions(cityList),
-    mapAreaOptions(districtList),
-  ];
-}
-
-function openRegionPicker(field) {
-  activeRegionField.value = field;
+function getRegionPickerValue(field) {
   const value = formData[field.key];
-  const parts =
-    typeof value === "string" ? value.split("/").filter(Boolean) : [];
-  const codes = findCodesByNames(parts[0], parts[1], parts[2]);
-  setRegionColumns(codes);
-  regionPickerValue.value = codes;
+  return typeof value === "string" ? value.split("/").filter(Boolean) : [];
 }
 
-function onRegionColumnChange(pickerView, value, columnIndex, resolve) {
-  const item = value[columnIndex];
-  if (!item) {
-    resolve();
-    return;
-  }
-
-  if (columnIndex === 0) {
-    const cityList = mapAreaOptions(getCityList(item.value));
-    pickerView.setColumnData(1, cityList);
-    if (activeRegionField.value?.subType !== "province-city") {
-      const firstCityCode = cityList[0]?.value || "";
-      const districtList = mapAreaOptions(
-        getDistrictList(item.value, firstCityCode),
-      );
-      pickerView.setColumnData(2, districtList);
-    }
-  } else if (columnIndex === 1) {
-    if (activeRegionField.value?.subType === "province-city") {
-      resolve();
-      return;
-    }
-    const provinceCode = value[0]?.value || regionPickerValue.value[0] || "";
-    const districtList = mapAreaOptions(
-      getDistrictList(provinceCode, item.value),
-    );
-    pickerView.setColumnData(2, districtList);
-  }
-  resolve();
-}
-
-function onRegionConfirm(field) {
-  const targetField = field || activeRegionField.value;
-  if (!targetField) return;
-  const codes = Array.isArray(regionPickerValue.value)
-    ? regionPickerValue.value
-    : [];
-  const { province, city, district } = findAreaByCodes(codes);
-  const names = [province?.name || "", city?.name || ""];
-  if (targetField.subType === "province-city-district") {
-    names.push(district?.name || "");
-  }
-  formData[targetField.key] = names.filter(Boolean).join("/");
+function onRegionConfirm(field, event) {
+  const names = Array.isArray(event?.detail?.value) ? event.detail.value : [];
+  const selectedNames =
+    field.subType === "province-city-district"
+      ? names.slice(0, 3)
+      : names.slice(0, 2);
+  formData[field.key] = selectedNames.filter(Boolean).join("/");
 }
 
 function toggleCheckbox(key, opt) {

@@ -222,7 +222,7 @@ async function redirectToLoginIfNeeded(options, ctx) {
   const originalPath = "/pages/broadcast/entry" + (queryParts.length ? `?${queryParts.join("&")}` : "");
   const tenantParam = loginTenantId ? `&tenantId=${loginTenantId}` : "";
   uni.redirectTo({
-    url: `/pages/login/login?redirect=${encodeURIComponent(originalPath)}${tenantParam}`,
+    url: `/pagesPlus/main/login/login?redirect=${encodeURIComponent(originalPath)}${tenantParam}`,
   });
   return true;
 }

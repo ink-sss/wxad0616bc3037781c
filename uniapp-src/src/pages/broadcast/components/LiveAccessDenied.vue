@@ -1,11 +1,12 @@
 <template>
   <view class="access-denied-overlay">
     <view class="access-denied-card">
-      <image
-        class="access-denied-lock"
-        src="@/assets/figma/live-access-lock.png"
-        mode="aspectFit"
-      />
+      <view class="access-denied-lock" aria-hidden="true">
+        <view class="access-denied-lock__shackle"></view>
+        <view class="access-denied-lock__body">
+          <view class="access-denied-lock__dot"></view>
+        </view>
+      </view>
       <text class="access-denied-title">{{ title }}</text>
       <view class="access-denied-anchor">
         <image
@@ -81,6 +82,53 @@ const emit = defineEmits(["copy-uid"]);
   width: 216rpx;
   height: 186rpx;
   margin-top: -144rpx;
+  position: relative;
+}
+
+.access-denied-lock__shackle {
+  position: absolute;
+  left: 54rpx;
+  top: 0;
+  width: 108rpx;
+  height: 92rpx;
+  border: 18rpx solid #d9dde6;
+  border-bottom: 0;
+  border-radius: 68rpx 68rpx 0 0;
+  box-sizing: border-box;
+}
+
+.access-denied-lock__body {
+  position: absolute;
+  left: 16rpx;
+  right: 16rpx;
+  bottom: 0;
+  height: 122rpx;
+  border-radius: 32rpx;
+  background: linear-gradient(180deg, #ffb76d 0%, #fd6119 100%);
+  box-shadow: 0 16rpx 36rpx rgba(253, 97, 25, 0.24);
+}
+
+.access-denied-lock__dot {
+  position: absolute;
+  left: 50%;
+  top: 38rpx;
+  width: 30rpx;
+  height: 30rpx;
+  border-radius: 50%;
+  background: #ffffff;
+  transform: translateX(-50%);
+}
+
+.access-denied-lock__dot::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 20rpx;
+  width: 12rpx;
+  height: 36rpx;
+  border-radius: 8rpx;
+  background: #ffffff;
+  transform: translateX(-50%);
 }
 
 .access-denied-title {

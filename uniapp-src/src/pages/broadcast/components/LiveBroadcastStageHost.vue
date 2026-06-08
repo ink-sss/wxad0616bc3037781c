@@ -121,7 +121,7 @@ const marketingLayerState = computed(() => {
     commentLotteryWinners: unref(runtime.commentLotteryWinners) || [],
     commentLotteryParticipants: unref(runtime.commentLotteryParticipants) || [],
     commentLotteryWinRecord: unref(runtime.commentLotteryWinRecord) || null,
-    prizeRecordUrl: unref(runtime.prizeRecordUrl) || "/pages/prize-record/index",
+    prizeRecordUrl: unref(runtime.prizeRecordUrl) || "/pagesPlus/main/prize-record/index",
   };
 });
 </script>

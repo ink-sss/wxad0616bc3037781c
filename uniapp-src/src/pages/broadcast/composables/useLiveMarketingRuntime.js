@@ -44,7 +44,7 @@ function createMarketingDisplayState(marketingBlocked, watchRewards, normalLotte
     commentLotteryBubbleVisible: computed(() => !marketingBlocked.value && Boolean(unref(commentLottery.commentLotteryBubbleVisible))),
     prizeRecordUrl: computed(() => {
       const code = String(unref(roomCode) || "").trim();
-      return `/pages/prize-record/index${code ? `?roomCode=${encodeURIComponent(code)}` : ""}`;
+      return `/pagesPlus/main/prize-record/index${code ? `?roomCode=${encodeURIComponent(code)}` : ""}`;
     }),
   };
 }

@@ -95,7 +95,7 @@ export function buildLoginUrl(authDomain = '', params = {}) {
     .filter((key) => params[key] !== undefined && params[key] !== null && params[key] !== '')
     .map((key) => `${key}=${encodeURIComponent(params[key])}`)
     .join('&')
-  return buildRedirectUrl(authDomain, `#/pages/login/login${query ? `?${query}` : ''}`)
+  return buildRedirectUrl(authDomain, `#/pagesPlus/main/login/login${query ? `?${query}` : ''}`)
 }
 
 export function getHashPath(fallback = '/pages/broadcast/entry') {

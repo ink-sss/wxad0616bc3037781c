@@ -54,6 +54,10 @@ debugging PageSpy:
 VITE_ENABLE_PAGE_SPY=true npm run dev:mp-weixin
 ```
 
+Then import `uniapp-src/dist/dev/mp-weixin` in Weixin DevTools. The checked-in
+`uniapp-src/project.config.json` points at `dist/build/mp-weixin`, which is the
+release output and keeps PageSpy stubbed out.
+
 ## Local fallback
 
 If DevTools still spikes memory while diagnosing, set this local generated file:
