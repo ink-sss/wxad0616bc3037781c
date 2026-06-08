@@ -17,6 +17,67 @@ function firstValue(source = {}, ...keys) {
   return undefined;
 }
 
+const WINNER_NAME_KEYS = [
+  "nickname",
+  "nickName",
+  "nick_name",
+  "nick",
+  "name",
+  "customerName",
+  "customer_name",
+  "customerNickname",
+  "customer_nickname",
+  "customerNickName",
+  "customer_nick_name",
+  "userName",
+  "user_name",
+  "username",
+  "userNickname",
+  "user_nickname",
+  "winnerName",
+  "winner_name",
+  "winnerNickname",
+  "winner_nickname",
+  "memberName",
+  "member_name",
+  "memberNickname",
+  "member_nickname",
+];
+
+const WINNER_OBJECT_KEYS = [
+  "winner",
+  "winnerUser",
+  "winner_user",
+  "winningUser",
+  "winning_user",
+  "customer",
+  "customerInfo",
+  "customer_info",
+  "user",
+  "userInfo",
+  "user_info",
+  "member",
+  "memberInfo",
+  "member_info",
+  "profile",
+];
+
+function normalizeDisplayName(value) {
+  return String(value ?? "").trim();
+}
+
+function getWinnerNameFromObject(source, seen = new Set()) {
+  if (!isObject(source) || seen.has(source)) return "";
+  seen.add(source);
+  const directName = normalizeDisplayName(firstValue(source, ...WINNER_NAME_KEYS));
+  if (directName) return directName;
+  for (const key of WINNER_OBJECT_KEYS) {
+    const nestedName = getWinnerNameFromObject(source[key], seen);
+    if (nestedName) return nestedName;
+  }
+  return "";
+}
+
 export function unwrapLotteryPayload(message = {}) {
   const root = isObject(message) ? message : {};
   const data = isObject(root.data) ? root.data : {};
@@ -82,26 +143,15 @@ export function getLotteryRewardName(record = {}, fallbackPrize = {}) {
 }
 
 export function getLotteryWinnerName(record = {}, defaultName = "中奖用户") {
-  return record.nickname ||
-    record.nickName ||
-    record.nick_name ||
-    record.name ||
-    record.nick ||
-    record.customerName ||
-    record.customer_name ||
-    record.customerNickname ||
-    record.customer_nickname ||
-    record.userNickname ||
-    record.user_nickname ||
-    defaultName;
+  return getWinnerNameFromObject(record) || defaultName;
 }
 
 export function appendLotteryWinMessage(appendSystemMessage, seenKeys, record = {}, fallbackPrize = {}, options = {}) {
   if (typeof appendSystemMessage !== "function") return false;
-  const key = getLotteryRecordKey(record) || `${record.nickname || ""}:${getLotteryRewardName(record, fallbackPrize)}`;
+  const nick = getLotteryWinnerName(record, options.defaultName || "中奖用户");
+  const key = getLotteryRecordKey(record) || `${nick}:${getLotteryRewardName(record, fallbackPrize)}`;
   if (key && seenKeys?.has(key)) return false;
   if (key) seenKeys?.add(key);
-  const nick = getLotteryWinnerName(record, options.defaultName || "中奖用户");
   const prizeName = getLotteryRewardName(record, fallbackPrize);
   appendSystemMessage({
     type: "lottery_win",

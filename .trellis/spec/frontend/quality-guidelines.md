@@ -235,6 +235,69 @@ saveLoginSession(session);
 return Promise.resolve(session);
 ```
 
+## Scenario: Live Lottery Winner Nickname Normalization
+
+### 1. Scope / Trigger
+
+- Trigger: live broadcast lottery win messages are rendered in the interaction
+  feed from normalized websocket/API winner records.
+- Scope: `src/pages/broadcast/composables/live-lottery-message.js` and lottery
+  composables that pass records into `appendLotteryWinMessage`.
+
+### 2. Signatures
+
+- `getLotteryWinnerName(record, defaultName = "中奖用户")` -> display nickname.
+- `appendLotteryWinMessage(appendSystemMessage, seenKeys, record, fallbackPrize,
+  options)` -> appends a `lottery_win` message with `nick`, `prizeName`,
+  `icon`, and `content`.
+
+### 3. Contracts
+
+- Winner nickname fields may be top-level aliases such as `nickname`,
+  `nickName`, `nick_name`, `customerName`, `customer_name`, `userName`,
+  `user_name`, `winnerName`, or `winner_name`.
+- Winner nickname fields may also be nested under winner/customer/user/member
+  objects such as `winner`, `winnerUser`, `customer`, `customerInfo`, `user`,
+  `userInfo`, `member`, or `profile`.
+- `中奖用户` is only a fallback when no supported nickname field exists.
+- Prize name and duplicate-message keys must continue using the existing lottery
+  reward and record-key helpers.
+
+### 4. Validation & Error Matrix
+
+- Direct alias exists -> render that alias.
+- Nested winner object contains nickname -> render nested nickname.
+- Missing nickname -> render `中奖用户`.
+- Repeated record key -> do not append a duplicate `lottery_win` message.
+
+### 5. Good/Base/Bad Cases
+
+- Good: `{ customer: { nickname: "张三" }, prizeName: "奖品" }` renders
+  `恭喜 张三 获得 奖品`.
+- Base: `{ nick_name: "张三", prize_name: "奖品" }` renders `张三`.
+- Bad: treating every missing top-level `nickname` as `中奖用户` while a nested
+  `customer.nickname` exists.
+
+### 6. Tests Required
+
+- Focused unit test for top-level snake_case aliases.
+- Focused unit test for nested winner/customer/user objects.
+- Focused unit test for the no-nickname fallback.
+
+### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+const nick = record.nickname || "中奖用户";
+```
+
+Correct:
+
+```js
+const nick = getLotteryWinnerName(record, "中奖用户");
+```
+
 ## Scenario: Mini Program Live Playback Source Selection
 
 ### 1. Scope / Trigger
