@@ -3,6 +3,7 @@ import {
   loadLiveMiniState,
   saveLiveMiniState,
 } from "@/utils/live-mini-state";
+import { isVideoSource } from "@/utils/live-route.js";
 
 /**
  * 小窗/离页播放状态同步。
@@ -37,6 +38,51 @@ export function useLiveMiniWindow(ctx) {
   } = ctx;
   let lastLiveMiniStateSyncAt = 0;
 
+  function isMiniWindowVideoSource(url = "", state = {}) {
+    if (!url) return false;
+    if (state?.isReplay === true || isReplay.value === true) return true;
+    return isVideoSource(url);
+  }
+
+  function selectMiniWindowSource(extra = {}) {
+    const preferred = String(extra.playUrl || displayVideoUrl.value || pullUrl.value || "");
+    const backupHlsUrl = String(extra.backupHlsUrl || "");
+    if (isMiniWindowVideoSource(preferred, extra)) {
+      return {
+        playUrl: preferred,
+        backupUrl: String(extra.backupUrl || ""),
+        backupHlsUrl,
+      };
+    }
+    if (isMiniWindowVideoSource(backupHlsUrl, { ...extra, isReplay: false })) {
+      return {
+        playUrl: backupHlsUrl,
+        backupUrl: String(extra.backupUrl || preferred || ""),
+        backupHlsUrl,
+      };
+    }
+    const previousState = loadLiveMiniState(roomCode.value) || {};
+    if (isMiniWindowVideoSource(previousState.playUrl, previousState)) {
+      return {
+        playUrl: previousState.playUrl,
+        backupUrl: previousState.backupUrl || preferred || "",
+        backupHlsUrl: previousState.backupHlsUrl || backupHlsUrl,
+      };
+    }
+    if (isMiniWindowVideoSource(previousState.backupHlsUrl, { ...previousState, isReplay: false })) {
+      return {
+        playUrl: previousState.backupHlsUrl,
+        backupUrl: previousState.backupUrl || preferred || "",
+        backupHlsUrl: previousState.backupHlsUrl,
+      };
+    }
+    return {
+      playUrl: "",
+      backupUrl: String(extra.backupUrl || preferred || ""),
+      backupHlsUrl,
+    };
+  }
+
   function getCurrentMiniWindowTime() {
     const videoEl = getLiveVideoElement();
     const currentTime = Number(videoEl?.currentTime || replayLastTime.value || 0);
@@ -47,7 +93,8 @@ export function useLiveMiniWindow(ctx) {
     const force = extra.force === true;
     const now = Date.now();
     if (!force && now - lastLiveMiniStateSyncAt < 1500) return;
-    const sourceUrl = String(extra.playUrl || displayVideoUrl.value || pullUrl.value || "");
+    const source = selectMiniWindowSource(extra);
+    const sourceUrl = source.playUrl;
     const previousState = loadLiveMiniState(roomCode.value) || {};
     const hasRtcSource = !!(
       extra.rtcAppId &&
@@ -77,9 +124,11 @@ export function useLiveMiniWindow(ctx) {
       title: liveName.value || "",
       poster: extra.poster || currentVideoPoster.value || liveCover.value || "",
       playUrl: sourceUrl,
-      backupUrl: extra.backupUrl || "",
+      backupUrl: source.backupUrl,
       backupFlvUrl: extra.backupFlvUrl || "",
-      backupHlsUrl: extra.backupHlsUrl || "",
+      backupHlsUrl: source.backupHlsUrl,
+      sourceType: extra.isReplay === true || isReplay.value === true ? "replay" : "hls",
+      sourceComponent: "video",
       streamingProvider,
       rtcAppId,
       rtcChannel,

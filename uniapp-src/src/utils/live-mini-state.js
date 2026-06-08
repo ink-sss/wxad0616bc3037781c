@@ -52,6 +52,8 @@ function normalizeLiveMiniState(state = {}) {
     backupUrl: safeString(state.backupUrl),
     backupFlvUrl: safeString(state.backupFlvUrl),
     backupHlsUrl: safeString(state.backupHlsUrl),
+    sourceType: safeString(state.sourceType),
+    sourceComponent: safeString(state.sourceComponent),
     streamingProvider: safeNumber(state.streamingProvider),
     rtcAppId,
     rtcChannel,

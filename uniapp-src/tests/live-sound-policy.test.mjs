@@ -131,6 +131,25 @@ test("live mini-window state keeps sound intent but autoplays muted", async () =
   assert.match(globalMiniComponent, /:muted="muted"/);
 });
 
+test("live mini-window persists only video-compatible sources for secondary pages", async () => {
+  const broadcastMini = await readSource("src/pages/broadcast/composables/useLiveMiniWindow.js");
+  const globalMini = await readSource("src/composables/useLiveMiniWindow.js");
+  const miniState = await readSource("src/utils/live-mini-state.js");
+
+  assert.match(broadcastMini, /import\s+\{\s*isVideoSource\s*\}\s+from\s+"@\/utils\/live-route\.js"/);
+  assert.match(broadcastMini, /function\s+selectMiniWindowSource\(extra\s*=\s*\{\}\)/);
+  assert.match(broadcastMini, /backupHlsUrl\s*=\s*String\(extra\.backupHlsUrl\s*\|\|\s*""\)/);
+  assert.match(broadcastMini, /playUrl:\s*backupHlsUrl/);
+  assert.match(broadcastMini, /previousState\s*=\s*loadLiveMiniState\(roomCode\.value\)\s*\|\|\s*\{\}/);
+  assert.match(broadcastMini, /isMiniWindowVideoSource\(previousState\.playUrl,\s*previousState\)/);
+  assert.match(broadcastMini, /sourceComponent:\s*"video"/);
+  assert.match(globalMini, /function\s+resolveCachedMiniVideoState\(state\s*=\s*null\)/);
+  assert.match(globalMini, /isMiniWindowVideoUrl\(state\.playUrl,\s*state\)/);
+  assert.match(globalMini, /cached_no_hls_source/);
+  assert.match(miniState, /sourceType:\s*safeString\(state\.sourceType\)/);
+  assert.match(miniState, /sourceComponent:\s*safeString\(state\.sourceComponent\)/);
+});
+
 test("live mini-window removes poster overlay after playback starts", async () => {
   const globalMiniComponent = await readSource("src/components/live-mini-window.vue");
 

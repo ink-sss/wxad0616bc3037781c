@@ -199,6 +199,11 @@ await wechatSilentLogin({ code, sourceClient: "mp-weixin" });
 - `/h5/live/streamInf` is not just a fallback for missing detail URLs. Fetch it
   for live rooms when `roomCode` exists so detail data missing HLS cannot mask a
   usable HLS source from stream info.
+- Secondary-page live mini-window state must obey the same mp-weixin playback
+  boundary: persist a `video`-compatible live URL as `playUrl` and keep
+  RTMP/FLV only as diagnostics/backups. If the active room source is
+  `live-player`-only, reuse the last cached HLS/video source or refetch detail
+  plus stream info instead of rendering a visible empty mini-window.
 
 ### 4. Validation & Error Matrix
 
@@ -214,8 +219,13 @@ await wechatSilentLogin({ code, sourceClient: "mp-weixin" });
   adaptive HLS.
 - Base: stream info has HLS and detail only has FLV/RTMP -> selected URL is the
   stream-info HLS source.
+- Base: live page is playing a non-video source but cached mini-window state has
+  `backupHlsUrl` -> secondary page mini-window promotes `backupHlsUrl` to
+  `playUrl`.
 - Bad: selecting `pullRtmpUrl`/`pullFlvUrl`, initializing `live-player`, or
   retrying a live-player-only candidate in `mp-weixin`.
+- Bad: secondary page mini-window shows a black "直播间" shell with
+  `hasPlayableSource=false` because cached `playUrl` was RTMP/FLV.
 
 ### 6. Tests Required
 
@@ -226,6 +236,9 @@ await wechatSilentLogin({ code, sourceClient: "mp-weixin" });
   adaptive HLS used only when no normal HLS source exists.
 - Focused no-HLS check confirms RTMP/FLV-only live payloads do not initialize
   playback in `mp-weixin`.
+- Focused mini-window state check confirms broadcast leave-state persistence
+  writes only video-compatible `playUrl`, promotes `backupHlsUrl` when needed,
+  and does not treat RTMP/FLV cache as playable on secondary pages.
 - WeChat Developer Tools and real-device validation remain required for actual
   Mini Program video playback.
 

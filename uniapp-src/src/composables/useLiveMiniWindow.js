@@ -11,7 +11,7 @@ import {
   saveReplayProgressFromMiniState,
 } from '@/utils/live-mini-state'
 import { returnToLiveRoom } from '@/utils/live-room-navigation'
-import { getBestReplayUrl, getMiniProgramLiveCandidates } from '@/utils/live-route.js'
+import { getBestReplayUrl, getMiniProgramLiveCandidates, isVideoSource } from '@/utils/live-route.js'
 
 const POSITION_KEY = 'live_mini_window_position_v1'
 const CLOSED_KEY = 'live_mini_window_closed_room_v1'
@@ -88,6 +88,26 @@ function maskUrl(value = '') {
   return String(value || '')
     .replace(/([?&](?:token|access_token|auth_key|key|sign|signature|wx_token)=)[^&#]*/gi, '$1***')
     .replace(/(\/)([A-Za-z0-9_-]{24,})(?=\/|$)/g, '$1***')
+}
+
+function isMiniWindowVideoUrl(url = '', state = {}) {
+  const value = safeString(url)
+  if (!value) return false
+  if (state?.isReplay === true) return true
+  return isVideoSource(value)
+}
+
+function resolveCachedMiniVideoState(state = null) {
+  if (!state) return null
+  if (isMiniWindowVideoUrl(state.playUrl, state)) return state
+  const backupHlsUrl = [state.backupHlsUrl, state.backupUrl].find((url) => isMiniWindowVideoUrl(url, { ...state, isReplay: false })) || ''
+  if (!backupHlsUrl) return null
+  return {
+    ...state,
+    playUrl: backupHlsUrl,
+    backupUrl: state.backupUrl || state.playUrl || '',
+    backupHlsUrl,
+  }
 }
 
 function snapshotStorage() {
@@ -251,7 +271,7 @@ export function useLiveMiniWindow(props = {}) {
     return clampPosition(win.width - rpxToPx(MINI_WIDTH_RPX) - rpxToPx(24), win.height - rpxToPx(MINI_HEIGHT_RPX) - rpxToPx(props.bottomOffset || 190))
   }
 
-  const hasPlayableSource = computed(() => !!playUrl.value)
+  const hasPlayableSource = computed(() => isMiniWindowVideoUrl(playUrl.value, activePlayState || { isReplay: false }))
   const displayTitle = computed(() => title.value || '直播间')
   const statusText = computed(() => (hasPlayableSource.value ? '播放中' : '直播间'))
   const miniStyle = computed(() => ({
@@ -300,7 +320,7 @@ export function useLiveMiniWindow(props = {}) {
     stateRoomCode.value = state.roomCode || resolveRoomCode()
     title.value = state.title || '直播间'
     poster.value = state.poster || ''
-    playUrl.value = state.playUrl || ''
+    playUrl.value = isMiniWindowVideoUrl(state.playUrl, state) ? state.playUrl : ''
     muted.value = true
     isPlaying.value = false
     hideReason.value = state.playUrl ? 'state_applied' : 'state_no_url'
@@ -425,7 +445,7 @@ export function useLiveMiniWindow(props = {}) {
   function applyMiniDetail(detail = {}, streamInfo = {}) {
     const source = selectMiniPlayableSource(detail, streamInfo)
     const room = safeString(firstValue(detail, 'roomCode', 'room_code') || resolveRoomCode())
-    if (!room || !source.url) {
+    if (!room || !source.url || !isMiniWindowVideoUrl(source.url, source)) {
       recordDebug('detail_no_source', {
         room,
         hasSourceUrl: !!source.url,
@@ -443,6 +463,8 @@ export function useLiveMiniWindow(props = {}) {
       playUrl: source.url,
       backupUrl: source.backupUrl,
       backupHlsUrl: source.backupUrl,
+      sourceType: source.isReplay ? 'replay' : 'hls',
+      sourceComponent: 'video',
       isLive: source.isLive,
       isReplay: source.isReplay,
       muted: true,
@@ -481,16 +503,31 @@ export function useLiveMiniWindow(props = {}) {
     hideReason.value = 'loading'
     recordDebug('refresh_start', { roomCode: code, seq })
     const cachedState = loadLiveMiniState(code)
-    if (cachedState?.playUrl) {
-      applyMiniState(cachedState)
+    const cachedVideoState = resolveCachedMiniVideoState(cachedState)
+    if (cachedVideoState?.playUrl) {
+      const normalizedCachedState = cachedVideoState.playUrl !== cachedState.playUrl
+        ? saveLiveMiniState(cachedVideoState) || cachedVideoState
+        : cachedVideoState
+      applyMiniState(normalizedCachedState)
       visible.value = true
       hideReason.value = 'visible_cached'
       initPosition()
       await nextTick()
-      seekMiniVideo(cachedState.currentTime)
+      seekMiniVideo(normalizedCachedState.currentTime)
       schedulePlayMini()
       startProgressSync()
       return
+    }
+    if (cachedState && !cachedVideoState) {
+      visible.value = false
+      playUrl.value = ''
+      poster.value = cachedState.poster || poster.value
+      recordDebug('cached_no_hls_source', {
+        playUrl: maskUrl(cachedState.playUrl),
+        backupUrl: maskUrl(cachedState.backupUrl),
+        backupHlsUrl: maskUrl(cachedState.backupHlsUrl),
+        isReplay: cachedState.isReplay === true,
+      })
     }
     try {
       const [detail, streamInfo] = await Promise.all([
