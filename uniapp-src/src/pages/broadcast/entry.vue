@@ -24,6 +24,7 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, ref, watch } from "vue";
 import { onShareAppMessage, onShareTimeline } from "@dcloudio/uni-app";
+import { getLiveSocketDebugSnapshot, installLiveSocketDebug, setLiveSocketDebugEnabled } from "@/utils/live-socket-debug.js";
 defineOptions({ inheritAttrs: false });
 import LiveBroadcastStageHost from "./components/LiveBroadcastStageHost.vue";
 import LiveImDebugFloat from "./components/LiveImDebugFloat.vue";
@@ -322,8 +323,18 @@ function setLandscapeMiniActive(value) {
 function markStatusPushReceived() {
   lastStatusPushAt.value = Date.now();
 }
+function isLiveDebugEnabled(options = liveDebugOptions.value || {}) {
+  const forceOff = options.debug === "0" || options.live_debug === "0" || options.im_debug === "0";
+  return !forceOff;
+}
+function syncLiveSocketDebug(options = liveDebugOptions.value || {}) {
+  const enabled = isLiveDebugEnabled(options);
+  installLiveSocketDebug(enabled);
+  setLiveSocketDebugEnabled(enabled);
+}
 function setLiveDebugOptions(options = {}) {
   liveDebugOptions.value = { ...(options || {}) };
+  syncLiveSocketDebug(liveDebugOptions.value);
 }
 function safeStringify(value) {
   try {
@@ -344,6 +355,7 @@ function getCurrentRouteInfo() {
     return { route: "", options: {} };
   }
 }
+syncLiveSocketDebug();
 let scheduleLiveSoundIntentRestore = () => {};
 let hasPendingUnmute = () => false;
 let markStoredSoundIntentRestore = () => {};
@@ -676,17 +688,24 @@ getLiveSocket = webSocket.getLiveSocket;
 closeLiveSocket = webSocket.closeLiveSocket;
 sendFallbackEnter = webSocket.sendFallbackEnter;
 const imDebugVisible = computed(() => {
-  const options = liveDebugOptions.value || {};
-  const forceOff = options.debug === "0" || options.live_debug === "0" || options.im_debug === "0";
-  return !forceOff;
+  return isLiveDebugEnabled();
 });
 const imDebugSummary = computed(() => {
   const state = webSocket.channelDebugState.value || {};
   const im = state.im || {};
+  const ws = state.ws || {};
+  const socketDebug = getLiveSocketDebugSnapshot();
+  const socketEvents = Array.isArray(socketDebug.events) ? socketDebug.events : [];
+  const lastSocketClose = socketEvents
+    .slice()
+    .reverse()
+    .find((event) => String(event?.event || "").startsWith("socket_close"));
   const err = im.openError || im.joinError || im.tokenError || im.lastSendSkipReason || "";
   const close = im.lastClose || {};
   const closeReason = close.code || close.reason ? `${close.code || "-"}:${close.reason || "-"}` : "-";
-  return `mode:${state.mode || "-"} im:${im.state || "-"} open:${im.isOpened ? "Y" : "N"} token:${im.tokenFetched ? "Y" : "N"} join:${im.mainJoined ? "Y" : "N"} send:${im.lastSendOk === null ? "-" : (im.lastSendOk ? "Y" : "N")} event:${im.lastEvent || "-"} close:${closeReason}${im.expectedClose ? "(expected)" : ""} err:${err || "-"}`;
+  const wsSend = ws.lastSendOk === null || ws.lastSendOk === undefined ? "-" : (ws.lastSendOk ? "Y" : "N");
+  const socketClose = lastSocketClose ? `${lastSocketClose.event}#${lastSocketClose.taskId || "-"}` : "-";
+  return `mode:${state.mode || "-"} send:${state.sendChannel || "-"} ws:${ws.state || state.wsState || "-"} wsSend:${wsSend} wsEvent:${ws.lastEvent || "-"} wsFail:${ws.lastSendFail || "-"} im:${im.state || "-"} imOpen:${im.isOpened ? "Y" : "N"} imSend:${im.lastSendOk === null ? "-" : (im.lastSendOk ? "Y" : "N")} imEvent:${im.lastEvent || "-"} close:${closeReason}${im.expectedClose ? "(expected)" : ""} sockClose:${socketClose} err:${err || "-"}`;
 });
 const imDebugReport = computed(() => safeStringify({
   generatedAt: new Date().toISOString(),
@@ -701,7 +720,20 @@ const imDebugReport = computed(() => safeStringify({
     replayCurrentVideoId: replayCurrentVideoId.value,
     tokenPresent: Boolean(userStore.token),
   },
+  playback: {
+    videoUrl: videoUrl.value,
+    displayVideoUrl: displayVideoUrl.value,
+    pullUrl: pullUrl.value,
+    isPlaying: isPlaying.value,
+    videoFrameReady: videoFrameReady.value,
+    isMuted: isMuted.value,
+    mediaSourceComponent: mediaSourceComponent.value,
+    mediaSourceType: mediaSourceType.value,
+    videoDebugInfo: videoDebugInfo.value,
+  },
   messageChannel: webSocket.channelDebugState.value,
+  wsDebug: webSocket.channelDebugState.value?.ws || null,
+  socketDebug: getLiveSocketDebugSnapshot(),
 }));
 function copyImDebugInfo() {
   const report = imDebugReport.value;
