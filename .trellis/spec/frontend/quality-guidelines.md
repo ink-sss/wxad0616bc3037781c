@@ -204,6 +204,13 @@ await wechatSilentLogin({ code, sourceClient: "mp-weixin" });
   RTMP/FLV only as diagnostics/backups. If the active room source is
   `live-player`-only, reuse the last cached HLS/video source or refetch detail
   plus stream info instead of rendering a visible empty mini-window.
+- Secondary-page live mini-window overlays must be conditional on playback
+  source/frame state. Do not render a generic `v-else` empty layer after the
+  `video` node, because it can cover a valid native video when poster state
+  changes before a frame is confirmed.
+- In `mp-weixin`, tap controls layered over a native `video` mini-window must be
+  `cover-view` overlays. Plain `view` overlays are not reliable for native-video
+  click/close/return interactions.
 
 ### 4. Validation & Error Matrix
 
@@ -226,6 +233,9 @@ await wechatSilentLogin({ code, sourceClient: "mp-weixin" });
   retrying a live-player-only candidate in `mp-weixin`.
 - Bad: secondary page mini-window shows a black "直播间" shell with
   `hasPlayableSource=false` because cached `playUrl` was RTMP/FLV.
+- Bad: secondary page mini-window has `hasPlayableSource=true` and receives
+  `video_play`, but a fallback empty layer still covers the video because the
+  empty state was implemented as an unconditional `v-else`.
 
 ### 6. Tests Required
 
@@ -239,6 +249,9 @@ await wechatSilentLogin({ code, sourceClient: "mp-weixin" });
 - Focused mini-window state check confirms broadcast leave-state persistence
   writes only video-compatible `playUrl`, promotes `backupHlsUrl` when needed,
   and does not treat RTMP/FLV cache as playable on secondary pages.
+- Focused mini-window component check confirms empty/poster overlays are not
+  unconditional fallbacks and `mp-weixin` controls over native video use
+  `cover-view`.
 - WeChat Developer Tools and real-device validation remain required for actual
   Mini Program video playback.
 

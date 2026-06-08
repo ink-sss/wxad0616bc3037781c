@@ -150,12 +150,27 @@ test("live mini-window persists only video-compatible sources for secondary page
   assert.match(miniState, /sourceComponent:\s*safeString\(state\.sourceComponent\)/);
 });
 
-test("live mini-window removes poster overlay after playback starts", async () => {
+test("live mini-window removes overlays only after video frame readiness", async () => {
+  const globalMiniComponent = await readSource("src/components/live-mini-window.vue");
+  const globalMini = await readSource("src/composables/useLiveMiniWindow.js");
+
+  assert.match(globalMiniComponent, /v-if="hasPlayableSource && poster && !videoFrameReady"/);
+  assert.match(globalMiniComponent, /v-else-if="!hasPlayableSource && poster"/);
+  assert.match(globalMiniComponent, /v-else-if="!hasPlayableSource"\s+class="live-mini__empty"/);
+  assert.doesNotMatch(globalMiniComponent, /<view\s+v-else\s+class="live-mini__empty"/);
+  assert.doesNotMatch(globalMiniComponent, /v-else-if="poster"/);
+  assert.match(globalMini, /const\s+videoFrameReady\s*=\s*ref\(false\)/);
+  assert.match(globalMini, /function\s+markMiniVideoFrameReady\(source,\s*event\s*=\s*\{\}\)/);
+  assert.match(globalMini, /video_frame_ready/);
+});
+
+test("mini-program live mini-window uses native cover overlays for video taps", async () => {
   const globalMiniComponent = await readSource("src/components/live-mini-window.vue");
 
-  assert.match(globalMiniComponent, /v-if="hasPlayableSource && poster && !isPlaying"/);
-  assert.match(globalMiniComponent, /v-else-if="!hasPlayableSource && poster"/);
-  assert.doesNotMatch(globalMiniComponent, /v-else-if="poster"/);
+  assert.match(globalMiniComponent, /<!-- #ifdef MP-WEIXIN -->/);
+  assert.match(globalMiniComponent, /<cover-view\s+class="live-mini__touch-layer"\s+@tap\.stop="restoreLive"><\/cover-view>/);
+  assert.match(globalMiniComponent, /<cover-view[\s\S]*class="live-mini__badge"[\s\S]*@tap\.stop="restoreLive"/);
+  assert.match(globalMiniComponent, /<cover-view[\s\S]*class="live-mini__close"[\s\S]*@tap\.stop="closeMini"/);
 });
 
 test("live mini-window can recover room code from cached mini state", async () => {

@@ -19,6 +19,7 @@ const CLOSED_MAX_AGE = 30 * 60 * 1000
 const MINI_WIDTH_RPX = 224
 const MINI_HEIGHT_RPX = 316
 const DEBUG_EVENTS_LIMIT = 20
+const FRAME_READY_TIMEOUT_MS = 2600
 
 function rpxToPx(value) {
   try {
@@ -247,6 +248,8 @@ export function useLiveMiniWindow(props = {}) {
   const playUrl = ref('')
   const muted = ref(true)
   const isPlaying = ref(false)
+  const videoFrameReady = ref(false)
+  const videoRenderKey = ref(0)
   const title = ref('直播间')
   const stateRoomCode = ref('')
   const position = ref(getFallbackPosition())
@@ -263,6 +266,9 @@ export function useLiveMiniWindow(props = {}) {
   let refreshTimer = null
   let progressTimer = null
   let playRetryTimer = null
+  let frameReadyTimer = null
+  let frameRecoveryCount = 0
+  let lastTimeUpdateDebugAt = 0
   let lastRestoreAt = 0
   let suppressRestoreUntil = 0
 
@@ -272,6 +278,10 @@ export function useLiveMiniWindow(props = {}) {
   }
 
   const hasPlayableSource = computed(() => isMiniWindowVideoUrl(playUrl.value, activePlayState || { isReplay: false }))
+  const videoKey = computed(() => [
+    stateRoomCode.value || resolveRoomCode() || 'room',
+    videoRenderKey.value,
+  ].join('|'))
   const displayTitle = computed(() => title.value || '直播间')
   const statusText = computed(() => (hasPlayableSource.value ? '播放中' : '直播间'))
   const miniStyle = computed(() => ({
@@ -286,6 +296,7 @@ export function useLiveMiniWindow(props = {}) {
     `room:${stateRoomCode.value || resolveRoomCode() || '-'}`,
     `url:${playUrl.value ? 'yes' : 'no'}`,
     `playing:${isPlaying.value ? 1 : 0}`,
+    `frame:${videoFrameReady.value ? 1 : 0}`,
     `err:${lastError.value || '-'}`,
   ].join(' '))
 
@@ -301,6 +312,8 @@ export function useLiveMiniWindow(props = {}) {
   function setHidden(reason, payload = {}) {
     hideReason.value = reason
     visible.value = false
+    videoFrameReady.value = false
+    clearFrameReadyTimer()
     recordDebug('hidden', { reason, ...payload })
   }
 
@@ -317,12 +330,18 @@ export function useLiveMiniWindow(props = {}) {
   function applyMiniState(state = {}) {
     closedByUser = false
     activePlayState = state || null
+    const nextPlayUrl = isMiniWindowVideoUrl(state.playUrl, state) ? state.playUrl : ''
+    const sourceChanged = nextPlayUrl !== playUrl.value || state.roomCode !== stateRoomCode.value
     stateRoomCode.value = state.roomCode || resolveRoomCode()
     title.value = state.title || '直播间'
     poster.value = state.poster || ''
-    playUrl.value = isMiniWindowVideoUrl(state.playUrl, state) ? state.playUrl : ''
+    playUrl.value = nextPlayUrl
     muted.value = true
     isPlaying.value = false
+    videoFrameReady.value = false
+    frameRecoveryCount = 0
+    clearFrameReadyTimer()
+    if (sourceChanged) videoRenderKey.value += 1
     hideReason.value = state.playUrl ? 'state_applied' : 'state_no_url'
     recordDebug('state_applied', {
       roomCode: stateRoomCode.value,
@@ -330,6 +349,8 @@ export function useLiveMiniWindow(props = {}) {
       isLive: state.isLive === true,
       isReplay: state.isReplay === true,
       pushStatus: state.pushStatus,
+      sourceComponent: state.sourceComponent || '',
+      sourceType: state.sourceType || '',
     })
   }
 
@@ -343,6 +364,72 @@ export function useLiveMiniWindow(props = {}) {
     } catch (error) {
       return null
     }
+  }
+
+  function clearFrameReadyTimer() {
+    if (!frameReadyTimer) return
+    clearTimeout(frameReadyTimer)
+    frameReadyTimer = null
+  }
+
+  function getMiniVideoEventPayload(event = {}) {
+    const detail = event.detail || {}
+    return {
+      type: event.type || '',
+      currentTime: safeNumber(detail.currentTime ?? event.target?.currentTime),
+      duration: safeNumber(detail.duration ?? event.target?.duration),
+      errMsg: safeString(detail.errMsg || event.errMsg || event.message),
+      code: detail.errCode ?? detail.code ?? '',
+    }
+  }
+
+  function markMiniVideoFrameReady(source, event = {}) {
+    const payload = getMiniVideoEventPayload(event)
+    if (!videoFrameReady.value) {
+      recordDebug('video_frame_ready', {
+        source,
+        ...payload,
+      })
+    }
+    videoFrameReady.value = true
+    isPlaying.value = true
+    hideReason.value = visible.value ? 'playing' : hideReason.value
+    lastError.value = ''
+    frameRecoveryCount = 0
+    clearFrameReadyTimer()
+    startProgressSync()
+  }
+
+  function recoverMiniVideoFrame(reason, event = {}) {
+    if (!visible.value || !hasPlayableSource.value || videoFrameReady.value) return
+    const payload = getMiniVideoEventPayload(event)
+    recordDebug('video_frame_recover', {
+      reason,
+      attempt: frameRecoveryCount + 1,
+      ...payload,
+    })
+    if (frameRecoveryCount >= 2) {
+      isPlaying.value = false
+      hideReason.value = 'frame_timeout'
+      lastError.value = 'video frame timeout'
+      return
+    }
+    frameRecoveryCount += 1
+    isPlaying.value = false
+    hideReason.value = 'frame_retry'
+    videoFrameReady.value = false
+    videoRenderKey.value += 1
+    nextTick(() => schedulePlayMini(frameRecoveryCount))
+  }
+
+  function scheduleFrameReadyWatch(reason = 'play') {
+    clearFrameReadyTimer()
+    if (!visible.value || !hasPlayableSource.value || videoFrameReady.value) return
+    frameReadyTimer = setTimeout(() => {
+      frameReadyTimer = null
+      if (videoFrameReady.value) return
+      recoverMiniVideoFrame(reason)
+    }, FRAME_READY_TIMEOUT_MS)
   }
 
   function seekMiniVideo(currentTime = 0) {
@@ -410,6 +497,7 @@ export function useLiveMiniWindow(props = {}) {
     }
     try {
       recordDebug('play_command', { playUrl: maskUrl(playUrl.value) })
+      scheduleFrameReadyWatch('play_command')
       createMiniVideoContext()?.play?.()
     } catch (error) {}
   }
@@ -434,11 +522,13 @@ export function useLiveMiniWindow(props = {}) {
       clearTimeout(playRetryTimer)
       playRetryTimer = null
     }
+    clearFrameReadyTimer()
     stopProgressSync()
     try {
       createMiniVideoContext()?.pause?.()
     } catch (error) {}
     isPlaying.value = false
+    videoFrameReady.value = false
     recordDebug('playback_stopped')
   }
 
@@ -647,8 +737,33 @@ export function useLiveMiniWindow(props = {}) {
 
   function onMiniPlay() {
     isPlaying.value = true
-    hideReason.value = visible.value ? 'playing' : hideReason.value
-    recordDebug('video_play')
+    hideReason.value = visible.value ? 'play_started' : hideReason.value
+    recordDebug('video_play', getMiniVideoEventPayload({ type: 'play' }))
+    scheduleFrameReadyWatch('video_play')
+    startProgressSync()
+  }
+
+  function onMiniPlaying(event = {}) {
+    recordDebug('video_playing', getMiniVideoEventPayload(event))
+    markMiniVideoFrameReady('playing', event)
+  }
+
+  function onMiniLoadedMetadata(event = {}) {
+    recordDebug('video_loadedmetadata', getMiniVideoEventPayload(event))
+  }
+
+  function onMiniLoadedData(event = {}) {
+    markMiniVideoFrameReady('loadeddata', event)
+  }
+
+  function onMiniCanPlay(event = {}) {
+    markMiniVideoFrameReady('canplay', event)
+  }
+
+  function onMiniWaiting(event = {}) {
+    isPlaying.value = false
+    recordDebug('video_waiting', getMiniVideoEventPayload(event))
+    scheduleFrameReadyWatch('video_waiting')
     startProgressSync()
   }
 
@@ -659,7 +774,25 @@ export function useLiveMiniWindow(props = {}) {
   }
 
   function onMiniTimeUpdate(event = {}) {
+    const payload = getMiniVideoEventPayload(event)
+    const now = Date.now()
+    if (!videoFrameReady.value || now - lastTimeUpdateDebugAt > 5000) {
+      lastTimeUpdateDebugAt = now
+      recordDebug('video_timeupdate', payload)
+    }
+    markMiniVideoFrameReady('timeupdate', event)
     syncMiniProgress(event.detail?.currentTime)
+  }
+
+  function onMiniError(event = {}) {
+    const payload = getMiniVideoEventPayload(event)
+    const message = payload.errMsg || payload.code || 'video error'
+    lastError.value = String(message)
+    isPlaying.value = false
+    videoFrameReady.value = false
+    clearFrameReadyTimer()
+    recordDebug('video_error', payload)
+    recoverMiniVideoFrame('video_error', event)
   }
 
   function buildDebugReport() {
@@ -683,6 +816,8 @@ export function useLiveMiniWindow(props = {}) {
         poster: maskUrl(poster.value),
         muted: muted.value,
         isPlaying: isPlaying.value,
+        videoFrameReady: videoFrameReady.value,
+        videoKey: videoKey.value,
         title: title.value,
         lastError: lastError.value,
       },
@@ -756,6 +891,8 @@ export function useLiveMiniWindow(props = {}) {
     hasPlayableSource,
     muted,
     isPlaying,
+    videoFrameReady,
+    videoKey,
     displayTitle,
     statusText,
     miniStyle,
@@ -763,8 +900,14 @@ export function useLiveMiniWindow(props = {}) {
     restoreLive,
     playMini,
     onMiniPlay,
+    onMiniPlaying,
+    onMiniLoadedMetadata,
+    onMiniLoadedData,
+    onMiniCanPlay,
+    onMiniWaiting,
     onMiniPause,
     onMiniTimeUpdate,
+    onMiniError,
     onDragStart,
     onDragMove,
     onDragEnd,

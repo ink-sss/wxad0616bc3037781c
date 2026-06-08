@@ -11,6 +11,7 @@
       <view class="live-mini__video-wrap" @tap.stop="restoreLive">
         <video
           v-if="hasPlayableSource"
+          :key="videoKey"
           id="liveMiniVideo"
           class="live-mini__video"
           :src="playUrl"
@@ -24,17 +25,24 @@
           :muted="muted"
           :autoplay="true"
           :enable-play-gesture="true"
+          preload="auto"
           playsinline
           webkit-playsinline
           x5-playsinline
           x5-video-player-type="h5"
           x5-video-player-fullscreen="false"
           @play="onMiniPlay"
+          @playing="onMiniPlaying"
+          @loadedmetadata="onMiniLoadedMetadata"
+          @loadeddata="onMiniLoadedData"
+          @canplay="onMiniCanPlay"
+          @waiting="onMiniWaiting"
           @pause="onMiniPause"
           @timeupdate="onMiniTimeUpdate"
+          @error="onMiniError"
         />
         <image
-          v-if="hasPlayableSource && poster && !isPlaying"
+          v-if="hasPlayableSource && poster && !videoFrameReady"
           class="live-mini__poster live-mini__poster--cover"
           :src="poster"
           mode="aspectFill"
@@ -45,11 +53,42 @@
           :src="poster"
           mode="aspectFill"
         />
-        <view v-else class="live-mini__empty">
+        <view v-else-if="!hasPlayableSource" class="live-mini__empty">
           <text class="live-mini__empty-text">直播间</text>
         </view>
 
+        <!-- #ifndef MP-WEIXIN -->
         <view class="live-mini__touch-layer"></view>
+        <!-- #endif -->
+        <!-- #ifdef MP-WEIXIN -->
+        <cover-view class="live-mini__touch-layer" @tap.stop="restoreLive"></cover-view>
+        <cover-view
+          class="live-mini__badge"
+          @touchstart.stop="noopMiniTouch"
+          @touchend.stop="restoreLive"
+          @tap.stop="restoreLive"
+        >
+          <cover-view class="live-mini__badge-text">返回直播</cover-view>
+        </cover-view>
+        <cover-view
+          class="live-mini__close"
+          @touchstart.stop="noopMiniTouch"
+          @touchend.stop="closeMini"
+          @tap.stop="closeMini"
+        >
+          ×
+        </cover-view>
+        <cover-view
+          class="live-mini__play-state"
+          v-if="hasPlayableSource && !isPlaying"
+          @touchstart.stop="noopMiniTouch"
+          @touchend.stop="playMini"
+          @tap.stop="playMini"
+        >
+          <cover-view class="live-mini__play-text">▶</cover-view>
+        </cover-view>
+        <!-- #endif -->
+        <!-- #ifndef MP-WEIXIN -->
         <view
           class="live-mini__badge"
           @touchstart.stop="noopMiniTouch"
@@ -75,6 +114,7 @@
         >
           <text class="live-mini__play-text">▶</text>
         </view>
+        <!-- #endif -->
       </view>
       <!-- <view class="live-mini__footer" @click.stop="restoreLive">
         <text class="live-mini__title">{{ displayTitle }}</text>
@@ -120,6 +160,8 @@ const {
   hasPlayableSource,
   muted,
   isPlaying,
+  videoFrameReady,
+  videoKey,
   displayTitle,
   statusText,
   miniStyle,
@@ -127,8 +169,14 @@ const {
   restoreLive,
   playMini,
   onMiniPlay,
+  onMiniPlaying,
+  onMiniLoadedMetadata,
+  onMiniLoadedData,
+  onMiniCanPlay,
+  onMiniWaiting,
   onMiniPause,
   onMiniTimeUpdate,
+  onMiniError,
   onDragStart,
   onDragMove,
   onDragEnd,
