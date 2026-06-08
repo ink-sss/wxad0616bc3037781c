@@ -74,3 +74,7 @@ Components in the uni-app source project are Vue single-file components under
   overlays with the actual playback state, for example
   `hasPlayableSource && poster && !isPlaying`, and only use the static poster
   fallback when there is no playable source.
+- Making cross-page floating components depend only on the secondary page's
+  initial props. Live mini-window pages often render before order/center route
+  data has a `roomCode`; the component must be able to recover the room from
+  its own cached mini-window state before deciding to hide itself.

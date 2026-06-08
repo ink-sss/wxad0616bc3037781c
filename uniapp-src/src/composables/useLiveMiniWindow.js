@@ -75,6 +75,14 @@ function safeNumber(value, fallback = 0) {
   return Number.isFinite(next) ? next : fallback
 }
 
+function getCachedMiniRoomCode() {
+  try {
+    return safeString(loadLiveMiniState()?.roomCode)
+  } catch (error) {
+    return ''
+  }
+}
+
 function firstValue(source = {}, ...keys) {
   for (const key of keys) {
     const value = source?.[key]
@@ -216,9 +224,9 @@ export function useLiveMiniWindow(props = {}) {
     const propCode = safeString(props.roomCode)
     if (propCode) return propCode
     try {
-      return safeString(loadLiveRoomContext()?.roomCode)
+      return safeString(loadLiveRoomContext()?.roomCode) || getCachedMiniRoomCode()
     } catch (error) {
-      return ''
+      return getCachedMiniRoomCode()
     }
   }
 

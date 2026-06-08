@@ -138,3 +138,12 @@ test("live mini-window removes poster overlay after playback starts", async () =
   assert.match(globalMiniComponent, /v-else-if="!hasPlayableSource && poster"/);
   assert.doesNotMatch(globalMiniComponent, /v-else-if="poster"/);
 });
+
+test("live mini-window can recover room code from cached mini state", async () => {
+  const globalMini = await readSource("src/composables/useLiveMiniWindow.js");
+
+  assert.match(globalMini, /function\s+getCachedMiniRoomCode\(\)/);
+  assert.match(globalMini, /loadLiveMiniState\(\)\?\.roomCode/);
+  assert.match(globalMini, /loadLiveRoomContext\(\)\?\.roomCode\)\s*\|\|\s*getCachedMiniRoomCode\(\)/);
+  assert.match(globalMini, /return\s+getCachedMiniRoomCode\(\)/);
+});
