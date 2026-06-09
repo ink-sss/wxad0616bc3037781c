@@ -37,30 +37,31 @@
 
     <!-- 有数据 -->
     <template v-else-if="list.length > 0">
-      <scroll-view class="address-scroll" scroll-y>
-        <view
-          v-for="item in list"
-          :key="item.id"
-          :class="['address-item', selectedId === item.id ? 'address-item-selected' : '']"
-          @click="emit('select', item.id)"
-        >
-          <view class="address-item-top">
-            <view class="address-user-row">
-              <text class="address-name">{{ item.name }}</text>
-              <text class="address-mobile">{{ item.mobile }}</text>
-              <text v-if="item.tag" class="address-tag">{{ item.tag }}</text>
+      <view class="address-scroll-wrap">
+        <scroll-view class="address-scroll" scroll-y>
+          <view
+            v-for="item in list"
+            :key="item.id"
+            :class="['address-item', selectedId === item.id ? 'address-item-selected' : '']"
+            @click="emit('select', item.id)"
+          >
+            <view class="address-item-top">
+              <view class="address-user-row">
+                <text class="address-name">{{ item.name }}</text>
+                <text class="address-mobile">{{ item.mobile }}</text>
+                <text v-if="item.tag" class="address-tag">{{ item.tag }}</text>
+              </view>
+              <view class="address-actions">
+                <text class="address-edit" @click.stop="emit('edit', item)"
+                  >✎</text
+                >
+                <text class="address-delete" @click.stop="onDelete(item)"
+                  >删除</text
+                >
+              </view>
             </view>
-            <view class="address-actions">
-              <text class="address-edit" @click.stop="emit('edit', item)"
-                >✎</text
-              >
-              <text class="address-delete" @click.stop="onDelete(item)"
-                >删除</text
-              >
-            </view>
-          </view>
-          <text class="address-full">{{ item.fullAddress }}</text>
-          <!-- <view class="address-default-row">
+            <text class="address-full">{{ item.fullAddress }}</text>
+            <!-- <view class="address-default-row">
             <view
               :class="[
                 'address-radio',
@@ -84,8 +85,9 @@
               {{ selectedId === item.id ? "已设默认" : "默认" }}
             </text>
           </view> -->
-        </view>
-      </scroll-view>
+          </view>
+        </scroll-view>
+      </view>
 
       <view
         v-if="showFooter"
@@ -208,9 +210,20 @@ function onDelete(item) {
   box-sizing: border-box;
 }
 
+.address-scroll-wrap {
+  flex: none;
+  min-height: 240rpx;
+  height: calc(78vh - 232rpx - env(safe-area-inset-bottom));
+  overflow: hidden;
+}
+
 .address-scroll {
-  flex: 1;
-  height: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.address-panel-page .address-scroll-wrap {
+  height: calc(100vh - 232rpx - env(safe-area-inset-bottom));
 }
 
 .address-item {

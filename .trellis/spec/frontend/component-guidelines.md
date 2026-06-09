@@ -47,6 +47,11 @@ Components in the uni-app source project are Vue single-file components under
   style isolation can make parent deep selectors unreliable for replacing child
   images or backgrounds; pass a prop/class state into the child and style the
   child-owned node directly.
+- For `scroll-view` inside Mini Program bottom sheets or flex layouts, give the
+  scroll area a concrete height, such as `calc(100% - <header/footer size>)`,
+  and then set the nested `scroll-view` to `height: 100%`. iOS real devices can
+  collapse scroll areas that depend only on flex distribution or `height: 0`,
+  making populated lists look empty.
 
 ---
 
@@ -78,3 +83,14 @@ Components in the uni-app source project are Vue single-file components under
   initial props. Live mini-window pages often render before order/center route
   data has a `roomCode`; the component must be able to recover the room from
   its own cached mini-window state before deciding to hide itself.
+- Using a third-party tab component's internal active state to drive one part
+  of a live room while external panels read separate page state. For landscape
+  live-room tabs, keep the visual active state and the rendered panel on the
+  same page-owned state (`activeTab`/`activeTabIndex`) or Mini Program custom
+  event bridge differences can highlight "Products" while still rendering the
+  interaction feed.
+- Using `v-show` for mutually exclusive Mini Program panels that also have
+  flex/display styles. In mp-weixin this compiles to `hidden`, and display
+  declarations on the same node or child component can make stale panels look
+  visible. For live-room tab panels and bottom bars, prefer `v-if`/`wx:if` so
+  inactive panels are destroyed instead of hidden.

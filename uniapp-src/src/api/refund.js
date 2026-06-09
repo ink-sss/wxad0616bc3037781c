@@ -1,9 +1,5 @@
-import { h5Get, h5Post, normalizeH5AssetUrl } from './h5.js'
-import { putFileToPresignedUrl } from '../platform/weixin/file.js'
-
-function fileNameFromPath(filePath = '', prefix = 'refund') {
-  return filePath.split('/').pop() || `${prefix}_${Date.now()}.jpg`
-}
+import { h5Get, h5Post } from './h5.js'
+import { uploadFileWithComplaintUploadUrl } from './upload.js'
 
 export function applyRefund(data = {}) {
   return h5Post('/h5/refund/apply', data)
@@ -37,28 +33,17 @@ export function negotiate(data = {}) {
   return h5Post('/h5/refund/negotiate', data)
 }
 
-export function getRefundUploadUrl(data = {}) {
-  return h5Post('/h5/refund/getUploadUrl', data)
-}
-
 export async function uploadRefundImage(payload = {}) {
   const filePath = payload.filePath || ''
   if (!filePath) throw new Error('图片路径不能为空')
 
-  const fileName = payload.fileName || fileNameFromPath(filePath, 'refund')
-  const contentType = payload.contentType || 'image/jpeg'
-  const uploadInfo = await getRefundUploadUrl({
-    orderId: Number(payload.orderId || 0),
-    filename: fileName,
-    contentType,
+  return uploadFileWithComplaintUploadUrl({
+    ...payload,
+    filePath,
+    fileType: payload.fileType || payload.file_type || 'image',
+    data: {
+      ...(payload.data || {}),
+      orderId: Number(payload.orderId || 0),
+    },
   })
-  const uploadUrl = uploadInfo?.uploadUrl || ''
-  const fileUrl = uploadInfo?.fileUrl || ''
-  if (!uploadUrl || !fileUrl) throw new Error('获取上传地址失败')
-
-  await putFileToPresignedUrl(uploadUrl, filePath, { contentType })
-  return {
-    url: normalizeH5AssetUrl(fileUrl),
-    rawUrl: fileUrl,
-  }
 }

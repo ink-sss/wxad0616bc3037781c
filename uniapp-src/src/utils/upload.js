@@ -1,80 +1,31 @@
-import { getRuntimeConfig } from './runtime-config.js';
-
-function parseUploadData(data) {
-  if (typeof data === 'object') return data;
-  return JSON.parse(data);
-}
-
-function resolveRuntimeContext(context = {}) {
-  const config = getRuntimeConfig(context.config);
-  return {
-    config,
-    websiteUrl: context.websiteUrl || config.app_url,
-    getAppId: typeof context.getAppId === 'function' ? context.getAppId.bind(context) : () => config.app_id,
-    doLogin: typeof context.doLogin === 'function' ? context.doLogin.bind(context) : () => {},
-  };
-}
+import { uploadFilesWithComplaintUploadUrl } from '../api/upload.js';
 
 export function uploadFiles(files, options = {}) {
-  const runtime = resolveRuntimeContext(options.context);
   const fileType = options.isVideo ? 'video' : 'image';
-  const uploaded = [];
   const fileList = Array.isArray(files) ? files : [files];
-  const uploadUrl = options.url || `${runtime.websiteUrl}/index.php?s=/api/file.upload/image`;
 
   if (!fileList.length) {
-    if (options.onComplete) options.onComplete(uploaded);
-    return Promise.resolve(uploaded);
+    if (options.onComplete) options.onComplete([]);
+    return Promise.resolve([]);
   }
 
   uni.showLoading({
     title: options.loadingTitle || '上传中',
   });
 
-  return Promise.all(
-    fileList.map(
-      (filePath) =>
-        new Promise((resolve) => {
-          uni.uploadFile({
-            url: uploadUrl,
-            filePath,
-            name: options.name || 'iFile',
-            formData: {
-              token: runtime.config.token,
-              app_id: runtime.getAppId(),
-              appid: runtime.config.appid,
-              file_type: fileType,
-              ...(options.formData || {}),
-            },
-            success(result) {
-              const body = parseUploadData(result.data);
-
-              if (body.code === -1) {
-                console.log('登录态失效, 重新登录');
-                runtime.doLogin();
-                resolve(null);
-                return;
-              }
-
-              if (body.code === 1) {
-                uploaded.push(body.data);
-              } else {
-                uni.showModal({
-                  title: '提示',
-                  content: body.msg,
-                });
-              }
-
-              resolve(body);
-            },
-            fail(error) {
-              if (options.onError) options.onError(error);
-              resolve(null);
-            },
-          });
-        }),
-    ),
-  ).then(() => {
+  return uploadFilesWithComplaintUploadUrl(fileList, {
+    fileType,
+    name: options.name,
+    contentType: options.contentType,
+    data: options.formData || options.data || {},
+  }).catch((error) => {
+    if (options.onError) options.onError(error);
+    uni.showModal({
+      title: '提示',
+      content: error?.message || '上传失败',
+    });
+    return [];
+  }).then((uploaded) => {
     uni.hideLoading();
     if (options.onComplete) options.onComplete(uploaded);
     return uploaded;

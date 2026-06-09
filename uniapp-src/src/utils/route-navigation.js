@@ -12,6 +12,13 @@ function normalizePlainRoute(route = '') {
   return value.startsWith('/') ? value : `/${value}`
 }
 
+const MINI_PROGRAM_ROUTE_PREFIXES = ['/pages/', '/pagesPlus/']
+const DEFAULT_PRIZE_RECORD_ROUTE = '/pagesPlus/main/prize-record/index'
+const LEGACY_PRIZE_RECORD_ROUTES = new Set([
+  '/pages/prize-record/index',
+  '/pages/user/winRecord',
+])
+
 export function extractMiniProgramRoute(route = '') {
   const raw = String(route || '').trim()
   if (!raw) return ''
@@ -24,13 +31,15 @@ export function extractMiniProgramRoute(route = '') {
     if (hashIndex >= 0) {
       return normalizePlainRoute(value.slice(hashIndex + 1))
     }
-    if (value.startsWith('/pages/') || value.startsWith('pages/')) {
+    if (MINI_PROGRAM_ROUTE_PREFIXES.some((prefix) => value.startsWith(prefix) || value.startsWith(prefix.slice(1)))) {
       return normalizePlainRoute(value)
     }
     if (/^https?:\/\//i.test(value)) {
-      const pagesIndex = value.indexOf('/pages/')
-      if (pagesIndex >= 0) {
-        return normalizePlainRoute(value.slice(pagesIndex))
+      for (const prefix of MINI_PROGRAM_ROUTE_PREFIXES) {
+        const routeIndex = value.indexOf(prefix)
+        if (routeIndex >= 0) {
+          return normalizePlainRoute(value.slice(routeIndex))
+        }
       }
     }
   }
@@ -40,7 +49,7 @@ export function extractMiniProgramRoute(route = '') {
 
 export function normalizeAppRoute(route = '') {
   const value = String(route || '').trim()
-  if (!value) return '/pagesPlus/main/prize-record/index'
+  if (!value) return DEFAULT_PRIZE_RECORD_ROUTE
   const extracted = extractMiniProgramRoute(value)
   if (extracted) return extracted
   if (/^https?:\/\//i.test(value)) return value
@@ -61,6 +70,22 @@ export function navigateWithH5Fallback(route = '') {
   })
 }
 
-export function navigateToPrizeRecord(route = '/pagesPlus/main/prize-record/index') {
-  navigateWithH5Fallback(route || '/pagesPlus/main/prize-record/index')
+function normalizePrizeRecordRoute(route = DEFAULT_PRIZE_RECORD_ROUTE) {
+  const normalized = normalizeAppRoute(route || DEFAULT_PRIZE_RECORD_ROUTE)
+  if (!normalized || /^https?:\/\//i.test(normalized)) return DEFAULT_PRIZE_RECORD_ROUTE
+  const [path, query = ''] = normalized.split('?')
+  if (path === DEFAULT_PRIZE_RECORD_ROUTE) return normalized
+  if (LEGACY_PRIZE_RECORD_ROUTES.has(path)) {
+    return `${DEFAULT_PRIZE_RECORD_ROUTE}${query ? `?${query}` : ''}`
+  }
+  return DEFAULT_PRIZE_RECORD_ROUTE
+}
+
+export function navigateToPrizeRecord(route = DEFAULT_PRIZE_RECORD_ROUTE, options = {}) {
+  const url = normalizePrizeRecordRoute(route)
+  const uniApi = options.uniApi || uni
+  uniApi.navigateTo({
+    url,
+    fail: () => uniApi.redirectTo({ url }),
+  })
 }

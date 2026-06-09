@@ -76,7 +76,7 @@ import DiyTitle from './title/title.vue';
 import DiyTopMerge from './topMerge/topMerge.vue';
 import DiyVideos from './videos/videos.vue';
 import DiyWindow from './window/window.vue';
-import { fetchProducts, normalizeProductList } from '../../services/miniprogram-products.js';
+import { fetchProducts, mergeProductLists, normalizeProductList } from '../../services/miniprogram-products.js';
 import { defaultHomeData } from '../../utils/default-style-data.js';
 
 function getDefaultProductItem() {
@@ -117,7 +117,7 @@ export default {
     setIndex(index, categoryId) { this.thisindex = index; const next = categoryId || 0; if (this.category_id !== next) { this.category_id = next; this.initProduct(); } },
     shouldLoadDefaultProducts() { return !this.defaultProductsLoaded && this.thisindex === 0 && Array.isArray(this.diyItems) && this.diyItems.some((item) => item && item.type === 'product' && Array.isArray(item.data) && item.data.length === 0); },
     loadDefaultProducts() { if (!this.shouldLoadDefaultProducts()) return; this.defaultProductsLoaded = true; this.thisindex = 1; this.initProduct(); },
-    getProduct() { this.loading = true; fetchProducts({ page: this.page || 1, categoryId: this.category_id || '', search: '', sortType: 'all', sortPrice: 0, pageSize: 20 }).then((data) => { const list = normalizeProductList(data || {}, 20); this.listData = this.listData.concat(list.data || []); this.last_page = list.last_page || 0; if (this.last_page <= 1 || this.page >= 9 || this.page >= this.last_page) this.no_more = true; }).catch(() => { this.no_more = true; }).finally(() => { this.loading = false; this.$emit('stopPush'); }); },
+    getProduct() { this.loading = true; fetchProducts({ page: this.page || 1, categoryId: this.category_id || '', search: '', sortType: 'all', sortPrice: 0, pageSize: 20 }).then((data) => { const list = normalizeProductList(data || {}, 20); this.listData = mergeProductLists(this.listData, list.data || []); this.last_page = list.last_page || 0; if (this.last_page <= 1 || this.page >= 9 || this.page >= this.last_page) this.no_more = true; }).catch(() => { this.no_more = true; }).finally(() => { this.loading = false; this.$emit('stopPush'); }); },
     pullDown() { if (this.thisindex !== 0) this.initProduct(); else this.$emit('getData'); },
     initProduct() { if (this.thisindex === 0) return; this.listData = []; this.page = 1; this.no_more = false; this.getProduct(); },
     scrolltolowerFunc() { if (this.thisindex === 0 || this.no_more) return; if (this.page < this.last_page) { this.page += 1; this.getProduct(); return; } this.no_more = true; },

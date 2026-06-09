@@ -57,7 +57,12 @@
           <!-- <view class="popup-header">
             全部宝贝（{{ displayProductTotal }}）
           </view> -->
-          <view class="popup-header">全部宝贝（{{ displayProductTotal }}）</view>
+          <view class="popup-header">
+            <text>全部宝贝（{{ displayProductTotal }}）</text>
+            <view class="popup-close" @click="emit('update:showProductList', false)">
+              <text class="popup-close-icon">×</text>
+            </view>
+          </view>
           <!-- <view style="color:red">123</view> -->
           <view class="goods-all-box">
             <product-list
@@ -78,6 +83,7 @@
 
   <product-list
     v-else-if="mode === 'landscape-list'"
+    variant="landscape"
     :list="productList"
     :loading="productLoading"
     :finished="productFinished"
@@ -236,12 +242,31 @@ function openSuccessNoticeProduct() {
 }
 
 .popup-header{
+  position: relative;
   color: #666666;
   padding: 0 32rpx;
   flex-shrink: 0;
   font-size: 28rpx;
   height: 80rpx;
   line-height: 88rpx;
+}
+.popup-close {
+  position: absolute;
+  top: 16rpx;
+  right: 24rpx;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.08);
+}
+.popup-close-icon {
+  color: #666;
+  font-size: 40rpx;
+  line-height: 56rpx;
 }
 .popup-title {
   font-size: 28rpx;

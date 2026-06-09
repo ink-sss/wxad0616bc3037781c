@@ -36,14 +36,19 @@ async function withFakeTimers(callback) {
 async function createEntryActions(overrides = {}) {
   const { useLiveEntryActions } = await loadEntryActionsModule();
   const likeCount = { value: 0 };
+  const activeTabIndex = { value: "0" };
+  const activeTab = { value: "interact" };
+  const loadCalls = [];
   const ctx = {
     mode: { value: "portrait" },
     showProductList: { value: false },
     productLoading: { value: false },
     productList: { value: [] },
-    loadProductList() {},
-    activeTabIndex: { value: "0" },
-    activeTab: { value: "interact" },
+    loadProductList(...args) {
+      loadCalls.push(args);
+    },
+    activeTabIndex,
+    activeTab,
     currentProduct: { value: null },
     getEffectiveTermId: () => 0,
     liveId: { value: 12 },
@@ -65,6 +70,9 @@ async function createEntryActions(overrides = {}) {
   };
   return {
     likeCount,
+    activeTabIndex,
+    activeTab,
+    loadCalls,
     actions: useLiveEntryActions(ctx),
   };
 }
@@ -118,4 +126,73 @@ test("live like HTTP fallback keeps the H5 argument shape", async () => {
     assert.deepEqual(channelCalls, [[1]]);
     assert.deepEqual(httpCalls, [[88, 1]]);
   });
+});
+
+test("landscape model-value tab update switches the content panel to products", async () => {
+  const { actions, activeTabIndex, activeTab, loadCalls } = await createEntryActions({
+    mode: { value: "landscape" },
+  });
+
+  actions.setActiveTabIndex("1");
+
+  assert.equal(activeTabIndex.value, "1");
+  assert.equal(activeTab.value, "products");
+  assert.deepEqual(loadCalls, [[true]]);
+});
+
+test("landscape change event payload switches the content panel to products", async () => {
+  const { actions, activeTabIndex, activeTab, loadCalls } = await createEntryActions({
+    mode: { value: "landscape" },
+  });
+
+  actions.onTabChange({ name: "1" });
+
+  assert.equal(activeTabIndex.value, "1");
+  assert.equal(activeTab.value, "products");
+  assert.deepEqual(loadCalls, [[true]]);
+});
+
+test("landscape mini-program native detail payload switches the content panel to products", async () => {
+  const { actions, activeTabIndex, activeTab, loadCalls } = await createEntryActions({
+    mode: { value: "landscape" },
+  });
+
+  actions.setActiveTabIndex({ detail: "1" });
+
+  assert.equal(activeTabIndex.value, "1");
+  assert.equal(activeTab.value, "products");
+  assert.deepEqual(loadCalls, [[true]]);
+});
+
+test("landscape uni-app event bridge args switch the content panel to products", async () => {
+  const { actions, activeTabIndex, activeTab, loadCalls } = await createEntryActions({
+    mode: { value: "landscape" },
+  });
+
+  actions.setActiveTabIndex({ detail: { __args__: ["1"] } });
+
+  assert.equal(activeTabIndex.value, "1");
+  assert.equal(activeTab.value, "products");
+  assert.deepEqual(loadCalls, [[true]]);
+});
+
+test("landscape tab switch records normalized debug state", async () => {
+  const events = [];
+  const { actions, activeTabIndex, activeTab, loadCalls } = await createEntryActions({
+    mode: { value: "landscape" },
+    recordTabDebugEvent(type, detail) {
+      events.push({ type, detail });
+    },
+  });
+
+  actions.setActiveTabIndex({ detail: { __args__: ["1"] } });
+
+  assert.equal(activeTabIndex.value, "1");
+  assert.equal(activeTab.value, "products");
+  assert.deepEqual(loadCalls, [[true]]);
+  assert.equal(events.length, 1);
+  assert.equal(events[0].type, "tab:setActiveTabIndex");
+  assert.equal(events[0].detail.parsedName, "1");
+  assert.equal(events[0].detail.nextActiveTab, "products");
+  assert.equal(events[0].detail.shouldLoadProducts, true);
 });

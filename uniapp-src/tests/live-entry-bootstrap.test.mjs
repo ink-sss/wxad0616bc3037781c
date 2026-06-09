@@ -38,6 +38,37 @@ async function loadBootstrapModule() {
   return import(pathToFileURL(modulePath).href);
 }
 
+async function loadStartupModule() {
+  const tempDir = await mkdtemp(join(tmpdir(), "miniprogram-startup-"));
+  const sourcePath = join(root, "src/services/miniprogram-startup.js");
+  const routePath = pathToFileURL(join(root, "src/utils/live-route.js")).href;
+  let source = await readFile(sourcePath, "utf8");
+  source = source
+    .replace(
+      "import { fetchLoginSetting, reportMiniProgramVersion } from '@/api/login.js'",
+      "const fetchLoginSetting = globalThis.__fetchLoginSetting;\nconst reportMiniProgramVersion = globalThis.__reportMiniProgramVersion;"
+    )
+    .replace(
+      "import { getAccountInfo } from '@/platform/weixin/account.js'",
+      "const getAccountInfo = globalThis.__getAccountInfo;"
+    )
+    .replace(
+      "import { getRuntimeConfig } from '@/utils/runtime-config.js'",
+      "const getRuntimeConfig = globalThis.__getRuntimeConfig;"
+    )
+    .replace(
+      "import { normalizeLiveRouteOptions } from '@/utils/live-route.js'",
+      `import { normalizeLiveRouteOptions } from ${JSON.stringify(routePath)};`
+    )
+    .replace(
+      "import { saveLiveRoomContext } from '@/utils/live-room-context.js'",
+      "const saveLiveRoomContext = globalThis.__saveLiveRoomContext;"
+    );
+  const modulePath = join(tempDir, "miniprogram-startup.mjs");
+  await writeFile(modulePath, source, "utf8");
+  return import(pathToFileURL(modulePath).href);
+}
+
 function createHarness(storageSeed = {}) {
   const storage = new Map(Object.entries(storageSeed));
   const redirects = [];
@@ -156,6 +187,45 @@ test("scene can carry equivalent live-room params", async () => {
   assert.equal(initCalls[0].liveType, "replay");
 });
 
+test("entry keeps current live-room params", async () => {
+  const { ctx, storage, initCalls } = createHarness();
+  ctx.userStore.token = "token-current";
+  const { runLiveEntryBootstrap } = await loadBootstrapModule();
+
+  await runLiveEntryBootstrap({
+    roomCode: "miufct6sqaqh",
+    tenantId: "15",
+    liveType: "live",
+    _tc: "xthxirwe9f",
+  }, ctx);
+
+  assert.equal(storage.get("mp_live_room_context_v1").roomCode, "miufct6sqaqh");
+  assert.equal(storage.get("mp_live_room_context_v1").tenantId, "15");
+  assert.equal(storage.get("mp_live_room_context_v1").liveType, "live");
+  assert.equal(storage.get("mp_live_room_context_v1")._tc, "xthxirwe9f");
+  assert.equal(initCalls.length, 1);
+  assert.equal(initCalls[0].roomCode, "miufct6sqaqh");
+  assert.equal(initCalls[0].tenantId, "15");
+  assert.equal(initCalls[0].liveType, "live");
+  assert.equal(initCalls[0]._tc, "xthxirwe9f");
+});
+
+test("comma scene can carry legacy key:value params", async () => {
+  const { ctx, storage, initCalls } = createHarness();
+  ctx.userStore.token = "token-legacy-scene";
+  const { runLiveEntryBootstrap } = await loadBootstrapModule();
+
+  await runLiveEntryBootstrap({
+    scene: encodeURIComponent("roomCode:miufct6sqaqh,tenantId:15,liveType:live,_tc:xthxirwe9f,uid:874"),
+  }, ctx);
+
+  assert.equal(storage.get("mp_live_room_context_v1").roomCode, "miufct6sqaqh");
+  assert.equal(storage.get("mp_live_room_context_v1").tenantId, "15");
+  assert.equal(initCalls.length, 1);
+  assert.equal(initCalls[0].roomCode, "miufct6sqaqh");
+  assert.equal(initCalls[0].uid, "874");
+});
+
 test("scene can carry H5 search token plus hash live-room params", async () => {
   const { ctx, storage, initCalls } = createHarness();
   const { runLiveEntryBootstrap } = await loadBootstrapModule();
@@ -220,4 +290,75 @@ test("debugLive=1 has no source token fallback", async () => {
   assert.equal(storage.get("h5_token"), undefined);
   assert.equal(storage.get("token"), undefined);
   assert.equal(redirects.length, 1);
+});
+
+test("mini-program startup persists scene and loginSetting compatibility storage", async () => {
+  const { storage } = createHarness();
+  const versionReports = [];
+  globalThis.__fetchLoginSetting = async () => ({
+    appVersion: "0.9.0",
+    setting: {
+      mp_open: 1,
+      wx_open: 1,
+      wx_phone: 0,
+      h5_sms_open: 1,
+      is_login: 1,
+      live_page: "2",
+    },
+    im_setting: {
+      im_sdk_appid: "sdk-1",
+      im_user_id: "im-user",
+      im_user_sig: "im-sig",
+    },
+  });
+  globalThis.__reportMiniProgramVersion = async (version, options) => {
+    versionReports.push({ version, options });
+    return { code: 1 };
+  };
+  globalThis.__getAccountInfo = () => ({
+    miniProgram: {
+      appId: "wx-test",
+      version: "1.0.0",
+    },
+  });
+  globalThis.__getRuntimeConfig = () => ({
+    app_id: 393016,
+    appid: "wx-config",
+    miniprogram_appid: "wx-config",
+  });
+  globalThis.getApp = () => ({ globalData: {} });
+  const app = { globalData: {} };
+  const { runMiniProgramStartup } = await loadStartupModule();
+
+  await runMiniProgramStartup({
+    query: {
+      scene: encodeURIComponent("roomCode:miufct6sqaqh,tenantId:15,liveType:live,_tc:xthxirwe9f,uid:874,live_id:1001,shop_supplier_id:15"),
+    },
+  }, app);
+
+  assert.equal(storage.get("referee_id"), "874");
+  assert.equal(storage.get("shop_supplier_id"), "15");
+  assert.equal(app.globalData.live_id, "1001");
+  assert.equal(app.globalData.shop_supplier_id, "15");
+  assert.equal(app.globalData.is_login, 1);
+  assert.equal(app.globalData.live_page, "2");
+  assert.equal(app.globalData.SDKAppID, "sdk-1");
+  assert.equal(app.globalData.imUserId, "im-user");
+  assert.equal(app.globalData.imUserSig, "im-sig");
+  assert.equal(storage.get("mpState"), 1);
+  assert.equal(storage.get("wxOpen"), 1);
+  assert.equal(storage.get("wxBinding"), 0);
+  assert.equal(storage.get("smsOpen"), 1);
+  assert.deepEqual(storage.get("setting_393016"), {
+    mp_open: 1,
+    wx_open: 1,
+    wx_phone: 0,
+    h5_sms_open: 1,
+    is_login: 1,
+    live_page: "2",
+  });
+  assert.equal(storage.get("mp_live_room_context_v1").roomCode, "miufct6sqaqh");
+  assert.equal(versionReports.length, 1);
+  assert.equal(versionReports[0].version, "1.0.0");
+  assert.equal(versionReports[0].options.appid, "wx-test");
 });

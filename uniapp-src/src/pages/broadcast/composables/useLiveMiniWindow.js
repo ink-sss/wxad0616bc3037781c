@@ -1,4 +1,5 @@
 import {
+  clearLiveMiniState,
   consumeLiveMiniReturnState,
   loadLiveMiniState,
   saveLiveMiniState,
@@ -169,6 +170,11 @@ export function useLiveMiniWindow(ctx) {
     isPlaying.value = false;
   }
 
+  function clearLiveMiniWindowState() {
+    clearLiveMiniState(roomCode.value);
+    lastLiveMiniStateSyncAt = 0;
+  }
+
   function restoreLivePlaybackFromMiniWindow() {
     const state = consumeLiveMiniReturnState(roomCode.value) || loadLiveMiniState(roomCode.value);
     if (!state) return false;
@@ -265,6 +271,7 @@ export function useLiveMiniWindow(ctx) {
   return {
     syncLiveMiniWindowState,
     pauseLivePlaybackForMiniWindow,
+    clearLiveMiniWindowState,
     restoreLivePlaybackFromMiniWindow,
     applyMiniResumeOptions,
   };

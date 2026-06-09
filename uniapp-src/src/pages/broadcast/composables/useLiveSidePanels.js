@@ -15,12 +15,27 @@ export function isTruthyFlag(value) {
   return value === true || value === 1 || value === "1" || value === "true";
 }
 
+function toNumber(value) {
+  const number = Number(value ?? 0);
+  return Number.isFinite(number) ? number : 0;
+}
+
+function firstStatValue(source = {}, keys = []) {
+  const stats = source && typeof source === "object" ? source : {};
+  for (const key of keys) {
+    const value = stats[key];
+    if (value !== undefined && value !== null && value !== "") return value;
+  }
+  return undefined;
+}
+
 export function buildCenterStats(orderStats = {}, refundStats = {}) {
+  const refundValue = firstStatValue(refundStats, ["refund", "refunding", "processing", "unread", "total"]);
   return {
-    waitPay: Number(orderStats?.unpay || 0),
-    waitShip: Number(orderStats?.unsend || 0),
-    waitReceive: Number(orderStats?.unreceive || 0),
-    refunding: Number(refundStats?.refund || 0),
+    waitPay: toNumber(firstStatValue(orderStats, ["payment", "unpay", "waitPay", "wait_pay", "pendingPay"])),
+    waitShip: toNumber(firstStatValue(orderStats, ["delivery", "unsend", "waitShip", "wait_ship", "waitDelivery"])),
+    waitReceive: toNumber(firstStatValue(orderStats, ["received", "unreceive", "waitReceive", "wait_receive"])),
+    refunding: toNumber(refundValue !== undefined ? refundValue : firstStatValue(orderStats, ["refund"])),
   };
 }
 

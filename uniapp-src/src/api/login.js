@@ -35,3 +35,30 @@ export function fetchLoginSetting() {
     })
   })
 }
+
+export function reportMiniProgramVersion(version, options = {}) {
+  const runtimeConfig = getRuntimeConfig()
+  const appId = options.app_id || runtimeConfig.app_id
+  const appid = options.appid || runtimeConfig.appid || runtimeConfig.miniprogram_appid
+  return new Promise((resolve, reject) => {
+    uni.request({
+      url: `${runtimeConfig.app_url}/index.php/api/index/updateVersion`,
+      data: {
+        app_id: appId,
+        appid,
+        version,
+      },
+      dataType: 'json',
+      method: 'POST',
+      header: {
+        'content-type': 'application/json;charset=UTF-8',
+      },
+      success(response) {
+        resolve(response?.data || response)
+      },
+      fail(error) {
+        reject(new Error(error?.errMsg || '版本上报失败'))
+      },
+    })
+  })
+}

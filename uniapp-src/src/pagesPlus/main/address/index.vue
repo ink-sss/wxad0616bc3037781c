@@ -69,7 +69,7 @@ onLoad((options) => {
   }
   // 从授权域名wxPick页回来
   if (options?.wxAddrDone === "1") {
-    uni.showToast({ title: "地址导入成功", icon: "success" });
+    uni.showToast({ title: "地址导入成功", icon: "none" });
   }
   loadAddresses();
 });

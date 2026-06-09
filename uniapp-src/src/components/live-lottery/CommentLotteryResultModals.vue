@@ -273,11 +273,14 @@ function openPrizeRecord() {
 .comment-result-modal .closeWinPrizeBox,
 .comment-result-modal .closeLosePrizeBox {
   position: absolute;
-  left: 50%;
-  bottom: -100rpx;
   width: 52rpx;
   height: 52rpx;
   opacity: 0.7;
+}
+
+.comment-result-modal .closeWinPrizeBox {
+  left: 50%;
+  bottom: -100rpx;
   transform: translateX(-50%);
 }
 
@@ -292,6 +295,16 @@ function openPrizeRecord() {
   background: url("https://man.lqjy.cc/static/remote-icons/nyfs-oss-bcvdata-com-frontend-mobile-live-lose-prize-icon-c9e67e0a.png") no-repeat;
   background-size: cover;
   transform: translate(-50%, -50%);
+}
+
+.comment-result-modal .closeLosePrizeBox {
+  top: 26rpx;
+  right: 26rpx;
+  z-index: 1;
+  box-sizing: border-box;
+  padding: 10rpx;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .comment-result-modal .losePrizeText {

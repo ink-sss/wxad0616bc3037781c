@@ -48,7 +48,7 @@ const props = defineProps({
   withMask: { type: Boolean, default: false },
   maskColor: { type: String, default: "rgba(0, 0, 0, 0.35)" },
   allowOverflow: { type: Boolean, default: false },
-  showClose: { type: Boolean, default: true },
+  showClose: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(["close"]);

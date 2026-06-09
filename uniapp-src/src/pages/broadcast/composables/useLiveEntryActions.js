@@ -3,6 +3,11 @@ import { useTapLikeEffect } from "../../../utils/useTapLikeEffect.js";
 import { ZAN_IMAGES } from "../utils/entry-format.js";
 
 const HEART_POOL_SIZE = 24;
+const TAB_MAP = {
+  0: "interact",
+  1: "products",
+  2: "sign",
+};
 
 function createHeartSlots() {
   return Array.from({ length: HEART_POOL_SIZE }, (_, slotId) => ({
@@ -21,6 +26,42 @@ function firstValue(source = {}, ...keys) {
     if (value !== undefined && value !== null && value !== "") return value;
   }
   return undefined;
+}
+
+function getTabPayloadValue(payload) {
+  if (!payload || typeof payload !== "object") return payload;
+  if (Array.isArray(payload)) return getTabPayloadValue(payload[0]);
+  if (Array.isArray(payload.__args__)) return getTabPayloadValue(payload.__args__[0]);
+  if (Array.isArray(payload.detail?.__args__)) return getTabPayloadValue(payload.detail.__args__[0]);
+  if (payload.name !== undefined && payload.name !== null) return payload.name;
+  if (payload.value !== undefined && payload.value !== null) return payload.value;
+  if (payload.detail !== undefined && payload.detail !== null) return getTabPayloadValue(payload.detail);
+  return payload;
+}
+
+function getTabName(payload) {
+  const value = getTabPayloadValue(payload);
+  const name = String(value ?? "0");
+  return Object.prototype.hasOwnProperty.call(TAB_MAP, name) ? name : "0";
+}
+
+function previewTabPayload(payload) {
+  if (payload === undefined) return "undefined";
+  if (payload === null) return "null";
+  if (typeof payload !== "object") return String(payload);
+  try {
+    return JSON.stringify(payload, (_key, value) => {
+      if (typeof value === "function") return "[Function]";
+      if (typeof value === "symbol") return String(value);
+      return value;
+    }).slice(0, 500);
+  } catch (_) {
+    return Object.prototype.toString.call(payload);
+  }
+}
+
+function getProductListLength(productList) {
+  return Array.isArray(productList?.value) ? productList.value.length : 0;
 }
 
 /**
@@ -53,6 +94,7 @@ export function useLiveEntryActions(ctx) {
     roomSetting,
     isTruthyFlag,
     signConfig,
+    recordTabDebugEvent = () => {},
   } = ctx;
 
   const heartSlots = ref(createHeartSlots());
@@ -142,8 +184,7 @@ export function useLiveEntryActions(ctx) {
         loadProductList(true);
       }
     } else {
-      activeTabIndex.value = "1";
-      activeTab.value = "products";
+      setActiveTabIndex("1");
     }
   }
 
@@ -257,9 +298,39 @@ export function useLiveEntryActions(ctx) {
     // visual handling stays in share-popup
   }
 
-  function onTabChange({ name }) {
-    const tabMap = { 0: "interact", 1: "products", 2: "sign" };
-    activeTab.value = tabMap[name] || "interact";
+  function setActiveTabIndex(payload) {
+    const name = getTabName(payload);
+    const previousActiveTabIndex = activeTabIndex.value;
+    const previousActiveTab = activeTab.value;
+    const wasProductActive = activeTabIndex.value === "1" && activeTab.value === "products";
+    const shouldLoadProducts = (
+      name === "1" &&
+      !wasProductActive &&
+      !productLoading.value &&
+      getProductListLength(productList) === 0
+    );
+    activeTabIndex.value = name;
+    activeTab.value = TAB_MAP[name];
+    try {
+      recordTabDebugEvent("tab:setActiveTabIndex", {
+        payload: previewTabPayload(payload),
+        parsedName: name,
+        previousActiveTabIndex,
+        previousActiveTab,
+        nextActiveTabIndex: name,
+        nextActiveTab: TAB_MAP[name],
+        productListLength: getProductListLength(productList),
+        productLoading: Boolean(productLoading.value),
+        shouldLoadProducts,
+      });
+    } catch (_) {}
+    if (shouldLoadProducts) {
+      loadProductList(true);
+    }
+  }
+
+  function onTabChange(payload) {
+    setActiveTabIndex(payload);
   }
 
   // enableChat 变化时自动切换到可用 tab
@@ -288,6 +359,7 @@ export function useLiveEntryActions(ctx) {
     finishTapEffect,
     onVideoTap,
     onShareAction,
+    setActiveTabIndex,
     onTabChange,
     switchToFirstAvailableTab,
     // 页面卸载/离开直播间时外部调用，防止累计点赞数丢失

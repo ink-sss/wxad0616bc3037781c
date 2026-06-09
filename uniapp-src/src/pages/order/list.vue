@@ -499,7 +499,7 @@ async function handlePayAction(item) {
     const code = String(item.roomCode || liveRoomCode.value || "").trim();
     const payResult = await executeYeepayPayment(item.orderNo, { roomCode: code });
     if (payResult?.confirmed) {
-      uni.showToast({ title: "支付成功", icon: "success" });
+      uni.showToast({ title: "支付成功", icon: "none" });
       setTimeout(() => {
         uni.redirectTo({
           url: `/pages/order/list?status=unsend${code ? `&roomCode=${encodeURIComponent(code)}` : ""}`,
@@ -558,7 +558,7 @@ function showRemindToast() {
 async function handleExtendAction(item) {
   try {
     await extendReceive(item.id);
-    uni.showToast({ title: "延长收货成功", icon: "success" });
+    uni.showToast({ title: "延长收货成功", icon: "none" });
     loadOrders(true);
   } catch (err) {
     uni.showToast({ title: err?.message || "延长收货失败", icon: "none" });
@@ -568,7 +568,7 @@ async function handleExtendAction(item) {
 async function handleConfirmAction(item) {
   try {
     await confirmReceive(item.id);
-    uni.showToast({ title: "确认收货成功", icon: "success" });
+    uni.showToast({ title: "确认收货成功", icon: "none" });
     loadOrders(true);
   } catch (err) {
     uni.showToast({ title: err?.message || "操作失败", icon: "none" });

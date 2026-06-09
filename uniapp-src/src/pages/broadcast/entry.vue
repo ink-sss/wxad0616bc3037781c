@@ -16,6 +16,7 @@
   />
   <LiveImDebugFloat
     :show="imDebugVisible"
+    title="直播调试"
     :summary="imDebugSummary"
     :copy-status="imDebugCopyStatus"
     @copy="copyImDebugInfo"
@@ -65,6 +66,7 @@ import { useLiveMiniWindow } from "./composables/useLiveMiniWindow.js";
 import { useLiveMuteState } from "./composables/useLiveMuteState.js";
 import { useLiveMarketingRuntime } from "./composables/useLiveMarketingRuntime.js";
 import { useLiveHeartbeatStatus } from "./composables/useLiveHeartbeatStatus.js";
+import { useLiveMiniProgramParity } from "./composables/useLiveMiniProgramParity.js";
 import { useLivePageLeave } from "./composables/useLivePageLeave.js";
 import { useLivePlaybackWiring } from "./composables/useLivePlaybackWiring.js";
 import { useLiveProgressReport } from "./composables/useLiveProgressReport.js";
@@ -159,6 +161,7 @@ const roomSetting = ref({
   buySuccessReminder: 0,
   showHotSale: 1,
 });
+useLiveMiniProgramParity({ roomSetting, liveInitResolved });
 const {
   userMuted, userBlocked, muteTipVisible, muteRemainText, chatDisabled, startMuteCountdown, stopMuteCountdown,
 } = useLiveMuteState({ roomSetting });
@@ -251,7 +254,8 @@ function getEffectiveTermId() {
 const userStore = useUserStore();
 const domainStore = useDomainStore(pinia);
 const activeTab = ref("interact"); // 'interact' | 'products' | 'sign'
-const activeTabIndex = ref("0"); // wd-tabs 使用字符串索引
+const activeTabIndex = ref("0");
+const tabDebugEvents = ref([]);
 const pushStatus = ref(0);
 const pullUrl = ref("");
 const isReplay = ref(false);
@@ -307,6 +311,7 @@ let sendFallbackEnter = () => {};
 let getLiveVideoElement = () => null;
 let applyInlineVideoAttrs = () => {};
 let resumeVideoPlayback = () => {};
+let clearLiveMiniWindowState = () => {};
 let tryIOSWechatBridgeAutoPlay = () => {};
 let tryIOSWechatBridgeMutedPlay = () => {};
 let setIOSWechatBridgeSoundAutoPlayAllowed = () => {};
@@ -343,17 +348,59 @@ function safeStringify(value) {
     return String(value || "");
   }
 }
+function maskDebugString(value = "") {
+  return String(value).replace(
+    /([?&](?:token|wx_token|auth|auth_key|sign|signature|secret|_tc)=)[^&]*/gi,
+    "$1***",
+  );
+}
+function maskDebugObject(value = {}) {
+  if (!value || typeof value !== "object") return value;
+  return Object.fromEntries(Object.entries(value).map(([key, rawValue]) => {
+    if (/token|auth|sign|signature|secret|_tc/i.test(key)) {
+      return [key, "***"];
+    }
+    return [key, typeof rawValue === "string" ? maskDebugString(rawValue) : rawValue];
+  }));
+}
 function getCurrentRouteInfo() {
   try {
     const pages = typeof getCurrentPages === "function" ? getCurrentPages() : [];
     const page = pages[pages.length - 1];
     return {
       route: page?.route || "",
-      options: page?.options || {},
+      options: maskDebugObject(page?.options || {}),
     };
   } catch (_) {
     return { route: "", options: {} };
   }
+}
+function getProductListDebugLength() {
+  return Array.isArray(productList?.value) ? productList.value.length : 0;
+}
+function getLiveTabDebugState() {
+  return {
+    mode: mode.value,
+    activeTab: activeTab.value,
+    activeTabIndex: activeTabIndex.value,
+    showProductList: showProductList.value,
+    productListLength: getProductListDebugLength(),
+    productLoading: productLoading.value,
+    productFinished: productFinished.value,
+    roomSetting: {
+      enableChat: roomSetting.value?.enableChat,
+      showProduct: roomSetting.value?.showProduct,
+    },
+  };
+}
+function recordTabDebugEvent(type, detail = {}) {
+  const event = {
+    at: new Date().toISOString(),
+    type,
+    detail,
+    state: getLiveTabDebugState(),
+  };
+  tabDebugEvents.value = [...tabDebugEvents.value.slice(-29), event];
 }
 syncLiveSocketDebug();
 let scheduleLiveSoundIntentRestore = () => {};
@@ -540,10 +587,11 @@ const entryActions = useLiveEntryActions({
   getEffectiveTermId, liveId, roomCode, liveTenantId, shareCode, liveBindId, isReplay, myUserId, likeCount, sendLike, getLiveSocket, isMuted,
   getVideoPlayer: () => videoPlayer,
   roomSetting, isTruthyFlag, signConfig,
+  recordTabDebugEvent,
 });
 const {
   hearts, tapEffects, comboInfo, toggleProduct, onGrab, onProductDetail, doLike, onVideoTap,
-  finishHeartAnimation, finishTapEffect, onShareAction, onTabChange,
+  finishHeartAnimation, finishTapEffect, onShareAction, setActiveTabIndex, onTabChange,
 } = entryActions;
 switchToFirstAvailableTab = entryActions.switchToFirstAvailableTab;
 const playbackWiring = useLivePlaybackWiring({
@@ -641,6 +689,7 @@ syncLiveMiniWindowState = miniWindow.syncLiveMiniWindowState;
 pauseLivePlaybackForMiniWindow = miniWindow.pauseLivePlaybackForMiniWindow;
 restoreLivePlaybackFromMiniWindow = miniWindow.restoreLivePlaybackFromMiniWindow;
 applyMiniResumeOptions = miniWindow.applyMiniResumeOptions;
+clearLiveMiniWindowState = miniWindow.clearLiveMiniWindowState;
 const handleWsMessage = createLiveWsMessageHandler({
   myUserId, isReplay, replayCurrentVideoId, replayCommentTimeline, formatLiveNickname, defaultAvatar, canAppendLiveMessages, shouldFollowLatestCommentWindow, messages,
   showEnterNotice, showBuyingNotice, showGoShoppingNotice, showProductList, showProductListSuccessNotice,
@@ -690,6 +739,14 @@ sendFallbackEnter = webSocket.sendFallbackEnter;
 const imDebugVisible = computed(() => {
   return isLiveDebugEnabled();
 });
+const liveTabDebugSummary = computed(() => {
+  const state = getLiveTabDebugState();
+  const lastEvent = tabDebugEvents.value[tabDebugEvents.value.length - 1];
+  const last = lastEvent
+    ? `${lastEvent.type}:${lastEvent.detail?.parsedName || lastEvent.state?.activeTabIndex || "-"}`
+    : "-";
+  return `tab:${state.activeTab}/${state.activeTabIndex} goods:${state.productListLength} loading:${state.productLoading ? "Y" : "N"} showProduct:${state.roomSetting.showProduct ?? "-"} last:${last}`;
+});
 const imDebugSummary = computed(() => {
   const state = webSocket.channelDebugState.value || {};
   const im = state.im || {};
@@ -705,7 +762,7 @@ const imDebugSummary = computed(() => {
   const closeReason = close.code || close.reason ? `${close.code || "-"}:${close.reason || "-"}` : "-";
   const wsSend = ws.lastSendOk === null || ws.lastSendOk === undefined ? "-" : (ws.lastSendOk ? "Y" : "N");
   const socketClose = lastSocketClose ? `${lastSocketClose.event}#${lastSocketClose.taskId || "-"}` : "-";
-  return `mode:${state.mode || "-"} send:${state.sendChannel || "-"} ws:${ws.state || state.wsState || "-"} wsSend:${wsSend} wsEvent:${ws.lastEvent || "-"} wsFail:${ws.lastSendFail || "-"} im:${im.state || "-"} imOpen:${im.isOpened ? "Y" : "N"} imSend:${im.lastSendOk === null ? "-" : (im.lastSendOk ? "Y" : "N")} imEvent:${im.lastEvent || "-"} close:${closeReason}${im.expectedClose ? "(expected)" : ""} sockClose:${socketClose} err:${err || "-"}`;
+  return `${liveTabDebugSummary.value} | mode:${state.mode || "-"} send:${state.sendChannel || "-"} ws:${ws.state || state.wsState || "-"} wsSend:${wsSend} wsEvent:${ws.lastEvent || "-"} wsFail:${ws.lastSendFail || "-"} im:${im.state || "-"} imOpen:${im.isOpened ? "Y" : "N"} imSend:${im.lastSendOk === null ? "-" : (im.lastSendOk ? "Y" : "N")} imEvent:${im.lastEvent || "-"} close:${closeReason}${im.expectedClose ? "(expected)" : ""} sockClose:${socketClose} err:${err || "-"}`;
 });
 const imDebugReport = computed(() => safeStringify({
   generatedAt: new Date().toISOString(),
@@ -720,10 +777,14 @@ const imDebugReport = computed(() => safeStringify({
     replayCurrentVideoId: replayCurrentVideoId.value,
     tokenPresent: Boolean(userStore.token),
   },
+  tabs: {
+    ...getLiveTabDebugState(),
+    recentEvents: tabDebugEvents.value.slice(-30),
+  },
   playback: {
-    videoUrl: videoUrl.value,
-    displayVideoUrl: displayVideoUrl.value,
-    pullUrl: pullUrl.value,
+    videoUrl: maskDebugString(videoUrl.value),
+    displayVideoUrl: maskDebugString(displayVideoUrl.value),
+    pullUrl: maskDebugString(pullUrl.value),
     isPlaying: isPlaying.value,
     videoFrameReady: videoFrameReady.value,
     isMuted: isMuted.value,
@@ -914,7 +975,7 @@ const { handlePageHide, handlePageBackground } = useLivePageLeave({
 useLiveEntryLifecycle({
   applyMiniResumeOptions, getLastInitOptions, restoreLivePlaybackFromMiniWindow, resumeVideoPlayback, isMuted,
   hasPendingUnmute, scheduleLiveSoundIntentRestore, pendingOrderId, getOrderDetail, getOrderListUrl,
-  pauseLivePlaybackForMiniWindow, persistReplayProgress, stopKeyboardListener, stopScheduleTimers, syncLiveMiniWindowState,
+  pauseLivePlaybackForMiniWindow, clearLiveMiniWindowState, persistReplayProgress, stopKeyboardListener, stopScheduleTimers,
   roomGroupType, isReplay, replayCurrentVideoId, liveId, replayVideosList, replayCurrentIndex,
   reportViewProgress, replayLastTime, resetReplayContext, stopHeartbeat, stopStatusPoll,
   stopMuteCountdown, stopReplayFutureStartTimer, applyH5ViewerLeaveDecrease, stopViewerCountAnimation, scheduleExplainTimerRef,
@@ -960,7 +1021,7 @@ const { stageState, stageActions } = useLiveStageBinding({
   onInputFocus, sendMessage, onInputBlur, handleSendClick: handleCommentLotterySendClick, handleCommentWindowScroll, loadPreviousCommentWindow, loadNextCommentWindow, toggleCenter, toggleProduct,
   doLike, finishHeartAnimation, finishTapEffect, onShareAction, onCenterAction, openBuyAddressPopup, onBuyQuantityChange, onBuySkuChange, onBuyCouponSelect, onBuyConfirm,
   onSelectBuyAddress, onAddBuyAddress, onEditBuyAddress, onDeleteBuyAddress, onImportWxAddress, onBuyAddressSaved,
-  isTruthyFlag, onSignedDone, enterLive, onSubscribePush, onTabChange, openCommentPrizeRuleModal, openWatchRewardPanel,
+  isTruthyFlag, onSignedDone, enterLive, onSubscribePush, setActiveTabIndex, onTabChange, openCommentPrizeRuleModal, openWatchRewardPanel,
   commentLotteryEntryVisible, commentLotteryEntryKeyword, commentLotteryBubbleVisible,
   isDistributor, distributorStatus,
   scheduleTimeStr, liveDate,

@@ -1,5 +1,6 @@
 import { computed, ref } from "vue";
 import { getProductDetail } from "@/api/product.js";
+import { handleCreatedOrderPaymentCancel } from "@/services/order-payment-cancel.js";
 
 export function getUniApi(explicitUni) {
   if (explicitUni) return explicitUni;
@@ -404,6 +405,7 @@ export function useLivePurchase({
       return;
     }
     buyLoading.value = true;
+    let createdOrderNo = "";
     try {
       const orderRes = await createOrder(
         buildCreateOrderPayload({
@@ -428,6 +430,7 @@ export function useLivePurchase({
       } else {
         onOrderCreated?.({ productId: product.id, quantity, orderRes });
       }
+      createdOrderNo = orderRes.orderNo;
       pendingOrderId.value = orderRes.orderId || orderRes.ID || 0;
       const payResult = await executeYeepayPayment(orderRes.orderNo, {
         roomCode: roomCode.value,
@@ -437,6 +440,14 @@ export function useLivePurchase({
         showBuyPopup.value = false;
       }
     } catch (err) {
+      if (handleCreatedOrderPaymentCancel({
+        err,
+        orderNo: createdOrderNo,
+        roomCode: roomCode.value,
+        uniApi: uniRuntime,
+      })) {
+        return;
+      }
       uniRuntime.showToast({ title: err?.message || "下单失败", icon: "none" });
     } finally {
       buyLoading.value = false;

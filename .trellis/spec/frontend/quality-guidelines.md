@@ -627,6 +627,154 @@ return this.sendRaw({
 
 ---
 
+## Scenario: Mini Program Live Entry Startup Parity
+
+### 1. Scope / Trigger
+
+- Trigger: broadcast pages need to mirror source Mini Program entry behavior
+  for QR/short-link launch, review settings, share menu, and capture policy.
+- Scope: `src/App.vue`, `src/services/miniprogram-startup.js`,
+  `src/utils/live-route.js`, broadcast entry composables, and
+  `src/platform/weixin/`.
+
+### 2. Signatures
+
+- `runMiniProgramStartup(options, app)` parses launch options, persists live
+  context, fetches login settings, and reports Mini Program version when needed.
+- `syncMiniProgramLoginSetting(app)` fetches `loginSetting` and updates
+  compatible storage plus `globalData`.
+- `normalizeLiveRouteOptions(query)` accepts direct query fields and `scene`.
+
+### 3. Contracts
+
+- Supported entry fields: `roomCode`, `tenantId`, `liveType`, `_tc`,
+  `liveId/live_id`, `roomId/room_id`, `shareCode/share_code`, `bindId/bind_id`,
+  `referee_id`, `uid`, and `shop_supplier_id`.
+- `scene` must support encoded URL/hash query, `key=value`, and legacy
+  comma-separated `key:value` pairs.
+- `loginSetting` writes `mpState`, `wxOpen`, `wxBinding`, `smsOpen`, and
+  `setting_${app_id}`; IM and review fields write to `globalData`.
+- WeChat-only share, capture, screen-recording, and app-exit behavior must stay
+  behind `src/platform/weixin/` wrappers.
+
+### 4. Validation & Error Matrix
+
+- Missing `roomCode` in broadcast entry -> keep existing entry guard and show
+  the room-code error; do not silently fall back to legacy live paths.
+- `loginSetting` fails -> log startup failure and continue app launch; do not
+  block update-manager or page routing.
+- Unknown `scene` fields -> preserve parsed fields in normalized options
+  without adding new route compatibility.
+- `room_setting.is_share=0` or `self_group=1` -> hide Mini Program share menu.
+- `room_setting.is_capture_screen=0` -> hide capture output; absent field leaves
+  the capture effect unchanged until detail is loaded.
+
+### 5. Good/Base/Bad Cases
+
+- Good: `/pages/broadcast/entry?roomCode=...&tenantId=15&liveType=live&_tc=...`
+  persists context and enters the broadcast initializer.
+- Base: encoded URL scenes and comma `key:value` scenes resolve to the same
+  broadcast initializer options.
+- Bad: adding compatibility for deprecated `pages/live/live-vertical` or
+  `pages/live/live-horizontal` when product scope says those paths no longer
+  exist.
+
+### 6. Tests Required
+
+- `npm run test:live-entry-bootstrap` covers direct query, URL scene, comma
+  scene, login redirect context preservation, and startup storage writes.
+- `npm run build:mp-weixin` passes from `uniapp-src/`.
+
+### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+uni.hideShareMenu();
+wx.exitMiniProgram();
+```
+
+Correct:
+
+```js
+import { hideShareMenu, exitMiniProgram } from "@/platform/weixin/share.js";
+```
+
+---
+
+## Scenario: Unified Mini Program Upload Endpoint
+
+### 1. Scope / Trigger
+
+- Trigger: uni-app business uploads need one H5 upload-contract path for Mini
+  Program domain whitelisting and storage routing.
+- Scope: `src/api/upload.js`, upload-facing API modules such as complaint and
+  refund, and UI upload callers.
+
+### 2. Signatures
+
+- `getUploadUrl(data)` -> `POST /h5/complaint/getUploadUrl`.
+- `uploadFileWithComplaintUploadUrl(payload)` -> uploaded file descriptor.
+- `uploadFilesWithComplaintUploadUrl(filePaths, options)` -> uploaded file
+  descriptor list.
+
+### 3. Contracts
+
+- All business uploads must request `/h5/complaint/getUploadUrl` first; do not
+  call legacy `/index.php?s=/api/file.upload/image` or feature-specific upload
+  URL endpoints such as `/h5/refund/getUploadUrl`.
+- `payload.filePath` is required and comes from platform file selection APIs.
+- Request metadata includes `filename/fileName`, `contentType/content_type`,
+  and `fileType/file_type`, plus caller-provided business fields.
+- The returned descriptor must keep `url`, `rawUrl`, `file_path`, and
+  `filePath` so migrated pages that still read legacy `file_path` keep working.
+- The actual file write must use the platform upload adapter, currently
+  `putFileToPresignedUrl`, against the backend-provided `uploadUrl`.
+
+### 4. Validation & Error Matrix
+
+- Missing `filePath` -> throw a user-facing upload path error.
+- Missing `uploadUrl` or `fileUrl` from the backend -> throw `获取上传地址失败`.
+- File PUT/upload failure -> propagate the error to the page or component so it
+  can show the existing upload failure toast/modal.
+
+### 5. Good/Base/Bad Cases
+
+- Good: avatar, complaint evidence, refund evidence, and generic upload
+  components all call `uploadFileWithComplaintUploadUrl`.
+- Base: video uploads pass `fileType: "video"` and infer a video content type
+  when the extension is known.
+- Bad: a page or component directly calls `uni.uploadFile` with a backend
+  business URL, or constructs `/index.php?s=/api/file.upload/image`.
+
+### 6. Tests Required
+
+- Focused unit test asserts the upload helper posts to
+  `/h5/complaint/getUploadUrl`, calls the presigned upload adapter, and returns
+  `file_path` compatibility fields.
+- Static scan confirms no source matches
+  `file.upload/image`, `/h5/refund/getUploadUrl`, or direct business
+  `uni.uploadFile`.
+- `npm run build:mp-weixin` passes from `uniapp-src/`.
+
+### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+uni.uploadFile({ url: `${this.websiteUrl}/index.php?s=/api/file.upload/image` });
+```
+
+Correct:
+
+```js
+import { uploadFileWithComplaintUploadUrl } from "@/api/upload.js";
+
+await uploadFileWithComplaintUploadUrl({ filePath, fileType: "image" });
+```
+
+---
+
 ## Code Review Checklist
 
 - Build passes for `mp-weixin`.

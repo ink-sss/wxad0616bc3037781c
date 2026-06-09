@@ -1,9 +1,17 @@
 <script>
 import { applyUpdate, bindUpdateManager } from './platform/weixin/update.js'
+import { runMiniProgramStartup, syncMiniProgramLoginSetting } from './services/miniprogram-startup.js'
 
 export default {
   globalData: {
     migrationStatus: 'scaffold',
+    live_id: '',
+    shop_supplier_id: 0,
+    live_page: '1',
+    is_login: 0,
+    SDKAppID: '',
+    imUserId: '',
+    imUserSig: '',
   },
 
   onLaunch(options) {
@@ -24,6 +32,24 @@ export default {
       },
     })
     // #endif
+
+    // #ifdef MP-WEIXIN
+    runMiniProgramStartup(options || {}, this).catch((error) => {
+      console.warn('[App] mini program startup failed:', error)
+    })
+    // #endif
+  },
+
+  methods: {
+    getWxopen(done) {
+      syncMiniProgramLoginSetting(this)
+        .catch((error) => {
+          console.warn('[App] getWxopen failed:', error)
+        })
+        .finally(() => {
+          if (typeof done === 'function') done()
+        })
+    },
   },
 
   onHide() {},

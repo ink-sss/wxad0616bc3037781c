@@ -117,6 +117,7 @@ import { computed, ref } from "vue";
 import { onLoad, onShow } from "@dcloudio/uni-app";
 import { confirmOrder, createOrder, getOrderDetail } from "@/api/order";
 import { executeYeepayPayment } from "@/services/payment-action";
+import { handleCreatedOrderPaymentCancel } from "@/services/order-payment-cancel.js";
 import { getAddressList, deleteAddress } from "@/api/address";
 import { importWxAddress } from "@/services/wechat-address";
 import { getSkuStock } from "@/api/product";
@@ -259,7 +260,7 @@ onLoad((options) => {
   // 从授权域名wxPick页回来，刷新地址列表获取新导入的地址
   if (options?.wxAddrDone === "1") {
     loadDefaultAddress().then(() => {
-      uni.showToast({ title: "地址导入成功", icon: "success" });
+      uni.showToast({ title: "地址导入成功", icon: "none" });
       loadConfirm();
     });
     return;
@@ -279,7 +280,7 @@ onShow(async () => {
       const status = Number(detail?.orderStatus || 0);
       if (status >= 2) {
         pendingOrderId.value = 0;
-        uni.showToast({ title: "支付成功", icon: "success" });
+        uni.showToast({ title: "支付成功", icon: "none" });
         setTimeout(() => {
           uni.redirectTo({ url: getOrderListUrl("unsend") });
         }, 1200);
@@ -432,6 +433,7 @@ async function onPay() {
     return;
   }
   loading.value = true;
+  let createdOrderNo = "";
   try {
     const orderRes = await createOrder({
       tenantId: tenantId.value,
@@ -458,6 +460,7 @@ async function onPay() {
       uni.showToast({ title: "已有待付款订单，正在跳转支付", icon: "none", duration: 1500 });
     }
     // 记录待支付订单ID，防止支付回调丢失
+    createdOrderNo = orderRes.orderNo;
     pendingOrderId.value = orderRes.orderId || orderRes.ID || 0;
     const payResult = await executeYeepayPayment(orderRes.orderNo, {
       roomCode: liveRoomCode.value,
@@ -466,6 +469,13 @@ async function onPay() {
       pendingOrderId.value = 0;
     }
   } catch (err) {
+    if (handleCreatedOrderPaymentCancel({
+      err,
+      orderNo: createdOrderNo,
+      roomCode: liveRoomCode.value,
+    })) {
+      return;
+    }
     uni.showToast({ title: err?.message || "下单失败", icon: "none" });
   } finally {
     loading.value = false;

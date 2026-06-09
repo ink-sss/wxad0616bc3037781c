@@ -109,6 +109,7 @@ watch(
       draftCouponId.value = Number(props.selectedCouponId) || 0;
     }
   },
+  { immediate: true },
 );
 
 watch(
@@ -431,7 +432,7 @@ function confirmSelection() {
 .coupon-card-right {
   flex: 1;
   min-width: 0;
-  padding: 24rpx 80rpx 22rpx 28rpx;
+  padding: 24rpx 0rpx 22rpx 28rpx;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -455,9 +456,9 @@ function confirmSelection() {
   font-size: 22rpx;
   line-height: 32rpx;
   color: #666;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  /* overflow: hidden; */
+  /* text-overflow: ellipsis; */
+  /* white-space: nowrap; */
 }
 
 .coupon-reason {

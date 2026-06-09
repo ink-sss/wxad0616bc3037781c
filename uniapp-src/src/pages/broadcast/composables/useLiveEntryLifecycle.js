@@ -18,10 +18,10 @@ export function useLiveEntryLifecycle(ctx) {
     getOrderDetail,
     getOrderListUrl,
     pauseLivePlaybackForMiniWindow,
+    clearLiveMiniWindowState,
     persistReplayProgress,
     stopKeyboardListener,
     stopScheduleTimers,
-    syncLiveMiniWindowState,
     roomGroupType,
     replayCurrentVideoId,
     isReplay,
@@ -78,7 +78,7 @@ export function useLiveEntryLifecycle(ctx) {
         const status = Number(detail?.orderStatus || 0);
         if (status >= 2) {
           pendingOrderId.value = 0;
-          uni.showToast({ title: "支付成功", icon: "success" });
+          uni.showToast({ title: "支付成功", icon: "none" });
           setTimeout(() => {
             uni.navigateTo({ url: getOrderListUrl("unsend") });
           }, 1200);
@@ -106,7 +106,7 @@ export function useLiveEntryLifecycle(ctx) {
   onBeforeUnmount(() => {
     stopKeyboardListener();
     stopScheduleTimers();
-    syncLiveMiniWindowState({ force: true });
+    clearLiveMiniWindowState?.();
     persistReplayProgress();
     // 录播栏目：组件卸载前上报最终进度
     if (isReplay.value && replayCurrentVideoId.value && liveId.value) {

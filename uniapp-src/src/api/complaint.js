@@ -1,5 +1,5 @@
-import { h5Get, h5Post, normalizeH5AssetUrl } from './h5.js'
-import { putFileToPresignedUrl } from '../platform/weixin/file.js'
+import { h5Get, h5Post } from './h5.js'
+import { uploadFileWithComplaintUploadUrl } from './upload.js'
 
 function firstValue(source = {}, ...keys) {
   for (const key of keys) {
@@ -74,10 +74,6 @@ function withComplaintAliases(data = {}) {
   return payload
 }
 
-function fileNameFromPath(filePath = '') {
-  return filePath.split('/').pop() || `complaint_${Date.now()}.jpg`
-}
-
 export function getComplaintUploadUrl(data = {}) {
   return h5Post('/h5/complaint/getUploadUrl', withComplaintAliases(data))
 }
@@ -86,31 +82,23 @@ export async function uploadComplaintImage(payload = {}) {
   const filePath = payload.filePath || ''
   if (!filePath) throw new Error('图片路径不能为空')
 
-  const fileName = payload.fileName || fileNameFromPath(filePath)
-  const contentType = payload.contentType || 'image/jpeg'
-  const uploadInfo = await getComplaintUploadUrl({
-    roomId: Number(firstValue(payload, 'roomId', 'room_id', 'liveId', 'live_id') || 0),
-    liveId: Number(firstValue(payload, 'liveId', 'live_id', 'roomId', 'room_id') || 0),
-    roomCode: firstValue(payload, 'roomCode', 'room_code') || '',
-    tenantId: firstValue(payload, 'tenantId', 'tenant_id'),
-    termId: firstValue(payload, 'termId', 'term_id', 'liveTermId', 'live_term_id'),
-    customerId: firstValue(payload, 'customerId', 'customer_id', 'userId', 'user_id'),
-    replayVideoId: firstValue(payload, 'replayVideoId', 'replay_video_id', 'videoId', 'video_id'),
-    isReplay: firstValue(payload, 'isReplay', 'is_replay', 'replay'),
-    liveType: firstValue(payload, 'liveType', 'live_type'),
-    filename: fileName,
-    fileName,
-    contentType,
+  return uploadFileWithComplaintUploadUrl({
+    ...payload,
+    filePath,
+    fileType: payload.fileType || payload.file_type || 'image',
+    data: {
+      ...(payload.data || {}),
+      roomId: Number(firstValue(payload, 'roomId', 'room_id', 'liveId', 'live_id') || 0),
+      liveId: Number(firstValue(payload, 'liveId', 'live_id', 'roomId', 'room_id') || 0),
+      roomCode: firstValue(payload, 'roomCode', 'room_code') || '',
+      tenantId: firstValue(payload, 'tenantId', 'tenant_id'),
+      termId: firstValue(payload, 'termId', 'term_id', 'liveTermId', 'live_term_id'),
+      customerId: firstValue(payload, 'customerId', 'customer_id', 'userId', 'user_id'),
+      replayVideoId: firstValue(payload, 'replayVideoId', 'replay_video_id', 'videoId', 'video_id'),
+      isReplay: firstValue(payload, 'isReplay', 'is_replay', 'replay'),
+      liveType: firstValue(payload, 'liveType', 'live_type'),
+    },
   })
-  const uploadUrl = uploadInfo?.uploadUrl || ''
-  const fileUrl = uploadInfo?.fileUrl || ''
-  if (!uploadUrl || !fileUrl) throw new Error('获取上传地址失败')
-
-  await putFileToPresignedUrl(uploadUrl, filePath, { contentType })
-  return {
-    url: normalizeH5AssetUrl(fileUrl),
-    rawUrl: fileUrl,
-  }
 }
 
 export function createComplaint(data = {}) {

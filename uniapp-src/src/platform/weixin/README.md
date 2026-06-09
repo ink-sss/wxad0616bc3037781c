@@ -23,6 +23,8 @@ components should import these wrappers instead of calling `wx.*` directly.
   `webViewProps`, `normalizeMiniProgramLink`.
 - Subscription messages: `requestSubscribeMessage`,
   `requestSubscribeDeviceMessage`.
+- Share menu and app exit: `showShareMenu`, `hideShareMenu`,
+  `exitMiniProgram`.
 - Account and environment: `getAccountInfo`,
   `getMenuButtonBoundingClientRect`, `getLaunchOptions`, `getEnterOptions`,
   `canUse`.

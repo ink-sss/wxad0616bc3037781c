@@ -10,7 +10,8 @@
     "build:mp-weixin": "uni build -p mp-weixin",
     "postbuild:mp-weixin": "node scripts/minify-mp-weixin-wxss.mjs",
     "diagnose:mp-weixin-hot-reload": "node scripts/diagnose-mp-weixin-hot-reload.mjs",
-    "test:live-entry-bootstrap": "node --test tests/live-entry-bootstrap.test.mjs"
+    "test:live-entry-bootstrap": "node --test tests/live-entry-bootstrap.test.mjs",
+    "test:live-side-panels": "node --test tests/live-side-panels.test.mjs"
   },
   "dependencies": {
     "@dcloudio/uni-app": "3.0.0-alpha-5010120260525001",

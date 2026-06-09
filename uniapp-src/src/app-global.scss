@@ -16,3 +16,26 @@ textarea {
 image {
   display: block;
 }
+
+@font-face {
+  font-family: iconfont;
+  src:
+    url("https://at.alicdn.com/t/c/font_4197023_19oiry0wceg.woff2?t=1716972390913") format("woff2"),
+    url("https://at.alicdn.com/t/c/font_4197023_19oiry0wceg.woff?t=1716972390913") format("woff"),
+    url("https://at.alicdn.com/t/c/font_4197023_19oiry0wceg.ttf?t=1716972390913") format("truetype");
+}
+
+.iconfont {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: iconfont !important;
+  font-style: normal;
+}
+
+.icon-sousuo1::before {
+  content: "\e65d";
+}
+
+.icon-sousuo::before {
+  content: "\e644";
+}

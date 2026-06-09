@@ -8,6 +8,7 @@ export * from './subscription'
 export * from './account'
 export * from './update'
 export * from './capture'
+export * from './share'
 export * from './live'
 export * from './im'
 export * from './file'
@@ -22,6 +23,7 @@ import * as subscription from './subscription'
 import * as account from './account'
 import * as update from './update'
 import * as capture from './capture'
+import * as share from './share'
 import * as live from './live'
 import * as im from './im'
 import * as file from './file'
@@ -37,6 +39,7 @@ export const weixin = {
   account,
   update,
   capture,
+  share,
   live,
   im,
   file,

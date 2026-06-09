@@ -103,7 +103,7 @@ export default {
           return requestPayment(payment)
         })
         .then(() => {
-          uni.showToast({ title: '支付成功', icon: 'success' })
+          uni.showToast({ title: '支付成功', icon: 'none' })
           this.closePopup()
         })
         .finally(() => {

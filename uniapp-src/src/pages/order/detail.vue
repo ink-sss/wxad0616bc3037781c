@@ -427,7 +427,7 @@ async function handleAction(action) {
   if (action === "cancel") return handleCancelAction();
   if (action === "confirm") return handleConfirmAction();
   if (action === "logistics") return handleLogisticsAction();
-  if (action === "remind") return uni.showToast({ title: "已提醒发货", icon: "success" });
+  if (action === "remind") return uni.showToast({ title: "已提醒发货", icon: "none" });
   if (action === "extend") return handleExtendAction();
   if (action === "pay") return navigatePay();
   if (action === "progress") return navigateRefundProgress();
@@ -491,7 +491,7 @@ async function handleCancelAction() {
 async function handleConfirmAction() {
   try {
     await confirmReceive(orderDetail.value.id);
-    uni.showToast({ title: "确认收货成功", icon: "success" });
+    uni.showToast({ title: "确认收货成功", icon: "none" });
     await loadOrderDetail(orderDetail.value.id);
   } catch (err) {
     uni.showToast({ title: err?.message || "确认收货失败", icon: "none" });
@@ -518,7 +518,7 @@ async function handleLogisticsAction() {
 async function handleExtendAction() {
   try {
     await extendReceive(orderDetail.value.id);
-    uni.showToast({ title: "延长收货成功", icon: "success" });
+    uni.showToast({ title: "延长收货成功", icon: "none" });
     await loadOrderDetail(orderDetail.value.id);
   } catch (err) {
     uni.showToast({ title: err?.message || "延长收货失败", icon: "none" });

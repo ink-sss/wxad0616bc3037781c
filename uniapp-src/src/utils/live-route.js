@@ -24,7 +24,7 @@ export function parseScene(scene = '') {
   queryTexts.forEach((queryText) => {
     queryText
       .replace(/^\?/, '')
-      .split('&')
+      .split(/[&,]/)
       .forEach((part) => {
         if (!part) return
         const separatorIndex = part.includes('=') ? part.indexOf('=') : part.indexOf(':')

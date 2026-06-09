@@ -53,19 +53,41 @@ function clampPosition(left, top) {
   }
 }
 
-function getCurrentRoute() {
+function getPageRoutes() {
   try {
-    if (typeof getCurrentPages !== 'function') return ''
+    if (typeof getCurrentPages !== 'function') return null
     const pages = getCurrentPages() || []
-    return String(pages[pages.length - 1]?.route || '').replace(/^\/+/, '')
+    return pages.map((page) => String(page?.route || '').replace(/^\/+/, ''))
   } catch (error) {
-    return ''
+    return null
   }
+}
+
+function isLiveSourceRoute(route = '') {
+  return route === 'pages/broadcast/entry' || route === 'pages/broadcast/replay'
+}
+
+function getCurrentRoute() {
+  const routes = getPageRoutes()
+  if (Array.isArray(routes)) return routes[routes.length - 1] || ''
+  return ''
+}
+
+function hasLiveSourceRouteInStack() {
+  const routes = getPageRoutes()
+  if (!Array.isArray(routes) || routes.length === 0) return true
+  return routes.some(isLiveSourceRoute)
 }
 
 function isLiveRoute() {
   const route = getCurrentRoute()
-  return route === 'pages/broadcast/entry' || route === 'pages/broadcast/replay'
+  return isLiveSourceRoute(route)
+}
+
+function getLiveSourceRoutesInStack() {
+  const routes = getPageRoutes()
+  if (!Array.isArray(routes)) return []
+  return routes.filter(isLiveSourceRoute)
 }
 
 function safeString(value) {
@@ -579,6 +601,15 @@ export function useLiveMiniWindow(props = {}) {
       stopMiniPlayback()
       return
     }
+    if (!hasLiveSourceRouteInStack()) {
+      setHidden('live_source_destroyed', {
+        roomCode: code,
+        liveRoutes: getLiveSourceRoutesInStack(),
+      })
+      clearLiveMiniState(code)
+      stopMiniPlayback()
+      return
+    }
     if (isLiveRoute()) {
       setHidden('live_route', { route: getCurrentRoute() })
       stopMiniPlayback()
@@ -820,6 +851,8 @@ export function useLiveMiniWindow(props = {}) {
         videoKey: videoKey.value,
         title: title.value,
         lastError: lastError.value,
+        liveSourceInStack: hasLiveSourceRouteInStack(),
+        liveRoutes: getLiveSourceRoutesInStack(),
       },
       storage: {
         miniState: storage.miniState ? {
@@ -877,7 +910,9 @@ export function useLiveMiniWindow(props = {}) {
       clearTimeout(playRetryTimer)
       playRetryTimer = null
     }
-    if (!closedByUser) {
+    if (!hasLiveSourceRouteInStack()) {
+      clearLiveMiniState(stateRoomCode.value || resolveRoomCode())
+    } else if (!closedByUser) {
       const state = getReturnPlaybackState()
       if (state) saveLiveMiniState(state)
     }

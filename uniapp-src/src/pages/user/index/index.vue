@@ -9,7 +9,6 @@
           <view class="profile-hero-main">
             <view class="profile-name-line">
               <text class="profile-hero-name">{{ profileName }}</text>
-              <text v-if="profileGradeName" class="profile-hero-grade">{{ profileGradeName }}</text>
             </view>
           </view>
           <text class="profile-hero-id">{{ profileSubtitle }}</text>
@@ -38,9 +37,9 @@
         </view>
       </view>
 
-      <view class="module-card" v-if="false">
+      <view class="module-card">
         <view class="module-head">
-          <text class="module-title">直播服务</text>
+          <text class="module-title">更多功能</text>
         </view>
         <view class="service-list">
           <view v-for="item in h5ServiceItems" :key="item.type" class="service-item" @tap="gotoH5CenterModule(item.type)">
@@ -188,9 +187,8 @@ export default {
     h5ServiceItems() {
       return [
         { type: 'prizeRecord', text: '中奖记录', icon: 'https://man.lqjy.cc/static/icon/lottery-points.png' },
-        { type: 'invitationRecord', text: '邀请记录', icon: 'https://man.lqjy.cc/static/icon/icon-tuandui.png' },
-        { type: 'complaint', text: '投诉', icon: 'https://man.lqjy.cc/static/icon/chat.png' },
         { type: 'address', text: '收货地址', icon: 'https://man.lqjy.cc/static/icon/address_icon.png' },
+        { type: 'complaint', text: '投诉', icon: 'https://man.lqjy.cc/static/icons/more4.png' },
       ]
     },
     hasProfile() {
@@ -209,12 +207,6 @@ export default {
       if (!this.isLoggedIn) return '未登录，点击登录'
       const id = this.detail?.user_id || this.detail?.userId
       return id ? `ID:${id}` : 'ID:--'
-    },
-    profileGradeName() {
-      if (!this.isLoggedIn) return ''
-      const grade = this.detail?.grade
-      if (typeof grade === 'string' && grade) return grade
-      return grade?.name || this.detail?.gradeName || this.detail?.grade_name || '普通会员'
     },
     liveRoomCode() {
       return this.liveRoomContext?.roomCode || ''
@@ -333,7 +325,6 @@ export default {
       return appendLiveRoomQuery(url, this.liveRoomContext || {})
     },
     gotoH5CenterModule(type) {
-      const roomId = this.liveRoomContext?.roomId || this.liveRoomContext?.liveId || ''
       const routes = {
         orders: this.withLiveQuery('/pages/order/list?status=all'),
         unpay: this.withLiveQuery('/pages/order/list?status=unpay'),
@@ -341,7 +332,6 @@ export default {
         unreceive: this.withLiveQuery('/pages/order/list?status=unreceive'),
         refund: this.withLiveQuery('/pages/order/refund-list'),
         prizeRecord: this.withLiveQuery('/pagesPlus/main/prize-record/index'),
-        invitationRecord: this.withLiveQuery(`/pagesPlus/main/invitation-record/index?roomId=${encodeURIComponent(roomId)}`),
         complaint: this.withLiveQuery('/pagesPlus/main/report/report-type?fromPath=%2Fpages%2Fcenter%2Findex'),
         address: this.withLiveQuery('/pagesPlus/main/address/index'),
       }
@@ -458,17 +448,6 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.profile-hero-grade {
-  background-color: rgba(0, 0, 0, .1);
-  border-radius: 40rpx;
-  color: #fff;
-  flex-shrink: 0;
-  font-size: 22rpx;
-  line-height: 36rpx;
-  margin-left: 20rpx;
-  padding: 0 16rpx;
 }
 
 .profile-hero-id {

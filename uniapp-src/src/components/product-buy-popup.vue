@@ -4,10 +4,13 @@
       v-model="popupVisible"
       position="bottom"
       :z-index="zIndex"
-      custom-style="height: 84vh; border-radius: 24rpx 24rpx 0 0; overflow: hidden;"
+      custom-style="height: calc(84vh - 40rpx); border-radius: 24rpx 24rpx 0 0; overflow: hidden;"
       @close="emit('close')"
     >
       <view class="buy-popup">
+        <view class="buy-popup-close" @click="emit('close')">
+          <text class="buy-popup-close__icon">×</text>
+        </view>
         <view class="product-info">
           <image class="info-img" :src="product.image" mode="aspectFill" />
           <view class="info-detail">
@@ -471,13 +474,34 @@ function onConfirm() {
 
 <style lang="scss" scoped>
 .buy-popup {
+  position: relative;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   width: 750rpx;
-  height: 84vh;
+  height: calc(84vh - 40rpx);
   box-sizing: border-box;
   background: #fff;
+}
+
+.buy-popup-close {
+  position: absolute;
+  top: 24rpx;
+  right: 24rpx;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.buy-popup-close__icon {
+  color: #666;
+  font-size: 40rpx;
+  line-height: 56rpx;
 }
 
 .section-row {
@@ -546,6 +570,8 @@ function onConfirm() {
   justify-content: space-between;
   min-width: 0;
   max-width: 100%;
+  box-sizing: border-box;
+  padding-right: 72rpx;
 }
 .info-title {
   font-size: 28rpx;

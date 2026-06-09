@@ -41,7 +41,7 @@ $asset-live-like: url('https://man.lqjy.cc/static/zan/zan_1.png');
 }
 
 .live-room--live.live-landscape.live-landscape--live .video-top {
-  top: 20rpx;
+  top: calc(var(--broadcast-nav-height, 0px) + 20rpx);
   z-index: 6;
   align-items: flex-start;
   padding: 0 28rpx;
@@ -247,7 +247,7 @@ $asset-live-like: url('https://man.lqjy.cc/static/zan/zan_1.png');
 
 .live-room--live.live-landscape.live-landscape--live :deep(.external-lottery-tools) {
   /* 从视频内挪到视频外：tab 栏下方一定距离（视频 422rpx + tab栏 80rpx + 26rpx 间距） */
-  top: 528rpx;
+  top: calc(var(--broadcast-nav-height, 0px) + 528rpx);
   right: 24rpx;
   z-index: 1001;
   width: 88rpx;
@@ -260,7 +260,7 @@ $asset-live-like: url('https://man.lqjy.cc/static/zan/zan_1.png');
 
 .live-room--live.live-landscape.live-landscape--live .live-landscape-reward {
   position: absolute;
-  top: 218rpx;
+  top: calc(var(--broadcast-nav-height, 0px) + 218rpx);
   right: 22rpx;
   z-index: 6;
   width: 74rpx;
@@ -353,10 +353,13 @@ $asset-live-like: url('https://man.lqjy.cc/static/zan/zan_1.png');
 
 .live-room--live.live-landscape.live-landscape--live .interact-content {
   background: #fff;
+  height: calc(100vh - var(--broadcast-nav-height, 0px) - 422rpx - 80rpx - var(--landscape-bottom-bar-height, 110px));
+  min-height: 0;
+  flex: 0 0 calc(100vh - var(--broadcast-nav-height, 0px) - 422rpx - 80rpx - var(--landscape-bottom-bar-height, 110px));
 }
 
 .live-room--live.live-landscape.live-landscape--live .comment-list {
-  padding: 20rpx 0;
+  padding: 0 0 0rpx;
 }
 
 .live-room--live.live-landscape.live-landscape--live .comment-item {
@@ -465,7 +468,7 @@ $asset-live-like: url('https://man.lqjy.cc/static/zan/zan_1.png');
   box-shadow: none;
 }
 
-.live-room--live.live-landscape.live-landscape--live :deep(.toolbar-icons > .tool-btn:nth-child(1)) {
+.live-room--live.live-landscape.live-landscape--live :deep(.live-toolbar-center-btn) {
   background-image: $asset-live-add;
 }
 

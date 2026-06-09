@@ -2,34 +2,34 @@
   <view class="drag optional" :style="wrapperStyle">
     <view class="diy-product" :style="borderStyle">
       <view :class="['product-list-box', `column__${column}`]">
-        <view v-for="col in columnCount" :key="col" :class="['product-list', `column__${column}`]">
+        <view v-for="(products, colIndex) in columnProductGroups" :key="colIndex" :class="['product-list', `column__${column}`]">
           <view
-            v-for="(product, index) in dataList"
-            v-show="shouldShowInColumn(index, col - 1)"
-            :key="product.product_id || index"
+            v-for="entry in products"
+            :key="entry.product.product_id || entry.index"
             class="product-item"
             :style="productStyle"
-            @tap="gotoDetail(product.product_id)"
+            @tap="gotoDetail(entry.product.product_id)"
           >
-            <image class="product-cover" mode="aspectFill" :src="product.image || product.product_image || product.imgUrl" :style="productRadiusStyle"></image>
+            <template v-if="entry.product">
+            <image class="product-cover" mode="aspectFill" :src="entry.product.image || entry.product.product_image || entry.product.imgUrl" :style="productRadiusStyle"></image>
             <view class="product-info">
               <view v-if="params.productName" class="product-name text-ellipsis-2" :style="`color:${styleConfig.product_name_color || ''};`">
-                <text :class="styleConfig.nameWeight ? 'fb' : ''">{{ product.product_name }}</text>
+                <text :class="styleConfig.nameWeight ? 'fb' : ''">{{ entry.product.product_name }}</text>
               </view>
               <view class="price d-s-c">
                 <view v-if="params.productPrice" :style="`color:${styleConfig.product_price_color || ''};`">
-                  <text class="f22">¥</text><text class="f32 fb">{{ product.product_price }}</text>
+                  <text class="f22">¥</text><text class="f32 fb">{{ entry.product.product_price }}</text>
                 </view>
-                <view v-if="params.linePrice && Number(product.line_price || 0) > 0" class="f22 ml10 gray9 text-d-line" :style="`color:${styleConfig.line_price_color || ''};`">
-                  <text>¥</text><text>{{ product.line_price }}</text>
+                <view v-if="params.linePrice && Number(entry.product.line_price || 0) > 0" class="f22 ml10 gray9 text-d-line" :style="`color:${styleConfig.line_price_color || ''};`">
+                  <text>¥</text><text>{{ entry.product.line_price }}</text>
                 </view>
               </view>
               <view class="d-s-c">
                 <view v-if="params.productSales" class="product-sale">
-                  <text :style="`color:${styleConfig.product_sales_color || ''};`">已售{{ product.product_sales }}件</text>
+                  <text :style="`color:${styleConfig.product_sales_color || ''};`">已售{{ entry.product.product_sales }}件</text>
                 </view>
-                <view v-if="params.comment && product.goodRate" class="product-comment">
-                  <text :style="`color:${styleConfig.product_comment_color || ''};`">好评率{{ product.goodRate }}</text>
+                <view v-if="params.comment && entry.product.goodRate" class="product-comment">
+                  <text :style="`color:${styleConfig.product_comment_color || ''};`">好评率{{ entry.product.goodRate }}</text>
                 </view>
               </view>
               <view v-if="Number(params.showCart) === 1">
@@ -44,6 +44,7 @@
                 </view>
               </view>
             </view>
+            </template>
           </view>
         </view>
       </view>
@@ -51,15 +52,24 @@
   </view>
 </template>
 <script>
+import { dedupeProductList } from '../../../services/miniprogram-products.js'
+
 export default {
   name: 'DiyProduct',
   props: { itemData: { type: Object, default: () => ({}) } },
   computed: {
-    dataList() { return Array.isArray(this.itemData.data) ? this.itemData.data : [] },
+    dataList() { return dedupeProductList(Array.isArray(this.itemData.data) ? this.itemData.data : []) },
     styleConfig() { return this.itemData.style || {} },
     params() { return this.itemData.params || {} },
     column() { return Number(this.params.column || 2) },
     columnCount() { return [2, 4].includes(this.column) ? 2 : 1 },
+    columnProductGroups() {
+      return Array.from({ length: this.columnCount }, (_, columnIndex) => (
+        this.dataList
+          .map((product, index) => ({ product, index }))
+          .filter((entry) => this.columnCount === 1 || entry.index % this.columnCount === columnIndex)
+      ))
+    },
     wrapperStyle() {
       const s = this.styleConfig
       return `padding-left:${this.toRpx(s.paddingLeft)};padding-right:${this.toRpx(s.paddingLeft)};padding-top:${this.toRpx(s.paddingTop)};padding-bottom:${this.toRpx(s.paddingBottom)};margin-top:${this.toRpx(s.marginTop)};background:${s.background || ''};`
@@ -87,7 +97,6 @@ export default {
   },
   methods: {
     toRpx(value) { return `${2 * Number(value || 0)}rpx` },
-    shouldShowInColumn(index, columnIndex) { return ![2, 4].includes(this.column) || index % 2 === columnIndex },
     gotoDetail(productId) { if (productId && typeof this.gotoPage === 'function') this.gotoPage(`/pages/product/detail/detail?product_id=${productId}`) }
   }
 }

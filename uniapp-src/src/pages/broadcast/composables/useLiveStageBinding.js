@@ -205,6 +205,10 @@ function buildSetterActions(ctx) {
       ctx.activeTab.value = value;
     },
     setActiveTabIndex(value) {
+      if (typeof ctx.setActiveTabIndex === "function") {
+        ctx.setActiveTabIndex(value);
+        return;
+      }
       ctx.activeTabIndex.value = value;
     },
     setInputText(value) {

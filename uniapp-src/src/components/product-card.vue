@@ -16,6 +16,8 @@
         previous-margin="0rpx"
         next-margin="0rpx"
         circular="false"
+         autoplay
+        interval="5000"
         @change="onSwiperChange"
       >
         <swiper-item

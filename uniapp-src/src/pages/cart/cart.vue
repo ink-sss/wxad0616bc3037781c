@@ -1,7 +1,7 @@
 <template>
   <view class="cart-page" :data-theme="theme && theme()">
     <view v-if="!loadding" class="card">
-      <view class="cart-content" :class="{ pb100: totalNum > 0 && isEdit }">
+      <view class="cart-content" :class="{ pb100: totalNum > 0 }">
         <template v-if="totalNum > 0">
           <view class="address-bar d-b-c">
             <view class="f24 gray3">
@@ -16,20 +16,10 @@
           <view class="section">
             <view v-for="(supplierItem, supplierIndex) in tableData" :key="supplierIndex">
               <view class="supplier_list">
-                <view class="supplier_list_tit">
-                  <checkbox-group v-if="isEdit" @change="checkStprItem(supplierItem, supplierIndex)">
-                    <label class="d-c-c">
-                      <checkbox class="checkbox" color="red" :checked="supplierItem.checked" value="cb" />
-                    </label>
-                  </checkbox-group>
-                  <view v-if="store_open" class="d-a-c" @tap="gotoPage('/pagesPlus/main/shop/shop?shop_supplier_id=' + supplierItem.supplier.shop_supplier_id)">
-                    <view class="icon iconfont icon-stores"></view>
-                    <text class="f28 fb gray3">{{ supplierItem.supplier.name }}</text>
-                  </view>
-                </view>
+            
 
                 <view v-for="(item, productIndex) in supplierItem.productList" :key="item.cart_id || productIndex" class="item">
-                  <checkbox-group v-if="isEdit" @change="checkItem(item, supplierIndex, productIndex)">
+                  <checkbox-group @change="checkItem(item, supplierIndex, productIndex)">
                     <label class="d-c-c">
                       <checkbox class="checkbox" color="red" :checked="item.checked" value="cb" />
                     </label>
@@ -39,7 +29,7 @@
                   </view>
                   <view class="info">
                     <view class="title text-ellipsis">{{ item.product_name }}</view>
-                    <view class="describe">{{ item.product_sku && item.product_sku.product_attr }}</view>
+                    <view v-if="item.product_sku && item.product_sku.product_attr" class="describe">{{ item.product_sku.product_attr }}</view>
                     <view class="level-box count_choose">
                       <view class="price fb flex-1">¥<text class="num">{{ item.product_price }}</text></view>
                       <view class="num-wrap">
@@ -67,13 +57,20 @@
           <button class="theme-btn mt30 none_btn" @tap="gotoShop">去逛逛</button>
         </view>
 
-        <view v-if="totalNum > 0 && isEdit" class="bottom-btns f28">
+        <view v-if="totalNum > 0" class="bottom-btns f28">
           <checkbox-group @change="onCheckedAll">
             <label class="d-c-c mr20 w-nr">
               <checkbox class="checkbox" color="red" :checked="checkedAll" value="cb" />全选
             </label>
           </checkbox-group>
-          <view class="bottom-action pr20">
+          <view v-if="!isEdit" class="bottom-action bottom-action-settle d-e-c pr20">
+            <view class="total d-s-c flex-1 mr20">
+              <text class="f28 gray3 w-nr">合计：</text>
+              <view class="price fb f26">¥<text class="num f40">{{ totalPrice }}</text></view>
+            </view>
+            <button class="buy-btn theme-btn" type="primary" @tap="Submit">去结算</button>
+          </view>
+          <view v-else class="bottom-action pr20">
             <button class="delete-btn theme-btn mr20" type="primary" @tap="onDelete">删除</button>
           </view>
         </view>
@@ -209,6 +206,9 @@ export default {
       })
       this.totalPrice = total.toFixed(2)
     },
+    Submit() {
+      uni.showToast({ title: '购物车暂不支持结算', icon: 'none' })
+    },
     addFunc(item) {
       incrementLocalCartItem(item)
       this.getData()
@@ -295,6 +295,7 @@ export default {
 .f28 { font-size: 28rpx; }
 .f40 { font-size: 40rpx; }
 .fb { font-weight: 700; }
+.flex-1 { flex: 1; min-width: 0; }
 .gray3 { color: #333; }
 .gray9 { color: #999; }
 .mr20 { margin-right: 20rpx; }
@@ -327,6 +328,12 @@ export default {
   box-sizing: border-box;
   height: 92rpx;
   padding: 0 45rpx;
+}
+
+.address-bar button {
+  background: none;
+  border: none;
+  color: #333;
 }
 
 .section {
@@ -402,13 +409,11 @@ export default {
 
 .describe {
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   color: #999;
   display: -webkit-box;
   font-size: 24rpx;
-  line-height: 32rpx;
   margin-top: 20rpx;
-  min-height: 32rpx;
   overflow: hidden;
 }
 
@@ -458,7 +463,7 @@ export default {
   position: fixed;
   white-space: nowrap;
   width: 100%;
-  z-index: 80;
+  z-index: 1000;
 }
 
 .bottom-action {
@@ -466,10 +471,15 @@ export default {
   min-width: 0;
 }
 
+.bottom-action-settle {
+  flex: 1;
+}
+
 .total {
   min-width: 0;
 }
 
+.buy-btn,
 .delete-btn {
   border-radius: 68rpx;
   box-sizing: border-box;
@@ -479,6 +489,13 @@ export default {
   margin: 0;
   padding: 0;
   width: 222rpx;
+}
+
+.buy-btn {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  text-align: center;
 }
 
 .none-data-box {
@@ -527,6 +544,14 @@ export default {
 [data-theme=theme5] .price { color: #c8ba97 !important; }
 [data-theme=theme6] .theme-price,
 [data-theme=theme6] .price { color: #623ceb !important; }
+
+[data-theme=theme0] .bottom-btns .price { color: #ff4c01 !important; }
+[data-theme=theme1] .bottom-btns .price { color: #e31c28 !important; }
+[data-theme=theme2] .bottom-btns .price { color: #f55234 !important; }
+[data-theme=theme3] .bottom-btns .price { color: #ff4645 !important; }
+[data-theme=theme4] .bottom-btns .price { color: #ff4d4d !important; }
+[data-theme=theme5] .bottom-btns .price { color: #e7032c !important; }
+[data-theme=theme6] .bottom-btns .price { color: #e31c28 !important; }
 
 [data-theme=theme0] .theme-btn { background-color: #ff5704 !important; }
 [data-theme=theme1] .theme-btn { background-color: #19ad57 !important; }

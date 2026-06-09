@@ -314,6 +314,20 @@ function queryQuickReplyPopoverRects() {
   });
 }
 
+function queryBottomBarRect() {
+  return new Promise((resolve) => {
+    const query = createComponentSelectorQuery();
+    query.select(".bottom-bar").boundingClientRect();
+    query.exec((rects = []) => resolve(rects?.[0] || null));
+  });
+}
+
+async function measureHeight() {
+  await nextTick();
+  const rect = await queryBottomBarRect();
+  return Number(rect?.height || 0);
+}
+
 function resetQuickReplyPopoverPosition() {
   popoverLeft.value = `${POPOVER_EDGE_PADDING_RPX}rpx`;
   popoverArrowLeft.value = "50%";
@@ -376,6 +390,7 @@ function onInput(event) {
 defineExpose({
   focus: () => inputRef.value?.focus?.(),
   blur: () => inputRef.value?.blur?.(),
+  measureHeight,
   barRef,
 });
 </script>
@@ -820,5 +835,96 @@ defineExpose({
   height: 74rpx;
   border-radius: 50%;
   background: #f0f0f4;
+}
+.bottom-bar--landscape.bottom-bar--live-toolbar {
+  min-height: 88rpx;
+  padding: 10rpx 18rpx calc(10rpx + env(safe-area-inset-bottom));
+  background: #fff;
+  box-shadow: 0 -6rpx 12rpx rgba(0, 0, 0, 0.1);
+}
+.bottom-bar--landscape.bottom-bar--live-toolbar .bottom-bar-main {
+  gap: 0;
+  padding: 12rpx;
+}
+.bottom-bar--landscape.bottom-bar--live-toolbar .bottom-bar-input-row {
+  gap: 10rpx;
+}
+.bottom-bar--landscape.bottom-bar--live-toolbar .quick-replies-inner {
+  gap: 20rpx;
+  padding: 8rpx 0 12rpx;
+}
+.bottom-bar--landscape.bottom-bar--live-toolbar .quick-reply-tag {
+  height: 48rpx;
+  max-width: 252rpx;
+  padding: 0 18rpx;
+  border: none;
+  border-radius: 28rpx;
+  background: #f0f0f4;
+  color: #333;
+  font-size: 28rpx;
+}
+.bottom-bar--landscape.bottom-bar--live-toolbar .input-wrap {
+  height: 64rpx;
+  padding: 0 20rpx;
+  border-radius: 8rpx;
+  background: #f0f0f4;
+}
+.bottom-bar--landscape.bottom-bar--live-toolbar .msg-input {
+  height: 64rpx;
+  color: #333;
+  font-size: 28rpx;
+  line-height: 64rpx;
+}
+.bottom-bar--landscape.bottom-bar--live-toolbar .toolbar-icons {
+  gap: 10rpx;
+}
+.bottom-bar--landscape.bottom-bar--live-toolbar .tool-btn {
+  width: 72rpx;
+  height: 72rpx;
+  border: none;
+  border-radius: 50%;
+  background-color: transparent;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  box-shadow: none;
+}
+.bottom-bar--landscape.bottom-bar--live-toolbar .live-toolbar-center-btn {
+  background-image: url("https://man.lqjy.cc/static/icons/competitor-live/oper_add.png");
+}
+.bottom-bar--landscape.bottom-bar--live-toolbar .tool-btn-like {
+  background-image: url("https://man.lqjy.cc/static/zan/zan_1.png");
+}
+.bottom-bar--landscape.bottom-bar--live-toolbar .tool-icon-img {
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+}
+.bottom-bar--landscape.bottom-bar--live-toolbar .like-number {
+  position: absolute;
+  right: -4rpx;
+  bottom: -6rpx;
+  min-width: 44rpx;
+  height: 28rpx;
+  padding: 0 8rpx;
+  border-radius: 16rpx;
+  background: rgba(254, 74, 110, 0.8);
+  color: #fff;
+  font-size: 20rpx;
+  line-height: 28rpx;
+  text-align: center;
+}
+.bottom-bar--landscape.bottom-bar--live-toolbar .send-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 104rpx;
+  height: 64rpx;
+  padding: 0 24rpx;
+  border-radius: 32rpx;
+  background: #ff6e2d;
+  color: #fff;
+  font-size: 28rpx;
+  box-shadow: none;
 }
 </style>

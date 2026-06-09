@@ -63,6 +63,7 @@
 <script>
 import { normalizeAvatarEvent } from '../../../../platform/weixin/index.js'
 import { mobileValid, toast } from '../../../../pages/user/page-tools.js'
+import { uploadFileWithComplaintUploadUrl } from '../../../../api/upload.js'
 
 export default {
   data() {
@@ -111,35 +112,27 @@ export default {
       const avatar = normalizeAvatarEvent(event).avatarUrl
       if (avatar) this.uploadFile([avatar])
     },
-    uploadFile(files) {
+    async uploadFile(files) {
       this.imageList = []
       let done = 0
-      const formData = {
-        token: this.config.token,
-        app_id: this.getAppId(),
-        appid: this.config.appid,
-      }
       uni.showLoading({ title: '图片上传中' })
-      files.forEach((filePath) => {
-        uni.uploadFile({
-          url: this.websiteUrl + '/index.php?s=/api/file.upload/image',
-          filePath,
-          name: 'iFile',
-          formData,
-          success: (uploadRes) => {
-            const data = typeof uploadRes.data === 'object' ? uploadRes.data : JSON.parse(uploadRes.data)
-            if (data.code === 1) this.imageList.push(data.data)
-            else this.showError(data.msg)
-          },
-          complete: () => {
-            done += 1
-            if (done === files.length) {
-              uni.hideLoading()
-              this.getImgsFunc(this.imageList)
-            }
-          },
-        })
-      })
+      await Promise.all(files.map(async (filePath) => {
+        try {
+          const uploaded = await uploadFileWithComplaintUploadUrl({
+            filePath,
+            fileType: 'image',
+          })
+          this.imageList.push(uploaded)
+        } catch (error) {
+          this.showError(error?.message || '上传失败')
+        } finally {
+          done += 1
+        }
+      }))
+      if (done === files.length) {
+        uni.hideLoading()
+        this.getImgsFunc(this.imageList)
+      }
     },
     getImgsFunc(files) {
       if (files && files[0]) {

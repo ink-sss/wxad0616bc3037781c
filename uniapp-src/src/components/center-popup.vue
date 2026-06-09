@@ -7,7 +7,6 @@
     :with-mask="true"
     mask-color="rgba(0, 0, 0, 0.35)"
     :allow-overflow="true"
-    :show-close="false"
     @close="emit('close')"
   >
     <view class="center-popup">

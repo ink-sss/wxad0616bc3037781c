@@ -357,7 +357,7 @@ export function useLiveEntryInitializer(ctx) {
       primeReplayFirstVideo();
       startEarlyLiveStream(entryLiveType, _roomCode, startEarlyLivePlayer);
       const preloadedDetail = consumePreloadedLiveDetail(_roomCode);
-      const d = preloadedDetail || await getLiveDetail(_roomCode);
+      const d = normalizeLiveDetailPayload(preloadedDetail || await getLiveDetail(_roomCode));
       if (d) {
         await handleLiveDetail(d, {
           options,
@@ -404,6 +404,24 @@ export function useLiveEntryInitializer(ctx) {
       backupUrl: firstVideoBackupUrl,
       nativeLoadTimeoutMs: isIOSRuntime() ? 700 : undefined,
     });
+  }
+
+  function normalizeLiveDetailPayload(payload = {}) {
+    if (!payload || typeof payload !== "object") return payload;
+    const data = payload.data && typeof payload.data === "object" ? payload.data : payload;
+    const liveDetail = data.live_detail && typeof data.live_detail === "object" ? data.live_detail : {};
+    const roomSetting = data.room_setting && typeof data.room_setting === "object" ? data.room_setting : null;
+    const setting = data.setting && typeof data.setting === "object" ? data.setting : roomSetting;
+    return {
+      ...payload,
+      ...data,
+      ...liveDetail,
+      code: firstPresent(payload.code, data.code),
+      message: firstPresent(payload.msg, payload.message, data.msg, data.message, liveDetail.msg, liveDetail.message),
+      setting,
+      room_setting: roomSetting || setting,
+      live_detail: liveDetail,
+    };
   }
 
   function reuseEarlyReplayState(targetIndex, targetPosition, targetVideo) {
@@ -855,7 +873,8 @@ export function useLiveEntryInitializer(ctx) {
   }
 
   function handleAccessRestrictions(d) {
-    if (d.isBlocked) {
+    const code = Number(firstPresent(d.code, d.statusCode, d.status_code, 0));
+    if (code === -2 || d.isBlocked || d.blocked) {
       userBlocked.value = true;
       denyLiveAccess();
       refreshMissingProfile();
@@ -871,7 +890,7 @@ export function useLiveEntryInitializer(ctx) {
       });
       return true;
     }
-    if (d.needAuth && !d.hasAccess) {
+    if (code === -3 || (d.needAuth && !d.hasAccess)) {
       denyLiveAccess();
       refreshMissingProfile();
       return true;
@@ -891,9 +910,8 @@ export function useLiveEntryInitializer(ctx) {
   }
 
   function applyRoomSettingAndSign(d) {
-    if (d.setting) {
-      Object.assign(roomSetting.value, d.setting);
-    }
+    const rawSetting = firstPresent(d.setting, d.room_setting, d.roomSetting, {});
+    Object.assign(roomSetting.value, normalizeRoomSetting(rawSetting));
     const normalizedSignConfig = normalizeSignConfig(firstPresent(d.signConfig, d.sign_config, d.sign, null));
     if (!normalizedSignConfig) return;
     signConfig.value = normalizedSignConfig;
@@ -905,6 +923,40 @@ export function useLiveEntryInitializer(ctx) {
         }
       });
     }
+  }
+
+  function normalizeRoomSetting(rawSetting = {}) {
+    const source = rawSetting && typeof rawSetting === "object" ? rawSetting : {};
+    const next = { ...source };
+    const shareEnabled = firstPresent(source.enableShare, source.enable_share, source.is_share);
+    if (shareEnabled !== undefined) next.enableShare = toNumber(shareEnabled, roomSetting.value.enableShare);
+    const closeComment = firstPresent(source.close_comment, source.is_close_comment, source.closeComment);
+    const chatOpen = firstPresent(source.enableChat, source.enable_chat);
+    if (chatOpen !== undefined) next.enableChat = toNumber(chatOpen, roomSetting.value.enableChat);
+    if (closeComment !== undefined) next.enableChat = toNumber(closeComment, 0) === 1 ? 0 : 1;
+    const noSpeak = firstPresent(source.is_no_speaking, source.no_speaking, source.muteAll, source.mute_all);
+    if (noSpeak !== undefined) next.muteAll = toNumber(noSpeak, roomSetting.value.muteAll);
+    const shoppingCart = firstPresent(source.showProduct, source.show_product, source.is_show_shopping_cart, source.is_order);
+    if (shoppingCart !== undefined) next.showProduct = toNumber(shoppingCart, 1);
+    const hotSale = firstPresent(source.showHotSale, source.show_hot_sale, source.is_hot_sale);
+    if (hotSale !== undefined) next.showHotSale = toNumber(hotSale, roomSetting.value.showHotSale);
+    const buyReminder = firstPresent(source.buyReminder, source.buy_reminder, source.is_creating_order);
+    if (buyReminder !== undefined) next.buyReminder = toNumber(buyReminder, roomSetting.value.buyReminder);
+    const buySuccessReminder = firstPresent(source.buySuccessReminder, source.buy_success_reminder, source.is_submit_order_success);
+    if (buySuccessReminder !== undefined) next.buySuccessReminder = toNumber(buySuccessReminder, roomSetting.value.buySuccessReminder || 0);
+    const anonymous = firstPresent(source.encryptNickname, source.encrypt_nickname, source.is_anonymous, source.is_avatar_anonymous);
+    if (anonymous !== undefined) next.encryptNickname = toNumber(anonymous, roomSetting.value.encryptNickname);
+    const onlineNumber = firstPresent(source.showOnlineNumber, source.show_online_number, source.is_online_number);
+    if (onlineNumber !== undefined) next.showOnlineNumber = toNumber(onlineNumber, 1);
+    const customerService = firstPresent(source.showCustomerService, source.show_customer_service, source.is_customer_service);
+    if (customerService !== undefined) next.showCustomerService = toNumber(customerService, 1);
+    const captureScreen = firstPresent(source.is_capture_screen, source.captureScreen, source.capture_screen);
+    if (captureScreen !== undefined) next.is_capture_screen = toNumber(captureScreen, 0);
+    const selfGroup = firstPresent(source.self_group, source.selfGroup);
+    if (selfGroup !== undefined) next.self_group = toNumber(selfGroup, 0);
+    const unconsciousLogin = firstPresent(source.unconscious_login, source.unconsciousLogin);
+    if (unconsciousLogin !== undefined) next.unconscious_login = unconsciousLogin;
+    return next;
   }
 
   function handleWaitingScheduleIfNeeded() {

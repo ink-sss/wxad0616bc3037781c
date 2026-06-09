@@ -4,7 +4,7 @@
     class="live-im-debug"
     @click.stop="emitCopy"
   >
-    <cover-view class="live-im-debug__title">消息调试</cover-view>
+    <cover-view class="live-im-debug__title">{{ title }}</cover-view>
     <cover-view class="live-im-debug__summary">{{ summary }}</cover-view>
     <cover-view class="live-im-debug__actions">
       <cover-view
@@ -21,6 +21,7 @@
 <script setup>
 defineProps({
   show: { type: Boolean, default: false },
+  title: { type: String, default: "消息调试" },
   summary: { type: String, default: "" },
   copyStatus: { type: String, default: "" },
 });

@@ -32,7 +32,7 @@ export async function importWxAddress() {
     }
 
     await createAddress(payload);
-    uni.showToast({ title: "导入成功", icon: "success" });
+    uni.showToast({ title: "导入成功", icon: "none" });
     return true;
   } catch (error) {
     const msg = String(error?.errMsg || error?.message || "");

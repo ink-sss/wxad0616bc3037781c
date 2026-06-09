@@ -13,6 +13,46 @@ function firstValue(...values) {
   return values.find((value) => value !== undefined && value !== null && value !== '')
 }
 
+export function getProductIdentity(item = {}) {
+  const value = firstValue(item.product_id, item.productId, item.goodsId, item.goods_id, item.id)
+  return value === undefined || value === null || value === '' ? '' : String(value)
+}
+
+export function dedupeProductList(items = []) {
+  if (!Array.isArray(items)) return []
+  const seen = new Set()
+  const result = []
+
+  items.forEach((item) => {
+    if (!item || typeof item !== 'object') return
+    const key = getProductIdentity(item)
+    if (key) {
+      if (seen.has(key)) return
+      seen.add(key)
+    }
+    result.push(item)
+  })
+
+  return result
+}
+
+export function mergeProductLists(current = [], incoming = []) {
+  const result = Array.isArray(current) ? current.slice() : []
+  const seen = new Set(result.map(getProductIdentity).filter(Boolean))
+
+  ;(Array.isArray(incoming) ? incoming : []).forEach((item) => {
+    if (!item || typeof item !== 'object') return
+    const key = getProductIdentity(item)
+    if (key) {
+      if (seen.has(key)) return
+      seen.add(key)
+    }
+    result.push(item)
+  })
+
+  return result
+}
+
 function normalizeBaseUrl(baseUrl = '') {
   return baseUrl.replace(/\/$/, '')
 }
@@ -82,7 +122,7 @@ export function normalizeCategory(item = {}) {
 }
 
 export function normalizeProduct(item = {}) {
-  const productId = firstValue(item.product_id, item.id, '')
+  const productId = firstValue(item.product_id, item.productId, item.goodsId, item.goods_id, item.id, '')
   const productPrice = firstValue(item.product_price, item.salePrice, item.priceMin, item.price, 0)
   const linePrice = firstValue(item.line_price, item.linePrice, 0)
   const productStock = toNumber(firstValue(item.product_stock, item.stock, 0), 0)

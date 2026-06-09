@@ -10,8 +10,9 @@
       'live-landscape--replay': !isLiveVisualMode,
       'live-landscape--stage-collapsed': stageCollapsed,
     }"
-    :style="landscapeBottomStyle"
+    :style="landscapeRootStyle"
   >
+    <view class="landscape-navbar-placeholder" />
     <!-- 视频主区域：播放器、兜底播放按钮、封面占位与结束/未开播蒙层 -->
     <view
       class="video-section"
@@ -224,7 +225,7 @@
           >
         </view>
       </view>
-      <view v-if="!(isWaitingSchedule && warmUpVideoUrl)" class="viewer-area">
+      <view v-if="!isWaitingSchedule || allowWarmupInteraction" class="viewer-area">
         <view v-if="roomSetting.showViewerData !== 0" class="viewer-badge">
           <image
             class="viewer-icon"
@@ -249,7 +250,7 @@
       </view>
     </view>
     <live-external-lottery-tools
-      v-if="!(isWaitingSchedule && warmUpVideoUrl) && !anyBusinessPopupOpen"
+      v-if="(!isWaitingSchedule || allowWarmupInteraction) && !anyBusinessPopupOpen"
       class="landscape-lottery-tools"
       :comment-lottery-visible="showLandscapeCommentLotteryEntry"
       :keyword="commentLotteryEntryKeyword"
@@ -291,22 +292,35 @@
         class="landscape-tab-bar"
         :class="{ 'landscape-tab-bar--with-subscribe': showLandscapeSubscribe }"
       >
-        <wd-tabs
-          class="custom-tabs"
-          :model-value="activeTabIndex"
-          color="#000000"
-          inactive-color="#7f7f7f"
-          @update:model-value="setActiveTabIndex"
-          @change="onTabChange"
-        >
-          <wd-tab v-if="roomSetting.enableChat !== 0" :title="landscapeInteractTitle" name="0" />
-          <wd-tab v-if="isTruthyFlag(signConfig.enabled)" title="签到" name="2" />
-          <wd-tab
+        <view class="custom-tabs landscape-direct-tabs">
+          <view
+            v-if="roomSetting.enableChat !== 0"
+            class="landscape-direct-tabs__item"
+            :class="{ 'is-active': activeTab === 'interact' }"
+            @click.stop="setActiveTabIndex('0')"
+          >
+            <text class="landscape-direct-tabs__text">{{ landscapeInteractTitle }}</text>
+            <view class="landscape-direct-tabs__indicator" />
+          </view>
+          <view
+            v-if="isTruthyFlag(signConfig.enabled)"
+            class="landscape-direct-tabs__item"
+            :class="{ 'is-active': activeTab === 'sign' }"
+            @click.stop="setActiveTabIndex('2')"
+          >
+            <text class="landscape-direct-tabs__text">签到</text>
+            <view class="landscape-direct-tabs__indicator" />
+          </view>
+          <view
             v-if="roomSetting.showProduct !== 0"
-            :title="landscapeProductTitle"
-            name="1"
-          />
-        </wd-tabs>
+            class="landscape-direct-tabs__item"
+            :class="{ 'is-active': activeTab === 'products' }"
+            @click.stop="setActiveTabIndex('1')"
+          >
+            <text class="landscape-direct-tabs__text">{{ landscapeProductTitle }}</text>
+            <view class="landscape-direct-tabs__indicator" />
+          </view>
+        </view>
         <view
           v-if="showLandscapeSubscribe"
           class="landscape-tab-subscribe"
@@ -318,8 +332,7 @@
       </view>
       <!-- 直播互动 -->
       <view
-        v-if="roomSetting.enableChat !== 0"
-        v-show="activeTab === 'interact'"
+        v-if="roomSetting.enableChat !== 0 && activeTab === 'interact'"
         class="interact-content"
         :style="commentListStyle"
       >
@@ -403,7 +416,7 @@
         </scroll-view>
       </view>
       <!-- 商品列表 -->
-      <view v-show="activeTab === 'products'" class="products-content">
+      <view v-if="activeTab === 'products'" class="products-content">
         <live-product-shelf
           mode="landscape-list"
           :product-list="productList"
@@ -417,8 +430,7 @@
       </view>
       <!-- 签到 -->
       <view
-        v-if="isTruthyFlag(signConfig.enabled)"
-        v-show="activeTab === 'sign'"
+        v-if="isTruthyFlag(signConfig.enabled) && activeTab === 'sign'"
         class="sign-content"
       >
         <live-sign-in
@@ -465,8 +477,8 @@
       ref="landscapeInputRef"
       :model-value="inputText"
       variant="landscape"
-      :visible="roomSetting.enableChat !== 0 && !isWaitingSchedule"
-      :show="activeTab === 'interact'"
+      :visible="roomSetting.enableChat !== 0 && activeTab === 'interact' && (!isWaitingSchedule || allowWarmupInteraction)"
+      :show="true"
       :focused="inputFocused"
       :disabled-text="chatDisabled"
       :bottom-style="bottomBarStyle"
@@ -594,7 +606,6 @@
       v-if="renderCenterPopup"
       :visible="showCenterPopup"
       :name="centerPopupName"
-      :show-close="false"
       :avatar="centerPopupAvatar"
       :order-stats="centerPopupOrderStats"
       :is-distributor="isDistributor"
@@ -712,6 +723,7 @@ const props = defineProps({
 const BUY_POPUP_Z_INDEX = 100000000;
 const {
   mode, accessDenied, isWechatH5, isIOS, anchorName, anchorAvatar, likeCount, isWaitingSchedule,
+  broadcastNavHeight,
   warmUpVideoUrl, roomSetting, viewerCountAnimating, displayViewerCount, displayVideoUrl, mediaSourceComponent, mediaSourceType, videoRenderKey, isReplay,
   isLiveVisualMode, hasReplay, liveStatusText, quickReplies, roomGroupType, videoPoster, isMuted,
   playbackErrorVisible, playbackErrorText, isPlaying, videoFrameReady, isIOSH5, liveCover, tapEffects, comboInfo, shouldShowComments, scrollToId,
@@ -797,6 +809,9 @@ const liveStatusClass = computed(() => {
   return 'live-status--pending'
 })
 const isLiveLandscapeStyle = computed(() => isLiveVisualMode.value)
+const allowWarmupInteraction = computed(() =>
+  roomGroupType.value === 1 && isWaitingSchedule.value && !!warmUpVideoUrl.value
+)
 const shouldUseLivePlayer = computed(() => {
   const url = String(displayVideoUrl.value || "");
   if (!url || isReplay.value) return false;
@@ -914,12 +929,30 @@ const showLivePoster = computed(() =>
 const landscapeInteractTitle = computed(() => isLiveLandscapeStyle.value ? '互动' : '直播互动')
 const landscapeProductTitle = computed(() => isLiveLandscapeStyle.value ? '商品' : '商品列表')
 
-// 动态测量底部输入栏（含快捷回复条）实际高度，作为 .live-page 的 padding-bottom，
-// 避免 fixed 的 .bottom-bar 遮挡评论列表最后一条；写死数值无法覆盖快捷回复条数/聚焦/popover 展开等差异。
-const bottomBarHeight = ref(0)
+// 横屏直播优先按底栏实际渲染高度计算弹幕区；测量前用盒模型常量兜底。
+const LANDSCAPE_BOTTOM_BAR_HEIGHT = 'calc(88rpx + env(safe-area-inset-bottom))'
+const LANDSCAPE_BOTTOM_BAR_WITH_QUICK_REPLIES_HEIGHT = 'calc(160rpx + env(safe-area-inset-bottom))'
+const bottomBarHeight = ref('')
 
-function bindBottomBarObserver() {
-  bottomBarHeight.value = quickReplies.value?.length > 0 ? 180 : 110
+function getLandscapeBottomBarHeight() {
+  if (!isLiveLandscapeStyle.value) {
+    return quickReplies.value?.length > 0 ? '180px' : '110px'
+  }
+  if (!inputFocused.value && quickReplies.value?.length > 0) {
+    return LANDSCAPE_BOTTOM_BAR_WITH_QUICK_REPLIES_HEIGHT
+  }
+  return LANDSCAPE_BOTTOM_BAR_HEIGHT
+}
+
+async function bindBottomBarObserver() {
+  if (activeTab.value === 'interact') {
+    const measuredHeight = await landscapeInputRef.value?.measureHeight?.()
+    if (measuredHeight) {
+      bottomBarHeight.value = `${measuredHeight}px`
+      return
+    }
+  }
+  bottomBarHeight.value = getLandscapeBottomBarHeight()
 }
 
 onMounted(() => {
@@ -953,15 +986,14 @@ const showLandscapeCommentLotteryEntry = computed(() => (
 
 const landscapeBottomStyle = computed(() => {
   if (activeTab.value !== 'interact') return {}
-  if (bottomBarHeight.value > 0) {
-    return { paddingBottom: `${bottomBarHeight.value}px` }
-  }
-  // 兜底：测量未就绪前，按当前是否有快捷回复给一个安全初值，避免首屏闪现遮挡
-  if (quickReplies.value?.length > 0) {
-    return { paddingBottom: 'calc(180rpx + env(safe-area-inset-bottom))' }
-  }
-  return { paddingBottom: 'calc(110rpx + env(safe-area-inset-bottom))' }
+  return { paddingBottom: bottomBarHeight.value || getLandscapeBottomBarHeight() }
 })
+
+const landscapeRootStyle = computed(() => ({
+  "--broadcast-nav-height": broadcastNavHeight.value || "0px",
+  "--landscape-bottom-bar-height": bottomBarHeight.value || getLandscapeBottomBarHeight(),
+  ...landscapeBottomStyle.value,
+}))
 
 const {
   setIsPlaying, setShowProduct, setShowProductList, setShowShare, setShowCenterPopup, setShowBuyPopup,

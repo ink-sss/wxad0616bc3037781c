@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Verified Mini Program frontend requirement by running `npm run build:mp-weixin`; build passed."}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Ran live entry regression check `npm run test:live-entry-bootstrap`; all 9 tests passed."}
