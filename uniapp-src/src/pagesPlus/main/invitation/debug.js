@@ -22,7 +22,8 @@ export function useInvitationDebug({
   const debugBrief = computed(() => {
     if (posterRendering.value) return "生成中";
     if (shareImageSrc.value && posterImageSrc.value) return "合成完成";
-    if (shareImageSrc.value || posterImageSrc.value) return "部分完成";
+    if (posterImageSrc.value) return "海报完成";
+    if (shareImageSrc.value) return "分享完成";
     return "待生成";
   });
 

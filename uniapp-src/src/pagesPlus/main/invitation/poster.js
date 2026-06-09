@@ -6,7 +6,7 @@ const DEFAULT_WIDTH = 750;
 const SHARE_CARD_WIDTH = 500;
 const SHARE_CARD_HEIGHT = 400;
 const CANVAS_IMAGE_LOAD_TIMEOUT = 5000;
-const AVATAR_IMAGE_LOAD_TIMEOUT = 1200;
+const AVATAR_IMAGE_LOAD_TIMEOUT = 2500;
 const CANVAS_API_TIMEOUT = 3000;
 const imagePathCache = new Map();
 const avatarTempFileCache = new Map();
@@ -405,6 +405,13 @@ async function resolveAvatarTempFilePath(src, options = {}, label = "avatar") {
   if (!value) return "";
   if (avatarTempFileCache.has(value)) {
     const cachedPath = await avatarTempFileCache.get(value);
+    if (!cachedPath) {
+      avatarTempFileCache.delete(value);
+      emitPosterEvent(options, "avatar_temp_file_cache_empty", {
+        label,
+      });
+      return "";
+    }
     emitPosterEvent(options, "avatar_temp_file_cache_hit", {
       label,
       path: summarizeImageSource(cachedPath),

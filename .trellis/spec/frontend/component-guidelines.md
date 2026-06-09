@@ -121,6 +121,12 @@ Components in the uni-app source project are Vue single-file components under
   backgrounds are larger local package images and need a longer canvas
   `createImage` timeout. If a required template background fails, treat that
   render as failed instead of caching a fallback-colored poster.
+- Starting Mini Program invitation share-card composition immediately after
+  poster composition. Template switching can leave the previous share-card
+  canvas loading background/avatar assets while the new poster canvas needs the
+  same avatar, causing the new poster avatar to time out and fall back to an
+  initial. Generate the share-card image lazily from `onShareAppMessage`
+  instead of preheating it after every poster render.
 - Assuming every packaged static image path can be drawn directly by Mini
   Program offscreen canvas. For invitation posters, if direct `createImage`
   loading of `/pagesPlus/static/...` fails, call `getImageInfo` for the packaged
