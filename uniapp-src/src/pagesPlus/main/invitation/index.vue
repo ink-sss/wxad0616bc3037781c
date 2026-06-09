@@ -1,17 +1,5 @@
 <template>
   <view class="invitation-page">
-    <view class="inv-nav">
-      <view class="inv-nav__back" @click="goBack">
-        <text class="inv-nav__close">✕</text>
-      </view>
-      <view class="inv-nav__center">
-        <text class="inv-nav__title">邀请函</text>
-        <text class="inv-nav__sub">{{ navDomain }}</text>
-      </view>
-      <view class="inv-nav__more">
-        <text class="inv-nav__more-dot">···</text>
-      </view>
-    </view>
 
     <view class="inv-preview-wrap">
       <view
@@ -22,7 +10,7 @@
         <image
           class="inv-preview-img"
           :src="activeTemplate.bgImg"
-          mode="aspectFill"
+          mode="scaleToFill"
           show-menu-by-longpress
         />
         <image
@@ -135,6 +123,8 @@ const activeIdx = ref(0);
 const qrcodeSrc = ref("");
 const navDomain = ref("小程序");
 const activeTemplate = computed(() => templates[activeIdx.value] || templates[0]);
+const CARD_DESIGN_WIDTH = 750;
+const CARD_DISPLAY_WIDTH_RPX = 630;
 
 const displayTime = computed(() => {
   const schedule = payload.value.scheduleTime || payload.value.liveDate || "";
@@ -144,27 +134,27 @@ const displayTime = computed(() => {
 
 const avatarStyle = computed(() => {
   const slot = activeTemplate.value?.slots?.avatar || {};
-  const size = `${Number(slot.r || 0) * 200}%`;
+  const size = posterWidthRpx(Number(slot.r || 0) * 2);
   return {
     left: `${Number(slot.cx || 0) * 100}%`,
     top: `${Number(slot.cy || 0) * 100}%`,
-    width: size,
-    height: size,
-    marginLeft: `-${Number(slot.r || 0) * 100}%`,
-    marginTop: `-${Number(slot.r || 0) * 100}%`,
+    width: `${size}rpx`,
+    height: `${size}rpx`,
+    marginLeft: `-${Math.round(size / 2)}rpx`,
+    marginTop: `-${Math.round(size / 2)}rpx`,
   };
 });
 
 const qrcodeStyle = computed(() => {
   const slot = activeTemplate.value?.slots?.qrcode || {};
-  const size = `${Number(slot.size || 0) * 100}%`;
+  const size = posterWidthRpx(Number(slot.size || 0));
   return {
     left: `${Number(slot.cx || 0) * 100}%`,
     top: `${Number(slot.cy || 0) * 100}%`,
-    width: size,
-    height: size,
-    marginLeft: `-${Number(slot.size || 0) * 50}%`,
-    marginTop: `-${Number(slot.size || 0) * 50}%`,
+    width: `${size}rpx`,
+    height: `${size}rpx`,
+    marginLeft: `-${Math.round(size / 2)}rpx`,
+    marginTop: `-${Math.round(size / 2)}rpx`,
   };
 });
 
@@ -277,7 +267,7 @@ function slotTextStyle(slot = {}) {
   if (!slot) return {};
   const style = {
     color: slot.color || "#FFFFFF",
-    fontSize: `${Math.round(Number(slot.fontPct || 0.02) * 1000)}rpx`,
+    fontSize: `${slotFontRpx(slot)}rpx`,
     textAlign: slot.cx != null ? "center" : "left",
   };
   if (slot.cx != null) {
@@ -290,6 +280,17 @@ function slotTextStyle(slot = {}) {
     style.transform = "translateY(-50%)";
   }
   return style;
+}
+
+function posterWidthRpx(ratio) {
+  return Math.round(Number(ratio || 0) * CARD_DISPLAY_WIDTH_RPX);
+}
+
+function slotFontRpx(slot = {}) {
+  const aspectRatio = Number(activeTemplate.value?.aspectRatio || CARD_DESIGN_WIDTH / 1334);
+  const designHeight = CARD_DESIGN_WIDTH / aspectRatio;
+  const displayScale = CARD_DISPLAY_WIDTH_RPX / CARD_DESIGN_WIDTH;
+  return Math.round(designHeight * Number(slot.fontPct || 0.02) * displayScale);
 }
 
 function copyLink() {
@@ -439,13 +440,13 @@ function goBack() {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 24rpx 60rpx 0;
+  padding: 24rpx 0 0;
   box-sizing: border-box;
 }
 
 .inv-preview-card {
   position: relative;
-  width: 100%;
+  width: 630rpx;
   border-radius: 16rpx;
   overflow: hidden;
   box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.1);

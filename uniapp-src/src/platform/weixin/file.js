@@ -1,4 +1,5 @@
 import { getGlobalUni, getWeixinApi, promisifyApi, unsupportedError } from './runtime'
+import { getSetting, openSetting } from './auth'
 
 export function chooseAddress(options = {}) {
   return promisifyApi('chooseAddress', options)
@@ -135,6 +136,33 @@ export function saveImageToAlbum(filePath) {
   return promisifyApi('saveImageToPhotosAlbum', { filePath }, { preferUni: true })
 }
 
+function isAlbumAuthError(error = {}) {
+  const message = String(error?.errMsg || error?.message || error || '')
+  return message.includes('auth deny') ||
+    message.includes('auth denied') ||
+    message.includes('authorize no response') ||
+    message.includes('scope.writePhotosAlbum')
+}
+
+async function ensureAlbumWritable() {
+  try {
+    const setting = await getSetting()
+    if (setting?.authSetting?.['scope.writePhotosAlbum'] === false) {
+      await openSetting()
+    }
+  } catch (_) {}
+}
+
+export async function saveImageToAlbumWithAuth(filePath) {
+  try {
+    return await saveImageToAlbum(filePath)
+  } catch (error) {
+    if (!isAlbumAuthError(error)) throw error
+    await ensureAlbumWritable()
+    return saveImageToAlbum(filePath)
+  }
+}
+
 export async function saveImageUrlToAlbum(url, fileName) {
   if (!url) throw new Error('图片路径为空')
   let filePath = url
@@ -147,5 +175,5 @@ export async function saveImageUrlToAlbum(url, fileName) {
     }
     filePath = result.tempFilePath
   }
-  return saveImageToAlbum(filePath)
+  return saveImageToAlbumWithAuth(filePath)
 }

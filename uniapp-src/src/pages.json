@@ -1075,7 +1075,6 @@
           "path": "main/invitation/index",
           "style": {
             "navigationBarTitleText": "邀请函",
-            "navigationStyle": "custom",
             "enablePullDownRefresh": false
           }
         },

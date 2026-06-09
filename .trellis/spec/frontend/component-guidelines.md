@@ -94,3 +94,9 @@ Components in the uni-app source project are Vue single-file components under
   declarations on the same node or child component can make stale panels look
   visible. For live-room tab panels and bottom bars, prefer `v-if`/`wx:if` so
   inactive panels are destroyed instead of hidden.
+- Rendering Canvas-designed poster slots as layered DOM with percentage width
+  and height for square assets. In Mini Program invitation posters, avatar and
+  QR code slots must be sized from the poster display width and then applied as
+  equal `rpx` width/height. If width and height are both percentages, they scale
+  against different card axes and circles become tall ovals while QR codes
+  overflow their frame.

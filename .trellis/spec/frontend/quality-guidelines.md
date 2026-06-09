@@ -34,6 +34,11 @@ and no dependency on compiled Mini Program output.
 - Keep `src/pages.json` route order and route paths aligned with the source
   Mini Program route contract during migration.
 - Isolate mp-weixin-only APIs in `src/platform/weixin/` wrappers.
+- Mini Program QR/poster save flows must save a local temp file whenever
+  possible. Do not make a component depend on downloading a third-party QR
+  image URL, because `downloadFile` is constrained by WeChat's configured
+  download domains; generate the image through `src/platform/weixin/` and use
+  `saveImageToPhotosAlbum` behind the platform wrapper.
 - Keep H5 viewer-loop APIs behind `src/api/` modules; pages should call domain
   API helpers instead of embedding `/h5/*` request details.
 - Keep intentional migration gaps explicit with `TODO:migration` and a reason.

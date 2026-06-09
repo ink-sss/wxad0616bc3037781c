@@ -22,41 +22,7 @@
           </view>
           <text class="share-label">生成邀请函</text>
         </view>
-        <button
-          v-if="!shareUrlLoading"
-          class="share-item share-item-button"
-          open-type="share"
-          @tap.stop="onMiniProgramWechatShare"
-        >
-          <view class="share-icon wechat-bg">
-            <image
-              class="icon-svg"
-              src="https://man.lqjy.cc/static/icons/Frame_114.svg"
-              mode="aspectFit"
-            />
-          </view>
-          <text class="share-label">微信分享</text>
-        </button>
-        <view v-else class="share-item" @click.stop="waitMiniProgramShareReady">
-          <view class="share-icon wechat-bg">
-            <image
-              class="icon-svg"
-              src="https://man.lqjy.cc/static/icons/Frame_114.svg"
-              mode="aspectFit"
-            />
-          </view>
-          <text class="share-label">微信分享</text>
-        </view>
-        <view class="share-item" @click="onShare('link')">
-          <view class="share-icon link-bg">
-            <image
-              class="icon-svg"
-              src="https://man.lqjy.cc/static/icons/Frame_115.svg"
-              mode="aspectFit"
-            />
-          </view>
-          <text class="share-label">生成链接</text>
-        </view>
+       
         <view class="share-item" @click="onShare('qrcode')">
           <view class="share-icon qrcode-bg">
             <image
@@ -105,7 +71,7 @@
           class="qrcode-img"
           :src="qrcodeSrc"
           mode="aspectFit"
-          @longpress="saveQrcode"
+          show-menu-by-longpress
         />
       </view>
       <text class="qrcode-tip">长按或点击保存二维码 分享朋友圈</text>
@@ -130,7 +96,8 @@
 import { ref, computed, watch } from "vue";
 import { getLiveDistributorShareUrl } from "@/services/live-share";
 import { readBindId } from "@/services/h5-auth-context";
-import { saveImageUrlToAlbum } from "@/platform/weixin/file";
+import { saveImageToAlbumWithAuth, saveImageUrlToAlbum } from "@/platform/weixin/file";
+import { createQrCodeTempFile } from "@/platform/weixin/qrcode";
 
 const props = defineProps({
   visible: {
@@ -248,6 +215,8 @@ const linkStatusText = computed(() => {
 });
 
 const qrcodeSrc = ref("");
+const qrcodeTempFilePath = ref("");
+const qrcodeRenderTaskId = ref(0);
 
 function buildQrcodeImageUrl(text) {
   const value = String(text || "").trim();
@@ -255,12 +224,26 @@ function buildQrcodeImageUrl(text) {
   return `https://api.qrserver.com/v1/create-qr-code/?size=360x360&margin=1&data=${encodeURIComponent(value)}`;
 }
 
-function renderQrcode(text) {
+async function renderQrcode(text) {
+  const taskId = qrcodeRenderTaskId.value + 1;
+  qrcodeRenderTaskId.value = taskId;
+  qrcodeTempFilePath.value = "";
   if (!text || !props.visible || activePanel.value !== "qrcode") {
     qrcodeSrc.value = "";
     return;
   }
-  qrcodeSrc.value = buildQrcodeImageUrl(text);
+  const fallbackUrl = buildQrcodeImageUrl(text);
+  qrcodeSrc.value = fallbackUrl;
+  // #ifdef MP-WEIXIN
+  try {
+    const filePath = await createQrCodeTempFile(text);
+    if (qrcodeRenderTaskId.value !== taskId) return;
+    qrcodeTempFilePath.value = filePath;
+    qrcodeSrc.value = filePath;
+  } catch (error) {
+    console.warn("[share-popup] local qrcode render fail:", error);
+  }
+  // #endif
 }
 
 // [2026-06-06] 主包不再打包 qrcode 库；打开二维码面板时用图片 URL 渲染。
@@ -284,6 +267,8 @@ watch(
       activePanel.value = "main";
       linkType.value = "long";
       currentLink.value = "";
+      qrcodeSrc.value = "";
+      qrcodeTempFilePath.value = "";
       loadedShareUrl.value = "";
       loadedShareCode.value = "";
     }
@@ -534,13 +519,17 @@ function makeShortLink() {
 }
 
 async function saveQrcode() {
-  const url = qrcodeSrc.value;
-  if (!url) {
+  const image = qrcodeTempFilePath.value || qrcodeSrc.value;
+  if (!image) {
     uni.showToast({ title: "二维码生成失败", icon: "none" });
     return;
   }
   try {
-    await saveImageUrlToAlbum(url, `live-room-${props.roomId || Date.now()}.png`);
+    if (qrcodeTempFilePath.value) {
+      await saveImageToAlbumWithAuth(qrcodeTempFilePath.value);
+    } else {
+      await saveImageUrlToAlbum(image, `live-room-${props.roomId || Date.now()}.png`);
+    }
     uni.showToast({ title: "已保存", icon: "success" });
   } catch (error) {
     console.warn("[share-popup] save qrcode fail:", error);
@@ -748,7 +737,7 @@ async function saveQrcode() {
 }
 
 .share-item {
-  width: 25%;
+  width: 50%;
   display: flex;
   flex-direction: column;
   align-items: center;
