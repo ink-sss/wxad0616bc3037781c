@@ -5,7 +5,8 @@ import { createQrMatrix } from "@/utils/qrcode-matrix.js";
 const DEFAULT_WIDTH = 750;
 const SHARE_CARD_WIDTH = 500;
 const SHARE_CARD_HEIGHT = 400;
-const CANVAS_IMAGE_LOAD_TIMEOUT = 1200;
+const CANVAS_IMAGE_LOAD_TIMEOUT = 5000;
+const AVATAR_IMAGE_LOAD_TIMEOUT = 1200;
 const CANVAS_API_TIMEOUT = 3000;
 const imagePathCache = new Map();
 const avatarTempFileCache = new Map();
@@ -26,7 +27,14 @@ export async function createInvitationPosterTempFile(template, payload = {}, opt
   const width = canvas.width;
   const height = canvas.height;
 
-  await drawTemplateBackground(canvas, ctx, template.bgImg, width, height, options);
+  const hasBackground = await drawTemplateBackground(canvas, ctx, template.bgImg, width, height, options);
+  if (!hasBackground) {
+    emitPosterEvent(options, "poster_background_required_fail", {
+      templateId: template.id || "",
+      hasSrc: !!template.bgImg,
+    });
+    throw new Error("邀请函模板背景加载失败");
+  }
   await drawSlots(canvas, ctx, width, height, template.slots || {}, payload, options);
 
   const filePath = await canvasToTempFilePath(canvas);
@@ -71,7 +79,9 @@ async function drawShareCard(canvas, ctx, template, payload, options = {}) {
   const width = SHARE_CARD_WIDTH;
   const height = SHARE_CARD_HEIGHT;
   drawShareCardBase(ctx, width, height);
-  const background = await loadCanvasImage(canvas, template?.bgImg, options, "share_background");
+  const background = await loadCanvasImage(canvas, template?.bgImg, options, "share_background", {
+    timeoutMs: CANVAS_IMAGE_LOAD_TIMEOUT,
+  });
   if (background) {
     ctx.save();
     ctx.globalAlpha = 0.52;
@@ -150,7 +160,10 @@ async function drawShareAvatar(canvas, ctx, payload, options = {}) {
   ctx.arc(x + avatarSize / 2, y + avatarSize / 2, avatarSize / 2, 0, Math.PI * 2);
   ctx.closePath();
   ctx.clip();
-  const image = await loadCanvasImage(canvas, payload.anchorAvatar, options, "share_avatar", { preferDirect: true });
+  const image = await loadCanvasImage(canvas, payload.anchorAvatar, options, "share_avatar", {
+    preferDirect: true,
+    timeoutMs: AVATAR_IMAGE_LOAD_TIMEOUT,
+  });
   if (image) {
     ctx.drawImage(image, x, y, avatarSize, avatarSize);
     emitPosterEvent(options, "share_avatar_drawn", { loaded: true });
@@ -188,14 +201,17 @@ function roundRect(ctx, x, y, width, height, radius) {
 }
 
 async function drawTemplateBackground(canvas, ctx, src, width, height, options = {}) {
-  const image = await loadCanvasImage(canvas, src, options, "poster_background");
+  const image = await loadCanvasImage(canvas, src, options, "poster_background", {
+    timeoutMs: CANVAS_IMAGE_LOAD_TIMEOUT,
+  });
   if (image) {
     ctx.drawImage(image, 0, 0, width, height);
-    return;
+    return true;
   }
   ctx.fillStyle = "#160026";
   ctx.fillRect(0, 0, width, height);
   emitPosterEvent(options, "poster_background_fallback", { hasSrc: !!src });
+  return false;
 }
 
 async function drawSlots(canvas, ctx, width, height, slots, payload, options = {}) {
@@ -242,7 +258,10 @@ async function drawAvatarSlot(canvas, ctx, width, height, slot, src, fallbackTex
   ctx.arc(cx, cy, radius, 0, Math.PI * 2);
   ctx.closePath();
   ctx.clip();
-  const image = await loadCanvasImage(canvas, src, options, "poster_avatar", { preferDirect: true });
+  const image = await loadCanvasImage(canvas, src, options, "poster_avatar", {
+    preferDirect: true,
+    timeoutMs: AVATAR_IMAGE_LOAD_TIMEOUT,
+  });
   if (image) {
     ctx.drawImage(image, cx - radius, cy - radius, radius * 2, radius * 2);
     emitPosterEvent(options, "poster_avatar_drawn", { loaded: true });
@@ -332,7 +351,7 @@ async function loadCanvasImage(canvas, src, options = {}, label = "image", loadO
       });
       return null;
     }
-    const avatarImage = await createCanvasImage(canvas, avatarPath, options, label, "avatar-temp-file");
+    const avatarImage = await createCanvasImage(canvas, avatarPath, options, label, "avatar-temp-file", loadOptions);
     if (avatarImage) {
       emitPosterEvent(options, "image_load_success", { label, mode: "avatar-temp-file" });
       return avatarImage;
@@ -341,7 +360,7 @@ async function loadCanvasImage(canvas, src, options = {}, label = "image", loadO
     return null;
   }
   if (loadOptions.preferDirect) {
-    const direct = await createCanvasImage(canvas, src, options, label, "direct-fast");
+    const direct = await createCanvasImage(canvas, src, options, label, "direct-fast", loadOptions);
     if (direct) {
       emitPosterEvent(options, "image_load_success", { label, mode: "direct-fast" });
       return direct;
@@ -363,7 +382,7 @@ async function loadCanvasImage(canvas, src, options = {}, label = "image", loadO
       });
       return loadCanvasImageDirect(canvas, src, options, label, "remote-direct-fallback");
     }
-    const localImage = await createCanvasImage(canvas, localPath, options, label, "local");
+    const localImage = await createCanvasImage(canvas, localPath, options, label, "local", loadOptions);
     emitPosterEvent(options, localImage ? "image_load_success" : "image_local_load_fail", {
       label,
       mode: "local",
@@ -410,7 +429,9 @@ async function createAvatarTempFilePath(src, options = {}, label = "avatar") {
   const size = 180;
   const canvas = createFixedCanvas(size, size);
   const ctx = canvas.getContext("2d");
-  const image = await createCanvasImage(canvas, src, options, label, "avatar-direct-localize");
+  const image = await createCanvasImage(canvas, src, options, label, "avatar-direct-localize", {
+    timeoutMs: AVATAR_IMAGE_LOAD_TIMEOUT,
+  });
   if (!image) return "";
   ctx.drawImage(image, 0, 0, size, size);
   const filePath = await canvasToTempFilePath(canvas);
@@ -444,7 +465,7 @@ async function loadCanvasImageDirect(canvas, src, options = {}, label = "image",
   return localImage;
 }
 
-function createCanvasImage(canvas, src, options = {}, label = "image", mode = "direct") {
+function createCanvasImage(canvas, src, options = {}, label = "image", mode = "direct", loadOptions = {}) {
   if (!src || !canvas || typeof canvas.createImage !== "function") {
     return Promise.resolve(null);
   }
@@ -463,11 +484,12 @@ function createCanvasImage(canvas, src, options = {}, label = "image", mode = "d
       if (result) {
         perCanvasCache.set(cacheKey, result);
       } else {
-        emitPosterEvent(options, "image_create_timeout_or_fail", { label, mode });
+        emitPosterEvent(options, "image_create_timeout_or_fail", { label, mode, timeoutMs });
       }
       resolve(result);
     };
-    const timer = setTimeout(() => finish(null), CANVAS_IMAGE_LOAD_TIMEOUT);
+    const timeoutMs = Number(loadOptions.timeoutMs || CANVAS_IMAGE_LOAD_TIMEOUT);
+    const timer = setTimeout(() => finish(null), timeoutMs);
     image.onload = () => finish(image);
     image.onerror = () => finish(null);
     image.src = src;

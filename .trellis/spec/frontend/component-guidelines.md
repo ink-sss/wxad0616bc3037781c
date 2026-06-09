@@ -116,3 +116,8 @@ Components in the uni-app source project are Vue single-file components under
   `getImageInfo`/`downloadFile` for them. Prefer direct canvas image loading,
   cache a successful draw as a temp file when the same avatar is reused, and
   fall back immediately if the direct load fails.
+- Reusing the same short image-load timeout for both avatar probes and poster
+  template backgrounds. Avatar probes should fail fast, but invitation template
+  backgrounds are larger local package images and need a longer canvas
+  `createImage` timeout. If a required template background fails, treat that
+  render as failed instead of caching a fallback-colored poster.
