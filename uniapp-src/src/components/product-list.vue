@@ -19,7 +19,7 @@
             item.isCurrent ? 'goods-content-explain' : '',
             item.soldOut ? 'product-item-soldout sellout' : '',
           ]"
-          @click="onDetail(item, index)"
+          @click="!item.soldOut && onBuy(item, index)"
         >
           <view class="goods-row goods-content-first">
             <view class="product-img-wrap goods-thumb">

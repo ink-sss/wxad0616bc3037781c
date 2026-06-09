@@ -118,29 +118,39 @@ const form = reactive({
   isDefault: false,
 });
 
+function resetForm() {
+  form.name = "";
+  form.mobile = "";
+  form.province = "";
+  form.city = "";
+  form.district = "";
+  form.detail = "";
+  form.isDefault = false;
+  syncRegionByNames([]);
+}
+
+function syncFormFromEditData(data = null) {
+  if (!data) {
+    resetForm();
+    return;
+  }
+  form.name = data.receiverName || data.name || "";
+  form.mobile = data.receiverPhone || data.mobile || "";
+  form.province = data.province || "";
+  form.city = data.city || "";
+  form.district = data.district || "";
+  form.detail = data.address || data.detail || "";
+  form.isDefault = data.isDefault === 1;
+  syncRegionByNames([form.province, form.city, form.district]);
+}
+
 watch(
-  () => props.visible,
-  (val) => {
-    if (val && props.editData) {
-      form.name = props.editData.receiverName || props.editData.name || "";
-      form.mobile = props.editData.receiverPhone || props.editData.mobile || "";
-      form.province = props.editData.province || "";
-      form.city = props.editData.city || "";
-      form.district = props.editData.district || "";
-      form.detail = props.editData.address || props.editData.detail || "";
-      form.isDefault = props.editData.isDefault === 1;
-      syncRegionByNames([form.province, form.city, form.district]);
-    } else if (val) {
-      form.name = "";
-      form.mobile = "";
-      form.province = "";
-      form.city = "";
-      form.district = "";
-      form.detail = "";
-      form.isDefault = false;
-      syncRegionByNames([]);
-    }
+  [() => props.visible, () => props.editData],
+  ([visible, editData]) => {
+    if (!visible) return;
+    syncFormFromEditData(editData);
   },
+  { immediate: true },
 );
 
 function onRegionConfirm(event) {

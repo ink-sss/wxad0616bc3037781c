@@ -249,17 +249,6 @@
         </view>
       </view>
     </view>
-    <live-external-lottery-tools
-      v-if="(!isWaitingSchedule || allowWarmupInteraction) && !anyBusinessPopupOpen"
-      class="landscape-lottery-tools"
-      :comment-lottery-visible="showLandscapeCommentLotteryEntry"
-      :keyword="commentLotteryEntryKeyword"
-      :bubble-visible="commentLotteryBubbleVisible"
-      :watch-reward-visible="!isLiveLandscapeStyle && hasVisibleWatchRewardTasks"
-      :watch-reward-label="watchRewardEntryLabel"
-      @open-comment-lottery="openCommentPrizeRuleModal"
-      @open-watch-reward="openWatchRewardPanel"
-    />
     <!-- 右侧内容区：互动评论、商品列表与签到页签 -->
     <view class="interact-section">
       <!-- 横屏：预约开播倒计时(tabs上方) -->
@@ -340,6 +329,17 @@
         <live-marquee-ad
           :room-setting="roomSetting"
           variant="landscape"
+        />
+        <live-external-lottery-tools
+          v-if="(!isWaitingSchedule || allowWarmupInteraction) && !anyBusinessPopupOpen"
+          class="landscape-lottery-tools"
+          :comment-lottery-visible="showLandscapeCommentLotteryEntry"
+          :keyword="commentLotteryEntryKeyword"
+          :bubble-visible="commentLotteryBubbleVisible"
+          :watch-reward-visible="!isLiveLandscapeStyle && hasVisibleWatchRewardTasks"
+          :watch-reward-label="watchRewardEntryLabel"
+          @open-comment-lottery="openCommentPrizeRuleModal"
+          @open-watch-reward="openWatchRewardPanel"
         />
         <!-- 置顶评论固定栏：复用 comment-item 结构，昵称右侧加黄色置顶标识 -->
         <view v-if="pinnedMessage" class="comment-item comment-item--pinned">

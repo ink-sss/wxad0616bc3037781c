@@ -247,7 +247,7 @@ $asset-live-like: url('https://man.lqjy.cc/static/zan/zan_1.png');
 
 .live-room--live.live-landscape.live-landscape--live :deep(.external-lottery-tools) {
   /* 从视频内挪到视频外：tab 栏下方一定距离（视频 422rpx + tab栏 80rpx + 26rpx 间距） */
-  top: calc(var(--broadcast-nav-height, 0px) + 528rpx);
+  top: 528rpx;
   right: 24rpx;
   z-index: 1001;
   width: 88rpx;

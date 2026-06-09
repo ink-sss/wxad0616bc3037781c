@@ -25,6 +25,24 @@ async function loadUploadModule() {
   return import(pathToFileURL(modulePath).href);
 }
 
+async function loadRefundModule() {
+  const tempDir = await mkdtemp(join(tmpdir(), "refund-api-"));
+  const sourcePath = join(root, "src/api/refund.js");
+  let source = await readFile(sourcePath, "utf8");
+  source = source
+    .replace(
+      "import { h5Get, h5Post } from './h5.js'",
+      "const h5Get = globalThis.__h5Get; const h5Post = globalThis.__h5Post;",
+    )
+    .replace(
+      "import { uploadFileWithComplaintUploadUrl } from './upload.js'",
+      "const uploadFileWithComplaintUploadUrl = globalThis.__uploadFileWithComplaintUploadUrl;",
+    );
+  const modulePath = join(tempDir, "refund.mjs");
+  await writeFile(modulePath, source, "utf8");
+  return import(pathToFileURL(modulePath).href);
+}
+
 test("business uploads use complaint getUploadUrl and return legacy file_path", async () => {
   const h5Calls = [];
   const putCalls = [];
@@ -45,12 +63,14 @@ test("business uploads use complaint getUploadUrl and return legacy file_path", 
   const uploaded = await uploadFileWithComplaintUploadUrl({
     filePath: "/tmp/avatar.jpg",
     fileType: "image",
-    data: { orderId: 123 },
+    data: { orderId: 123, liveRoomId: 88 },
   });
 
   assert.equal(h5Calls.length, 1);
   assert.equal(h5Calls[0].url, "/h5/complaint/getUploadUrl");
   assert.equal(h5Calls[0].data.orderId, 123);
+  assert.equal(h5Calls[0].data.RoomId, 88);
+  assert.equal(h5Calls[0].data.roomId, 88);
   assert.equal(h5Calls[0].data.filename, "avatar.jpg");
   assert.equal(h5Calls[0].data.contentType, "image/jpeg");
   assert.equal(putCalls.length, 1);
@@ -61,4 +81,50 @@ test("business uploads use complaint getUploadUrl and return legacy file_path", 
   assert.equal(uploaded.filePath, "https://man.lqjy.cc/uploads/avatar.jpg");
   assert.equal(uploaded.rawUrl, "/uploads/avatar.jpg");
   assert.equal(uploaded.extra, "kept");
+});
+
+test("refund voucher upload forwards roomId into unified upload metadata", async () => {
+  const uploadCalls = [];
+  globalThis.__h5Get = async () => ({});
+  globalThis.__h5Post = async () => ({});
+  globalThis.__uploadFileWithComplaintUploadUrl = async (payload) => {
+    uploadCalls.push(payload);
+    return { url: "https://man.lqjy.cc/uploads/refund.jpg", rawUrl: "/uploads/refund.jpg" };
+  };
+
+  const { uploadRefundImage } = await loadRefundModule();
+  const uploaded = await uploadRefundImage({
+    orderId: 123,
+    roomId: 88,
+    filePath: "/tmp/refund.jpg",
+    fileName: "refund.jpg",
+    contentType: "image/jpeg",
+  });
+
+  assert.equal(uploadCalls.length, 1);
+  assert.equal(uploadCalls[0].data.orderId, 123);
+  assert.equal(uploadCalls[0].data.roomId, 88);
+  assert.equal(uploaded.rawUrl, "/uploads/refund.jpg");
+});
+
+test("refund voucher upload rejects missing roomId before requesting upload URL", async () => {
+  const uploadCalls = [];
+  globalThis.__h5Get = async () => ({});
+  globalThis.__h5Post = async () => ({});
+  globalThis.__uploadFileWithComplaintUploadUrl = async (payload) => {
+    uploadCalls.push(payload);
+    return { url: "" };
+  };
+
+  const { uploadRefundImage } = await loadRefundModule();
+  await assert.rejects(
+    () => uploadRefundImage({
+      orderId: 123,
+      filePath: "/tmp/refund.jpg",
+      fileName: "refund.jpg",
+      contentType: "image/jpeg",
+    }),
+    /直播间信息异常/,
+  );
+  assert.equal(uploadCalls.length, 0);
 });

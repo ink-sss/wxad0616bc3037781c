@@ -436,8 +436,11 @@ async function handleAction(action) {
 }
 
 function navigateRefund() {
+  const raw = orderDetail.value?.raw || {};
+  const roomId = raw.liveRoomId || raw.roomId || raw.liveId || 0;
+  const roomQuery = roomId ? `&roomId=${encodeURIComponent(roomId)}` : "";
   uni.navigateTo({
-    url: "/pages/order/refund?orderId=" + orderDetail.value.id,
+    url: `/pages/order/refund?orderId=${encodeURIComponent(orderDetail.value.id)}${roomQuery}`,
   });
 }
 

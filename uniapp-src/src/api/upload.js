@@ -32,6 +32,26 @@ function normalizeUploadInfo(uploadInfo = {}) {
   return { data, uploadUrl, fileUrl }
 }
 
+function firstValue(source = {}, ...keys) {
+  for (const key of keys) {
+    const value = source?.[key]
+    if (value !== undefined && value !== null && value !== '') return value
+  }
+  return undefined
+}
+
+function applyRoomIdAliases(data = {}) {
+  const roomId = firstValue(data, 'RoomId', 'roomId', 'room_id', 'liveRoomId', 'live_room_id', 'liveId', 'live_id')
+  if (roomId === undefined) return data
+  const normalized = Number(roomId)
+  const value = Number.isFinite(normalized) ? normalized : roomId
+  return {
+    ...data,
+    RoomId: firstValue(data, 'RoomId') ?? value,
+    roomId: firstValue(data, 'roomId') ?? value,
+  }
+}
+
 function normalizeUploadedFile(fileUrl = '', uploadInfo = {}) {
   const normalizedUrl = normalizeH5AssetUrl(fileUrl)
   return {
@@ -81,7 +101,7 @@ export async function uploadFileWithComplaintUploadUrl(payload = {}) {
     fileType,
     file_type: fileType,
   }
-  const { data, uploadUrl, fileUrl } = normalizeUploadInfo(await getUploadUrl(requestData))
+  const { data, uploadUrl, fileUrl } = normalizeUploadInfo(await getUploadUrl(applyRoomIdAliases(requestData)))
   if (!uploadUrl || !fileUrl) throw new Error('获取上传地址失败')
 
   await putFileToPresignedUrl(uploadUrl, filePath, {

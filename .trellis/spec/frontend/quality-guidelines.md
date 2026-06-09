@@ -726,6 +726,9 @@ import { hideShareMenu, exitMiniProgram } from "@/platform/weixin/share.js";
 - `payload.filePath` is required and comes from platform file selection APIs.
 - Request metadata includes `filename/fileName`, `contentType/content_type`,
   and `fileType/file_type`, plus caller-provided business fields.
+- Uploads tied to a live room, including refund and complaint evidence, must
+  provide a positive room id. The unified upload request must include the
+  backend-required `RoomId` alias as well as the local `roomId` alias.
 - The returned descriptor must keep `url`, `rawUrl`, `file_path`, and
   `filePath` so migrated pages that still read legacy `file_path` keep working.
 - The actual file write must use the platform upload adapter, currently
@@ -734,6 +737,8 @@ import { hideShareMenu, exitMiniProgram } from "@/platform/weixin/share.js";
 ### 4. Validation & Error Matrix
 
 - Missing `filePath` -> throw a user-facing upload path error.
+- Refund evidence missing a positive room id -> throw before requesting
+  `/h5/complaint/getUploadUrl`; do not send `RoomId: 0`.
 - Missing `uploadUrl` or `fileUrl` from the backend -> throw `获取上传地址失败`.
 - File PUT/upload failure -> propagate the error to the page or component so it
   can show the existing upload failure toast/modal.
@@ -742,6 +747,8 @@ import { hideShareMenu, exitMiniProgram } from "@/platform/weixin/share.js";
 
 - Good: avatar, complaint evidence, refund evidence, and generic upload
   components all call `uploadFileWithComplaintUploadUrl`.
+- Good: refund evidence uploads pass order id plus live room id, and the helper
+  posts both `RoomId` and `roomId` to `/h5/complaint/getUploadUrl`.
 - Base: video uploads pass `fileType: "video"` and infer a video content type
   when the extension is known.
 - Bad: a page or component directly calls `uni.uploadFile` with a backend

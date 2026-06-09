@@ -5,7 +5,7 @@
 
 .landscape-lottery-tools {
   /* 从视频内挪到视频外：tab 栏下方一定距离（视频 422rpx + tab栏 88rpx + 26rpx 间距） */
-  top: calc(var(--broadcast-nav-height, 0px) + 536rpx);
+  top: 536rpx;
   z-index: 5;
 }
 

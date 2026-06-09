@@ -55,3 +55,17 @@ test("landscape product shelf owns H5 product tab sizing for mp-weixin", async (
   assert.match(productList, /\.product-list--landscape \.recommend-tip-img \{[\s\S]*width: 28rpx;[\s\S]*height: 28rpx;/);
   assert.match(productList, /\.product-list--landscape \.buy-btn \{[\s\S]*width: 144rpx;[\s\S]*background: linear-gradient\(270deg, #ff0e4c 0%, #ff6089 100%\);/);
 });
+
+test("landscape comment lottery entry follows H5 interaction placement", async () => {
+  const stage = await readSource("src/pages/broadcast/components/LiveLandscapeStage.vue");
+  const liveStageStyles = await readSource("src/pages/broadcast/styles/live-landscape-stage.scss");
+  const liveStyles = await readSource("src/pages/broadcast/styles/entry-landscape-live.scss");
+
+  assert.match(stage, /class="interact-content"[\s\S]*<live-external-lottery-tools/);
+  assert.match(stage, /<live-external-lottery-tools[\s\S]*v-if="\(!isWaitingSchedule \|\| allowWarmupInteraction\) && !anyBusinessPopupOpen"/);
+  assert.match(stage, /:comment-lottery-visible="showLandscapeCommentLotteryEntry"/);
+  assert.match(liveStageStyles, /\.landscape-lottery-tools \{[^}]*top: 536rpx;[^}]*z-index: 5;[^}]*\}/);
+  assert.doesNotMatch(liveStageStyles, /\.landscape-lottery-tools \{[^}]*--broadcast-nav-height[^}]*\}/);
+  assert.match(liveStyles, /:deep\(\.external-lottery-tools\) \{[^}]*top: 528rpx;[^}]*right: 24rpx;[^}]*z-index: 1001;[^}]*width: 88rpx;[^}]*gap: 10rpx;[^}]*\}/);
+  assert.doesNotMatch(liveStyles, /:deep\(\.external-lottery-tools\) \{[^}]*--broadcast-nav-height[^}]*\}/);
+});

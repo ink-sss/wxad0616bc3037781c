@@ -491,7 +491,10 @@ async function onAction(type, item) {
 }
 
 function navigateRefund(item) {
-  uni.navigateTo({ url: "/pages/order/refund?orderId=" + item.id });
+  const raw = item?._raw || {};
+  const roomId = raw.liveRoomId || raw.roomId || raw.liveId || 0;
+  const roomQuery = roomId ? `&roomId=${encodeURIComponent(roomId)}` : "";
+  uni.navigateTo({ url: `/pages/order/refund?orderId=${encodeURIComponent(item.id)}${roomQuery}` });
 }
 
 async function handlePayAction(item) {

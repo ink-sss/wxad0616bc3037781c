@@ -140,12 +140,14 @@ import BottomSheetPopup from "@/components/bottom-sheet-popup.vue";
 import { getOrderDetail } from "@/api/order";
 import { applyRefund, uploadRefundImage } from "@/api/refund";
 import { chooseImage as chooseMpImage } from "@/platform/weixin/file";
+import { loadLiveRoomContext } from "@/utils/live-room-context";
 
 const defaultImage =
   "https://man.lqjy.cc/static/remote-icons/figma-product-placeholder.png";
 
 const orderId = ref(0);
 const orderItemId = ref(0);
+const roomId = ref(0);
 const orderStatus = ref(0);
 const refundType = ref(1);
 const refundAmount = ref(0);
@@ -164,15 +166,48 @@ const showReasonPopup = ref(false);
 const refundImages = ref([]);
 const submitting = ref(false);
 const uploading = ref(false);
+let orderInfoPromise = null;
 
 function formatAmount(value) {
   return Number(value || 0).toFixed(2);
+}
+
+function toPositiveNumber(value) {
+  const numberValue = Number(value || 0);
+  return Number.isFinite(numberValue) && numberValue > 0 ? numberValue : 0;
+}
+
+function firstValue(source = {}, ...keys) {
+  for (const key of keys) {
+    const value = source?.[key];
+    if (value !== undefined && value !== null && value !== "") return value;
+  }
+  return undefined;
+}
+
+function resolveRoomId(source = {}) {
+  return toPositiveNumber(firstValue(
+    source,
+    "RoomId",
+    "roomId",
+    "room_id",
+    "liveRoomId",
+    "live_room_id",
+    "liveId",
+    "live_id",
+  ));
+}
+
+function syncRoomId(source = {}) {
+  const nextRoomId = resolveRoomId(source);
+  if (nextRoomId) roomId.value = nextRoomId;
 }
 
 async function loadOrderInfo(id) {
   try {
     const data = await getOrderDetail(id);
     if (!data) return;
+    syncRoomId(data);
     orderStatus.value = Number(data.orderStatus || 0);
     if (orderStatus.value >= 3) {
       refundType.value = 2;
@@ -195,15 +230,18 @@ async function loadOrderInfo(id) {
 }
 
 onLoad((options) => {
+  syncRoomId(options || {});
   if (options?.orderId) {
     orderId.value = Number(options.orderId);
-    loadOrderInfo(orderId.value);
+    orderInfoPromise = loadOrderInfo(orderId.value);
   } else if (options?.payload) {
     const parsed = JSON.parse(decodeURIComponent(options.payload));
     refundItem.value = { ...refundItem.value, ...parsed };
     orderId.value = parsed.orderId || parsed.id || 0;
+    syncRoomId(parsed);
     refundAmount.value = Number(parsed.price || 0) * (parsed.quantity || 1);
   }
+  if (!roomId.value) syncRoomId(loadLiveRoomContext() || {});
 });
 
 function confirmReason() {
@@ -218,11 +256,15 @@ function onUpload() {
     uni.showToast({ title: "订单信息异常", icon: "none" });
     return;
   }
-  chooseMpImage({ count: 3 - refundImages.value.length })
+  Promise.resolve(orderInfoPromise)
+    .then(() => {
+      if (!roomId.value) throw new Error("直播间信息异常，无法上传凭证");
+      return chooseMpImage({ count: 3 - refundImages.value.length });
+    })
     .then((res) => uploadImages(res.tempFilePaths || [], res.tempFiles || []))
     .catch((error) => {
       if (!String(error?.errMsg || "").includes("cancel")) {
-        uni.showToast({ title: "选择图片失败", icon: "none" });
+        uni.showToast({ title: error?.message || "选择图片失败", icon: "none" });
       }
     });
 }
@@ -266,6 +308,7 @@ async function uploadImages(filePaths = [], tempFiles = []) {
       try {
         const uploaded = await uploadRefundImage({
           orderId: orderId.value,
+          roomId: roomId.value,
           filePath,
           fileName,
           contentType: contentTypeMap[ext] || "image/jpeg",
