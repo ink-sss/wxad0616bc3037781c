@@ -343,6 +343,11 @@ async function loadCanvasImage(canvas, src, options = {}, label = "image", loadO
   });
   if (!src) return null;
   if (loadOptions.preferDirect && isUnwhitelistedAvatarUrl(src)) {
+    const directAvatar = await createCanvasImage(canvas, src, options, label, "avatar-direct", loadOptions);
+    if (directAvatar) {
+      emitPosterEvent(options, "image_load_success", { label, mode: "avatar-direct" });
+      return directAvatar;
+    }
     const avatarPath = await resolveAvatarTempFilePath(src, options, label);
     if (!avatarPath) {
       emitPosterEvent(options, "image_load_skip_local_path", {
@@ -356,6 +361,7 @@ async function loadCanvasImage(canvas, src, options = {}, label = "image", loadO
       emitPosterEvent(options, "image_load_success", { label, mode: "avatar-temp-file" });
       return avatarImage;
     }
+    avatarTempFileCache.delete(String(src || ""));
     emitPosterEvent(options, "image_load_fail", { label, mode: "avatar-temp-file" });
     return null;
   }
