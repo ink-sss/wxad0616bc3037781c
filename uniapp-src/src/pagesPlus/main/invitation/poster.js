@@ -1,0 +1,534 @@
+import { downloadFile } from "@/platform/weixin/file";
+import { getWeixinApi, promisifyApi, unsupportedError } from "@/platform/weixin/runtime";
+import { createQrMatrix } from "@/utils/qrcode-matrix.js";
+
+const DEFAULT_WIDTH = 750;
+const SHARE_CARD_WIDTH = 500;
+const SHARE_CARD_HEIGHT = 400;
+const CANVAS_IMAGE_LOAD_TIMEOUT = 5000;
+const CANVAS_API_TIMEOUT = 8000;
+
+export async function createInvitationPosterTempFile(template, payload = {}, options = {}) {
+  if (!template?.bgImg) {
+    throw new Error("邀请函模板为空");
+  }
+
+  emitPosterEvent(options, "poster_canvas_start", {
+    templateId: template.id || "",
+    hasAvatar: !!payload.anchorAvatar,
+    hasQrcodeText: !!payload.qrcodeText,
+  });
+  const canvas = createCanvas(template);
+  const ctx = canvas.getContext("2d");
+  const width = canvas.width;
+  const height = canvas.height;
+
+  await drawTemplateBackground(canvas, ctx, template.bgImg, width, height, options);
+  await drawSlots(canvas, ctx, width, height, template.slots || {}, payload, options);
+
+  const filePath = await canvasToTempFilePath(canvas);
+  emitPosterEvent(options, "poster_temp_file_success", { filePath, width, height });
+  return filePath;
+}
+
+export async function createInvitationShareCardTempFile(template, payload = {}, options = {}) {
+  emitPosterEvent(options, "share_card_canvas_start", {
+    templateId: template?.id || "",
+    hasAvatar: !!payload.anchorAvatar,
+    hasQrcodeText: !!payload.qrcodeText,
+  });
+  const canvas = createFixedCanvas(SHARE_CARD_WIDTH, SHARE_CARD_HEIGHT);
+  const ctx = canvas.getContext("2d");
+  await drawShareCard(canvas, ctx, template, payload, options);
+  const filePath = await canvasToTempFilePath(canvas);
+  emitPosterEvent(options, "share_card_temp_file_success", {
+    filePath,
+    width: SHARE_CARD_WIDTH,
+    height: SHARE_CARD_HEIGHT,
+  });
+  return filePath;
+}
+
+function createCanvas(template) {
+  const width = DEFAULT_WIDTH;
+  const aspectRatio = Number(template.aspectRatio || DEFAULT_WIDTH / 1334);
+  const height = Math.round(width / aspectRatio);
+  return createFixedCanvas(width, height);
+}
+
+function createFixedCanvas(width, height) {
+  const api = getWeixinApi("createOffscreenCanvas");
+  if (!api || typeof api.createOffscreenCanvas !== "function") {
+    throw unsupportedError("createOffscreenCanvas");
+  }
+  return api.createOffscreenCanvas({ type: "2d", width, height });
+}
+
+async function drawShareCard(canvas, ctx, template, payload, options = {}) {
+  const width = SHARE_CARD_WIDTH;
+  const height = SHARE_CARD_HEIGHT;
+  drawShareCardBase(ctx, width, height);
+  const background = await loadCanvasImage(canvas, template?.bgImg, options, "share_background");
+  if (background) {
+    ctx.save();
+    ctx.globalAlpha = 0.52;
+    ctx.drawImage(background, 0, 0, width, height);
+    ctx.restore();
+  }
+
+  ctx.fillStyle = "rgba(12, 0, 24, 0.58)";
+  roundRect(ctx, 24, 24, width - 48, height - 48, 24);
+  ctx.fill();
+
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "bold 42px sans-serif";
+  ctx.textBaseline = "top";
+  ctx.fillText("直播邀请函", 42, 52);
+
+  ctx.font = "26px sans-serif";
+  ctx.fillStyle = "rgba(255,255,255,0.78)";
+  ctx.fillText(truncate(payload.liveName || "精彩直播", 10), 42, 120);
+
+  ctx.font = "22px sans-serif";
+  ctx.fillStyle = "rgba(255,255,255,0.72)";
+  ctx.fillText(truncate(payload.displayTime || "敬请期待", 16), 42, 162);
+
+  await drawShareAvatar(canvas, ctx, payload, options);
+
+  const qrSize = 150;
+  const qrX = width - qrSize - 48;
+  const qrY = height - qrSize - 58;
+  ctx.fillStyle = "#ffffff";
+  roundRect(ctx, qrX - 10, qrY - 10, qrSize + 20, qrSize + 20, 14);
+  ctx.fill();
+  drawQrMatrix(
+    ctx,
+    payload.qrcodeText || payload.miniProgramPath || payload.link || "/pages/broadcast/entry",
+    qrX,
+    qrY,
+    qrSize,
+    options,
+    "share_qrcode",
+  );
+
+  ctx.font = "18px sans-serif";
+  ctx.fillStyle = "rgba(255,255,255,0.72)";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "top";
+  ctx.fillText("扫码进入直播间", qrX + qrSize / 2, qrY + qrSize + 18);
+  ctx.textAlign = "left";
+}
+
+function drawShareCardBase(ctx, width, height) {
+  const gradient = ctx.createLinearGradient(0, 0, width, height);
+  gradient.addColorStop(0, "#12001f");
+  gradient.addColorStop(1, "#31004d");
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, width, height);
+  ctx.fillStyle = "rgba(255, 0, 212, 0.18)";
+  ctx.beginPath();
+  ctx.arc(width * 0.78, height * 0.12, 120, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "rgba(111, 0, 255, 0.22)";
+  ctx.beginPath();
+  ctx.arc(width * 0.16, height * 0.92, 140, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+async function drawShareAvatar(canvas, ctx, payload, options = {}) {
+  const avatarSize = 82;
+  const x = 42;
+  const y = 222;
+  ctx.fillStyle = "rgba(0, 0, 0, 0.22)";
+  roundRect(ctx, x - 12, y - 12, 250, avatarSize + 24, 16);
+  ctx.fill();
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(x + avatarSize / 2, y + avatarSize / 2, avatarSize / 2, 0, Math.PI * 2);
+  ctx.closePath();
+  ctx.clip();
+  const image = await loadCanvasImage(canvas, payload.anchorAvatar, options, "share_avatar");
+  if (image) {
+    ctx.drawImage(image, x, y, avatarSize, avatarSize);
+    emitPosterEvent(options, "share_avatar_drawn", { loaded: true });
+  } else {
+    ctx.fillStyle = "#444444";
+    ctx.fillRect(x, y, avatarSize, avatarSize);
+    emitPosterEvent(options, "share_avatar_drawn", {
+      loaded: false,
+      hasSrc: !!payload.anchorAvatar,
+    });
+  }
+  ctx.restore();
+
+  ctx.font = "bold 24px sans-serif";
+  ctx.fillStyle = "#ffffff";
+  ctx.textBaseline = "top";
+  ctx.fillText(truncate(payload.inviterName || "游客", 8), x + avatarSize + 18, y + 12);
+  ctx.font = "20px sans-serif";
+  ctx.fillStyle = "rgba(255,255,255,0.7)";
+  ctx.fillText("邀请你一起看直播", x + avatarSize + 18, y + 48);
+}
+
+function roundRect(ctx, x, y, width, height, radius) {
+  const r = Math.min(radius, width / 2, height / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + width - r, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + r);
+  ctx.lineTo(x + width, y + height - r);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - r, y + height);
+  ctx.lineTo(x + r, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+async function drawTemplateBackground(canvas, ctx, src, width, height, options = {}) {
+  const image = await loadCanvasImage(canvas, src, options, "poster_background");
+  if (image) {
+    ctx.drawImage(image, 0, 0, width, height);
+    return;
+  }
+  ctx.fillStyle = "#160026";
+  ctx.fillRect(0, 0, width, height);
+  emitPosterEvent(options, "poster_background_fallback", { hasSrc: !!src });
+}
+
+async function drawSlots(canvas, ctx, width, height, slots, payload, options = {}) {
+  drawTextSlot(ctx, width, height, slots.inviterName, payload.inviterName || "游客", 8);
+  drawTextSlot(ctx, width, height, slots.liveName, payload.liveName || "精彩直播", 12);
+  drawTextSlot(ctx, width, height, slots.time, payload.displayTime || "敬请期待", 18);
+  await drawAvatarSlot(canvas, ctx, width, height, slots.avatar, payload.anchorAvatar, options);
+  drawQrcodeSlot(
+    ctx,
+    width,
+    height,
+    slots.qrcode,
+    payload.qrcodeText || payload.miniProgramPath || payload.link || "/pages/broadcast/entry",
+    options,
+  );
+}
+
+function drawTextSlot(ctx, width, height, slot, rawText, defaultMaxLen) {
+  if (!slot) return;
+  const fontSize = Math.round(height * Number(slot.fontPct || 0.02));
+  ctx.fillStyle = slot.color || "#ffffff";
+  ctx.font = `${slot.bold ? "bold " : ""}${fontSize}px sans-serif`;
+  ctx.textBaseline = "middle";
+  const text = truncate(rawText, Number(slot.maxLen || defaultMaxLen));
+  if (slot.cx != null) {
+    ctx.textAlign = "center";
+    ctx.fillText(text, width * Number(slot.cx), height * Number(slot.cy || 0));
+    return;
+  }
+  ctx.textAlign = "left";
+  ctx.fillText(text, width * Number(slot.x || 0), height * Number(slot.y || 0));
+}
+
+async function drawAvatarSlot(canvas, ctx, width, height, slot, src, options = {}) {
+  if (!slot || !src) {
+    emitPosterEvent(options, "poster_avatar_skip", { hasSlot: !!slot, hasSrc: !!src });
+    return;
+  }
+  const cx = width * Number(slot.cx || 0);
+  const cy = height * Number(slot.cy || 0);
+  const radius = width * Number(slot.r || 0);
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+  ctx.closePath();
+  ctx.clip();
+  const image = await loadCanvasImage(canvas, src, options, "poster_avatar");
+  if (image) {
+    ctx.drawImage(image, cx - radius, cy - radius, radius * 2, radius * 2);
+    emitPosterEvent(options, "poster_avatar_drawn", { loaded: true });
+  } else {
+    ctx.fillStyle = "#444444";
+    ctx.fillRect(cx - radius, cy - radius, radius * 2, radius * 2);
+    emitPosterEvent(options, "poster_avatar_drawn", { loaded: false, hasSrc: !!src });
+  }
+  ctx.restore();
+}
+
+function drawQrcodeSlot(ctx, width, height, slot, text, options = {}) {
+  if (!slot || !text) {
+    emitPosterEvent(options, "poster_qrcode_skip", { hasSlot: !!slot, hasText: !!text });
+    return;
+  }
+  const size = Math.round(width * Number(slot.size || 0));
+  const x = Math.round(width * Number(slot.cx || 0) - size / 2);
+  const y = Math.round(height * Number(slot.cy || 0) - size / 2);
+  drawQrMatrix(ctx, text, x, y, size, options, "poster_qrcode");
+}
+
+function drawQrMatrix(ctx, text, x, y, size, options = {}, label = "qrcode") {
+  emitPosterEvent(options, "qrcode_draw_start", {
+    label,
+    size,
+    textLength: String(text || "").length,
+  });
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(x, y, size, size);
+  let matrix = null;
+  try {
+    matrix = createQrMatrix(text);
+  } catch (error) {
+    emitPosterEvent(options, "qrcode_matrix_fail", {
+      label,
+      error: normalizePosterError(error),
+    });
+    ctx.fillStyle = "#222222";
+    ctx.font = `${Math.max(14, Math.round(size * 0.09))}px sans-serif`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("扫码进入", x + size / 2, y + size / 2 - 10);
+    ctx.fillText("直播间", x + size / 2, y + size / 2 + 16);
+    ctx.textAlign = "left";
+    return;
+  }
+  const margin = 1;
+  const moduleCount = matrix.length + margin * 2;
+  const cellSize = size / moduleCount;
+  ctx.fillStyle = "#000000";
+  matrix.forEach((row, rowIndex) => {
+    row.forEach((dark, colIndex) => {
+      if (!dark) return;
+      ctx.fillRect(
+        x + (colIndex + margin) * cellSize,
+        y + (rowIndex + margin) * cellSize,
+        Math.ceil(cellSize),
+        Math.ceil(cellSize),
+      );
+    });
+  });
+  emitPosterEvent(options, "qrcode_draw_success", {
+    label,
+    modules: matrix.length,
+  });
+}
+
+function truncate(text, maxLen) {
+  const value = String(text || "");
+  const max = Number(maxLen || 10);
+  return value.length > max ? `${value.slice(0, Math.max(max - 1, 1))}...` : value;
+}
+
+async function loadCanvasImage(canvas, src, options = {}, label = "image") {
+  emitPosterEvent(options, "image_load_start", {
+    label,
+    hasSrc: !!src,
+    src: summarizeImageSource(src),
+  });
+  if (/^https?:\/\//.test(String(src || ""))) {
+    const localPath = await resolveLocalImagePath(src, options, label);
+    if (!localPath) {
+      emitPosterEvent(options, "image_local_path_empty", {
+        label,
+        reason: "empty-local-path",
+      });
+      return loadCanvasImageDirect(canvas, src, options, label, "remote-direct-fallback");
+    }
+    const localImage = await createCanvasImage(canvas, localPath);
+    emitPosterEvent(options, localImage ? "image_load_success" : "image_local_load_fail", {
+      label,
+      mode: "local",
+      localPath: summarizeImageSource(localPath),
+    });
+    if (localImage) return localImage;
+    return loadCanvasImageDirect(canvas, src, options, label, "remote-direct-fallback");
+  }
+  return loadCanvasImageDirect(canvas, src, options, label, "direct");
+}
+
+async function loadCanvasImageDirect(canvas, src, options = {}, label = "image", mode = "direct") {
+  const direct = await createCanvasImage(canvas, src);
+  if (direct) {
+    emitPosterEvent(options, "image_load_success", { label, mode });
+    return direct;
+  }
+  const localPath = await resolveLocalImagePath(src, options, label);
+  if (!localPath || localPath === src) {
+    emitPosterEvent(options, "image_load_fail", {
+      label,
+      reason: !localPath ? "empty-local-path" : "local-path-unchanged",
+    });
+    return null;
+  }
+  const localImage = await createCanvasImage(canvas, localPath);
+  emitPosterEvent(options, localImage ? "image_load_success" : "image_load_fail", {
+    label,
+    mode: "local-fallback",
+    localPath: summarizeImageSource(localPath),
+  });
+  return localImage;
+}
+
+function createCanvasImage(canvas, src) {
+  if (!src || !canvas || typeof canvas.createImage !== "function") {
+    return Promise.resolve(null);
+  }
+  return new Promise((resolve) => {
+    let settled = false;
+    const image = canvas.createImage();
+    const finish = (result) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      resolve(result);
+    };
+    const timer = setTimeout(() => finish(null), CANVAS_IMAGE_LOAD_TIMEOUT);
+    image.onload = () => finish(image);
+    image.onerror = () => finish(null);
+    image.src = src;
+  });
+}
+
+async function resolveLocalImagePath(src, options = {}, label = "image") {
+  if (!/^https?:\/\//.test(String(src || ""))) return src;
+  try {
+    const info = await withTimeout(
+      promisifyApi("getImageInfo", { src }, { preferUni: true }),
+      CANVAS_API_TIMEOUT,
+      "getImageInfo timeout",
+    );
+    if (info?.path) {
+      emitPosterEvent(options, "image_local_path_success", {
+        label,
+        mode: "getImageInfo",
+        path: summarizeImageSource(info.path),
+      });
+      return info.path;
+    }
+  } catch (error) {
+    emitPosterEvent(options, "image_get_info_fail", {
+      label,
+      error: normalizePosterError(error),
+    });
+  }
+  try {
+    const result = await withTimeout(downloadFile({ url: src }), CANVAS_API_TIMEOUT, "downloadFile timeout");
+    if (!result?.statusCode || result.statusCode === 200) {
+      emitPosterEvent(options, "image_local_path_success", {
+        label,
+        mode: "downloadFile",
+        statusCode: result?.statusCode || "",
+        path: summarizeImageSource(result?.tempFilePath),
+      });
+      return result.tempFilePath;
+    }
+    emitPosterEvent(options, "image_download_bad_status", {
+      label,
+      statusCode: result.statusCode,
+    });
+  } catch (error) {
+    emitPosterEvent(options, "image_download_fail", {
+      label,
+      error: normalizePosterError(error),
+    });
+  }
+  return "";
+}
+
+function canvasToTempFilePath(canvas) {
+  if (canvas && typeof canvas.toTempFilePath === "function") {
+    return withTimeout(
+      new Promise((resolve, reject) => {
+        canvas.toTempFilePath({
+          fileType: "png",
+          success: (result) => resolve(result.tempFilePath),
+          fail: reject,
+        });
+      }),
+      CANVAS_API_TIMEOUT,
+      "canvas.toTempFilePath timeout",
+    );
+  }
+
+  const api = getWeixinApi("canvasToTempFilePath");
+  if (api && typeof api.canvasToTempFilePath === "function") {
+    return withTimeout(
+      new Promise((resolve, reject) => {
+        api.canvasToTempFilePath({
+          canvas,
+          fileType: "png",
+          success: (result) => resolve(result.tempFilePath),
+          fail: reject,
+        });
+      }),
+      CANVAS_API_TIMEOUT,
+      "canvasToTempFilePath timeout",
+    );
+  }
+
+  return Promise.reject(unsupportedError("canvas.toTempFilePath"));
+}
+
+function withTimeout(promise, timeoutMs, message) {
+  return new Promise((resolve, reject) => {
+    let settled = false;
+    const timer = setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      const error = new Error(message);
+      error.code = "TIMEOUT";
+      reject(error);
+    }, timeoutMs);
+
+    Promise.resolve(promise).then(
+      (value) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (error) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        reject(error);
+      },
+    );
+  });
+}
+
+function emitPosterEvent(options = {}, type, detail = {}) {
+  if (typeof options.onEvent !== "function") return;
+  try {
+    options.onEvent(type, sanitizePosterDetail(detail));
+  } catch (_) {}
+}
+
+function sanitizePosterDetail(value, depth = 0) {
+  if (depth > 3) return "[MaxDepth]";
+  if (value == null) return value;
+  if (typeof value === "string") return value.length > 180 ? `${value.slice(0, 180)}...` : value;
+  if (typeof value === "number" || typeof value === "boolean") return value;
+  if (Array.isArray(value)) return value.slice(0, 20).map((item) => sanitizePosterDetail(item, depth + 1));
+  if (typeof value === "object") {
+    return Object.keys(value).reduce((result, key) => {
+      result[key] = sanitizePosterDetail(value[key], depth + 1);
+      return result;
+    }, {});
+  }
+  return String(value);
+}
+
+function normalizePosterError(error) {
+  if (!error) return { message: "" };
+  if (typeof error === "string") return { message: error };
+  return {
+    message: error.message || error.errMsg || String(error),
+    code: error.code || error.errCode || "",
+    apiName: error.apiName || "",
+  };
+}
+
+function summarizeImageSource(src) {
+  const value = String(src || "");
+  if (!value) return "";
+  if (/^data:/i.test(value)) return `[data-url:${value.length}]`;
+  if (value.length <= 180) return value;
+  return `${value.slice(0, 180)}...`;
+}

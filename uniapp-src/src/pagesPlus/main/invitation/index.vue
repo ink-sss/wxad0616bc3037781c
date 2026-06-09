@@ -8,20 +8,28 @@
         :style="{ aspectRatio: `${activeTemplate.aspectRatio || 750 / 1334}` }"
       >
         <image
+          v-if="posterImageSrc"
+          class="inv-preview-img"
+          :src="posterImageSrc"
+          mode="scaleToFill"
+          show-menu-by-longpress
+          @longpress="saveQrcode"
+        />
+        <image
+          v-else
           class="inv-preview-img"
           :src="activeTemplate.bgImg"
           mode="scaleToFill"
-          show-menu-by-longpress
         />
         <image
-          v-if="payload.anchorAvatar"
+          v-if="!posterImageSrc && payload.anchorAvatar"
           class="inv-layer-avatar"
           :src="payload.anchorAvatar"
           mode="aspectFill"
           :style="avatarStyle"
         />
         <text
-          v-if="payload.inviterName"
+          v-if="!posterImageSrc && payload.inviterName"
           class="inv-layer-text"
           :class="{ 'inv-layer-text--bold': activeTemplate.slots?.inviterName?.bold }"
           :style="slotTextStyle(activeTemplate.slots?.inviterName)"
@@ -29,6 +37,7 @@
           {{ slotText(payload.inviterName, activeTemplate.slots?.inviterName, 8) }}
         </text>
         <text
+          v-if="!posterImageSrc"
           class="inv-layer-text"
           :class="{ 'inv-layer-text--bold': activeTemplate.slots?.liveName?.bold }"
           :style="slotTextStyle(activeTemplate.slots?.liveName)"
@@ -36,6 +45,7 @@
           {{ slotText(payload.liveName || "精彩直播", activeTemplate.slots?.liveName, 12) }}
         </text>
         <text
+          v-if="!posterImageSrc"
           class="inv-layer-text"
           :class="{ 'inv-layer-text--bold': activeTemplate.slots?.time?.bold }"
           :style="slotTextStyle(activeTemplate.slots?.time)"
@@ -43,11 +53,10 @@
           {{ displayTime || "敬请期待" }}
         </text>
         <image
-          v-if="qrcodeSrc"
+          v-if="!posterImageSrc && qrcodeSrc"
           class="inv-layer-qrcode"
           :src="qrcodeSrc"
           mode="aspectFit"
-          show-menu-by-longpress
           :style="qrcodeStyle"
           @longpress="saveQrcode"
         />
@@ -56,15 +65,7 @@
         <text class="inv-preview-placeholder-text">正在生成...</text>
       </view>
     </view>
-    <text class="inv-tip">长按二维码保存，或复制链接发送给好友</text>
-    <view class="inv-actions">
-      <view class="inv-action-btn" @click="copyLink">
-        <text class="inv-action-btn-text">复制链接</text>
-      </view>
-      <view class="inv-action-btn inv-action-btn--primary" @click="saveQrcode">
-        <text class="inv-action-btn-text inv-action-btn-text--primary">保存二维码</text>
-      </view>
-    </view>
+    <text class="inv-tip">{{ posterRendering ? "邀请函生成中..." : "长按保存邀请函" }}</text>
 
     <scroll-view class="inv-templates" scroll-x :show-scrollbar="false">
       <view class="inv-templates-inner">
@@ -82,6 +83,27 @@
         </view>
       </view>
     </scroll-view>
+
+    <view
+      v-if="debugVisible"
+      class="inv-debug-float"
+      @click.stop
+      @touchstart.stop
+    >
+      <view class="inv-debug-title">
+        <text class="inv-debug-title-text">邀请函调试</text>
+        <text class="inv-debug-status">{{ debugBrief }}</text>
+      </view>
+      <view class="inv-debug-lines">
+        <text class="inv-debug-line">头像: {{ payload.anchorAvatar ? "有" : "空" }}</text>
+        <text class="inv-debug-line">昵称: {{ payload.inviterName || "空" }}</text>
+        <text class="inv-debug-line">二维码: {{ qrcodeSrc ? "有" : "空" }}</text>
+        <text class="inv-debug-line">分享图: {{ shareImageSrc ? "已生成" : "空" }}</text>
+      </view>
+      <view class="inv-debug-button" @click.stop="copyDebugInfo">
+        <text class="inv-debug-button-text">{{ debugCopyText }}</text>
+      </view>
+    </view>
   </view>
 </template>
 
@@ -91,7 +113,9 @@ import { onShareAppMessage, onShareTimeline } from "@dcloudio/uni-app";
 import templates from "./templates";
 import { getProfile } from "@/api/user";
 import { useUserStore } from "@/stores/user";
-import { saveImageUrlToAlbum } from "@/platform/weixin/file";
+import { saveImageToAlbumWithAuth } from "@/platform/weixin/file";
+import { useInvitationDebug } from "./debug";
+import { createInvitationPosterTempFile, createInvitationShareCardTempFile } from "./poster";
 
 const payload = ref({
   link: "",
@@ -121,15 +145,25 @@ const payload = ref({
 
 const activeIdx = ref(0);
 const qrcodeSrc = ref("");
+const posterImageSrc = ref("");
+const shareImageSrc = ref("");
+const posterRenderTaskId = ref(0);
+const posterRendering = ref(false);
 const navDomain = ref("小程序");
 const activeTemplate = computed(() => templates[activeIdx.value] || templates[0]);
 const CARD_DESIGN_WIDTH = 750;
 const CARD_DISPLAY_WIDTH_RPX = 630;
+let posterRenderPromise = null;
+let shareRenderPromise = null;
 
 const displayTime = computed(() => {
   const schedule = payload.value.scheduleTime || payload.value.liveDate || "";
   if (schedule) return schedule.replace(/-/g, ".").replace(" ", "  ");
   return formatTime(payload.value.pushTime);
+});
+
+const shareMiniProgramPath = computed(() => {
+  return payload.value.miniProgramPath || buildMiniProgramPath(payload.value) || "/pages/broadcast/entry";
 });
 
 const avatarStyle = computed(() => {
@@ -158,11 +192,51 @@ const qrcodeStyle = computed(() => {
   };
 });
 
+const {
+  debugVisible,
+  debugCopyText,
+  debugBrief,
+  initializeDebugFloat,
+  recordDebugEvent,
+  copyDebugInfo,
+  getCurrentRouteOptions,
+  maskSensitiveText,
+  normalizeError,
+} = useInvitationDebug({
+  payload,
+  activeTemplate,
+  shareMiniProgramPath,
+  displayTime,
+  qrcodeSrc,
+  posterImageSrc,
+  shareImageSrc,
+  posterRendering,
+  posterRenderTaskId,
+  getPosterRenderPromise: () => posterRenderPromise,
+  getShareRenderPromise: () => shareRenderPromise,
+});
+
 onMounted(async () => {
+  const debugState = initializeDebugFloat();
+  recordDebugEvent("page_mounted", {
+    debugReason: debugState.reason,
+    routeOptions: getCurrentRouteOptions(),
+  });
   let data = {};
   try {
     data = uni.getStorageSync("invitation_payload") || {};
-  } catch (_) {}
+  } catch (error) {
+    recordDebugEvent("payload_read_fail", normalizeError(error));
+  }
+  recordDebugEvent("payload_loaded", {
+    keys: Object.keys(data || {}),
+    hasLink: !!data.link,
+    hasAvatar: !!data.anchorAvatar,
+    hasMiniProgramPath: !!data.miniProgramPath,
+    hasRoomCode: !!data.roomCode,
+    hasLiveId: !!(data.liveId || data.roomId),
+    hasTenantId: !!data.tenantId,
+  });
   const inviter = await resolveInviterProfile();
   payload.value = {
     link: data.link || "/pages/broadcast/entry",
@@ -190,27 +264,70 @@ onMounted(async () => {
     replay_video_id: data.replay_video_id || data.replayVideoId || data.videoId || data.video_id || "",
   };
   navDomain.value = normalizeNavDomain(data);
+  recordDebugEvent("payload_resolved", {
+    hasAvatar: !!payload.value.anchorAvatar,
+    inviterName: payload.value.inviterName,
+    sharePath: shareMiniProgramPath.value,
+    qrcodeText: payload.value.link || shareMiniProgramPath.value,
+  });
   await renderQrcode();
+  await renderPoster();
 });
 
-onShareAppMessage(() => ({
-  title: payload.value.liveName || "直播邀请",
-  path: shareMiniProgramPath.value,
-  imageUrl: activeTemplate.value?.bgImg || "",
-}));
+onShareAppMessage(() => {
+  const options = buildShareOptions();
+  recordDebugEvent("share_app_message", {
+    hasShareImage: !!shareImageSrc.value,
+    hasPosterImage: !!posterImageSrc.value,
+    imageUrl: options.imageUrl,
+    path: options.path,
+  });
+  if (!shareImageSrc.value) {
+    options.promise = ensureShareImageReady().then(() => buildShareOptions());
+    recordDebugEvent("share_promise_attached", { reason: "shareImageSrc empty" });
+  }
+  return options;
+});
 
 onShareTimeline(() => {
   const path = shareMiniProgramPath.value;
   return {
     title: payload.value.liveName || "直播邀请",
     query: path.includes("?") ? path.split("?")[1] : "",
-    imageUrl: activeTemplate.value?.bgImg || "",
+    imageUrl: shareImageSrc.value || posterImageSrc.value || activeTemplate.value?.bgImg || "",
   };
 });
 
-const shareMiniProgramPath = computed(() => {
-  return payload.value.miniProgramPath || buildMiniProgramPath(payload.value) || "/pages/broadcast/entry";
-});
+function buildShareOptions() {
+  return {
+    title: payload.value.liveName || "直播邀请",
+    path: shareMiniProgramPath.value,
+    imageUrl: shareImageSrc.value || posterImageSrc.value || activeTemplate.value?.bgImg || "",
+  };
+}
+
+async function ensureShareImageReady() {
+  if (shareImageSrc.value) {
+    recordDebugEvent("ensure_share_image_skip", { reason: "exists", imageUrl: shareImageSrc.value });
+    return shareImageSrc.value;
+  }
+  recordDebugEvent("ensure_share_image_start", {
+    hasShareRenderPromise: !!shareRenderPromise,
+    hasRenderPromise: !!posterRenderPromise,
+  });
+  if (shareRenderPromise) {
+    await shareRenderPromise;
+  } else {
+    renderPoster();
+    if (shareRenderPromise) {
+      await shareRenderPromise;
+    } else if (posterRenderPromise) {
+      await posterRenderPromise;
+    }
+  }
+  recordDebugEvent("ensure_share_image_done", { imageUrl: shareImageSrc.value });
+  return shareImageSrc.value;
+}
 
 async function resolveInviterProfile() {
   let avatar = "";
@@ -230,13 +347,26 @@ async function resolveInviterProfile() {
     }
     avatar = userInfo.avatar || userInfo.headimgurl || userInfo.headImg || "";
     nick = userInfo.nickname || userInfo.nickName || userInfo.name || "";
-  } catch (_) {}
+    recordDebugEvent("profile_resolved", {
+      hasToken: !!userStore.token,
+      userKeys: Object.keys(userInfo || {}),
+      hasAvatar: !!avatar,
+      nick,
+    });
+  } catch (error) {
+    recordDebugEvent("profile_resolve_fail", normalizeError(error));
+  }
   return { avatar, nick };
 }
 
 function renderQrcode() {
   const text = payload.value.link || "/pages/broadcast/entry";
   qrcodeSrc.value = buildQrcodeImageUrl(text);
+  recordDebugEvent("qrcode_rendered", {
+    hasImage: !!qrcodeSrc.value,
+    text: maskSensitiveText(text),
+    imageUrl: qrcodeSrc.value,
+  });
 }
 
 function buildQrcodeImageUrl(text) {
@@ -245,8 +375,9 @@ function buildQrcodeImageUrl(text) {
   return `https://api.qrserver.com/v1/create-qr-code/?size=360x360&margin=1&data=${encodeURIComponent(value)}`;
 }
 
-function selectTemplate(idx) {
+async function selectTemplate(idx) {
   activeIdx.value = idx;
+  await renderPoster();
 }
 
 function formatTime(ts) {
@@ -303,16 +434,107 @@ function copyLink() {
 }
 
 async function saveQrcode() {
-  if (!qrcodeSrc.value) {
-    uni.showToast({ title: "二维码生成失败", icon: "none" });
+  if (posterRendering.value) {
+    uni.showToast({ title: "邀请函生成中", icon: "none" });
+    return;
+  }
+  if (!posterImageSrc.value) {
+    uni.showToast({ title: "邀请函生成失败", icon: "none" });
     return;
   }
   try {
-    await saveImageUrlToAlbum(qrcodeSrc.value, `live-invitation-${Date.now()}.png`);
+    await saveImageToAlbumWithAuth(posterImageSrc.value);
     uni.showToast({ title: "已保存", icon: "success" });
   } catch (error) {
-    console.warn("[Invitation] save qrcode fail:", error);
-    uni.showToast({ title: "请长按二维码保存", icon: "none" });
+    console.warn("[Invitation] save invitation fail:", error);
+    uni.showToast({ title: "请长按图片保存", icon: "none" });
+  }
+}
+
+async function renderPoster() {
+  const taskId = posterRenderTaskId.value + 1;
+  posterRenderTaskId.value = taskId;
+  recordDebugEvent("render_poster_start", { taskId, templateId: activeTemplate.value?.id || "" });
+  const promise = renderPosterTask(taskId);
+  posterRenderPromise = promise;
+  try {
+    await promise;
+  } finally {
+    if (posterRenderPromise === promise) {
+      posterRenderPromise = null;
+    }
+  }
+}
+
+async function renderPosterTask(taskId) {
+  const template = activeTemplate.value;
+  if (!template) {
+    posterImageSrc.value = "";
+    shareImageSrc.value = "";
+    recordDebugEvent("render_poster_skip", { taskId, reason: "template empty" });
+    return;
+  }
+  // #ifdef MP-WEIXIN
+  posterRendering.value = true;
+  try {
+    const posterPayload = {
+      ...payload.value,
+      displayTime: displayTime.value || "敬请期待",
+      link: payload.value.link || shareMiniProgramPath.value,
+      qrcodeText: shareMiniProgramPath.value,
+    };
+    const posterDebugOptions = {
+      onEvent: (type, detail) => recordDebugEvent(type, detail),
+    };
+    recordDebugEvent("render_payload", {
+      taskId,
+      hasAvatar: !!posterPayload.anchorAvatar,
+      inviterName: posterPayload.inviterName,
+      hasQrcodeText: !!posterPayload.qrcodeText,
+      qrcodeText: maskSensitiveText(posterPayload.qrcodeText),
+      hasLink: !!posterPayload.link,
+    });
+    const sharePromise = renderShareCard(taskId, template, posterPayload, posterDebugOptions);
+    shareRenderPromise = sharePromise;
+    await sharePromise;
+    try {
+      const filePath = await createInvitationPosterTempFile(template, posterPayload, posterDebugOptions);
+      if (posterRenderTaskId.value !== taskId) return;
+      posterImageSrc.value = filePath;
+      recordDebugEvent("poster_ready", { taskId, filePath });
+    } catch (error) {
+      if (posterRenderTaskId.value !== taskId) return;
+      posterImageSrc.value = "";
+      recordDebugEvent("poster_fail", normalizeError(error));
+      console.warn("[Invitation] poster render fail:", error);
+    }
+  } finally {
+    if (posterRenderTaskId.value === taskId) {
+      posterRendering.value = false;
+      if (shareRenderPromise) {
+        shareRenderPromise = null;
+      }
+      recordDebugEvent("render_poster_done", {
+        taskId,
+        hasShareImage: !!shareImageSrc.value,
+        hasPosterImage: !!posterImageSrc.value,
+      });
+    }
+  }
+  // #endif
+}
+
+async function renderShareCard(taskId, template, posterPayload, posterDebugOptions) {
+  try {
+    const shareFilePath = await createInvitationShareCardTempFile(template, posterPayload, posterDebugOptions);
+    if (posterRenderTaskId.value !== taskId) return;
+    shareImageSrc.value = shareFilePath;
+    recordDebugEvent("share_card_ready", { taskId, filePath: shareFilePath });
+  } catch (error) {
+    if (posterRenderTaskId.value !== taskId) return;
+    shareImageSrc.value = "";
+    recordDebugEvent("share_card_fail", normalizeError(error));
+    console.warn("[Invitation] share image render fail:", error);
   }
 }
 
@@ -592,5 +814,71 @@ function goBack() {
   color: #fff;
   font-size: 22rpx;
   line-height: 1;
+}
+
+.inv-debug-float {
+  position: fixed;
+  right: 18rpx;
+  bottom: calc(190rpx + env(safe-area-inset-bottom));
+  z-index: 99;
+  width: 310rpx;
+  padding: 14rpx;
+  border-radius: 12rpx;
+  background: rgba(17, 17, 26, 0.92);
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.25);
+  box-sizing: border-box;
+}
+
+.inv-debug-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10rpx;
+}
+
+.inv-debug-title-text {
+  font-size: 22rpx;
+  line-height: 1.3;
+  color: #fff;
+  font-weight: 700;
+}
+
+.inv-debug-status {
+  flex-shrink: 0;
+  font-size: 18rpx;
+  line-height: 1.3;
+  color: #7cffb7;
+}
+
+.inv-debug-lines {
+  margin-top: 8rpx;
+}
+
+.inv-debug-line {
+  display: block;
+  width: 100%;
+  font-size: 19rpx;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.78);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.inv-debug-button {
+  height: 44rpx;
+  margin-top: 10rpx;
+  border-radius: 8rpx;
+  background: #ff6b2e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inv-debug-button-text {
+  font-size: 20rpx;
+  line-height: 1;
+  color: #fff;
+  font-weight: 600;
 }
 </style>
