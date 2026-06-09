@@ -52,6 +52,11 @@ Components in the uni-app source project are Vue single-file components under
   and then set the nested `scroll-view` to `height: 100%`. iOS real devices can
   collapse scroll areas that depend only on flex distribution or `height: 0`,
   making populated lists look empty.
+- For autoplaying Mini Program `swiper` components, keep the `current` index in
+  the same coordinate space as the rendered `swiper-item` list. Do not render a
+  moving slice/window while also binding a parent-owned `current`, because iOS
+  can fight the native autoplay transition and look like it is jittering left
+  and right.
 
 ---
 

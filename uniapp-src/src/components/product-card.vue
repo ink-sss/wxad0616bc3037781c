@@ -16,7 +16,7 @@
         previous-margin="0rpx"
         next-margin="0rpx"
         circular="false"
-         autoplay
+        autoplay
         interval="5000"
         @change="onSwiperChange"
       >
@@ -90,7 +90,6 @@
 import { computed } from "vue";
 import { toSizedImageUrl } from "@/utils/image-url";
 
-const SWIPER_WINDOW_RADIUS = 2;
 const PRODUCT_CARD_THUMB_SIZE = { width: 220, height: 220 };
 
 const props = defineProps({
@@ -152,23 +151,14 @@ const activeItem = computed(() => {
   return productItems.value[safeActiveIndex.value] || {};
 });
 
-const visibleWindowStart = computed(() => {
-  const total = productItems.value.length;
-  if (total <= SWIPER_WINDOW_RADIUS * 2 + 1) return 0;
-  const maxStart = Math.max(total - (SWIPER_WINDOW_RADIUS * 2 + 1), 0);
-  return Math.min(Math.max(safeActiveIndex.value - SWIPER_WINDOW_RADIUS, 0), maxStart);
-});
-
 const visibleProductItems = computed(() => {
-  const start = visibleWindowStart.value;
-  const end = Math.min(start + SWIPER_WINDOW_RADIUS * 2 + 1, productItems.value.length);
-  return productItems.value.slice(start, end).map((item, offset) => ({
+  return productItems.value.map((item, index) => ({
     item,
-    index: start + offset,
+    index,
   }));
 });
 
-const visibleActiveIndex = computed(() => safeActiveIndex.value - visibleWindowStart.value);
+const visibleActiveIndex = computed(() => safeActiveIndex.value);
 
 function close() {
   emit("close");
@@ -180,7 +170,7 @@ function onDetail(item) {
 }
 
 function onSwiperChange(e) {
-  emit("change", visibleWindowStart.value + Number(e?.detail?.current || 0));
+  emit("change", Number(e?.detail?.current || 0));
 }
 
 function productImage(item) {
