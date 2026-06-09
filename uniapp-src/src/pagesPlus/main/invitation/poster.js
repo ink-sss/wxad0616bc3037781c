@@ -5,8 +5,11 @@ import { createQrMatrix } from "@/utils/qrcode-matrix.js";
 const DEFAULT_WIDTH = 750;
 const SHARE_CARD_WIDTH = 500;
 const SHARE_CARD_HEIGHT = 400;
-const CANVAS_IMAGE_LOAD_TIMEOUT = 5000;
-const CANVAS_API_TIMEOUT = 8000;
+const CANVAS_IMAGE_LOAD_TIMEOUT = 1200;
+const CANVAS_API_TIMEOUT = 3000;
+const imagePathCache = new Map();
+const avatarTempFileCache = new Map();
+const canvasImageCache = new WeakMap();
 
 export async function createInvitationPosterTempFile(template, payload = {}, options = {}) {
   if (!template?.bgImg) {
@@ -147,13 +150,12 @@ async function drawShareAvatar(canvas, ctx, payload, options = {}) {
   ctx.arc(x + avatarSize / 2, y + avatarSize / 2, avatarSize / 2, 0, Math.PI * 2);
   ctx.closePath();
   ctx.clip();
-  const image = await loadCanvasImage(canvas, payload.anchorAvatar, options, "share_avatar");
+  const image = await loadCanvasImage(canvas, payload.anchorAvatar, options, "share_avatar", { preferDirect: true });
   if (image) {
     ctx.drawImage(image, x, y, avatarSize, avatarSize);
     emitPosterEvent(options, "share_avatar_drawn", { loaded: true });
   } else {
-    ctx.fillStyle = "#444444";
-    ctx.fillRect(x, y, avatarSize, avatarSize);
+    drawAvatarFallback(ctx, x, y, avatarSize, payload.inviterName);
     emitPosterEvent(options, "share_avatar_drawn", {
       loaded: false,
       hasSrc: !!payload.anchorAvatar,
@@ -200,7 +202,7 @@ async function drawSlots(canvas, ctx, width, height, slots, payload, options = {
   drawTextSlot(ctx, width, height, slots.inviterName, payload.inviterName || "游客", 8);
   drawTextSlot(ctx, width, height, slots.liveName, payload.liveName || "精彩直播", 12);
   drawTextSlot(ctx, width, height, slots.time, payload.displayTime || "敬请期待", 18);
-  await drawAvatarSlot(canvas, ctx, width, height, slots.avatar, payload.anchorAvatar, options);
+  await drawAvatarSlot(canvas, ctx, width, height, slots.avatar, payload.anchorAvatar, payload.inviterName, options);
   drawQrcodeSlot(
     ctx,
     width,
@@ -227,8 +229,8 @@ function drawTextSlot(ctx, width, height, slot, rawText, defaultMaxLen) {
   ctx.fillText(text, width * Number(slot.x || 0), height * Number(slot.y || 0));
 }
 
-async function drawAvatarSlot(canvas, ctx, width, height, slot, src, options = {}) {
-  if (!slot || !src) {
+async function drawAvatarSlot(canvas, ctx, width, height, slot, src, fallbackText, options = {}) {
+  if (!slot) {
     emitPosterEvent(options, "poster_avatar_skip", { hasSlot: !!slot, hasSrc: !!src });
     return;
   }
@@ -240,13 +242,12 @@ async function drawAvatarSlot(canvas, ctx, width, height, slot, src, options = {
   ctx.arc(cx, cy, radius, 0, Math.PI * 2);
   ctx.closePath();
   ctx.clip();
-  const image = await loadCanvasImage(canvas, src, options, "poster_avatar");
+  const image = await loadCanvasImage(canvas, src, options, "poster_avatar", { preferDirect: true });
   if (image) {
     ctx.drawImage(image, cx - radius, cy - radius, radius * 2, radius * 2);
     emitPosterEvent(options, "poster_avatar_drawn", { loaded: true });
   } else {
-    ctx.fillStyle = "#444444";
-    ctx.fillRect(cx - radius, cy - radius, radius * 2, radius * 2);
+    drawAvatarFallback(ctx, cx - radius, cy - radius, radius * 2, fallbackText);
     emitPosterEvent(options, "poster_avatar_drawn", { loaded: false, hasSrc: !!src });
   }
   ctx.restore();
@@ -315,12 +316,44 @@ function truncate(text, maxLen) {
   return value.length > max ? `${value.slice(0, Math.max(max - 1, 1))}...` : value;
 }
 
-async function loadCanvasImage(canvas, src, options = {}, label = "image") {
+async function loadCanvasImage(canvas, src, options = {}, label = "image", loadOptions = {}) {
   emitPosterEvent(options, "image_load_start", {
     label,
     hasSrc: !!src,
     src: summarizeImageSource(src),
   });
+  if (!src) return null;
+  if (loadOptions.preferDirect && isUnwhitelistedAvatarUrl(src)) {
+    const avatarPath = await resolveAvatarTempFilePath(src, options, label);
+    if (!avatarPath) {
+      emitPosterEvent(options, "image_load_skip_local_path", {
+        label,
+        reason: "unwhitelisted-avatar-url",
+      });
+      return null;
+    }
+    const avatarImage = await createCanvasImage(canvas, avatarPath, options, label, "avatar-temp-file");
+    if (avatarImage) {
+      emitPosterEvent(options, "image_load_success", { label, mode: "avatar-temp-file" });
+      return avatarImage;
+    }
+    emitPosterEvent(options, "image_load_fail", { label, mode: "avatar-temp-file" });
+    return null;
+  }
+  if (loadOptions.preferDirect) {
+    const direct = await createCanvasImage(canvas, src, options, label, "direct-fast");
+    if (direct) {
+      emitPosterEvent(options, "image_load_success", { label, mode: "direct-fast" });
+      return direct;
+    }
+    if (isUnwhitelistedAvatarUrl(src)) {
+      emitPosterEvent(options, "image_load_skip_local_path", {
+        label,
+        reason: "unwhitelisted-avatar-url",
+      });
+      return null;
+    }
+  }
   if (/^https?:\/\//.test(String(src || ""))) {
     const localPath = await resolveLocalImagePath(src, options, label);
     if (!localPath) {
@@ -330,7 +363,7 @@ async function loadCanvasImage(canvas, src, options = {}, label = "image") {
       });
       return loadCanvasImageDirect(canvas, src, options, label, "remote-direct-fallback");
     }
-    const localImage = await createCanvasImage(canvas, localPath);
+    const localImage = await createCanvasImage(canvas, localPath, options, label, "local");
     emitPosterEvent(options, localImage ? "image_load_success" : "image_local_load_fail", {
       label,
       mode: "local",
@@ -342,8 +375,54 @@ async function loadCanvasImage(canvas, src, options = {}, label = "image") {
   return loadCanvasImageDirect(canvas, src, options, label, "direct");
 }
 
+async function resolveAvatarTempFilePath(src, options = {}, label = "avatar") {
+  const value = String(src || "");
+  if (!value) return "";
+  if (avatarTempFileCache.has(value)) {
+    const cachedPath = await avatarTempFileCache.get(value);
+    emitPosterEvent(options, "avatar_temp_file_cache_hit", {
+      label,
+      path: summarizeImageSource(cachedPath),
+    });
+    return cachedPath;
+  }
+  const promise = createAvatarTempFilePath(value, options, label).catch((error) => {
+    avatarTempFileCache.delete(value);
+    emitPosterEvent(options, "avatar_temp_file_fail", {
+      label,
+      error: normalizePosterError(error),
+    });
+    return "";
+  });
+  avatarTempFileCache.set(value, promise);
+  const filePath = await promise;
+  if (!filePath) {
+    avatarTempFileCache.delete(value);
+  }
+  return filePath;
+}
+
+async function createAvatarTempFilePath(src, options = {}, label = "avatar") {
+  emitPosterEvent(options, "avatar_temp_file_start", {
+    label,
+    src: summarizeImageSource(src),
+  });
+  const size = 180;
+  const canvas = createFixedCanvas(size, size);
+  const ctx = canvas.getContext("2d");
+  const image = await createCanvasImage(canvas, src, options, label, "avatar-direct-localize");
+  if (!image) return "";
+  ctx.drawImage(image, 0, 0, size, size);
+  const filePath = await canvasToTempFilePath(canvas);
+  emitPosterEvent(options, "avatar_temp_file_success", {
+    label,
+    filePath: summarizeImageSource(filePath),
+  });
+  return filePath;
+}
+
 async function loadCanvasImageDirect(canvas, src, options = {}, label = "image", mode = "direct") {
-  const direct = await createCanvasImage(canvas, src);
+  const direct = await createCanvasImage(canvas, src, options, label, mode);
   if (direct) {
     emitPosterEvent(options, "image_load_success", { label, mode });
     return direct;
@@ -356,7 +435,7 @@ async function loadCanvasImageDirect(canvas, src, options = {}, label = "image",
     });
     return null;
   }
-  const localImage = await createCanvasImage(canvas, localPath);
+  const localImage = await createCanvasImage(canvas, localPath, options, label, "local-fallback");
   emitPosterEvent(options, localImage ? "image_load_success" : "image_load_fail", {
     label,
     mode: "local-fallback",
@@ -365,9 +444,14 @@ async function loadCanvasImageDirect(canvas, src, options = {}, label = "image",
   return localImage;
 }
 
-function createCanvasImage(canvas, src) {
+function createCanvasImage(canvas, src, options = {}, label = "image", mode = "direct") {
   if (!src || !canvas || typeof canvas.createImage !== "function") {
     return Promise.resolve(null);
+  }
+  const cacheKey = String(src || "");
+  const perCanvasCache = getCanvasImageCache(canvas);
+  if (perCanvasCache.has(cacheKey)) {
+    return Promise.resolve(perCanvasCache.get(cacheKey));
   }
   return new Promise((resolve) => {
     let settled = false;
@@ -376,6 +460,11 @@ function createCanvasImage(canvas, src) {
       if (settled) return;
       settled = true;
       clearTimeout(timer);
+      if (result) {
+        perCanvasCache.set(cacheKey, result);
+      } else {
+        emitPosterEvent(options, "image_create_timeout_or_fail", { label, mode });
+      }
       resolve(result);
     };
     const timer = setTimeout(() => finish(null), CANVAS_IMAGE_LOAD_TIMEOUT);
@@ -386,14 +475,24 @@ function createCanvasImage(canvas, src) {
 }
 
 async function resolveLocalImagePath(src, options = {}, label = "image") {
-  if (!/^https?:\/\//.test(String(src || ""))) return src;
+  const value = String(src || "");
+  if (!/^https?:\/\//.test(value)) return value;
+  if (imagePathCache.has(value)) {
+    const cached = imagePathCache.get(value);
+    emitPosterEvent(options, "image_local_path_cache_hit", {
+      label,
+      path: summarizeImageSource(cached),
+    });
+    return cached;
+  }
   try {
     const info = await withTimeout(
-      promisifyApi("getImageInfo", { src }, { preferUni: true }),
+      promisifyApi("getImageInfo", { src: value }, { preferUni: true }),
       CANVAS_API_TIMEOUT,
       "getImageInfo timeout",
     );
     if (info?.path) {
+      imagePathCache.set(value, info.path);
       emitPosterEvent(options, "image_local_path_success", {
         label,
         mode: "getImageInfo",
@@ -408,8 +507,9 @@ async function resolveLocalImagePath(src, options = {}, label = "image") {
     });
   }
   try {
-    const result = await withTimeout(downloadFile({ url: src }), CANVAS_API_TIMEOUT, "downloadFile timeout");
+    const result = await withTimeout(downloadFile({ url: value }), CANVAS_API_TIMEOUT, "downloadFile timeout");
     if (!result?.statusCode || result.statusCode === 200) {
+      imagePathCache.set(value, result.tempFilePath);
       emitPosterEvent(options, "image_local_path_success", {
         label,
         mode: "downloadFile",
@@ -531,4 +631,38 @@ function summarizeImageSource(src) {
   if (/^data:/i.test(value)) return `[data-url:${value.length}]`;
   if (value.length <= 180) return value;
   return `${value.slice(0, 180)}...`;
+}
+
+function getCanvasImageCache(canvas) {
+  let cache = canvasImageCache.get(canvas);
+  if (!cache) {
+    cache = new Map();
+    canvasImageCache.set(canvas, cache);
+  }
+  return cache;
+}
+
+function isUnwhitelistedAvatarUrl(src) {
+  const value = String(src || "");
+  return /thirdwx\.qlogo\.cn|qlogo\.cn|wx\.qlogo\.cn/i.test(value);
+}
+
+function drawAvatarFallback(ctx, x, y, size, text) {
+  const gradient = ctx.createLinearGradient(x, y, x + size, y + size);
+  gradient.addColorStop(0, "#7A42FF");
+  gradient.addColorStop(1, "#FF4FD8");
+  ctx.fillStyle = gradient;
+  ctx.fillRect(x, y, size, size);
+  ctx.fillStyle = "#FFFFFF";
+  ctx.font = `bold ${Math.round(size * 0.42)}px sans-serif`;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(getAvatarInitial(text), x + size / 2, y + size / 2);
+  ctx.textAlign = "left";
+}
+
+function getAvatarInitial(text) {
+  const value = String(text || "").trim();
+  if (!value) return "邀";
+  return value.slice(0, 1).toUpperCase();
 }

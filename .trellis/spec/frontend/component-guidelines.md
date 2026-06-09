@@ -105,3 +105,14 @@ Components in the uni-app source project are Vue single-file components under
   equal `rpx` width/height. If width and height are both percentages, they scale
   against different card axes and circles become tall ovals while QR codes
   overflow their frame.
+- Re-rendering Mini Program invitation poster backgrounds from remote template
+  URLs on every canvas export. If an H5 invitation template ships local static
+  backgrounds, copy compatible assets into the matching uni-app package or
+  subpackage and import them from `templates.js`; this avoids repeated
+  `getImageInfo`/network latency during poster generation.
+- Treating WeChat user avatar URLs such as `thirdwx.qlogo.cn` as normal
+  downloadable images in canvas composition. Those domains may be absent from
+  the Mini Program download whitelist, so poster code must not block on
+  `getImageInfo`/`downloadFile` for them. Prefer direct canvas image loading,
+  cache a successful draw as a temp file when the same avatar is reused, and
+  fall back immediately if the direct load fails.
