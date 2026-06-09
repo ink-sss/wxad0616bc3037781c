@@ -22,16 +22,17 @@ Move the broadcast landscape comment-lottery entry back into the interaction are
 ## Requirements
 
 * The landscape comment-lottery entry remains tied to the interaction tab state.
-* The landscape lottery tool top positioning must match H5 values exactly: base `536rpx`, live override `528rpx`.
-* Remove the Mini Program nav-height offset from the lottery tool positioning.
+* The landscape lottery tool must keep H5's tab-below spacing: H5 total top values are base `536rpx` and live `528rpx`, which equal video height + tab height + `26rpx`; because uni-app renders the tool inside interaction content, its local top must be `26rpx`.
+* Remove the Mini Program nav-height and duplicated video/tab offsets from the lottery tool positioning.
 * Keep the H5 live override values for right/z-index/width/gap/bubble/icon sizing.
 * Scope stays inside `uniapp-src` broadcast source and focused tests.
 
 ## Acceptance Criteria
 
 * [ ] `LiveLandscapeStage.vue` renders the landscape lottery tool inside the interaction section flow area rather than above it.
-* [ ] `.landscape-lottery-tools` uses `top: 536rpx` without `--broadcast-nav-height`.
-* [ ] `.external-lottery-tools` live override uses `top: 528rpx` without `--broadcast-nav-height`.
+* [ ] `.interact-content` owns the positioning context for the lottery tool.
+* [ ] `.landscape-lottery-tools` uses local `top: 26rpx` without `--broadcast-nav-height`.
+* [ ] `.external-lottery-tools` live override uses local `top: 26rpx` without `--broadcast-nav-height`.
 * [ ] Focused static regression test covers the H5 positioning values.
 * [ ] Focused test passes.
 * [ ] `npm run build:mp-weixin` is attempted.
