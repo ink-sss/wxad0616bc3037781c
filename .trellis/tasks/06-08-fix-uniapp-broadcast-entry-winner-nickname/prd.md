@@ -2,7 +2,7 @@
 
 ## Goal
 
-Fix the `uniapp-src` broadcast entry interaction feed so lottery congratulations display the winning user's nickname instead of always falling back to `中奖用户`.
+Fix the `uniapp-src` broadcast entry interaction feed so lottery congratulations resolve the winning user's nickname instead of always falling back to `中奖用户`, then display that nickname in masked form.
 
 ## What I Already Know
 
@@ -17,18 +17,20 @@ Fix the `uniapp-src` broadcast entry interaction feed so lottery congratulations
 * Existing UI templates are correct; the bug is in message normalization.
 * The backend may send winner names under additional aliases or nested user/customer/member objects.
 * `中奖用户` should remain the fallback only when no nickname is present anywhere useful.
+* Winner nicknames should follow the existing live comment masking pattern: keep the first and last character visible and replace the middle with `*`.
 
 ## Requirements
 
 * Extract winner nickname from the direct lottery record fields already supported.
 * Also extract nickname from common nested user/customer/member/profile shapes.
+* Display the resolved winner nickname in masked form in `lottery_win` messages and winner lists.
 * Keep prize name and duplicate message behavior unchanged.
-* Add a focused test for direct, snake_case, and nested nickname payloads.
+* Add a focused test for direct, snake_case, nested nickname payloads, and masked display.
 
 ## Acceptance Criteria
 
-* [ ] A `lottery_win` message with `customer: { nickname: "..." }` renders that nickname.
-* [ ] A `lottery_win` message with `nick_name` renders that nickname.
+* [ ] A `lottery_win` message with `customer: { nickname: "中奖昵称" }` renders `中***称`.
+* [ ] A `lottery_win` message with `nick_name` resolves the nickname before masking it.
 * [ ] Missing nickname still falls back to `中奖用户`.
 * [ ] Relevant Node test passes.
 

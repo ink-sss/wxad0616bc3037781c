@@ -4,6 +4,7 @@ import {
   getLotteryActivityType,
   getLotteryRecordKey,
   getLotteryRewardName,
+  getLotteryWinnerDisplayName,
   getLotteryWinnerName,
   unwrapLotteryPayload,
 } from "./live-lottery-message.js";
@@ -133,7 +134,7 @@ function getRecordKey(payload = {}) {
 }
 
 function normalizeDisplayUser(item = {}, index = 0) {
-  const nickname = getLotteryWinnerName(item, `用户${index + 1}`);
+  const nickname = getLotteryWinnerDisplayName(item, `用户${index + 1}`);
   return {
     key: String(firstValue(item, "recordId", "record_id", "winnerRecordId", "winner_record_id", "customerId", "customer_id", "userId", "user_id") || `${nickname}-${index}`),
     name: nickname,

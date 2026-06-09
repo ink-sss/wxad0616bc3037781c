@@ -66,6 +66,15 @@ function normalizeDisplayName(value) {
   return String(value ?? "").trim();
 }
 
+export function maskLotteryWinnerName(name, defaultName = "中奖用户") {
+  const raw = normalizeDisplayName(name);
+  if (!raw) return defaultName;
+  const chars = Array.from(raw);
+  if (chars.length <= 1) return raw;
+  if (chars.length === 2) return `${chars[0]}*${chars[1]}`;
+  return `${chars[0]}***${chars[chars.length - 1]}`;
+}
+
 function getWinnerNameFromObject(source, seen = new Set()) {
   if (!isObject(source) || seen.has(source)) return "";
   seen.add(source);
@@ -146,10 +155,17 @@ export function getLotteryWinnerName(record = {}, defaultName = "中奖用户") 
   return getWinnerNameFromObject(record) || defaultName;
 }
 
+export function getLotteryWinnerDisplayName(record = {}, defaultName = "中奖用户") {
+  const rawName = getLotteryWinnerName(record, "");
+  return rawName ? maskLotteryWinnerName(rawName, defaultName) : defaultName;
+}
+
 export function appendLotteryWinMessage(appendSystemMessage, seenKeys, record = {}, fallbackPrize = {}, options = {}) {
   if (typeof appendSystemMessage !== "function") return false;
-  const nick = getLotteryWinnerName(record, options.defaultName || "中奖用户");
-  const key = getLotteryRecordKey(record) || `${nick}:${getLotteryRewardName(record, fallbackPrize)}`;
+  const defaultName = options.defaultName || "中奖用户";
+  const rawNick = getLotteryWinnerName(record, "");
+  const nick = rawNick ? maskLotteryWinnerName(rawNick, defaultName) : defaultName;
+  const key = getLotteryRecordKey(record) || `${rawNick || defaultName}:${getLotteryRewardName(record, fallbackPrize)}`;
   if (key && seenKeys?.has(key)) return false;
   if (key) seenKeys?.add(key);
   const prizeName = getLotteryRewardName(record, fallbackPrize);
