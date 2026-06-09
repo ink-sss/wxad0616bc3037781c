@@ -113,9 +113,11 @@ Components in the uni-app source project are Vue single-file components under
 - Treating WeChat user avatar URLs such as `thirdwx.qlogo.cn` as normal
   downloadable images in canvas composition. Those domains may be absent from
   the Mini Program download whitelist, so poster code must not block on
-  `getImageInfo`/`downloadFile` for them. Prefer direct canvas image loading on
-  the current canvas. A cached temp-file avatar may be used only as fallback,
-  and must be discarded if the current canvas cannot load it.
+  `getImageInfo`/`downloadFile` for them. Prefer direct canvas image loading
+  for the first successful avatar render, then immediately convert that image
+  into a local temp-file cache and try the cached file first for later poster
+  canvases. A failed or empty temp-file avatar cache must be discarded before
+  retrying direct canvas image loading.
 - Reusing the same short image-load timeout for both avatar probes and poster
   template backgrounds. Avatar probes should fail fast, but invitation template
   backgrounds are larger local package images and need a longer canvas
