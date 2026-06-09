@@ -12,7 +12,9 @@
     }"
     :style="landscapeRootStyle"
   >
-    <view class="landscape-navbar-placeholder" />
+    <view class="landscape-navbar-placeholder">
+      <text class="landscape-navbar-title">{{ liveName || '直播间' }}</text>
+    </view>
     <!-- 视频主区域：播放器、兜底播放按钮、封面占位与结束/未开播蒙层 -->
     <view
       class="video-section"

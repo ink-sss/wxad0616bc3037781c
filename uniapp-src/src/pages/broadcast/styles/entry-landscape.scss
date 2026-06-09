@@ -14,10 +14,28 @@
 }
 
 .landscape-navbar-placeholder {
+  position: relative;
   width: 750rpx;
   height: var(--broadcast-nav-height, 0px);
   background: #fff;
   flex-shrink: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.landscape-navbar-title {
+  position: absolute;
+  left: 180rpx;
+  right: 180rpx;
+  bottom: 16rpx;
+  overflow: hidden;
+  color: #333333;
+  font-size: 32rpx;
+  font-weight: 500;
+  line-height: 44rpx;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* 视频区域 */
