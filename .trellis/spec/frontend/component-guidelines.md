@@ -121,3 +121,7 @@ Components in the uni-app source project are Vue single-file components under
   backgrounds are larger local package images and need a longer canvas
   `createImage` timeout. If a required template background fails, treat that
   render as failed instead of caching a fallback-colored poster.
+- Assuming every packaged static image path can be drawn directly by Mini
+  Program offscreen canvas. For invitation posters, if direct `createImage`
+  loading of `/pagesPlus/static/...` fails, call `getImageInfo` for the packaged
+  path and draw the returned local `path` before failing the render.

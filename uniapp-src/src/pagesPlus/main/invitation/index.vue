@@ -274,7 +274,6 @@ onMounted(async () => {
   });
   await renderQrcode();
   await renderPoster();
-  renderRemainingTemplatesInBackground();
 });
 
 onShareAppMessage(() => {
@@ -511,15 +510,7 @@ async function renderPosterTask(taskId) {
       qrcodeText: maskSensitiveText(posterPayload.qrcodeText),
       hasLink: !!posterPayload.link,
     });
-    if (!cachedShare) {
-      const sharePromise = renderShareCard(taskId, template, posterPayload, posterDebugOptions);
-      shareRenderPromise = sharePromise;
-      sharePromise.finally(() => {
-        if (shareRenderPromise === sharePromise) {
-          shareRenderPromise = null;
-        }
-      });
-    } else {
+    if (cachedShare) {
       shareImageSrc.value = shareReadyMap.value[templateId];
       recordDebugEvent("share_card_cache_hit", { taskId, templateId });
     }
@@ -543,6 +534,9 @@ async function renderPosterTask(taskId) {
     } else {
       recordDebugEvent("poster_cache_hit", { taskId, templateId });
     }
+    if (!cachedShare) {
+      startShareCardRender(taskId, template, posterPayload, posterDebugOptions);
+    }
   } finally {
     if (posterRenderTaskId.value === taskId) {
       posterRendering.value = false;
@@ -558,6 +552,17 @@ async function renderPosterTask(taskId) {
     }
   }
   // #endif
+}
+
+function startShareCardRender(taskId, template, posterPayload, posterDebugOptions) {
+  const sharePromise = renderShareCard(taskId, template, posterPayload, posterDebugOptions);
+  shareRenderPromise = sharePromise;
+  sharePromise.finally(() => {
+    if (shareRenderPromise === sharePromise) {
+      shareRenderPromise = null;
+    }
+  });
+  return sharePromise;
 }
 
 async function renderShareCard(taskId, template, posterPayload, posterDebugOptions) {
@@ -583,52 +588,6 @@ async function renderShareCard(taskId, template, posterPayload, posterDebugOptio
     shareImageSrc.value = "";
     recordDebugEvent("share_card_fail", normalizeError(error));
     console.warn("[Invitation] share image render fail:", error);
-  }
-}
-
-function renderRemainingTemplatesInBackground() {
-  const startIndex = activeIdx.value;
-  const indexes = templates.map((_, idx) => idx).filter((idx) => idx !== startIndex);
-  setTimeout(() => renderTemplatesInBackground(indexes), 500);
-}
-
-async function renderTemplatesInBackground(indexes = []) {
-  for (const idx of indexes) {
-    await renderTemplateInBackground(idx);
-  }
-}
-
-async function renderTemplateInBackground(idx) {
-  const template = templates[idx];
-  const templateId = template?.id || "";
-  if (!template || posterReadyMap.value[templateId]) return;
-  const posterPayload = {
-    ...payload.value,
-    displayTime: displayTime.value || "敬请期待",
-    link: payload.value.link || shareMiniProgramPath.value,
-    qrcodeText: shareMiniProgramPath.value,
-  };
-  try {
-    const startedAt = Date.now();
-    const shareFilePath = await createInvitationShareCardTempFile(template, posterPayload);
-    shareReadyMap.value = { ...shareReadyMap.value, [templateId]: shareFilePath };
-    recordDebugEvent("background_share_card_ready", {
-      templateId,
-      durationMs: Date.now() - startedAt,
-    });
-  } catch (error) {
-    recordDebugEvent("background_share_card_fail", { templateId, error: normalizeError(error) });
-  }
-  try {
-    const startedAt = Date.now();
-    const filePath = await createInvitationPosterTempFile(template, posterPayload);
-    posterReadyMap.value = { ...posterReadyMap.value, [templateId]: filePath };
-    recordDebugEvent("background_poster_ready", {
-      templateId,
-      durationMs: Date.now() - startedAt,
-    });
-  } catch (error) {
-    recordDebugEvent("background_poster_fail", { templateId, error: normalizeError(error) });
   }
 }
 

@@ -391,7 +391,7 @@ async function loadCanvasImage(canvas, src, options = {}, label = "image", loadO
     if (localImage) return localImage;
     return loadCanvasImageDirect(canvas, src, options, label, "remote-direct-fallback");
   }
-  return loadCanvasImageDirect(canvas, src, options, label, "direct");
+  return loadCanvasImageDirect(canvas, src, options, label, "direct", loadOptions);
 }
 
 async function resolveAvatarTempFilePath(src, options = {}, label = "avatar") {
@@ -442,8 +442,8 @@ async function createAvatarTempFilePath(src, options = {}, label = "avatar") {
   return filePath;
 }
 
-async function loadCanvasImageDirect(canvas, src, options = {}, label = "image", mode = "direct") {
-  const direct = await createCanvasImage(canvas, src, options, label, mode);
+async function loadCanvasImageDirect(canvas, src, options = {}, label = "image", mode = "direct", loadOptions = {}) {
+  const direct = await createCanvasImage(canvas, src, options, label, mode, loadOptions);
   if (direct) {
     emitPosterEvent(options, "image_load_success", { label, mode });
     return direct;
@@ -456,7 +456,7 @@ async function loadCanvasImageDirect(canvas, src, options = {}, label = "image",
     });
     return null;
   }
-  const localImage = await createCanvasImage(canvas, localPath, options, label, "local-fallback");
+  const localImage = await createCanvasImage(canvas, localPath, options, label, "local-fallback", loadOptions);
   emitPosterEvent(options, localImage ? "image_load_success" : "image_load_fail", {
     label,
     mode: "local-fallback",
@@ -498,7 +498,6 @@ function createCanvasImage(canvas, src, options = {}, label = "image", mode = "d
 
 async function resolveLocalImagePath(src, options = {}, label = "image") {
   const value = String(src || "");
-  if (!/^https?:\/\//.test(value)) return value;
   if (imagePathCache.has(value)) {
     const cached = imagePathCache.get(value);
     emitPosterEvent(options, "image_local_path_cache_hit", {
@@ -506,6 +505,14 @@ async function resolveLocalImagePath(src, options = {}, label = "image") {
       path: summarizeImageSource(cached),
     });
     return cached;
+  }
+  if (!/^https?:\/\//.test(value)) {
+    const infoPath = await resolvePackagedImagePath(value, options, label);
+    if (infoPath && infoPath !== value) {
+      imagePathCache.set(value, infoPath);
+      return infoPath;
+    }
+    return value;
   }
   try {
     const info = await withTimeout(
@@ -551,6 +558,32 @@ async function resolveLocalImagePath(src, options = {}, label = "image") {
     });
   }
   return "";
+}
+
+async function resolvePackagedImagePath(src, options = {}, label = "image") {
+  if (!src || /^wxfile:\/\//.test(String(src))) return src;
+  try {
+    const info = await withTimeout(
+      promisifyApi("getImageInfo", { src }, { preferUni: true }),
+      CANVAS_API_TIMEOUT,
+      "getImageInfo timeout",
+    );
+    if (info?.path) {
+      emitPosterEvent(options, "image_local_path_success", {
+        label,
+        mode: "packaged-getImageInfo",
+        path: summarizeImageSource(info.path),
+      });
+      return info.path;
+    }
+  } catch (error) {
+    emitPosterEvent(options, "image_get_info_fail", {
+      label,
+      mode: "packaged-getImageInfo",
+      error: normalizePosterError(error),
+    });
+  }
+  return src;
 }
 
 function canvasToTempFilePath(canvas) {
