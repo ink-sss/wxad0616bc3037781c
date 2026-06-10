@@ -79,6 +79,18 @@
       "style": {
         "navigationBarTitleText": "商户列表"
       }
+    },
+    {
+      "path": "pages/agreement/service",
+      "style": {
+        "navigationBarTitleText": "服务协议"
+      }
+    },
+    {
+      "path": "pages/agreement/privacy",
+      "style": {
+        "navigationBarTitleText": "隐私政策"
+      }
     }
   ],
 

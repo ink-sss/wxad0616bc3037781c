@@ -20,6 +20,7 @@
       <!-- #ifndef MP-WEIXIN -->
       <button class="primary" :loading="submitting" @tap="userLogin">微信一键登录</button>
       <!-- #endif -->
+      <button class="ghost" @tap="onNotLogin">暂不登录</button>
     </view>
 
     <view class="agreement" @tap="isRead = !isRead">
@@ -189,7 +190,7 @@ export default {
       this.userLogin(event)
     },
     xieyi(type) {
-      this.gotoPage('/pagesPlus/main/webview/ue?type=' + type)
+      this.gotoPage(type === 'service' ? '/pages/agreement/service' : '/pages/agreement/privacy')
     },
     onNotLogin() {
       redirectAfterSkippedH5Login(this.loginContext)

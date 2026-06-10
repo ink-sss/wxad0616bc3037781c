@@ -2,17 +2,17 @@
   <view
     v-if="visible"
     :class="['share-mask', activePanel === 'qrcode' ? 'mask-center' : '']"
-    @click="close"
   >
-    <view v-if="activePanel === 'main'" class="share-panel" @click.stop>
+    <view class="share-mask-close" @tap="close"></view>
+    <view v-if="activePanel === 'main'" class="share-panel" @tap.stop>
       <view class="share-header">
         <text class="share-title">分享至</text>
-        <view class="share-close" @click="close">
+        <view class="share-close" @tap.stop="close">
           <text class="close-x">✕</text>
         </view>
       </view>
       <view :class="['share-options', loadedMiniProgramShortLink ? 'share-options--three' : '']">
-        <view class="share-item" @click="onShare('invitation')">
+        <view class="share-item" @tap.stop="onShare('invitation')">
           <view class="share-icon invitation-bg">
             <image
               class="icon-svg"
@@ -22,7 +22,7 @@
           </view>
           <text class="share-label">生成邀请函</text>
         </view>
-        <view v-if="loadedMiniProgramShortLink" class="share-item" @click="onShare('link')">
+        <view v-if="loadedMiniProgramShortLink" class="share-item" @tap.stop="onShare('link')">
           <view class="share-icon link-bg">
             <image
               class="icon-svg"
@@ -32,7 +32,7 @@
           </view>
           <text class="share-label">复制链接</text>
         </view>
-        <view class="share-item" @click="onShare('qrcode')">
+        <view class="share-item" @tap.stop="onShare('qrcode')">
           <view class="share-icon qrcode-bg">
             <image
               class="icon-svg"
@@ -45,7 +45,7 @@
       </view>
     </view>
 
-    <view v-else-if="activePanel === 'link'" class="link-panel" @click.stop>
+    <view v-else-if="activePanel === 'link'" class="link-panel" @tap.stop>
       <view class="panel-header">
         <view class="panel-status">
           <view class="status-dot">
@@ -53,7 +53,7 @@
           </view>
           <text class="panel-status-text">{{ linkStatusText }}</text>
         </view>
-        <view class="panel-close" @click="close">
+        <view class="panel-close" @tap.stop="close">
           <text class="close-x">✕</text>
         </view>
       </view>
@@ -62,15 +62,15 @@
         <text class="link-text">{{ currentLink }}</text>
       </view>
 
-      <view class="primary-btn" @click="copyCurrentLink">
+      <view class="primary-btn" @tap.stop="copyCurrentLink">
         <text class="primary-btn-text">复制链接</text>
       </view>
     </view>
 
-    <view v-else-if="activePanel === 'qrcode'" class="qrcode-panel" @click.stop>
+    <view v-else-if="activePanel === 'qrcode'" class="qrcode-panel" @tap.stop>
       <view class="panel-header center">
         <text class="panel-title">直播间二维码</text>
-        <view class="panel-close" @click="close">
+        <view class="panel-close" @tap.stop="close">
           <text class="close-x">✕</text>
         </view>
       </view>
@@ -84,13 +84,13 @@
         />
       </view>
       <text class="qrcode-tip">长按或点击保存二维码 分享朋友圈</text>
-      <view class="primary-btn qrcode-save-btn" @click="saveQrcode">
+      <view class="primary-btn qrcode-save-btn" @tap.stop="saveQrcode">
         <text class="primary-btn-text">保存二维码</text>
       </view>
     </view>
 
     <!-- [2026-05-21] 微信右上角分享引导面板：H5 不能主动唤起分享，只能预设分享卡片后引导用户点右上角 ··· -->
-    <view v-else-if="activePanel === 'wechat-guide'" class="wechat-guide" @click.stop="close">
+    <view v-else-if="activePanel === 'wechat-guide'" class="wechat-guide" @tap.stop="close">
       <view class="wechat-guide-arrow"></view>
       <text class="wechat-guide-tip-1">点击右上角 <text class="wechat-guide-dots">···</text></text>
       <text class="wechat-guide-tip-2">选择「发送给朋友」或「分享到朋友圈」</text>
@@ -646,11 +646,21 @@ async function saveQrcode() {
   -webkit-backdrop-filter: blur(10rpx);
 }
 
+.share-mask-close {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+}
+
 .mask-center {
   align-items: center;
 }
 
 .share-panel {
+  position: relative;
+  z-index: 1;
   width: 750rpx;
   background: #fff;
   border-radius: 30rpx 30rpx 0 0;
@@ -720,6 +730,8 @@ async function saveQrcode() {
 }
 
 .link-panel {
+  position: relative;
+  z-index: 1;
   width: 750rpx;
   background: #fff;
   border-radius: 30rpx 30rpx 0 0;
@@ -758,6 +770,8 @@ async function saveQrcode() {
 }
 
 .qrcode-panel {
+  position: relative;
+  z-index: 1;
   width: 640rpx;
   background: #fff;
   border-radius: 30rpx;

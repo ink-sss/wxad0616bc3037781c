@@ -206,7 +206,7 @@ export default {
       })
     },
     xieyi(type) {
-      this.gotoPage('/pagesPlus/main/webview/ue?type=' + type)
+      this.gotoPage(type === 'service' ? '/pages/agreement/service' : '/pages/agreement/privacy')
     },
     changeMsg() {
       if (this.second > 0) {

@@ -1,0 +1,289 @@
+From 63b43e61a649f159a143e09a94a71f22f2e26874 Mon Sep 17 00:00:00 2001
+From: xiusin <826466266@qq.com>
+Date: Wed, 10 Jun 2026 18:29:11 +0800
+Subject: [PATCH] bug fix
+
+---
+ .../src/components/address-list-panel.vue     | 30 +++++++++++++------
+ .../src/components/bottom-sheet-popup.vue     | 14 +++++++--
+ uniapp-src/src/components/center-popup.vue    |  2 ++
+ .../components/LiveLandscapeStage.vue         |  1 +
+ .../components/LivePortraitStage.vue          |  1 +
+ .../broadcast/composables/useLivePurchase.js  |  1 -
+ .../main/invitation-record/index.vue          | 22 ++++++++------
+ .../src/pagesPlus/main/report/report-form.vue | 26 +++++++++++++---
+ 8 files changed, 71 insertions(+), 26 deletions(-)
+
+diff --git a/uniapp-src/src/components/address-list-panel.vue b/uniapp-src/src/components/address-list-panel.vue
+index 5bde4a38..81129836 100644
+--- a/uniapp-src/src/components/address-list-panel.vue
++++ b/uniapp-src/src/components/address-list-panel.vue
+@@ -1,5 +1,5 @@
+ <template>
+-  <view :class="['address-panel', pageMode ? 'address-panel-page' : '']">
++  <view :class="['address-panel', pageMode ? 'address-panel-page' : '']" @tap.stop>
+     <!-- 标题栏（弹窗模式） -->
+     <view v-if="!pageMode && title" class="address-panel-header">
+       <text class="address-panel-title">{{ title }}</text>
+@@ -43,7 +43,7 @@
+             v-for="item in list"
+             :key="item.id"
+             :class="['address-item', selectedId === item.id ? 'address-item-selected' : '']"
+-            @click="emit('select', item.id)"
++            @tap.stop="emit('select', item.id)"
+           >
+             <view class="address-item-top">
+               <view class="address-user-row">
+@@ -52,12 +52,12 @@
+                 <text v-if="item.tag" class="address-tag">{{ item.tag }}</text>
+               </view>
+               <view class="address-actions">
+-                <text class="address-edit" @click.stop="emit('edit', item)"
+-                  >✎</text
+-                >
+-                <text class="address-delete" @click.stop="onDelete(item)"
+-                  >删除</text
+-                >
++                <view class="address-action-btn" @tap.stop="emit('edit', item)">
++                  <text class="address-edit">✎</text>
++                </view>
++                <view class="address-action-btn address-action-delete" @tap.stop="onDelete(item)">
++                  <text class="address-delete">删除</text>
++                </view>
+               </view>
+             </view>
+             <text class="address-full">{{ item.fullAddress }}</text>
+@@ -271,10 +271,22 @@ function onDelete(item) {
+ .address-actions {
+   display: flex;
+   align-items: center;
+-  gap: 24rpx;
++  gap: 8rpx;
+   flex-shrink: 0;
+ }
+ 
++.address-action-btn {
++  min-width: 64rpx;
++  height: 56rpx;
++  display: flex;
++  align-items: center;
++  justify-content: center;
++}
++
++.address-action-delete {
++  min-width: 72rpx;
++}
++
+ .address-edit {
+   font-size: 34rpx;
+   color: #b3b3b3;
+diff --git a/uniapp-src/src/components/bottom-sheet-popup.vue b/uniapp-src/src/components/bottom-sheet-popup.vue
+index 385ee255..c8d6dbdd 100644
+--- a/uniapp-src/src/components/bottom-sheet-popup.vue
++++ b/uniapp-src/src/components/bottom-sheet-popup.vue
+@@ -20,9 +20,10 @@
+       ';'
+     "
+   >
+-    <view class="sheet-mask" @click="emit('close')">
+-      <view class="sheet-panel" :style="panelStyle" @click.stop>
+-        <view v-if="showClose" class="sheet-close" @click="emit('close')">
++    <view class="sheet-mask">
++      <view class="sheet-mask-close" @tap="emit('close')"></view>
++      <view class="sheet-panel" :style="panelStyle" @tap.stop>
++        <view v-if="showClose" class="sheet-close" @tap.stop="emit('close')">
+           <image
+             class="sheet-close-icon"
+             src="https://man.lqjy.cc/static/icons/close.svg"
+@@ -100,12 +101,19 @@ onBeforeUnmount(() => {
+   width: 100%;
+   height: 100%;
+   display: flex;
++  flex-direction: column;
+   align-items: flex-end;
+   justify-content: stretch;
+ }
+ 
++.sheet-mask-close {
++  width: 100%;
++  flex: 1;
++}
++
+ .sheet-panel {
+   width: 750rpx;
++  flex-shrink: 0;
+   display: flex;
+   flex-direction: column;
+   overflow: hidden;
+diff --git a/uniapp-src/src/components/center-popup.vue b/uniapp-src/src/components/center-popup.vue
+index 6ebef0d4..85dd0bc8 100644
+--- a/uniapp-src/src/components/center-popup.vue
++++ b/uniapp-src/src/components/center-popup.vue
+@@ -6,6 +6,7 @@
+     :duration="500"
+     :with-mask="true"
+     mask-color="rgba(0, 0, 0, 0.35)"
++    :z-index="zIndex"
+     :allow-overflow="true"
+     @close="emit('close')"
+   >
+@@ -67,6 +68,7 @@ const props = defineProps({
+   isDistributor: { type: Boolean, default: false },
+   distributorStatus: { type: Number, default: 0 },
+   enableShare: { type: Number, default: 1 },
++  zIndex: { type: Number, default: 80 },
+ });
+ 
+ const emit = defineEmits(["close", "action"]);
+diff --git a/uniapp-src/src/pages/broadcast/components/LiveLandscapeStage.vue b/uniapp-src/src/pages/broadcast/components/LiveLandscapeStage.vue
+index 67e3d07b..701c20a3 100644
+--- a/uniapp-src/src/pages/broadcast/components/LiveLandscapeStage.vue
++++ b/uniapp-src/src/pages/broadcast/components/LiveLandscapeStage.vue
+@@ -614,6 +614,7 @@
+       :is-distributor="isDistributor"
+       :distributor-status="distributorStatus"
+       :enable-share="roomSetting.enableShare"
++      :z-index="BUY_POPUP_Z_INDEX + 6"
+       @close="setShowCenterPopup(false)"
+       @action="onCenterAction"
+     />
+diff --git a/uniapp-src/src/pages/broadcast/components/LivePortraitStage.vue b/uniapp-src/src/pages/broadcast/components/LivePortraitStage.vue
+index 4d2fb6cc..163543e5 100644
+--- a/uniapp-src/src/pages/broadcast/components/LivePortraitStage.vue
++++ b/uniapp-src/src/pages/broadcast/components/LivePortraitStage.vue
+@@ -432,6 +432,7 @@
+       :is-distributor="isDistributor"
+       :distributor-status="distributorStatus"
+       :enable-share="roomSetting.enableShare"
++      :z-index="BUY_POPUP_Z_INDEX + 6"
+       @close="setShowCenterPopup(false)"
+       @action="onCenterAction"
+     />
+diff --git a/uniapp-src/src/pages/broadcast/composables/useLivePurchase.js b/uniapp-src/src/pages/broadcast/composables/useLivePurchase.js
+index 8d001a8c..b21b2268 100644
+--- a/uniapp-src/src/pages/broadcast/composables/useLivePurchase.js
++++ b/uniapp-src/src/pages/broadcast/composables/useLivePurchase.js
+@@ -562,7 +562,6 @@ export function useLivePurchase({
+ 
+   function onSelectBuyAddress(addrId) {
+     selectedAddressId.value = addrId;
+-    confirmBuyAddress();
+   }
+ 
+   function onAddBuyAddress() {
+diff --git a/uniapp-src/src/pagesPlus/main/invitation-record/index.vue b/uniapp-src/src/pagesPlus/main/invitation-record/index.vue
+index 2437b2d8..a311c475 100644
+--- a/uniapp-src/src/pagesPlus/main/invitation-record/index.vue
++++ b/uniapp-src/src/pagesPlus/main/invitation-record/index.vue
+@@ -69,12 +69,12 @@
+         </view>
+       </view>
+ 
+-      <view v-else-if="!loading" class="no-data">
+-        <image src="https://man.lqjy.cc/static/remote-icons/s-nuoyun-income-nodata.png" mode="aspectFit" />
++      <view v-else class="no-data">
++        <image class="no-data-image" src="https://man.lqjy.cc/static/remote-icons/s-nuoyun-income-nodata.png" mode="aspectFit" />
+         <text class="no-data-text">暂无邀请记录</text>
+       </view>
+ 
+-      <view v-if="loading" class="loading-text">加载中...</view>
++      <view v-if="loading && records.length" class="loading-text">加载中...</view>
+       <view v-else-if="finished && records.length" class="loading-text">没有更多了</view>
+     </scroll-view>
+   </view>
+@@ -433,18 +433,22 @@ onLoad(() => {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+-  margin-top: 160rpx;
++  justify-content: flex-start;
++  min-height: 760rpx;
++  padding-top: 190rpx;
++  box-sizing: border-box;
+ }
+ 
+-.no-data image {
+-  width: 320rpx;
+-  height: 320rpx;
++.no-data-image {
++  width: 220rpx;
++  height: 220rpx;
++  opacity: 0.72;
+ }
+ 
+ .no-data-text {
+-  margin-top: 16rpx;
++  margin-top: 34rpx;
+   font-size: 26rpx;
+-  color: #999;
++  color: #b8b8b8;
+ }
+ 
+ .loading-text {
+diff --git a/uniapp-src/src/pagesPlus/main/report/report-form.vue b/uniapp-src/src/pagesPlus/main/report/report-form.vue
+index 3cbee269..5a3a17b0 100644
+--- a/uniapp-src/src/pagesPlus/main/report/report-form.vue
++++ b/uniapp-src/src/pagesPlus/main/report/report-form.vue
+@@ -116,6 +116,16 @@ const submitting = ref(false);
+ const uploading = ref(false);
+ let uploadIdCounter = 0;
+ 
++function decodeOption(value) {
++  const text = value === undefined || value === null ? "" : String(value);
++  if (!text) return "";
++  try {
++    return decodeURIComponent(text);
++  } catch (_) {
++    return text;
++  }
++}
++
+ function appendQuery(params, key, value) {
+   const text = value === undefined || value === null ? "" : String(value);
+   if (text) params.push(key + "=" + encodeURIComponent(text));
+@@ -333,7 +343,7 @@ async function submit() {
+ 
+ onLoad((options) => {
+   type.value = options.type || "";
+-  typeLabel.value = options.typeLabel || "";
++  typeLabel.value = decodeOption(options.typeLabel);
+   liveId.value = options.liveId || "";
+   roomCode.value = options.roomCode || options.room_code || "";
+   tenantId.value = options.tenantId || options.tenant_id || "";
+@@ -341,9 +351,9 @@ onLoad((options) => {
+   customerId.value = options.customerId || options.customer_id || options.userId || options.user_id || "";
+   replayVideoId.value = options.replayVideoId || options.replay_video_id || options.videoId || options.video_id || "";
+   liveType.value = options.liveType || options.live_type || (options.replay === "1" ? "replay" : "");
+-  liveName.value = options.liveName || "";
+-  cover.value = options.cover || "";
+-  fromPath.value = options.fromPath || "";
++  liveName.value = decodeOption(options.liveName);
++  cover.value = decodeOption(options.cover);
++  fromPath.value = decodeOption(options.fromPath);
+ 
+   // [2026-05-13] liveId / roomCode / fromPath 缺失时从 live_room_ctx_v1 缓存兜底
+   if (!liveId.value || !roomCode.value || !fromPath.value) {
+@@ -433,12 +443,20 @@ onLoad((options) => {
+ 
+ .form-value,
+ .form-input {
++  min-width: 0;
+   font-size: 28rpx;
+   line-height: 40rpx;
+   color: rgba(0, 0, 0, 0.35);
+   text-align: right;
+ }
+ 
++.form-value {
++  max-width: 500rpx;
++  overflow: hidden;
++  text-overflow: ellipsis;
++  white-space: nowrap;
++}
++
+ .form-value-active {
+   color: #333;
+ }
+-- 
+2.50.1 (Apple Git-155)
+
