@@ -148,3 +148,9 @@ Components in the uni-app source project are Vue single-file components under
   images/canvases are runtime details. Cache exported poster/share file paths
   by template plus invitation payload and show that cached file immediately on
   re-entry; only rebuild when the cache key changes or no exported file exists.
+- Only caching the invitation poster that the user manually viewed. After the
+  first visible poster export succeeds, start a sequential background queue for
+  the remaining templates and cache each exported poster file with the same
+  template-plus-payload key. Re-entry must reuse those final files for every
+  template instead of asking the new page instance to decode untouched template
+  backgrounds again.

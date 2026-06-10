@@ -14,13 +14,18 @@ const avatarCanvasCache = new Map();
 const avatarTempFileCache = new Map();
 const posterFileCache = new Map();
 const shareFileCache = new Map();
+const posterFilePromiseCache = new Map();
 const canvasImageCache = new WeakMap();
+let posterFileQueuePromise = Promise.resolve();
 
 export function resetInvitationPosterRuntimeCache() {
   const snapshot = {
     imagePathCount: imagePathCache.size,
     avatarCanvasCount: avatarCanvasCache.size,
     avatarTempFileCount: avatarTempFileCache.size,
+    posterFileCount: posterFileCache.size,
+    shareFileCount: shareFileCache.size,
+    posterFilePromiseCount: posterFilePromiseCache.size,
   };
   imagePathCache.clear();
   avatarCanvasCache.clear();
@@ -37,6 +42,37 @@ export function setInvitationPosterFileCache(cacheKey, filePath) {
   if (!key || !filePath) return "";
   posterFileCache.set(key, filePath);
   return filePath;
+}
+
+export async function resolveInvitationPosterFileCache(cacheKey, createFile) {
+  const key = String(cacheKey || "");
+  if (!key || typeof createFile !== "function") {
+    return { filePath: "", cached: false, shared: false };
+  }
+  const cached = getInvitationPosterFileCache(key);
+  if (cached) {
+    return { filePath: cached, cached: true, shared: false };
+  }
+  if (posterFilePromiseCache.has(key)) {
+    const filePath = await posterFilePromiseCache.get(key);
+    return { filePath, cached: false, shared: true };
+  }
+  const promise = posterFileQueuePromise
+    .catch(() => {})
+    .then(() => getInvitationPosterFileCache(key) || createFile())
+    .then((filePath) => {
+      if (filePath) {
+        posterFileCache.set(key, filePath);
+      }
+      return filePath || "";
+    })
+    .finally(() => {
+      posterFilePromiseCache.delete(key);
+    });
+  posterFilePromiseCache.set(key, promise);
+  posterFileQueuePromise = promise.catch(() => {});
+  const filePath = await promise;
+  return { filePath, cached: false, shared: false };
 }
 
 export function getInvitationShareFileCache(cacheKey) {
