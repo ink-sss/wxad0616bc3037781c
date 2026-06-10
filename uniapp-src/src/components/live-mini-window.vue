@@ -59,36 +59,6 @@
 
         <!-- #ifndef MP-WEIXIN -->
         <view class="live-mini__touch-layer"></view>
-        <!-- #endif -->
-        <!-- #ifdef MP-WEIXIN -->
-        <cover-view class="live-mini__touch-layer" @tap.stop="restoreLive"></cover-view>
-        <cover-view
-          class="live-mini__badge"
-          @touchstart.stop="noopMiniTouch"
-          @touchend.stop="restoreLive"
-          @tap.stop="restoreLive"
-        >
-          <cover-view class="live-mini__badge-text">返回直播</cover-view>
-        </cover-view>
-        <cover-view
-          class="live-mini__close"
-          @touchstart.stop="noopMiniTouch"
-          @touchend.stop="closeMini"
-          @tap.stop="closeMini"
-        >
-          ×
-        </cover-view>
-        <cover-view
-          class="live-mini__play-state"
-          v-if="hasPlayableSource && !isPlaying"
-          @touchstart.stop="noopMiniTouch"
-          @touchend.stop="playMini"
-          @tap.stop="playMini"
-        >
-          <cover-view class="live-mini__play-text">▶</cover-view>
-        </cover-view>
-        <!-- #endif -->
-        <!-- #ifndef MP-WEIXIN -->
         <view
           class="live-mini__badge"
           @touchstart.stop="noopMiniTouch"
@@ -121,6 +91,43 @@
         <text class="live-mini__restore">返回直播</text>
       </view> -->
     </view>
+    <!-- #ifdef MP-WEIXIN -->
+    <cover-view
+      v-if="visible"
+      class="live-mini-cover"
+      :style="miniCoverStyle"
+      @touchstart.stop="onDragStart"
+      @touchmove.stop.prevent="onDragMove"
+      @touchend.stop="onDragEnd"
+    >
+      <cover-view class="live-mini__touch-layer" @tap.stop="restoreLive"></cover-view>
+      <cover-view
+        class="live-mini__badge"
+        @touchstart.stop="noopMiniTouch"
+        @touchend.stop="restoreLive"
+        @tap.stop="restoreLive"
+      >
+        <cover-view class="live-mini__badge-text">返回直播</cover-view>
+      </cover-view>
+      <cover-view
+        class="live-mini__close"
+        @touchstart.stop="noopMiniTouch"
+        @touchend.stop="closeMini"
+        @tap.stop="closeMini"
+      >
+        ×
+      </cover-view>
+      <cover-view
+        class="live-mini__play-state"
+        v-if="hasPlayableSource && !isPlaying"
+        @touchstart.stop="noopMiniTouch"
+        @touchend.stop="playMini"
+        @tap.stop="playMini"
+      >
+        <cover-view class="live-mini__play-text">▶</cover-view>
+      </cover-view>
+    </cover-view>
+    <!-- #endif -->
     <live-mini-debug-float
       :show="debugVisible"
       :summary="debugSummary"
@@ -165,6 +172,7 @@ const {
   displayTitle,
   statusText,
   miniStyle,
+  miniCoverStyle,
   closeMini,
   restoreLive,
   playMini,
@@ -203,6 +211,13 @@ function noopMiniTouch() {}
   overflow: hidden;
   background: #111;
   box-shadow: 0 12rpx 34rpx rgba(0, 0, 0, 0.28);
+}
+
+.live-mini-cover {
+  position: fixed;
+  z-index: 999;
+  width: 224rpx;
+  height: 316rpx;
 }
 
 .live-mini__video-wrap {
@@ -298,6 +313,8 @@ function noopMiniTouch() {}
   background: rgba(0, 0, 0, 0.5);
   color: #fff;
   font-size: 28rpx;
+  line-height: 38rpx;
+  text-align: center;
 }
 
 .live-mini__play-state {
@@ -313,12 +330,34 @@ function noopMiniTouch() {}
   display: flex;
   align-items: center;
   justify-content: center;
+  line-height: 54rpx;
+  text-align: center;
 }
 
 .live-mini__play-text {
   color: #fff;
   font-size: 28rpx;
+  line-height: 54rpx;
   margin-left: 4rpx;
+}
+
+.live-mini-cover .live-mini__badge {
+  display: block;
+  min-width: 72rpx;
+  line-height: 34rpx;
+  text-align: center;
+}
+
+.live-mini-cover .live-mini__badge-text {
+  display: block;
+  line-height: 34rpx;
+  text-align: center;
+}
+
+.live-mini-cover .live-mini__close,
+.live-mini-cover .live-mini__play-state,
+.live-mini-cover .live-mini__play-text {
+  display: block;
 }
 
 .live-mini__footer {

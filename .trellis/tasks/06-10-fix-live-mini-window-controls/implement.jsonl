@@ -1,0 +1,4 @@
+{"file":".trellis/spec/frontend/directory-structure.md","reason":"Defines uni-app source boundaries and route/component organization for frontend edits."}
+{"file":".trellis/spec/frontend/component-guidelines.md","reason":"Covers component styling patterns and Mini Program fixed CTA layering constraints."}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Defines frontend forbidden patterns and mp-weixin validation expectations."}
+{"file":".trellis/spec/guides/index.md","reason":"Shared pre-modification thinking guide for scoped code changes."}

@@ -310,6 +310,12 @@ export function useLiveMiniWindow(props = {}) {
     left: `${position.value.left}px`,
     top: `${position.value.top}px`,
   }))
+  const miniCoverStyle = computed(() => ({
+    left: `${position.value.left}px`,
+    top: `${position.value.top}px`,
+    width: `${rpxToPx(MINI_WIDTH_RPX)}px`,
+    height: `${rpxToPx(MINI_HEIGHT_RPX)}px`,
+  }))
   const debugVisible = computed(() => false)
   const debugSummary = computed(() => [
     `visible:${visible.value ? 1 : 0}`,
@@ -931,6 +937,7 @@ export function useLiveMiniWindow(props = {}) {
     displayTitle,
     statusText,
     miniStyle,
+    miniCoverStyle,
     closeMini,
     restoreLive,
     playMini,
