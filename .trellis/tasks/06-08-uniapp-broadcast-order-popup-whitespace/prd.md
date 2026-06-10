@@ -2,7 +2,7 @@
 
 ## Goal
 
-Reduce the excessive middle whitespace in the live broadcast order popup by 40rpx so the popup is not unnecessarily tall on the broadcast entry page.
+Remove the excessive white space in the live broadcast order popup so the popup fits its content while keeping a 30rpx gap above the footer area.
 
 ## What I Already Know
 
@@ -13,14 +13,16 @@ Reduce the excessive middle whitespace in the live broadcast order popup by 40rp
 
 ## Requirements
 
-- Reduce the visible order popup height by 40rpx.
+- Remove the extra white area between the price rows and the footer, keeping only 30rpx spacing.
+- Keep a maximum popup height so long content can still scroll within the bottom sheet.
 - Keep product info, quantity controls, remark, coupon, price rows, and footer behavior unchanged.
 - Scope edits to the uni-app source project.
 
 ## Acceptance Criteria
 
-- [ ] The bottom order popup height is 40rpx shorter than the current `84vh` layout.
-- [ ] The popup internal container uses the same height as the `wd-popup` custom style.
+- [ ] The bottom order popup uses content height instead of forcing the current `84vh` layout.
+- [ ] The scroll content keeps a 30rpx bottom gap before the footer.
+- [ ] The popup still caps at 84vh and allows content scrolling when needed.
 - [ ] No unrelated business logic, API, or route behavior is changed.
 
 ## Out Of Scope

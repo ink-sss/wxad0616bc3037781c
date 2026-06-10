@@ -186,6 +186,7 @@ const currentLink = ref("");
 const loadedShareUrl = ref("");
 const loadedShareCode = ref("");
 const shareUrlLoading = ref(false);
+const shareUrlRequestKey = ref("");
 
 const miniProgramRoomLink = computed(() => {
   const params = [];
@@ -256,9 +257,14 @@ watch(
 );
 
 watch(
-  () => props.visible,
-  (val) => {
-    if (val) {
+  [
+    () => props.visible,
+    () => props.roomId,
+    () => props.isDistributor,
+    () => props.distributorStatus,
+  ],
+  ([visible]) => {
+    if (visible) {
       // [2026-05-21] 每次打开弹窗都重新拉 distributorShareUrl（不缓存）
       //   该接口走进来的前提是付父组件已用 isDistributor && status===1 筛过按钮可见性，
       //   这里不再重复权限判断；如后端返错，降级使用当前小程序直播间路径
@@ -273,14 +279,22 @@ watch(
       loadedShareCode.value = "";
     }
   },
+  { immediate: true },
 );
 
 async function loadShareUrl() {
+  const rid = Number(props.roomId);
+  if (!canUseDistributorShare.value || !rid) {
+    loadedShareUrl.value = "";
+    loadedShareCode.value = "";
+    shareUrlRequestKey.value = "";
+    return;
+  }
+  const requestKey = `${rid}:${props.isDistributor ? 1 : 0}:${Number(props.distributorStatus)}`;
+  if (shareUrlLoading.value && shareUrlRequestKey.value === requestKey) return;
   loadedShareUrl.value = "";
   loadedShareCode.value = "";
-  if (!canUseDistributorShare.value) return;
-  const rid = Number(props.roomId);
-  if (!rid) return;
+  shareUrlRequestKey.value = requestKey;
   shareUrlLoading.value = true;
   try {
     const res = await getLiveDistributorShareUrl(rid);

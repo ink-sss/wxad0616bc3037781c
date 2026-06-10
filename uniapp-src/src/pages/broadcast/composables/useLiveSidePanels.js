@@ -1,6 +1,7 @@
 import { computed, ref } from "vue";
 import { navigateToPrizeRecord } from "../../../utils/route-navigation.js";
 import { appendLiveRoomQuery, mergeLiveRoomContext } from "../../../utils/live-room-context.js";
+import { getWeixinApi } from "../../../platform/weixin/runtime.js";
 
 /**
  * 直播侧边弹窗、个人中心、投诉和签到状态。
@@ -8,7 +9,7 @@ import { appendLiveRoomQuery, mergeLiveRoomContext } from "../../../utils/live-r
  */
 export function getUniApi(explicitUni) {
   if (explicitUni) return explicitUni;
-  return uni;
+  return getWeixinApi("", { preferUni: true });
 }
 
 export function isTruthyFlag(value) {
@@ -210,20 +211,28 @@ export function useLiveSidePanels({
 
   async function loadCenterPopupData() {
     try {
-      const [data, orderStats, refundStats] = await Promise.all([
-        getCenter(),
-        getOrderUnreadStats(),
-        getRefundUnreadStats(),
-      ]);
+      const data = await getCenter();
       if (data?.customer) {
         userStore.setUserInfo({
           ...(userStore.userInfo || {}),
           ...data.customer,
         });
       }
-      centerPopupOrderStats.value = buildCenterStats(orderStats, refundStats);
+      await refreshCenterOrderStats();
     } catch (err) {
       logger.error("[Live] loadCenterPopupData fail:", err);
+    }
+  }
+
+  async function refreshCenterOrderStats() {
+    try {
+      const [orderStats, refundStats] = await Promise.all([
+        getOrderUnreadStats(),
+        getRefundUnreadStats(),
+      ]);
+      centerPopupOrderStats.value = buildCenterStats(orderStats, refundStats);
+    } catch (err) {
+      logger.error("[Live] refreshCenterOrderStats fail:", err);
     }
   }
 
@@ -340,6 +349,7 @@ export function useLiveSidePanels({
     showSignPopup,
     toggleCenter,
     loadCenterPopupData,
+    refreshCenterOrderStats,
     onCenterAction,
     goReport,
     onSignedDone,

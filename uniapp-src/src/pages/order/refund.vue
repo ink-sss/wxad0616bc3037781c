@@ -203,6 +203,10 @@ function syncRoomId(source = {}) {
   if (nextRoomId) roomId.value = nextRoomId;
 }
 
+function getErrorMessage(error, fallback = "图片上传失败") {
+  return error?.message || error?.errMsg || error?.msg || error?.code || error?.statusCode || fallback;
+}
+
 async function loadOrderInfo(id) {
   try {
     const data = await getOrderDetail(id);
@@ -330,7 +334,7 @@ async function uploadImages(filePaths = [], tempFiles = []) {
           (item) => item?.id !== uploadId,
         );
         uni.showToast({
-          title: error?.message || "图片上传失败",
+          title: String(getErrorMessage(error)),
           icon: "none",
         });
       }

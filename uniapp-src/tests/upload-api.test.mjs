@@ -144,6 +144,61 @@ test("business uploads use H5 blob PUT without platform upload fallback", async 
   }
 });
 
+test("business uploads read H5 blob filePath when tempFiles lacks File object", async () => {
+  const originalFetch = globalThis.fetch;
+  const originalXmlHttpRequest = globalThis.XMLHttpRequest;
+  const putCalls = [];
+  const uploadFileFallbackCalls = [];
+  globalThis.__h5Post = async () => ({
+    uploadUrl: "https://oss.example.test/presigned",
+    fileUrl: "/uploads/refund.jpg",
+  });
+  globalThis.__putFileToPresignedUrl = async (...args) => {
+    uploadFileFallbackCalls.push(args);
+    return { statusCode: 200 };
+  };
+  const file = new Blob(["fake-image"], { type: "image/jpeg" });
+  globalThis.fetch = async (url) => {
+    assert.equal(url, "blob:http://localhost/fake");
+    return {
+      ok: true,
+      blob: async () => file,
+    };
+  };
+  globalThis.XMLHttpRequest = class {
+    open(method, url) {
+      this.method = method;
+      this.url = url;
+    }
+    setRequestHeader(key, value) {
+      this.headers = { ...(this.headers || {}), [key]: value };
+    }
+    send(body) {
+      putCalls.push({ method: this.method, url: this.url, headers: this.headers, body });
+      this.status = 200;
+      this.readyState = 4;
+      this.onload?.();
+    }
+  };
+
+  try {
+    const { uploadFileWithComplaintUploadUrl } = await loadUploadModule();
+    await uploadFileWithComplaintUploadUrl({
+      filePath: "blob:http://localhost/fake",
+      fileName: "refund.jpg",
+      contentType: "image/jpeg",
+      data: { orderId: 123, roomId: 88 },
+    });
+
+    assert.equal(putCalls.length, 1);
+    assert.equal(putCalls[0].body, file);
+    assert.equal(uploadFileFallbackCalls.length, 0);
+  } finally {
+    globalThis.fetch = originalFetch;
+    globalThis.XMLHttpRequest = originalXmlHttpRequest;
+  }
+});
+
 test("refund voucher upload forwards roomId into unified upload metadata", async () => {
   const uploadCalls = [];
   globalThis.__h5Get = async () => ({});

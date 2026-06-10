@@ -1,7 +1,14 @@
 import { redirectToNativeLogin } from '../services/h5-auth-context.js';
+import { buildRequestIdentityHeaders } from './request-identity-headers.js';
 
 function isObject(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
+export function buildRequestHeaders(method) {
+  const header = buildRequestIdentityHeaders();
+  if (method === 'POST') header['content-type'] = 'application/json;charset=UTF-8';
+  return header;
 }
 
 function withCommonParams(vm, params = {}, includeSourceClient = false) {
@@ -27,7 +34,7 @@ function requestByContext(vm, options) {
     data,
     dataType: 'json',
     method: options.method,
-    header: options.method === 'POST' ? { 'content-type': 'application/json;charset=UTF-8' } : undefined,
+    header: buildRequestHeaders(options.method),
     success(response) {
       if (response.statusCode !== 200 || !isObject(response.data)) return false;
 

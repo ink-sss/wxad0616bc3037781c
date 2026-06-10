@@ -99,6 +99,12 @@ Components in the uni-app source project are Vue single-file components under
   declarations on the same node or child component can make stale panels look
   visible. For live-room tab panels and bottom bars, prefer `v-if`/`wx:if` so
   inactive panels are destroyed instead of hidden.
+- Placing critical fixed CTA controls under Mini Program native components or
+  persistent popup wrappers. If a page can be reached from live video, map the
+  mp-weixin CTA layer to `cover-view`, destroy closed popup components with
+  `v-if`, and keep the `cover-view` styling to conservative absolute
+  positioning plus `background-color`/`line-height` instead of relying on
+  flex-only layout or gradients.
 - Rendering Canvas-designed poster slots as layered DOM with percentage width
   and height for square assets. In Mini Program invitation posters, avatar and
   QR code slots must be sized from the poster display width and then applied as

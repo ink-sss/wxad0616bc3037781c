@@ -2,10 +2,11 @@ import { computed, ref } from "vue";
 import { getProductDetail } from "@/api/product.js";
 import { navigatePaymentSuccessOrderDetail } from "@/services/order-payment-navigation";
 import { handleCreatedOrderPaymentCancel } from "@/services/order-payment-cancel.js";
+import { getWeixinApi } from "@/platform/weixin/runtime.js";
 
 export function getUniApi(explicitUni) {
   if (explicitUni) return explicitUni;
-  return uni;
+  return getWeixinApi("", { preferUni: true });
 }
 
 export function mapAddressItem(item = {}) {
@@ -156,6 +157,7 @@ export function useLivePurchase({
   loadBuyContext,
   clearBuyContext,
   onOrderCreated,
+  onPendingOrderChanged,
   sendBuyReminder,
   roomSetting,
   roomGroupType,
@@ -433,6 +435,7 @@ export function useLivePurchase({
       }
       createdOrderNo = orderRes.orderNo;
       pendingOrderId.value = orderRes.orderId || orderRes.ID || 0;
+      onPendingOrderChanged?.({ orderRes, orderId: pendingOrderId.value, orderNo: orderRes.orderNo });
       const payResult = await executeYeepayPayment(orderRes.orderNo, {
         roomCode: roomCode.value,
       });

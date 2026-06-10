@@ -87,6 +87,41 @@ function putBlobToPresignedUrl(url, file, contentType) {
   return Promise.reject(new Error('当前环境不支持文件上传'))
 }
 
+function canReadPathAsBlob(filePath = '') {
+  return /^(blob:|data:)/i.test(String(filePath || ''))
+}
+
+function readPathAsBlob(filePath = '') {
+  if (!canReadPathAsBlob(filePath)) return Promise.resolve(null)
+  if (typeof fetch === 'function') {
+    return fetch(filePath)
+      .then((response) => {
+        if (!response.ok) throw new Error('读取图片文件失败')
+        return response.blob()
+      })
+      .catch(() => readPathAsBlobWithXhr(filePath))
+  }
+  return readPathAsBlobWithXhr(filePath)
+}
+
+function readPathAsBlobWithXhr(filePath = '') {
+  if (typeof XMLHttpRequest === 'undefined') return Promise.resolve(null)
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest()
+    xhr.open('GET', filePath, true)
+    xhr.responseType = 'blob'
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        resolve(xhr.response)
+        return
+      }
+      reject(new Error('读取图片文件失败'))
+    }
+    xhr.onerror = () => reject(new Error('读取图片文件失败'))
+    xhr.send()
+  })
+}
+
 function firstValue(source = {}, ...keys) {
   for (const key of keys) {
     const value = source?.[key]
@@ -159,8 +194,9 @@ export async function uploadFileWithComplaintUploadUrl(payload = {}) {
   const { data, uploadUrl, fileUrl } = normalizeUploadInfo(await getUploadUrl(applyRoomIdAliases(requestData)))
   if (!uploadUrl || !fileUrl) throw new Error('获取上传地址失败')
 
-  if (isBlobLike(payload.file)) {
-    await putBlobToPresignedUrl(uploadUrl, payload.file, contentType)
+  const h5File = isBlobLike(payload.file) ? payload.file : await readPathAsBlob(filePath)
+  if (h5File) {
+    await putBlobToPresignedUrl(uploadUrl, h5File, contentType)
   } else {
     await putFileToPresignedUrl(uploadUrl, filePath, {
       contentType,

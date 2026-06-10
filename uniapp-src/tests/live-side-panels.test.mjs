@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { buildCenterStats } from "../src/pages/broadcast/composables/useLiveSidePanels.js";
+import { buildCenterStats, useLiveSidePanels } from "../src/pages/broadcast/composables/useLiveSidePanels.js";
 
 test("buildCenterStats maps H5 unread stat fields", () => {
   assert.deepEqual(
@@ -58,4 +58,50 @@ test("buildCenterStats maps missing or blank values to zero", () => {
     ),
     { waitPay: 0, waitShip: 0, waitReceive: 0, refunding: 0 },
   );
+});
+
+test("refreshCenterOrderStats updates pending payment badge data", async () => {
+  const panels = useLiveSidePanels({
+    liveId: { value: 77 },
+    roomCode: { value: "room-code" },
+    roomCurrentTermId: { value: 99 },
+    myUserId: { value: 100 },
+    liveTenantId: { value: 12 },
+    shareCode: { value: "" },
+    liveBindId: { value: "" },
+    isReplay: { value: false },
+    replayCurrentVideoId: { value: 0 },
+    anchorName: { value: "anchor" },
+    anchorAvatar: { value: "" },
+    userStore: {
+      token: "token",
+      userInfo: {},
+      setUserInfo(value) {
+        this.userInfo = value;
+      },
+    },
+    getLiveRedirectUrl: () => "/pages/broadcast/entry?roomCode=room-code",
+    isDebugLocalLogin: () => false,
+    ensureBuyAddressLoaded: async () => {},
+    addressPopupSource: { value: "" },
+    showAddressPopup: { value: false },
+    getCenter: async () => ({ customer: { nickname: "viewer" } }),
+    getOrderUnreadStats: async () => ({ unpay: "2", unsend: 0, unreceive: 0 }),
+    getRefundUnreadStats: async () => ({ refund: 0 }),
+    checkSigned: async () => ({}),
+    uniApi: {
+      navigateTo() {},
+      showToast() {},
+    },
+    logger: {
+      error() {},
+      warn() {},
+    },
+  });
+
+  assert.equal(panels.centerPopupOrderStats.value.waitPay, 0);
+
+  await panels.refreshCenterOrderStats();
+
+  assert.equal(panels.centerPopupOrderStats.value.waitPay, 2);
 });

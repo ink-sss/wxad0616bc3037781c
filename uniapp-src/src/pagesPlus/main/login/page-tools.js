@@ -71,11 +71,11 @@ const DEVTOOLS_PROFILE = {
 }
 
 const DEVTOOLS_LOGIN_SESSION = {
-  token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b21lcklkIjo4NzQsInRlbmFudElkIjoxNSwib3BlbklkIjoib3QtRm4zWjRyMmUwaU42VXB1VGwxTUdVeXNnOCIsInVuaW9uSWQiOiIiLCJwaG9uZSI6IiIsIm5pY2tuYW1lIjoiaW5rIiwiYnVmZmVyVGltZSI6ODY0MDAsImlzcyI6InFtUGx1cyIsImF1ZCI6WyJINSJdLCJleHAiOjE3ODEzMTkyNzMsIm5iZiI6MTc4MDcxNDQ3M30.fAC4f3PLC9RmmZSroauQ3V9Wfjf3HmTlrSVJcM6QG_Y',
-  user_id: 874,
+  token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b21lcklkIjo4ODQsInRlbmFudElkIjoxNSwib3BlbklkIjoiIiwidW5pb25JZCI6Im9NeDFVMmZQZmVNRTlTWU5jS29kRThDVzJFUFkiLCJwaG9uZSI6IiIsIm5pY2tuYW1lIjoiaW5rIiwiYnVmZmVyVGltZSI6ODY0MDAsImlzcyI6InFtUGx1cyIsImF1ZCI6WyJINSJdLCJleHAiOjE3ODE2NjQwMTUsIm5iZiI6MTc4MTA1OTIxNX0.BmUA7oOYNRvkb4RTQ__HDLc42TkKjPCJamLKtTCjpHY',
+  user_id: 884,
   open_id: 'ot-Fn3Z4r2e0iN6UpuTl1MGUysg8',
-  im_user_id: 'customer_874',
-  im_user_sig: 'YWMtC7JZFGFTEfGl5qtxAIs4lxDcftnmIkpPnhC-J8NjAz5dDO8QYVER8b-J5xmES75EAwMAAAGemtqGyQABUYC25uR8ZjJfZn7jKdGZSv4KAqure6IJNcH7iqREAYhGPg',
+  im_user_id: 'customer_884',
+  im_user_sig: 'YWMtthuFrmR1EfGO_UW_jQLOQBDcftnmIkpPnhC-J8NjAz7Jf3SwY-UR8YbLLxRUuu46AwMAAAGer2bgUAABUYCN1BVSQZHZpztaKdOX4sDn-RqVqMbPADWGoyUK08u8lw',
   shop_supplier_id: 15,
   msg: '登录成功',
 }

@@ -17,6 +17,7 @@ const ref = (value) => ({ value });
 const computed = (getter) => ({ get value() { return getter(); } });
 `)
     .replace('import { getProductDetail } from "@/api/product.js";', "const getProductDetail = async () => null;")
+    .replace('import { navigatePaymentSuccessOrderDetail } from "@/services/order-payment-navigation";', "const navigatePaymentSuccessOrderDetail = () => {};")
     .replace('import { handleCreatedOrderPaymentCancel } from "@/services/order-payment-cancel.js";', `
 function isPaymentCancelError(err = {}) {
   const text = [err?.message, err?.errMsg, err?.err_msg, err?.code].filter(Boolean).join(" ");
@@ -32,7 +33,8 @@ function handleCreatedOrderPaymentCancel({ err, orderNo, roomCode, uniApi }) {
   uniApi.showToast({ title: "用户取消支付", icon: "none" });
   return true;
 }
-`);
+`)
+    .replace('import { getWeixinApi } from "@/platform/weixin/runtime.js";', "const getWeixinApi = () => null;");
   const modulePath = join(tempDir, "useLivePurchase.mjs");
   await writeFile(modulePath, source, "utf8");
   return import(pathToFileURL(modulePath).href);
@@ -105,6 +107,7 @@ test("live purchase payment cancel opens pending order list", async () => {
   const { useLivePurchase } = await loadLivePurchaseModule();
   const navigations = [];
   const toasts = [];
+  const pendingOrderChanges = [];
   const state = useLivePurchase({
     liveId: { value: 77 },
     roomCode: { value: "room-code" },
@@ -132,6 +135,9 @@ test("live purchase payment cancel opens pending order list", async () => {
     loadBuyContext: () => null,
     clearBuyContext: () => {},
     onOrderCreated: () => {},
+    onPendingOrderChanged: (payload) => {
+      pendingOrderChanges.push(payload);
+    },
     sendBuyReminder: async () => {},
     roomSetting: { value: { buyReminder: 1 } },
     roomGroupType: { value: 0 },
@@ -160,6 +166,9 @@ test("live purchase payment cancel opens pending order list", async () => {
 
   assert.deepEqual(navigations, [
     { url: "/pages/order/list?status=unpay&roomCode=room-code" },
+  ]);
+  assert.deepEqual(pendingOrderChanges, [
+    { orderRes: { orderNo: "NO1", orderId: 77 }, orderId: 77, orderNo: "NO1" },
   ]);
   assert.equal(toasts.some((item) => item.title === "下单失败"), false);
   assert.equal(toasts.at(-1)?.title, "用户取消支付");

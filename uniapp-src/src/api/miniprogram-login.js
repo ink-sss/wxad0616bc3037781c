@@ -3,6 +3,7 @@ import { getRuntimeConfig } from '../utils/runtime-config.js'
 
 export const MINIPROGRAM_LOGIN_APP_ID = 'wx9ea83e805b82f59d'
 const OPEN_ID_KEYS = ['mini_program_open_id', 'open_id', 'openId', 'openid']
+const UNION_ID_KEYS = ['mini_program_union_id', 'union_id', 'unionId', 'unionid', 'wechatUnionid']
 const IM_USER_ID_KEYS = ['im_user_id', 'imUserId']
 const IM_USER_SIG_KEYS = ['im_user_sig', 'imUserSig']
 
@@ -46,6 +47,16 @@ export function getStoredMiniProgramOpenId() {
   return ''
 }
 
+export function getStoredMiniProgramUnionId() {
+  try {
+    for (const key of UNION_ID_KEYS) {
+      const value = uni.getStorageSync(key)
+      if (value) return value
+    }
+  } catch (error) {}
+  return ''
+}
+
 export function persistMiniProgramOpenId(openId) {
   if (!openId) return ''
   try {
@@ -61,9 +72,27 @@ export function persistMiniProgramOpenId(openId) {
   return openId
 }
 
+export function persistMiniProgramUnionId(unionId) {
+  if (!unionId) return ''
+  try {
+    UNION_ID_KEYS.forEach((key) => uni.setStorageSync(key, unionId))
+  } catch (error) {}
+  try {
+    const app = getApp()
+    if (app?.globalData) {
+      app.globalData.union_id = unionId
+      app.globalData.unionId = unionId
+      app.globalData.wechatUnionid = unionId
+    }
+  } catch (error) {}
+  return unionId
+}
+
 export function persistMiniProgramLoginSession(data = {}) {
   const openId = data.open_id || data.openId || data.openid || ''
   persistMiniProgramOpenId(openId)
+  const unionId = data.union_id || data.unionId || data.unionid || data.wechatUnionid || ''
+  persistMiniProgramUnionId(unionId)
   const imUserId = data.im_user_id || data.imUserId || ''
   const imUserSig = data.im_user_sig || data.imUserSig || ''
   try {

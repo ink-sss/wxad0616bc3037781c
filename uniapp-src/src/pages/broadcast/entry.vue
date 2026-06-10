@@ -440,6 +440,7 @@ let pauseLivePlaybackForMiniWindow = () => {};
 let restoreLivePlaybackFromMiniWindow = () => {};
 let applyMiniResumeOptions = () => false;
 let applyProductHotOrder = () => false;
+let refreshCenterOrderStats = () => {};
 const helperAccessDeniedUnionId = () => accessDeniedUnionId.value;
 const entryHelpers = useLiveEntryHelpers({
   API_BASE, roomCode, liveId, liveName, liveCover, mode, liveTenantId,
@@ -463,15 +464,18 @@ const {
 	  deleteAddress, confirmOrder, createOrder, getUsableCoupons, executeYeepayPayment, importWxAddress, saveBuyContext, loadBuyContext,
 	  clearBuyContext,
 	  onOrderCreated: ({ productId, quantity }) => applyProductHotOrder(productId, quantity),
+	  onPendingOrderChanged: () => refreshCenterOrderStats(),
   sendBuyReminder, roomSetting, roomGroupType, mode, userStore,
 });
 const {
   showLiveReportPopup, showCenterPopup, centerPopupOrderStats, centerPopupName, centerPopupAvatar, signConfig, signFields, hasSigned,
   showSignPopup, toggleCenter, onCenterAction, goReport, onSignedDone, loadSignStatus,
+  refreshCenterOrderStats: refreshCenterOrderStatsAction,
 } = useLiveSidePanels({
   liveId, roomCode, roomCurrentTermId, myUserId, liveTenantId, shareCode, liveBindId, isReplay, replayCurrentVideoId, anchorName, anchorAvatar, userStore, getLiveRedirectUrl, isDebugLocalLogin,
   ensureBuyAddressLoaded, addressPopupSource, showAddressPopup, getCenter, getOrderUnreadStats, getRefundUnreadStats, checkSigned,
 });
+refreshCenterOrderStats = refreshCenterOrderStatsAction;
 const displayState = useLiveDisplayState({
   userStore, anchorName, liveName, warmUpVideoUrl, warmUpVideoCoverImage, liveCover, replayCover, isReplay,
   replayCurrentIndex, replayVideosList, videoUrl, isIOSH5, scheduleTimeStr, nowTs, scheduleEnabled, domainStore,

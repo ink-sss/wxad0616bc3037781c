@@ -1,4 +1,5 @@
 import { handleH5Unauthorized } from '../services/h5-auth-context.js'
+import { buildRequestIdentityHeaders } from '../utils/request-identity-headers.js'
 import { getRuntimeConfig } from '../utils/runtime-config.js'
 
 function getStorageToken() {
@@ -80,7 +81,7 @@ export function h5Request(options = {}) {
   if (!url) return Promise.reject(new Error('h5Request: url is required'))
 
   const token = getStorageToken()
-  const finalHeader = { ...header }
+  const finalHeader = { ...buildRequestIdentityHeaders(), ...header }
   if (token) {
     finalHeader.Authorization = `Bearer ${token}`
     finalHeader['X-Token'] = token

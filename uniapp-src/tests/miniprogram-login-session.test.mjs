@@ -47,3 +47,37 @@ test("miniprogram login session persists Easemob IM credentials", async () => {
   assert.equal(app.globalData.imUserId, "customer_870");
   assert.equal(app.globalData.imUserSig, "easemob-token");
 });
+
+test("miniprogram login session persists unionid aliases", async () => {
+  const storage = new Map();
+  const app = { globalData: {} };
+  globalThis.__h5Post = async () => ({});
+  globalThis.__getRuntimeConfig = () => ({});
+  globalThis.getApp = () => app;
+  globalThis.uni = {
+    setStorageSync(key, value) {
+      storage.set(key, value);
+    },
+    getStorageSync(key) {
+      return storage.get(key) || "";
+    },
+  };
+
+  const {
+    getStoredMiniProgramUnionId,
+    persistMiniProgramLoginSession,
+  } = await loadMiniProgramLoginModule();
+  persistMiniProgramLoginSession({
+    unionId: "union-870",
+  });
+
+  assert.equal(storage.get("mini_program_union_id"), "union-870");
+  assert.equal(storage.get("union_id"), "union-870");
+  assert.equal(storage.get("unionId"), "union-870");
+  assert.equal(storage.get("unionid"), "union-870");
+  assert.equal(storage.get("wechatUnionid"), "union-870");
+  assert.equal(app.globalData.union_id, "union-870");
+  assert.equal(app.globalData.unionId, "union-870");
+  assert.equal(app.globalData.wechatUnionid, "union-870");
+  assert.equal(getStoredMiniProgramUnionId(), "union-870");
+});

@@ -20,6 +20,11 @@ and no dependency on compiled Mini Program output.
 - Do not scatter direct high-risk WeChat calls such as `wx.*`,
   `uni.requestPayment`, `uni.navigateToMiniProgram`, or `uni.getUpdateManager`
   outside `src/platform/weixin/`.
+- Do not use bare global `uni` or `wx` as a function parameter default in
+  service/composable modules, for example `uniApi = uni`. In mp-weixin builds
+  those modules can execute without a `uni` lexical binding and throw before
+  the function body runs. Pass the API explicitly from the page/composable, or
+  resolve it inside the function body through `src/platform/weixin/runtime.js`.
 - Do not migrate H5 upload code that relies on `fetch`, `XMLHttpRequest`, or
   Blob reads into mp-weixin viewer flows. Use `src/platform/weixin/` file
   adapters and `uni.request`/`uni.uploadFile`-based paths instead.
@@ -177,6 +182,65 @@ const code = await getMiniProgramWechatCode();
 await wechatSilentLogin({ code, sourceClient: "mp-weixin" });
 ```
 
+## Scenario: Mini Program Request Identity Headers
+
+### 1. Scope / Trigger
+
+- Trigger: common uni-app API requests need backend-visible Mini Program identity
+  headers.
+- Scope: `src/utils/request.js` and Mini Program login session persistence.
+
+### 2. Signatures
+
+- `buildRequestHeaders(method)` -> request header object.
+- `persistMiniProgramLoginSession(data)` -> persists openid/unionid aliases when
+  returned by login APIs.
+
+### 3. Contracts
+
+- Always send `X-Appid` on common API requests.
+- Resolve `X-Appid` from the current Mini Program runtime account first, then
+  fallback to global data, storage, and runtime config.
+- Send `X-Openid` only when an openid exists in compatible Mini Program session
+  storage or global data.
+- Send `X-Unionid` only when a unionid exists in compatible Mini Program session
+  storage or global data.
+- Keep POST `content-type: application/json;charset=UTF-8`.
+
+### 4. Validation & Error Matrix
+
+- Missing appid fallback -> no fake value; use configured Mini Program appid when
+  runtime account info is unavailable.
+- Missing openid or unionid -> omit that header rather than sending an empty
+  string.
+
+### 5. Good/Base/Bad Cases
+
+- Good: POST request has `content-type`, `X-Appid`, and optional identity headers.
+- Base: unauthenticated GET request has `X-Appid` only.
+- Bad: page code manually adds identity headers or sends empty `X-Openid` /
+  `X-Unionid`.
+
+### 6. Tests Required
+
+- Unit test common request header construction for GET and POST.
+- Unit test Mini Program login session unionid alias persistence when login data
+  contains unionid.
+
+### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+uni.request({ header: { "X-Openid": openId || "" } });
+```
+
+Correct:
+
+```js
+const header = buildRequestHeaders(method);
+```
+
 ## Scenario: Mini Program Developer Tools Login Payload
 
 ### 1. Scope / Trigger
@@ -195,7 +259,7 @@ await wechatSilentLogin({ code, sourceClient: "mp-weixin" });
 - Developer-tools login must not call `uni.login`/`wx.login` or
   `/h5/miniprogram/login`.
 - Developer-tools login returns the local reused session fields:
-  `token`, `user_id=874`, `open_id`, `im_user_id="customer_874"`,
+  `token`, `user_id=884`, `open_id`, `im_user_id="customer_884"`,
   `im_user_sig`, `shop_supplier_id=15`, and `msg="登录成功"`.
 - The local session still passes through the normal H5 auth sync and
   mini-program session persistence path.
@@ -752,6 +816,9 @@ import { hideShareMenu, exitMiniProgram } from "@/platform/weixin/share.js";
 - H5 uploads with a `File`/`Blob` must not fall back to `uni.uploadFile`
   multipart uploads, because OSS presigned `PUT` URLs expect the raw object
   body and may reject multipart form bodies.
+- H5 uploads whose selector only provides a `blob:` or `data:` `filePath` must
+  first read that path into a `Blob`, then raw `PUT`; do not treat H5 blob URLs
+  like Mini Program temp file paths.
 
 ### 5. Good/Base/Bad Cases
 

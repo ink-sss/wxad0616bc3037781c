@@ -56,7 +56,7 @@ export default {
       user_id: '',
       mobile: true,
       is_login: false,
-      isRead: false,
+      isRead: true,
       showDevtoolsLogin: false,
       setting: {
         login_desc: '',

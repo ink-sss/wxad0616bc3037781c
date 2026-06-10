@@ -68,15 +68,43 @@
       <text class="price-value">¥ {{ shippingFee }}</text>
     </view>
 
-    <view class="pay-bar">
+    <!-- #ifdef MP-WEIXIN -->
+    <cover-view
+      v-if="!showAddressPopup && !showAddressFormPopup"
+      class="pay-bar pay-bar-cover"
+    >
+      <cover-view class="pay-label pay-label-cover">实付款</cover-view>
+      <cover-view class="pay-price pay-price-cover">¥ {{ totalPrice }}</cover-view>
+      <cover-view
+        :class="['pay-btn-cover', loading ? 'pay-btn-cover-disabled' : '']"
+        @touchend.stop.prevent="onPayTap"
+        @tap.stop="onPayTap"
+      >
+        {{ loading ? "支付中..." : "立即支付" }}
+      </cover-view>
+    </cover-view>
+    <!-- #endif -->
+    <!-- #ifndef MP-WEIXIN -->
+    <view
+      v-if="!showAddressPopup && !showAddressFormPopup"
+      class="pay-bar"
+    >
       <view class="pay-left">
         <text class="pay-label">实付款</text>
         <text class="pay-price">¥ {{ totalPrice }}</text>
       </view>
-      <view class="pay-btn" @tap.stop="onPay">立即支付</view>
+      <view
+        class="pay-btn"
+        :class="{ 'pay-btn-disabled': loading }"
+        @tap.stop="onPayTap"
+      >
+        {{ loading ? "支付中..." : "立即支付" }}
+      </view>
     </view>
+    <!-- #endif -->
 
     <bottom-sheet-popup
+      v-if="showAddressPopup"
       :visible="showAddressPopup"
       :height="addressList.length === 0 ? '66vh' : '78vh'"
       radius="24rpx 24rpx 0 0"
@@ -102,6 +130,7 @@
     </bottom-sheet-popup>
 
     <address-form-popup
+      v-if="showAddressFormPopup"
       :visible="showAddressFormPopup"
       :edit-data="editAddressData"
       popup-height="78vh"
@@ -152,6 +181,7 @@ const showAddressFormPopup = ref(false);
 const editAddressData = ref(null);
 const addressList = ref([]);
 const selectedAddressId = ref(null);
+let lastPayTapAt = 0;
 
 function firstValue(source = {}, ...keys) {
   for (const key of keys) {
@@ -422,6 +452,13 @@ async function onImportWx() {
   if (ok) await loadAddressList();
 }
 
+function onPayTap() {
+  const now = Date.now();
+  if (now - lastPayTapAt < 500) return;
+  lastPayTapAt = now;
+  onPay();
+}
+
 async function onPay() {
   if (loading.value) return;
   if (needAddress.value && !address.value?.id) {
@@ -433,6 +470,13 @@ async function onPay() {
     return;
   }
   loading.value = true;
+  let submitLoadingVisible = true;
+  const hideSubmitLoading = () => {
+    if (!submitLoadingVisible) return;
+    uni.hideLoading();
+    submitLoadingVisible = false;
+  };
+  uni.showLoading({ title: "提交中...", mask: true });
   let createdOrderNo = "";
   try {
     const orderRes = await createOrder({
@@ -451,22 +495,26 @@ async function onPay() {
       source: 4,
     });
     if (!orderRes?.orderNo) {
+      hideSubmitLoading();
       uni.showToast({ title: "创建订单失败", icon: "none" });
       return;
     }
     // 防重复下单：后端检测到已有相同待付款订单，直接复用
     if (orderRes.isDuplicate) {
       console.log("[OrderConfirm] 命中防重复下单，复用已有订单:", orderRes.orderNo);
+      hideSubmitLoading();
       uni.showToast({ title: "已有待付款订单，正在跳转支付", icon: "none", duration: 1500 });
     }
     // 记录待支付订单ID，防止支付回调丢失
     createdOrderNo = orderRes.orderNo;
     pendingOrderId.value = orderRes.orderId || orderRes.ID || 0;
+    hideSubmitLoading();
     const payResult = await executeYeepayPayment(orderRes.orderNo, {
       roomCode: liveRoomCode.value,
     });
     if (payResult?.confirmed) {
       const orderId = pendingOrderId.value;
+      hideSubmitLoading();
       uni.showToast({ title: "支付成功", icon: "none" });
       navigatePaymentSuccessOrderDetail({
         orderId,
@@ -476,16 +524,19 @@ async function onPay() {
       pendingOrderId.value = 0;
     }
   } catch (err) {
+    hideSubmitLoading();
     if (handleCreatedOrderPaymentCancel({
       err,
       orderNo: createdOrderNo,
       roomCode: liveRoomCode.value,
+      uniApi: uni,
       navigationMethod: "redirectTo",
     })) {
       return;
     }
     uni.showToast({ title: err?.message || "下单失败", icon: "none" });
   } finally {
+    hideSubmitLoading();
     loading.value = false;
   }
 }
@@ -659,7 +710,7 @@ async function onPay() {
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 10;
+  z-index: 10000;
   height: calc(136rpx + env(safe-area-inset-bottom));
   padding: 0 30rpx env(safe-area-inset-bottom);
   background: #fff;
@@ -667,6 +718,12 @@ async function onPay() {
   align-items: center;
   justify-content: space-between;
   box-shadow: 0 -2rpx 12rpx rgba(0, 0, 0, 0.05);
+}
+
+.pay-bar-cover {
+  height: 136rpx;
+  padding: 0;
+  background-color: #fff;
 }
 
 .pay-left {
@@ -697,5 +754,40 @@ async function onPay() {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.pay-btn-disabled {
+  background: #d8d8d8;
+}
+
+.pay-label-cover {
+  position: absolute;
+  left: 30rpx;
+  top: 52rpx;
+}
+
+.pay-price-cover {
+  position: absolute;
+  left: 142rpx;
+  top: 36rpx;
+  margin-left: 0;
+}
+
+.pay-btn-cover {
+  position: absolute;
+  right: 30rpx;
+  top: 22rpx;
+  width: 260rpx;
+  height: 92rpx;
+  line-height: 92rpx;
+  text-align: center;
+  border-radius: 46rpx;
+  background-color: #ff7215;
+  color: #fff;
+  font-size: 34rpx;
+}
+
+.pay-btn-cover-disabled {
+  background-color: #d8d8d8;
 }
 </style>

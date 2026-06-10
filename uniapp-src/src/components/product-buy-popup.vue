@@ -4,7 +4,7 @@
       v-model="popupVisible"
       position="bottom"
       :z-index="zIndex"
-      custom-style="height: calc(84vh - 40rpx); border-radius: 24rpx 24rpx 0 0; overflow: hidden;"
+      custom-style="height: auto; max-height: 84vh; border-radius: 24rpx 24rpx 0 0; overflow: hidden;"
       @close="emit('close')"
     >
       <view class="buy-popup">
@@ -479,7 +479,7 @@ function onConfirm() {
   flex-direction: column;
   overflow: hidden;
   width: 750rpx;
-  height: calc(84vh - 40rpx);
+  max-height: 84vh;
   box-sizing: border-box;
   background: #fff;
 }
@@ -858,7 +858,8 @@ function onConfirm() {
 }
 
 .popup-scroll {
-  flex: 1;
-  min-height: 0;
+  max-height: calc(84vh - 380rpx);
+  padding-bottom: 30rpx;
+  box-sizing: border-box;
 }
 </style>
