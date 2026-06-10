@@ -1,5 +1,5 @@
 <template>
-  <view :class="['address-panel', pageMode ? 'address-panel-page' : '']">
+  <view :class="['address-panel', pageMode ? 'address-panel-page' : '']" @tap.stop>
     <!-- 标题栏（弹窗模式） -->
     <view v-if="!pageMode && title" class="address-panel-header">
       <text class="address-panel-title">{{ title }}</text>
@@ -43,7 +43,7 @@
             v-for="item in list"
             :key="item.id"
             :class="['address-item', selectedId === item.id ? 'address-item-selected' : '']"
-            @click="emit('select', item.id)"
+            @tap.stop="emit('select', item.id)"
           >
             <view class="address-item-top">
               <view class="address-user-row">
@@ -52,12 +52,12 @@
                 <text v-if="item.tag" class="address-tag">{{ item.tag }}</text>
               </view>
               <view class="address-actions">
-                <text class="address-edit" @click.stop="emit('edit', item)"
-                  >✎</text
-                >
-                <text class="address-delete" @click.stop="onDelete(item)"
-                  >删除</text
-                >
+                <view class="address-action-btn" @tap.stop="emit('edit', item)">
+                  <text class="address-edit">✎</text>
+                </view>
+                <view class="address-action-btn address-action-delete" @tap.stop="onDelete(item)">
+                  <text class="address-delete">删除</text>
+                </view>
               </view>
             </view>
             <text class="address-full">{{ item.fullAddress }}</text>
@@ -271,8 +271,20 @@ function onDelete(item) {
 .address-actions {
   display: flex;
   align-items: center;
-  gap: 24rpx;
+  gap: 8rpx;
   flex-shrink: 0;
+}
+
+.address-action-btn {
+  min-width: 64rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.address-action-delete {
+  min-width: 72rpx;
 }
 
 .address-edit {

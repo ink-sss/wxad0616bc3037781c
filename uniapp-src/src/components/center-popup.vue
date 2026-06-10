@@ -6,6 +6,7 @@
     :duration="500"
     :with-mask="true"
     mask-color="rgba(0, 0, 0, 0.35)"
+    :z-index="zIndex"
     :allow-overflow="true"
     @close="emit('close')"
   >
@@ -67,6 +68,7 @@ const props = defineProps({
   isDistributor: { type: Boolean, default: false },
   distributorStatus: { type: Number, default: 0 },
   enableShare: { type: Number, default: 1 },
+  zIndex: { type: Number, default: 80 },
 });
 
 const emit = defineEmits(["close", "action"]);

@@ -614,6 +614,7 @@
       :is-distributor="isDistributor"
       :distributor-status="distributorStatus"
       :enable-share="roomSetting.enableShare"
+      :z-index="BUY_POPUP_Z_INDEX + 6"
       @close="setShowCenterPopup(false)"
       @action="onCenterAction"
     />

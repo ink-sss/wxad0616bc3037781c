@@ -562,7 +562,6 @@ export function useLivePurchase({
 
   function onSelectBuyAddress(addrId) {
     selectedAddressId.value = addrId;
-    confirmBuyAddress();
   }
 
   function onAddBuyAddress() {

@@ -20,9 +20,10 @@
       ';'
     "
   >
-    <view class="sheet-mask" @click="emit('close')">
-      <view class="sheet-panel" :style="panelStyle" @click.stop>
-        <view v-if="showClose" class="sheet-close" @click="emit('close')">
+    <view class="sheet-mask">
+      <view class="sheet-mask-close" @tap="emit('close')"></view>
+      <view class="sheet-panel" :style="panelStyle" @tap.stop>
+        <view v-if="showClose" class="sheet-close" @tap.stop="emit('close')">
           <image
             class="sheet-close-icon"
             src="https://man.lqjy.cc/static/icons/close.svg"
@@ -100,12 +101,19 @@ onBeforeUnmount(() => {
   width: 100%;
   height: 100%;
   display: flex;
+  flex-direction: column;
   align-items: flex-end;
   justify-content: stretch;
 }
 
+.sheet-mask-close {
+  width: 100%;
+  flex: 1;
+}
+
 .sheet-panel {
   width: 750rpx;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   overflow: hidden;

@@ -116,6 +116,16 @@ const submitting = ref(false);
 const uploading = ref(false);
 let uploadIdCounter = 0;
 
+function decodeOption(value) {
+  const text = value === undefined || value === null ? "" : String(value);
+  if (!text) return "";
+  try {
+    return decodeURIComponent(text);
+  } catch (_) {
+    return text;
+  }
+}
+
 function appendQuery(params, key, value) {
   const text = value === undefined || value === null ? "" : String(value);
   if (text) params.push(key + "=" + encodeURIComponent(text));
@@ -333,7 +343,7 @@ async function submit() {
 
 onLoad((options) => {
   type.value = options.type || "";
-  typeLabel.value = options.typeLabel || "";
+  typeLabel.value = decodeOption(options.typeLabel);
   liveId.value = options.liveId || "";
   roomCode.value = options.roomCode || options.room_code || "";
   tenantId.value = options.tenantId || options.tenant_id || "";
@@ -341,9 +351,9 @@ onLoad((options) => {
   customerId.value = options.customerId || options.customer_id || options.userId || options.user_id || "";
   replayVideoId.value = options.replayVideoId || options.replay_video_id || options.videoId || options.video_id || "";
   liveType.value = options.liveType || options.live_type || (options.replay === "1" ? "replay" : "");
-  liveName.value = options.liveName || "";
-  cover.value = options.cover || "";
-  fromPath.value = options.fromPath || "";
+  liveName.value = decodeOption(options.liveName);
+  cover.value = decodeOption(options.cover);
+  fromPath.value = decodeOption(options.fromPath);
 
   // [2026-05-13] liveId / roomCode / fromPath 缺失时从 live_room_ctx_v1 缓存兜底
   if (!liveId.value || !roomCode.value || !fromPath.value) {
@@ -433,10 +443,18 @@ onLoad((options) => {
 
 .form-value,
 .form-input {
+  min-width: 0;
   font-size: 28rpx;
   line-height: 40rpx;
   color: rgba(0, 0, 0, 0.35);
   text-align: right;
+}
+
+.form-value {
+  max-width: 500rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .form-value-active {

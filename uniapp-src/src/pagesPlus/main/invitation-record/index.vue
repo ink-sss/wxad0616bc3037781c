@@ -69,12 +69,12 @@
         </view>
       </view>
 
-      <view v-else-if="!loading" class="no-data">
-        <image src="https://man.lqjy.cc/static/remote-icons/s-nuoyun-income-nodata.png" mode="aspectFit" />
+      <view v-else class="no-data">
+        <image class="no-data-image" src="https://man.lqjy.cc/static/remote-icons/s-nuoyun-income-nodata.png" mode="aspectFit" />
         <text class="no-data-text">暂无邀请记录</text>
       </view>
 
-      <view v-if="loading" class="loading-text">加载中...</view>
+      <view v-if="loading && records.length" class="loading-text">加载中...</view>
       <view v-else-if="finished && records.length" class="loading-text">没有更多了</view>
     </scroll-view>
   </view>
@@ -433,18 +433,22 @@ onLoad(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 160rpx;
+  justify-content: flex-start;
+  min-height: 760rpx;
+  padding-top: 190rpx;
+  box-sizing: border-box;
 }
 
-.no-data image {
-  width: 320rpx;
-  height: 320rpx;
+.no-data-image {
+  width: 220rpx;
+  height: 220rpx;
+  opacity: 0.72;
 }
 
 .no-data-text {
-  margin-top: 16rpx;
+  margin-top: 34rpx;
   font-size: 26rpx;
-  color: #999;
+  color: #b8b8b8;
 }
 
 .loading-text {
