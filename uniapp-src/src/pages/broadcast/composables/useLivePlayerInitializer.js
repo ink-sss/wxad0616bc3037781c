@@ -168,6 +168,7 @@ export function useLivePlayerInitializer(ctx) {
   } = ctx;
   let playbackReadyTimer = null;
   let lastInitPlayback = null;
+  let playbackInitVersion = 0;
 
   function clearPlaybackReadyTimer() {
     if (playbackReadyTimer) {
@@ -408,6 +409,34 @@ export function useLivePlayerInitializer(ctx) {
     });
   }
 
+  function mountPlaybackPlayer(playUrl, normalizedOptions, preferLivePlayer, reason = "init", extraDebug = {}) {
+    const player = createMiniPlayer(playUrl, normalizedOptions);
+    startPlaybackReadyTimer(player, normalizedOptions);
+    recordPlaybackDebugEvent("mini_player_init", {
+      isReplay: !!normalizedOptions.isReplay,
+      hasUrl: !!playUrl,
+      seekTo: Number(normalizedOptions.seekTo || 0),
+      playUrl,
+      sourceType: normalizedOptions.sourceType || "",
+      sourceComponent: normalizedOptions.sourceComponent || "",
+      liveCandidates: Array.isArray(normalizedOptions.liveCandidates) ? normalizedOptions.liveCandidates.length : 0,
+      muted: normalizedOptions.muted === true,
+      ...extraDebug,
+    });
+    nextTick(() => {
+      if (!playUrl) return;
+      if (normalizedOptions.isReplay && Number(normalizedOptions.seekTo || 0) > 0) {
+        try { player.seek(Number(normalizedOptions.seekTo || 0)); } catch (e) {}
+      }
+      playNativePlayer(player, preferLivePlayer, normalizedOptions, reason);
+      scheduleNativePlayRetries(player, preferLivePlayer, normalizedOptions, reason);
+      if (hasPendingUnmute?.() || hasStoredSoundIntentRestore?.()) {
+        scheduleLiveSoundIntentRestore?.();
+      }
+    });
+    return player;
+  }
+
   function initVideoPlayer(url, opts = {}) {
     const playUrl = normalizePlaybackUrl(url, opts);
     const preferLivePlayer = shouldPreferLivePlayerContext(playUrl, opts);
@@ -446,6 +475,7 @@ export function useLivePlayerInitializer(ctx) {
       });
       return oldPlayer;
     }
+    const initVersion = ++playbackInitVersion;
     lastInitPlayback = {
       url: playUrl,
       opts: normalizedOptions,
@@ -459,13 +489,6 @@ export function useLivePlayerInitializer(ctx) {
     clearPlaybackFailureState();
     autoplayBlocked.value = false;
     if (videoFrameReady) videoFrameReady.value = false;
-    videoUrl.value = playUrl;
-    if (pullUrl) pullUrl.value = playUrl;
-    if (mediaSourceComponent) mediaSourceComponent.value = playUrl ? resolvedSourceComponent : "";
-    if (mediaSourceType) mediaSourceType.value = playUrl ? normalizedOptions.sourceType : "";
-    if (videoRenderKey && playUrl) {
-      videoRenderKey.value += 1;
-    }
     refreshMiniWindowState(playUrl, normalizedOptions);
     if (oldPlayer && typeof oldPlayer.destroy === "function") {
       recordPlaybackDebugEvent("mini_player_destroy_previous", {
@@ -474,30 +497,48 @@ export function useLivePlayerInitializer(ctx) {
         oldSourceType: oldPlayer.sourceType || "",
       });
       try { oldPlayer.destroy(); } catch (e) {}
+      setVideoPlayer(null);
     }
-    const player = createMiniPlayer(playUrl, normalizedOptions);
-    startPlaybackReadyTimer(player, normalizedOptions);
-    recordPlaybackDebugEvent("mini_player_init", {
-      isReplay: !!opts.isReplay,
-      hasUrl: !!playUrl,
-      seekTo: Number(opts.seekTo || 0),
-      playUrl,
-      sourceType: normalizedOptions.sourceType || "",
-      sourceComponent: normalizedOptions.sourceComponent || "",
-      liveCandidates: Array.isArray(opts.liveCandidates) ? opts.liveCandidates.length : 0,
-      muted: normalizedOptions.muted === true,
-    });
-    nextTick(() => {
-      if (!playUrl) return;
-      if (opts.isReplay && Number(opts.seekTo || 0) > 0) {
-        try { player.seek(Number(opts.seekTo || 0)); } catch (e) {}
+    if (
+      playUrl &&
+      normalizedOptions.forceNativeVideoRefresh === true &&
+      normalizedOptions.sourceComponent === "video" &&
+      !normalizedOptions.isReplay
+    ) {
+      videoUrl.value = "";
+      if (mediaSourceComponent) mediaSourceComponent.value = "";
+      if (mediaSourceType) mediaSourceType.value = "";
+      if (videoRenderKey) {
+        videoRenderKey.value += 1;
       }
-      playNativePlayer(player, preferLivePlayer, normalizedOptions, "init");
-      scheduleNativePlayRetries(player, preferLivePlayer, normalizedOptions, "init");
-      if (hasPendingUnmute?.() || hasStoredSoundIntentRestore?.()) {
-        scheduleLiveSoundIntentRestore?.();
-      }
-    });
+      recordPlaybackDebugEvent("mini_player_native_video_refresh", {
+        playUrl,
+        sourceType: normalizedOptions.sourceType || "",
+        sourceComponent: normalizedOptions.sourceComponent || "",
+      });
+      nextTick(() => {
+        if (initVersion !== playbackInitVersion) return;
+        videoUrl.value = playUrl;
+        if (pullUrl) pullUrl.value = playUrl;
+        if (mediaSourceComponent) mediaSourceComponent.value = resolvedSourceComponent;
+        if (mediaSourceType) mediaSourceType.value = normalizedOptions.sourceType || "";
+        if (videoRenderKey) {
+          videoRenderKey.value += 1;
+        }
+        mountPlaybackPlayer(playUrl, normalizedOptions, preferLivePlayer, "native_video_refresh", {
+          nativeVideoRefresh: true,
+        });
+      });
+      return;
+    }
+    videoUrl.value = playUrl;
+    if (pullUrl) pullUrl.value = playUrl;
+    if (mediaSourceComponent) mediaSourceComponent.value = playUrl ? resolvedSourceComponent : "";
+    if (mediaSourceType) mediaSourceType.value = playUrl ? normalizedOptions.sourceType : "";
+    if (videoRenderKey && playUrl) {
+      videoRenderKey.value += 1;
+    }
+    mountPlaybackPlayer(playUrl, normalizedOptions, preferLivePlayer);
   }
 
   async function switchLiveStreamQuality(stream = {}, reason = "") {

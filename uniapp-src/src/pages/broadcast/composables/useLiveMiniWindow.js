@@ -193,6 +193,7 @@ export function useLiveMiniWindow(ctx) {
         isReplay: false,
         isLive: true,
         forceRecreate: true,
+        forceNativeVideoRefresh: true,
         muted: state.canPlayWithSound ? false : isMuted.value !== false,
         canPlayWithSound: state.canPlayWithSound === true,
       });

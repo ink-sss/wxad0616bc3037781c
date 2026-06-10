@@ -140,13 +140,20 @@ test("live mini-window state keeps sound intent but autoplays muted", async () =
 
 test("live mini-window return recreates live player instead of resuming stale node", async () => {
   const broadcastMini = await readSource("src/pages/broadcast/composables/useLiveMiniWindow.js");
+  const playerInitializer = await readSource("src/pages/broadcast/composables/useLivePlayerInitializer.js");
   const lifecycle = await readSource("src/pages/broadcast/composables/useLiveEntryLifecycle.js");
   const entry = await readSource("src/pages/broadcast/entry.vue");
 
   assert.match(broadcastMini, /initVideoPlayer,/);
   assert.match(broadcastMini, /state\.isReplay\s*!==\s*true/);
   assert.match(broadcastMini, /forceRecreate:\s*true/);
+  assert.match(broadcastMini, /forceNativeVideoRefresh:\s*true/);
   assert.match(broadcastMini, /muted:\s*state\.canPlayWithSound\s*\?\s*false\s*:\s*isMuted\.value\s*!==\s*false/);
+  assert.match(playerInitializer, /forceNativeVideoRefresh\s*===\s*true/);
+  assert.match(playerInitializer, /videoUrl\.value\s*=\s*""/);
+  assert.match(playerInitializer, /mini_player_native_video_refresh/);
+  assert.match(playerInitializer, /if\s*\(initVersion\s*!==\s*playbackInitVersion\)\s*return/);
+  assert.match(playerInitializer, /mountPlaybackPlayer\(playUrl,\s*normalizedOptions,\s*preferLivePlayer,\s*"native_video_refresh"/);
   assert.match(entry, /initVideoPlayer:\s*\(\.\.\.args\)\s*=>\s*initVideoPlayer\(\.\.\.args\)/);
   assert.match(lifecycle, /const\s+restoredFromMiniWindow\s*=\s*restoreLivePlaybackFromMiniWindow\(\)/);
   assert.match(lifecycle, /if\s*\(!restoredFromMiniWindow\)\s*\{\s*\n\s*resumeVideoPlayback\(80,\s*\{\s*force:\s*true\s*\}\)/);
