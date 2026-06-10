@@ -116,7 +116,11 @@ import { useInvitationDebug } from "./debug";
 import {
   createInvitationPosterTempFile,
   createInvitationShareCardTempFile,
+  getInvitationPosterFileCache,
+  getInvitationShareFileCache,
   resetInvitationPosterRuntimeCache,
+  setInvitationPosterFileCache,
+  setInvitationShareFileCache,
 } from "./poster";
 
 const payload = ref({
@@ -423,9 +427,9 @@ function buildQrcodeImageUrl(text) {
 async function selectTemplate(idx) {
   if (idx === activeIdx.value) return;
   activeIdx.value = idx;
-  const templateId = templates[idx]?.id || "";
-  posterImageSrc.value = posterReadyMap.value[templateId] || "";
-  shareImageSrc.value = shareReadyMap.value[templateId] || "";
+  const template = templates[idx];
+  posterImageSrc.value = getCachedPosterFile(template);
+  shareImageSrc.value = getCachedShareFile(template);
   await renderPoster();
 }
 
@@ -518,6 +522,8 @@ async function renderPoster() {
 async function renderPosterTask(taskId) {
   const template = activeTemplate.value;
   const templateId = template?.id || "";
+  const posterCacheKey = buildRenderCacheKey(template, "poster");
+  const shareCacheKey = buildRenderCacheKey(template, "share");
   const startedAt = Date.now();
   if (!template) {
     posterImageSrc.value = "";
@@ -526,12 +532,16 @@ async function renderPosterTask(taskId) {
     return;
   }
   // #ifdef MP-WEIXIN
-  const cachedPoster = posterReadyMap.value[templateId] || "";
-  const cachedShare = shareReadyMap.value[templateId] || "";
+  const cachedPoster = getCachedPosterFile(template, posterCacheKey);
+  const cachedShare = getCachedShareFile(template, shareCacheKey);
   posterImageSrc.value = cachedPoster;
   shareImageSrc.value = cachedShare;
-  if (cachedPoster && cachedShare) {
-    recordDebugEvent("render_poster_cache_hit", { taskId, templateId });
+  if (cachedPoster) {
+    recordDebugEvent("poster_file_cache_hit", {
+      taskId,
+      templateId,
+      hasShareImage: !!cachedShare,
+    });
     return;
   }
   posterRendering.value = !cachedPoster;
@@ -549,7 +559,7 @@ async function renderPosterTask(taskId) {
       hasLink: !!posterPayload.link,
     });
     if (cachedShare) {
-      shareImageSrc.value = shareReadyMap.value[templateId];
+      shareImageSrc.value = cachedShare;
       recordDebugEvent("share_card_cache_hit", { taskId, templateId });
     }
     if (!cachedPoster) {
@@ -558,6 +568,7 @@ async function renderPosterTask(taskId) {
         if (posterRenderTaskId.value !== taskId) return;
         posterImageSrc.value = filePath;
         posterReadyMap.value = { ...posterReadyMap.value, [templateId]: filePath };
+        setInvitationPosterFileCache(posterCacheKey, filePath);
         recordDebugEvent("poster_ready", {
           taskId,
           filePath,
@@ -608,12 +619,20 @@ async function renderShareCard(taskId, template, posterPayload, posterDebugOptio
     recordDebugEvent("share_card_cache_hit", { taskId, templateId });
     return;
   }
+  const shareCacheKey = buildRenderCacheKey(template, "share");
+  const cachedShare = getCachedShareFile(template, shareCacheKey);
+  if (cachedShare) {
+    shareImageSrc.value = cachedShare;
+    recordDebugEvent("share_file_cache_hit", { taskId, templateId });
+    return;
+  }
   const startedAt = Date.now();
   try {
     const shareFilePath = await createInvitationShareCardTempFile(template, posterPayload, posterDebugOptions);
     if (posterRenderTaskId.value !== taskId) return;
     shareImageSrc.value = shareFilePath;
     shareReadyMap.value = { ...shareReadyMap.value, [templateId]: shareFilePath };
+    setInvitationShareFileCache(shareCacheKey, shareFilePath);
     recordDebugEvent("share_card_ready", {
       taskId,
       filePath: shareFilePath,
@@ -625,6 +644,30 @@ async function renderShareCard(taskId, template, posterPayload, posterDebugOptio
     recordDebugEvent("share_card_fail", normalizeError(error));
     console.warn("[Invitation] share image render fail:", error);
   }
+}
+
+function getCachedPosterFile(template, cacheKey = buildRenderCacheKey(template, "poster")) {
+  const templateId = template?.id || "";
+  return getInvitationPosterFileCache(cacheKey) || posterReadyMap.value[templateId] || "";
+}
+
+function getCachedShareFile(template, cacheKey = buildRenderCacheKey(template, "share")) {
+  const templateId = template?.id || "";
+  return getInvitationShareFileCache(cacheKey) || shareReadyMap.value[templateId] || "";
+}
+
+function buildRenderCacheKey(template, kind) {
+  if (!template?.id) return "";
+  const data = payload.value || {};
+  return [
+    kind,
+    template.id,
+    data.anchorAvatar || "",
+    data.inviterName || "",
+    data.liveName || "",
+    displayTime.value || "",
+    shareMiniProgramPath.value || "",
+  ].join("|");
 }
 
 function normalizeNavDomain(data = {}) {

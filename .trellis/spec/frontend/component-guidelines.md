@@ -142,3 +142,9 @@ Components in the uni-app source project are Vue single-file components under
   poster. Reset poster runtime caches on invitation page mount/unload, and
   normalize packaged `getImageInfo` paths so cached package images keep their
   leading `/pagesPlus/...` form.
+- Re-generating an invitation poster on page re-entry when an identical poster
+  was already exported in the same Mini Program session. The exported poster
+  `wxfile://` result is the stable artifact users actually need, while decoded
+  images/canvases are runtime details. Cache exported poster/share file paths
+  by template plus invitation payload and show that cached file immediately on
+  re-entry; only rebuild when the cache key changes or no exported file exists.

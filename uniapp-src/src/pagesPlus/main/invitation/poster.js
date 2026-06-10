@@ -12,6 +12,8 @@ const CANVAS_API_TIMEOUT = 3000;
 const imagePathCache = new Map();
 const avatarCanvasCache = new Map();
 const avatarTempFileCache = new Map();
+const posterFileCache = new Map();
+const shareFileCache = new Map();
 const canvasImageCache = new WeakMap();
 
 export function resetInvitationPosterRuntimeCache() {
@@ -24,6 +26,28 @@ export function resetInvitationPosterRuntimeCache() {
   avatarCanvasCache.clear();
   avatarTempFileCache.clear();
   return snapshot;
+}
+
+export function getInvitationPosterFileCache(cacheKey) {
+  return posterFileCache.get(String(cacheKey || "")) || "";
+}
+
+export function setInvitationPosterFileCache(cacheKey, filePath) {
+  const key = String(cacheKey || "");
+  if (!key || !filePath) return "";
+  posterFileCache.set(key, filePath);
+  return filePath;
+}
+
+export function getInvitationShareFileCache(cacheKey) {
+  return shareFileCache.get(String(cacheKey || "")) || "";
+}
+
+export function setInvitationShareFileCache(cacheKey, filePath) {
+  const key = String(cacheKey || "");
+  if (!key || !filePath) return "";
+  shareFileCache.set(key, filePath);
+  return filePath;
 }
 
 export async function createInvitationPosterTempFile(template, payload = {}, options = {}) {
