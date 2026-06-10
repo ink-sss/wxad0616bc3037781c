@@ -24,6 +24,10 @@
     }
   },
   "entryPagePath": "pages/index/index",
+  "globalStyle": {
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "navigationBarTextStyle": "black"
+  },
   "pages": [
     {
       "path": "pages/index/index",

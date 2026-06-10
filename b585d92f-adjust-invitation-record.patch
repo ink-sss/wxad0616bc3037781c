@@ -1,0 +1,372 @@
+From b585d92f665b55e5c2603dbbf54bb0742a1d1daf Mon Sep 17 00:00:00 2001
+From: xiusin <826466266@qq.com>
+Date: Wed, 10 Jun 2026 16:49:17 +0800
+Subject: [PATCH] =?UTF-8?q?=E8=B0=83=E6=95=B4=E9=82=80=E8=AF=B7=E8=AE=B0?=
+ =?UTF-8?q?=E5=BD=95?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ uniapp-src/src/api/live.js                    | 11 +++--
+ .../composables/useLiveEntryInitializer.js    | 10 ++++
+ uniapp-src/src/pages/user/index/index.vue     | 48 +++++++++++++++++--
+ .../src/pagesPlus/main/center/index.vue       | 38 +++++++++++----
+ .../main/invitation-record/index.vue          | 29 ++++-------
+ 5 files changed, 102 insertions(+), 34 deletions(-)
+
+diff --git a/uniapp-src/src/api/live.js b/uniapp-src/src/api/live.js
+index 4ff1bd88..26c060ac 100644
+--- a/uniapp-src/src/api/live.js
++++ b/uniapp-src/src/api/live.js
+@@ -370,18 +370,23 @@ export function checkDistributor(roomId) {
+   return h5Get('/h5/live/distributorCheck', { roomId: Number(roomId || 0) })
+ }
+ 
++export function checkCurrentDistributor() {
++  return h5Get('/h5/live/distributorCurrent')
++}
++
+ export function getDistributorShareUrl(roomId) {
+   return h5Get('/h5/live/distributorShareUrl', { roomId: Number(roomId || 0) })
+ }
+ 
+ export function getDistributorInvitedUsers(params = {}) {
+-  return h5Get('/h5/live/distributorInvitedUsers', {
+-    roomId: Number(params.roomId || 0),
++  const data = {
+     keyword: params.keyword || '',
+     currentStatus: params.currentStatus || 0,
+     page: params.page || 1,
+     pageSize: params.pageSize || 10,
+-  })
++  }
++  if (params.roomId) data.roomId = Number(params.roomId || 0)
++  return h5Get('/h5/live/distributorInvitedUsers', data)
+ }
+ 
+ export function getPrizeRecordList(params = {}) {
+diff --git a/uniapp-src/src/pages/broadcast/composables/useLiveEntryInitializer.js b/uniapp-src/src/pages/broadcast/composables/useLiveEntryInitializer.js
+index f0ae9d9a..fcbd6a72 100644
+--- a/uniapp-src/src/pages/broadcast/composables/useLiveEntryInitializer.js
++++ b/uniapp-src/src/pages/broadcast/composables/useLiveEntryInitializer.js
+@@ -912,6 +912,14 @@ export function useLiveEntryInitializer(ctx) {
+   function applyRoomSettingAndSign(d) {
+     const rawSetting = firstPresent(d.setting, d.room_setting, d.roomSetting, {});
+     Object.assign(roomSetting.value, normalizeRoomSetting(rawSetting));
++    try {
++      saveLiveRoomContext({
++        roomCode: roomCode.value || "",
++        liveId: liveId.value || "",
++        roomId: liveId.value || "",
++        enableShare: roomSetting.value?.enableShare,
++      });
++    } catch (_) {}
+     const normalizedSignConfig = normalizeSignConfig(firstPresent(d.signConfig, d.sign_config, d.sign, null));
+     if (!normalizedSignConfig) return;
+     signConfig.value = normalizedSignConfig;
+@@ -1255,6 +1263,7 @@ export function useLiveEntryInitializer(ctx) {
+       .then((result) => {
+         const _isDistributor = !!result?.isDistributor;
+         const _distributorStatus = Number(result?.status || 0);
++        const _invitationRecordVisible = _isDistributor && _distributorStatus === 1;
+         isDistributor.value = _isDistributor;
+         distributorStatus.value = _distributorStatus;
+         try {
+@@ -1263,6 +1272,7 @@ export function useLiveEntryInitializer(ctx) {
+             liveId: liveId.value || "",
+             isDistributor: _isDistributor,
+             distributorStatus: _distributorStatus,
++            invitationRecordVisible: _invitationRecordVisible,
+           });
+         } catch (_) {}
+       })
+diff --git a/uniapp-src/src/pages/user/index/index.vue b/uniapp-src/src/pages/user/index/index.vue
+index 5754a744..2a42fc42 100644
+--- a/uniapp-src/src/pages/user/index/index.vue
++++ b/uniapp-src/src/pages/user/index/index.vue
+@@ -64,6 +64,7 @@ import { bindMiniProgramMobile } from '../page-tools.js'
+ import { getOrderUnreadStats } from '../../../api/order.js'
+ import { getRefundUnreadStats } from '../../../api/refund.js'
+ import { getCenter } from '../../../api/user.js'
++import { checkCurrentDistributor } from '../../../api/live.js'
+ import { normalizeLiveRouteOptions } from '../../../utils/live-route.js'
+ import { appendLiveRoomQuery, loadLiveRoomContext, mergeLiveRoomContext, saveLiveRoomContext } from '../../../utils/live-room-context.js'
+ import RequestLoading from '../../../components/liveloading.vue'
+@@ -167,6 +168,9 @@ export default {
+       wxBinding: false,
+       getPhone: false,
+       isLoggedIn: false,
++      isDistributor: false,
++      distributorStatus: 0,
++      enableShare: 1,
+       bgColor: '#ff5704',
+       liveRoomContext: {},
+     }
+@@ -185,11 +189,15 @@ export default {
+       ]
+     },
+     h5ServiceItems() {
+-      return [
++      const items = [
+         { type: 'prizeRecord', text: '中奖记录', icon: 'https://man.lqjy.cc/static/icon/lottery-points.png' },
+-        { type: 'address', text: '收货地址', icon: 'https://man.lqjy.cc/static/icon/address_icon.png' },
+-        { type: 'complaint', text: '投诉', icon: 'https://man.lqjy.cc/static/icons/more4.png' },
+       ]
++      if (this.enableShare !== 0 && this.isDistributor && this.distributorStatus === 1) {
++        items.push({ type: 'invitationRecord', text: '邀请记录', icon: 'https://man.lqjy.cc/static/icons/more2.png' })
++      }
++      items.push({ type: 'address', text: '收货地址', icon: 'https://man.lqjy.cc/static/icon/address_icon.png' })
++      items.push({ type: 'complaint', text: '投诉', icon: 'https://man.lqjy.cc/static/icons/more4.png' })
++      return items
+     },
+     hasProfile() {
+       return !!(this.detail && (this.detail.nickName || this.detail.nickname || this.detail.userName || this.detail.user_id || this.detail.userId))
+@@ -211,6 +219,9 @@ export default {
+     liveRoomCode() {
+       return this.liveRoomContext?.roomCode || ''
+     },
++    liveRoomId() {
++      return Number(this.liveRoomContext?.liveId || this.liveRoomContext?.roomId || 0)
++    },
+   },
+   onReady() {
+     uni.hideTabBar()
+@@ -226,6 +237,7 @@ export default {
+   },
+   onShow() {
+     this.syncLiveContext()
++    this.refreshDistributorStatus()
+     this.getData()
+   },
+   onPullDownRefresh() {
+@@ -237,6 +249,7 @@ export default {
+       uni.showLoading({ title: '加载中' })
+       this.syncAuthFromStorage()
+       this.applyCachedProfile()
++      this.refreshDistributorStatus()
+       try {
+         await this.loadH5CenterData()
+       } catch (error) {
+@@ -260,6 +273,7 @@ export default {
+         const customer = centerData.customer || centerData.customerInfo || centerData.userInfo || centerData.user || centerData.profile
+         if (customer) this.applyProfile(customer, { cache: true, h5: true })
+         this.getPhone = !!(centerData.getPhone || centerData.needBindPhone || centerData.needBindMobile || customer?.needBindPhone)
++        this.enableShare = Number(centerData.enableShare ?? centerData.enable_share ?? this.enableShare)
+         loaded = true
+       }
+       if (orderResult.status === 'fulfilled' || refundResult.status === 'fulfilled') {
+@@ -273,6 +287,26 @@ export default {
+       }
+       if (!loaded) throw centerResult.reason || orderResult.reason || refundResult.reason || new Error('H5个人中心加载失败')
+     },
++    async refreshDistributorStatus() {
++      try {
++        const result = await checkCurrentDistributor()
++        const nextIsDistributor = !!result?.isDistributor
++        const nextDistributorStatus = Number(result?.status || 0)
++        const nextInvitationRecordVisible = nextIsDistributor && nextDistributorStatus === 1
++        this.isDistributor = nextIsDistributor
++        this.distributorStatus = nextDistributorStatus
++        saveLiveRoomContext({
++          roomCode: this.liveRoomCode || this.liveRoomContext?.roomCode || '',
++          liveId: this.liveRoomId || '',
++          roomId: this.liveRoomId || '',
++          isDistributor: nextIsDistributor,
++          distributorStatus: nextDistributorStatus,
++          invitationRecordVisible: nextInvitationRecordVisible,
++        })
++      } catch (error) {
++        console.warn('[UserCenter] checkDistributor fail:', error)
++      }
++    },
+     applyProfile(customer = {}, options = {}) {
+       const normalized = normalizeCustomer(customer)
+       this.detail = {
+@@ -320,6 +354,10 @@ export default {
+     },
+     syncLiveContext() {
+       this.liveRoomContext = mergeLiveRoomContext(loadLiveRoomContext() || {})
++      const context = this.liveRoomContext || {}
++      this.isDistributor = !!context.invitationRecordVisible || (!!context.isDistributor && Number(context.distributorStatus || 0) === 1)
++      this.distributorStatus = Number(context.distributorStatus || (this.isDistributor ? 1 : 0) || 0)
++      this.enableShare = Number(context.enableShare ?? context.enable_share ?? this.enableShare)
+     },
+     withLiveQuery(url) {
+       return appendLiveRoomQuery(url, this.liveRoomContext || {})
+@@ -335,6 +373,10 @@ export default {
+         complaint: this.withLiveQuery('/pagesPlus/main/report/report-type?fromPath=%2Fpages%2Fcenter%2Findex'),
+         address: this.withLiveQuery('/pagesPlus/main/address/index'),
+       }
++      if (type === 'invitationRecord') {
++        uni.navigateTo({ url: '/pagesPlus/main/invitation-record/index' })
++        return
++      }
+       const url = routes[type]
+       if (url) uni.navigateTo({ url })
+     },
+diff --git a/uniapp-src/src/pagesPlus/main/center/index.vue b/uniapp-src/src/pagesPlus/main/center/index.vue
+index 42506de7..e5fb2e52 100644
+--- a/uniapp-src/src/pagesPlus/main/center/index.vue
++++ b/uniapp-src/src/pagesPlus/main/center/index.vue
+@@ -41,6 +41,7 @@ import CenterSectionCard from "@/components/center-section-card.vue";
+ import LiveMiniWindow from "@/components/live-mini-window.vue";
+ import { getOrderUnreadStats } from "@/api/order";
+ import { getRefundUnreadStats } from "@/api/refund";
++import { checkCurrentDistributor } from "@/api/live";
+ import { getCenter } from "@/api/user";
+ import { useUserStore } from "@/stores/user";
+ import { logoutAndRedirect } from "@/services/logout";
+@@ -201,11 +202,34 @@ function applyCenterPayload(data = {}) {
+     applyCustomer(customer);
+     useUserStore().setUserInfo(customer);
+   }
+-  isDistributor.value = !!data.isDistributor || Number(data.distributorStatus || 0) === 1;
+-  distributorStatus.value = Number(data.distributorStatus || data.distributor_status || (isDistributor.value ? 1 : 0) || 0);
+   enableShare.value = Number(data.enableShare ?? data.enable_share ?? enableShare.value);
+ }
+ 
++async function loadDistributorStatus() {
++  try {
++    const result = await checkCurrentDistributor();
++    const nextIsDistributor = !!result?.isDistributor;
++    const nextDistributorStatus = Number(result?.status || 0);
++    const nextInvitationRecordVisible = nextIsDistributor && nextDistributorStatus === 1;
++    isDistributor.value = nextIsDistributor;
++    distributorStatus.value = nextDistributorStatus;
++    saveLiveRoomContext({
++      roomCode: liveRoomCode.value || liveRoomContext.value?.roomCode || "",
++      liveId: liveRoomId.value || "",
++      roomId: liveRoomId.value || "",
++      isDistributor: nextIsDistributor,
++      distributorStatus: nextDistributorStatus,
++      invitationRecordVisible: nextInvitationRecordVisible,
++    });
++  } catch (err) {
++    console.warn("[Center] checkDistributor fail:", err);
++  }
++}
++
++function refreshDistributorStatus() {
++  loadDistributorStatus();
++}
++
+ async function loadCenter() {
+   applyCachedCustomer();
+   try {
+@@ -234,7 +258,7 @@ function syncLiveContext(options = {}) {
+   const ctx = liveRoomContext.value;
+   liveRoomId.value = Number(normalized.roomId || normalized.liveId || ctx?.liveId || ctx?.roomId || 0);
+   if (ctx) {
+-    isDistributor.value = !!ctx.isDistributor && Number(ctx.distributorStatus || 0) === 1;
++    isDistributor.value = !!ctx.invitationRecordVisible || (!!ctx.isDistributor && Number(ctx.distributorStatus || 0) === 1);
+     distributorStatus.value = Number(ctx.distributorStatus || (isDistributor.value ? 1 : 0) || 0);
+     enableShare.value = Number(ctx.enableShare ?? ctx.enable_share ?? enableShare.value);
+   }
+@@ -244,11 +268,13 @@ onLoad((options = {}) => {
+   lastQuery = options || {};
+   syncLiveContext(options);
+   applyCachedCustomer();
++  refreshDistributorStatus();
+   loadCenter();
+ });
+ 
+ onShow(() => {
+   syncLiveContext(lastQuery);
++  refreshDistributorStatus();
+   loadCenter();
+ });
+ 
+@@ -285,12 +311,8 @@ function onAction(type) {
+     return;
+   }
+   if (type === "invitationRecord") {
+-    if (!liveRoomId.value) {
+-      uni.showToast({ title: "请从直播间进入", icon: "none" });
+-      return;
+-    }
+     uni.navigateTo({
+-      url: withLiveQuery(`/pagesPlus/main/invitation-record/index?roomId=${liveRoomId.value}`),
++      url: "/pagesPlus/main/invitation-record/index",
+     });
+     return;
+   }
+diff --git a/uniapp-src/src/pagesPlus/main/invitation-record/index.vue b/uniapp-src/src/pagesPlus/main/invitation-record/index.vue
+index 83296312..2437b2d8 100644
+--- a/uniapp-src/src/pagesPlus/main/invitation-record/index.vue
++++ b/uniapp-src/src/pagesPlus/main/invitation-record/index.vue
+@@ -83,7 +83,7 @@
+ <script setup>
+ import { computed, ref } from "vue";
+ import { onLoad } from "@dcloudio/uni-app";
+-import { getDistributorInvitedUsers } from "@/api/live";
++import { checkCurrentDistributor, getDistributorInvitedUsers } from "@/api/live";
+ import { loadLiveRoomContext } from "@/utils/live-room-context";
+ 
+ const statusOptions = [
+@@ -105,8 +105,6 @@ const finished = ref(false);
+ const keyword = ref("");
+ const selectedStatus = ref(0);
+ const statusMenuVisible = ref(false);
+-const roomId = ref(0);
+-const checking = ref(true);
+ 
+ const selectedStatusLabel = computed(() => {
+   return statusOptions.find((item) => item.value === selectedStatus.value)?.label || "全部";
+@@ -162,7 +160,6 @@ async function fetchRecordsWithRetry(params) {
+ async function loadRecords(reset = false) {
+   if (loading.value) return;
+   if (!reset && finished.value) return;
+-  if (!roomId.value) return;
+   if (reset) {
+     page.value = 1;
+     finished.value = false;
+@@ -170,7 +167,6 @@ async function loadRecords(reset = false) {
+   }
+   loading.value = true;
+   const params = {
+-    roomId: roomId.value,
+     page: page.value,
+     pageSize,
+     keyword: keyword.value.trim(),
+@@ -197,14 +193,14 @@ function loadMore() {
+ }
+ 
+ async function ensureDistributorAndLoad() {
+-  if (!roomId.value) {
+-    uni.showToast({ title: "请从直播间进入", icon: "none" });
+-    setTimeout(() => uni.navigateBack(), 800);
+-    return;
++  let ok = false;
++  try {
++    const result = await checkCurrentDistributor();
++    ok = !!result?.isDistributor && Number(result?.status || 0) === 1;
++  } catch (err) {
++    const ctx = loadLiveRoomContext();
++    ok = !!ctx?.invitationRecordVisible || (!!ctx?.isDistributor && Number(ctx?.distributorStatus || 0) === 1);
+   }
+-  // [分销员] 状态依赖进入直播间时写入的缓存，本页不重复调 checkDistributor
+-  const ctx = loadLiveRoomContext();
+-  const ok = !!ctx?.isDistributor && Number(ctx?.distributorStatus) === 1;
+   if (!ok) {
+     uni.showToast({ title: "仅分销员可查看邀请记录", icon: "none" });
+     setTimeout(() => uni.navigateBack(), 1000);
+@@ -213,14 +209,7 @@ async function ensureDistributorAndLoad() {
+   loadRecords(true);
+ }
+ 
+-onLoad((options) => {
+-  const optionRoomId = Number(options?.roomId || 0);
+-  if (optionRoomId > 0) {
+-    roomId.value = optionRoomId;
+-  } else {
+-    const ctx = loadLiveRoomContext();
+-    roomId.value = Number(ctx?.liveId || 0);
+-  }
++onLoad(() => {
+   ensureDistributorAndLoad();
+ });
+ </script>
+-- 
+2.50.1 (Apple Git-155)
+

@@ -105,7 +105,7 @@
 import { ref, computed, watch } from "vue";
 import { getLiveDistributorShareUrl } from "@/services/live-share";
 import { readBindId } from "@/services/h5-auth-context";
-import { normalizeBase64ImageDataUrl, saveImageToAlbumWithAuth, saveImageUrlToAlbum, writeBase64ImageToTempFile } from "@/platform/weixin/file";
+import { normalizeImageSource, saveImageToAlbumWithAuth, saveImageUrlToAlbum, writeBase64ImageToTempFile } from "@/platform/weixin/file";
 import { createQrCodeTempFile } from "@/platform/weixin/qrcode";
 
 const props = defineProps({
@@ -334,7 +334,7 @@ async function loadShareUrl() {
     const data = res?.data || res || {};
     const url = data.shareUrl || data.share_url || "";
     const code = data.shareCode || data.share_code || "";
-    const qrCode = normalizeBase64ImageDataUrl(data.miniProgramQrCode || data.mini_program_qr_code || "");
+    const qrCode = normalizeImageSource(getMiniProgramQrCodeFromData(data));
     const shortLink = String(data.miniProgramShortLink || data.mini_program_short_link || "").trim();
     if (url) loadedShareUrl.value = url;
     if (code) loadedShareCode.value = code;
@@ -355,6 +355,21 @@ async function loadShareUrl() {
   } finally {
     shareUrlLoading.value = false;
   }
+}
+
+function getMiniProgramQrCodeFromData(data = {}) {
+  return (
+    data.miniProgramQrCode ||
+    data.mini_program_qr_code ||
+    data.miniProgramCode ||
+    data.mini_program_code ||
+    data.wxaCode ||
+    data.wxacode ||
+    data.qrCode ||
+    data.qr_code ||
+    data.qrcode ||
+    ""
+  );
 }
 
 // [2026-05-21] 等待 distributorShareUrl 接口 resolve，避免在 loading 期间点击导致归因链接缺失

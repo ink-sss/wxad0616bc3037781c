@@ -95,7 +95,7 @@
       <view class="inv-debug-lines">
         <text class="inv-debug-line">头像: {{ payload.anchorAvatar ? "有" : "空" }}</text>
         <text class="inv-debug-line">昵称: {{ payload.inviterName || "空" }}</text>
-        <text class="inv-debug-line">二维码: {{ qrcodeSrc ? "有" : "空" }}</text>
+        <text class="inv-debug-line">二维码: {{ qrcodeStatusText }}</text>
         <text class="inv-debug-line">分享图: {{ shareImageSrc ? "已生成" : "空" }}</text>
       </view>
       <view class="inv-debug-button">
@@ -111,7 +111,7 @@ import { onShareAppMessage, onShareTimeline, onUnload } from "@dcloudio/uni-app"
 import templates from "./templates";
 import { getProfile } from "@/api/user";
 import { useUserStore } from "@/stores/user";
-import { normalizeBase64ImageDataUrl, saveImageToAlbumWithAuth, writeBase64ImageToTempFile } from "@/platform/weixin/file";
+import { normalizeImageSource, saveImageToAlbumWithAuth, writeBase64ImageToTempFile } from "@/platform/weixin/file";
 import { useInvitationDebug } from "./debug";
 import {
   createInvitationPosterTempFile,
@@ -154,6 +154,8 @@ const payload = ref({
 const activeIdx = ref(0);
 const qrcodeSrc = ref("");
 const miniProgramQrCodeSrc = ref("");
+const qrcodeSource = ref("none");
+const qrcodeFallbackReason = ref("");
 const posterImageSrc = ref("");
 const shareImageSrc = ref("");
 const posterRenderTaskId = ref(0);
@@ -168,6 +170,9 @@ let posterRenderPromise = null;
 let shareRenderPromise = null;
 let posterPreloadPromise = null;
 let posterPreloadRunId = 0;
+let posterPreloadTimer = null;
+const POSTER_PRELOAD_DELAY_MS = 1200;
+const POSTER_PRELOAD_STEP_DELAY_MS = 180;
 
 const displayTime = computed(() => {
   const schedule = payload.value.scheduleTime || payload.value.liveDate || "";
@@ -177,6 +182,14 @@ const displayTime = computed(() => {
 
 const shareMiniProgramPath = computed(() => {
   return payload.value.miniProgramPath || buildMiniProgramPath(payload.value) || "/pages/broadcast/entry";
+});
+
+const qrcodeStatusText = computed(() => {
+  if (!qrcodeSrc.value) return "空";
+  if (qrcodeSource.value === "miniProgramQrCodeTempFile" || qrcodeSource.value === "miniProgramQrCode") {
+    return "小程序码";
+  }
+  return qrcodeFallbackReason.value ? `普通二维码(${qrcodeFallbackReason.value})` : "普通二维码";
 });
 
 const avatarStyle = computed(() => {
@@ -221,12 +234,16 @@ const {
   shareMiniProgramPath,
   displayTime,
   qrcodeSrc,
+  qrcodeSource,
+  qrcodeFallbackReason,
+  miniProgramQrCodeSrc,
   posterImageSrc,
   shareImageSrc,
   posterRendering,
   posterRenderTaskId,
   getPosterRenderPromise: () => posterRenderPromise,
   getShareRenderPromise: () => shareRenderPromise,
+  getPosterPreloadPromise: () => posterPreloadPromise,
 });
 
 onMounted(async () => {
@@ -247,7 +264,7 @@ onMounted(async () => {
     hasLink: !!data.link,
     hasAvatar: !!data.anchorAvatar,
     hasMiniProgramPath: !!data.miniProgramPath,
-    hasMiniProgramQrCode: !!(data.miniProgramQrCode || data.mini_program_qr_code),
+    hasMiniProgramQrCode: !!getMiniProgramQrCodeFromData(data),
     hasRoomCode: !!data.roomCode,
     hasLiveId: !!(data.liveId || data.roomId),
     hasTenantId: !!data.tenantId,
@@ -256,7 +273,7 @@ onMounted(async () => {
   payload.value = {
     link: data.link || "/pages/broadcast/entry",
     miniProgramPath: data.miniProgramPath || buildMiniProgramPath(data),
-    miniProgramQrCode: normalizeBase64ImageDataUrl(data.miniProgramQrCode || data.mini_program_qr_code || ""),
+    miniProgramQrCode: normalizeImageSource(getMiniProgramQrCodeFromData(data)),
     roomCode: data.roomCode || "",
     roomId: data.roomId || "",
     liveId: data.liveId || data.roomId || "",
@@ -287,18 +304,18 @@ onMounted(async () => {
     sharePath: shareMiniProgramPath.value,
     qrcodeText: payload.value.link || shareMiniProgramPath.value,
     hasMiniProgramQrCode: !!payload.value.miniProgramQrCode,
+    miniProgramQrCodeType: getImageSourceType(payload.value.miniProgramQrCode),
   });
   await renderQrcode();
   await renderPoster();
-  startPosterPreloadQueue();
+  schedulePosterPreloadQueue("page_mounted");
 });
 
 onUnload(() => {
   posterRenderTaskId.value += 1;
-  posterPreloadRunId += 1;
+  cancelPosterPreload("page_unload");
   posterRenderPromise = null;
   shareRenderPromise = null;
-  posterPreloadPromise = null;
   resetPosterRuntimeCache("page_unload");
 });
 
@@ -341,6 +358,7 @@ function buildPosterPayload() {
     link: payload.value.link || shareMiniProgramPath.value,
     qrcodeText: shareMiniProgramPath.value,
     qrcodeImage: miniProgramQrCodeSrc.value || payload.value.miniProgramQrCode || "",
+    qrcodeImageSource: qrcodeSource.value,
   };
 }
 
@@ -427,21 +445,45 @@ async function resolveInviterProfile() {
 
 function renderQrcode() {
   const text = payload.value.link || "/pages/broadcast/entry";
-  qrcodeSrc.value = miniProgramQrCodeSrc.value || payload.value.miniProgramQrCode || buildQrcodeImageUrl(text);
+  const miniProgramCode = miniProgramQrCodeSrc.value || payload.value.miniProgramQrCode || "";
+  if (miniProgramCode) {
+    qrcodeSrc.value = miniProgramCode;
+    qrcodeSource.value = miniProgramQrCodeSrc.value ? "miniProgramQrCodeTempFile" : "miniProgramQrCode";
+    qrcodeFallbackReason.value = "";
+  } else {
+    qrcodeSrc.value = buildQrcodeImageUrl(text);
+    qrcodeSource.value = qrcodeSrc.value ? "ordinaryQrCode" : "none";
+    qrcodeFallbackReason.value = qrcodeSrc.value ? "payload缺少小程序码" : "二维码内容为空";
+  }
   recordDebugEvent("qrcode_rendered", {
     hasImage: !!qrcodeSrc.value,
     text: maskSensitiveText(text),
-    source: payload.value.miniProgramQrCode ? "miniProgramQrCode" : "generated",
+    source: qrcodeSource.value,
+    fallbackReason: qrcodeFallbackReason.value,
+    hasMiniProgramQrCode: !!payload.value.miniProgramQrCode,
+    miniProgramQrCodeType: getImageSourceType(payload.value.miniProgramQrCode),
     imageUrl: qrcodeSrc.value,
   });
 }
 
 async function resolveMiniProgramQrCodeSrc(value) {
-  const image = normalizeBase64ImageDataUrl(value);
+  const image = normalizeImageSource(value);
   if (!image) return "";
+  if (!/^data:image\//i.test(image)) {
+    recordDebugEvent("mini_program_qrcode_src_ready", {
+      type: getImageSourceType(image),
+      tempFile: false,
+    });
+    return image;
+  }
   // #ifdef MP-WEIXIN
   try {
-    return await writeBase64ImageToTempFile(image, `invitation-qrcode-${Date.now()}.png`);
+    const filePath = await writeBase64ImageToTempFile(image, `invitation-qrcode-${Date.now()}.png`);
+    recordDebugEvent("mini_program_qrcode_temp_file_success", {
+      type: "data-url",
+      filePath,
+    });
+    return filePath;
   } catch (error) {
     recordDebugEvent("mini_program_qrcode_temp_file_fail", normalizeError(error));
   }
@@ -457,11 +499,13 @@ function buildQrcodeImageUrl(text) {
 
 async function selectTemplate(idx) {
   if (idx === activeIdx.value) return;
+  cancelPosterPreload("template_select");
   activeIdx.value = idx;
   const template = templates[idx];
   posterImageSrc.value = getCachedPosterFile(template);
   shareImageSrc.value = getCachedShareFile(template);
   await renderPoster();
+  schedulePosterPreloadQueue("template_select_done");
 }
 
 function formatTime(ts) {

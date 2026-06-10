@@ -142,6 +142,18 @@ export function normalizeBase64ImageDataUrl(value, mimeType = 'image/png') {
   return `data:${mimeType || 'image/png'};base64,${compact}`
 }
 
+export function normalizeImageSource(value, mimeType = 'image/png') {
+  const text = String(value || '').trim()
+  if (!text) return ''
+  if (/^data:image\//i.test(text)) return normalizeBase64ImageDataUrl(text, mimeType)
+  if (/^(?:https?:\/\/|wxfile:\/\/|file:\/\/|\/)/i.test(text)) return text
+  const compact = text.replace(/\s+/g, '')
+  if (/^[A-Za-z0-9+/]+={0,2}$/.test(compact) && compact.length > 80) {
+    return normalizeBase64ImageDataUrl(compact, mimeType)
+  }
+  return text
+}
+
 export function saveImageToAlbum(filePath) {
   if (!filePath) return Promise.reject(new Error('图片路径为空'))
   return promisifyApi('saveImageToPhotosAlbum', { filePath }, { preferUni: true })
