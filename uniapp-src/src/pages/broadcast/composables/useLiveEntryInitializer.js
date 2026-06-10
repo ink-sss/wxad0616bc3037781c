@@ -912,6 +912,14 @@ export function useLiveEntryInitializer(ctx) {
   function applyRoomSettingAndSign(d) {
     const rawSetting = firstPresent(d.setting, d.room_setting, d.roomSetting, {});
     Object.assign(roomSetting.value, normalizeRoomSetting(rawSetting));
+    try {
+      saveLiveRoomContext({
+        roomCode: roomCode.value || "",
+        liveId: liveId.value || "",
+        roomId: liveId.value || "",
+        enableShare: roomSetting.value?.enableShare,
+      });
+    } catch (_) {}
     const normalizedSignConfig = normalizeSignConfig(firstPresent(d.signConfig, d.sign_config, d.sign, null));
     if (!normalizedSignConfig) return;
     signConfig.value = normalizedSignConfig;
@@ -1255,6 +1263,7 @@ export function useLiveEntryInitializer(ctx) {
       .then((result) => {
         const _isDistributor = !!result?.isDistributor;
         const _distributorStatus = Number(result?.status || 0);
+        const _invitationRecordVisible = _isDistributor && _distributorStatus === 1;
         isDistributor.value = _isDistributor;
         distributorStatus.value = _distributorStatus;
         try {
@@ -1263,6 +1272,7 @@ export function useLiveEntryInitializer(ctx) {
             liveId: liveId.value || "",
             isDistributor: _isDistributor,
             distributorStatus: _distributorStatus,
+            invitationRecordVisible: _invitationRecordVisible,
           });
         } catch (_) {}
       })

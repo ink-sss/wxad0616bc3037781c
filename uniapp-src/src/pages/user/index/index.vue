@@ -64,6 +64,7 @@ import { bindMiniProgramMobile } from '../page-tools.js'
 import { getOrderUnreadStats } from '../../../api/order.js'
 import { getRefundUnreadStats } from '../../../api/refund.js'
 import { getCenter } from '../../../api/user.js'
+import { checkCurrentDistributor } from '../../../api/live.js'
 import { normalizeLiveRouteOptions } from '../../../utils/live-route.js'
 import { appendLiveRoomQuery, loadLiveRoomContext, mergeLiveRoomContext, saveLiveRoomContext } from '../../../utils/live-room-context.js'
 import RequestLoading from '../../../components/liveloading.vue'
@@ -167,6 +168,9 @@ export default {
       wxBinding: false,
       getPhone: false,
       isLoggedIn: false,
+      isDistributor: false,
+      distributorStatus: 0,
+      enableShare: 1,
       bgColor: '#ff5704',
       liveRoomContext: {},
     }
@@ -185,11 +189,15 @@ export default {
       ]
     },
     h5ServiceItems() {
-      return [
+      const items = [
         { type: 'prizeRecord', text: '中奖记录', icon: 'https://man.lqjy.cc/static/icon/lottery-points.png' },
-        { type: 'address', text: '收货地址', icon: 'https://man.lqjy.cc/static/icon/address_icon.png' },
-        { type: 'complaint', text: '投诉', icon: 'https://man.lqjy.cc/static/icons/more4.png' },
       ]
+      if (this.enableShare !== 0 && this.isDistributor && this.distributorStatus === 1) {
+        items.push({ type: 'invitationRecord', text: '邀请记录', icon: 'https://man.lqjy.cc/static/icons/more2.png' })
+      }
+      items.push({ type: 'address', text: '收货地址', icon: 'https://man.lqjy.cc/static/icon/address_icon.png' })
+      items.push({ type: 'complaint', text: '投诉', icon: 'https://man.lqjy.cc/static/icons/more4.png' })
+      return items
     },
     hasProfile() {
       return !!(this.detail && (this.detail.nickName || this.detail.nickname || this.detail.userName || this.detail.user_id || this.detail.userId))
@@ -211,6 +219,9 @@ export default {
     liveRoomCode() {
       return this.liveRoomContext?.roomCode || ''
     },
+    liveRoomId() {
+      return Number(this.liveRoomContext?.liveId || this.liveRoomContext?.roomId || 0)
+    },
   },
   onReady() {
     uni.hideTabBar()
@@ -226,6 +237,7 @@ export default {
   },
   onShow() {
     this.syncLiveContext()
+    this.refreshDistributorStatus()
     this.getData()
   },
   onPullDownRefresh() {
@@ -237,6 +249,7 @@ export default {
       uni.showLoading({ title: '加载中' })
       this.syncAuthFromStorage()
       this.applyCachedProfile()
+      this.refreshDistributorStatus()
       try {
         await this.loadH5CenterData()
       } catch (error) {
@@ -260,6 +273,7 @@ export default {
         const customer = centerData.customer || centerData.customerInfo || centerData.userInfo || centerData.user || centerData.profile
         if (customer) this.applyProfile(customer, { cache: true, h5: true })
         this.getPhone = !!(centerData.getPhone || centerData.needBindPhone || centerData.needBindMobile || customer?.needBindPhone)
+        this.enableShare = Number(centerData.enableShare ?? centerData.enable_share ?? this.enableShare)
         loaded = true
       }
       if (orderResult.status === 'fulfilled' || refundResult.status === 'fulfilled') {
@@ -272,6 +286,26 @@ export default {
         this.orderCount = normalizeOrderCount(centerData.orderStats || centerData.orderCount || {}, centerData.refundStats || {})
       }
       if (!loaded) throw centerResult.reason || orderResult.reason || refundResult.reason || new Error('H5个人中心加载失败')
+    },
+    async refreshDistributorStatus() {
+      try {
+        const result = await checkCurrentDistributor()
+        const nextIsDistributor = !!result?.isDistributor
+        const nextDistributorStatus = Number(result?.status || 0)
+        const nextInvitationRecordVisible = nextIsDistributor && nextDistributorStatus === 1
+        this.isDistributor = nextIsDistributor
+        this.distributorStatus = nextDistributorStatus
+        saveLiveRoomContext({
+          roomCode: this.liveRoomCode || this.liveRoomContext?.roomCode || '',
+          liveId: this.liveRoomId || '',
+          roomId: this.liveRoomId || '',
+          isDistributor: nextIsDistributor,
+          distributorStatus: nextDistributorStatus,
+          invitationRecordVisible: nextInvitationRecordVisible,
+        })
+      } catch (error) {
+        console.warn('[UserCenter] checkDistributor fail:', error)
+      }
     },
     applyProfile(customer = {}, options = {}) {
       const normalized = normalizeCustomer(customer)
@@ -320,6 +354,10 @@ export default {
     },
     syncLiveContext() {
       this.liveRoomContext = mergeLiveRoomContext(loadLiveRoomContext() || {})
+      const context = this.liveRoomContext || {}
+      this.isDistributor = !!context.invitationRecordVisible || (!!context.isDistributor && Number(context.distributorStatus || 0) === 1)
+      this.distributorStatus = Number(context.distributorStatus || (this.isDistributor ? 1 : 0) || 0)
+      this.enableShare = Number(context.enableShare ?? context.enable_share ?? this.enableShare)
     },
     withLiveQuery(url) {
       return appendLiveRoomQuery(url, this.liveRoomContext || {})
@@ -334,6 +372,10 @@ export default {
         prizeRecord: this.withLiveQuery('/pagesPlus/main/prize-record/index'),
         complaint: this.withLiveQuery('/pagesPlus/main/report/report-type?fromPath=%2Fpages%2Fcenter%2Findex'),
         address: this.withLiveQuery('/pagesPlus/main/address/index'),
+      }
+      if (type === 'invitationRecord') {
+        uni.navigateTo({ url: '/pagesPlus/main/invitation-record/index' })
+        return
       }
       const url = routes[type]
       if (url) uni.navigateTo({ url })

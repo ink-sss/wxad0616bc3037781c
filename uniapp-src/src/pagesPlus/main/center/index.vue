@@ -41,6 +41,7 @@ import CenterSectionCard from "@/components/center-section-card.vue";
 import LiveMiniWindow from "@/components/live-mini-window.vue";
 import { getOrderUnreadStats } from "@/api/order";
 import { getRefundUnreadStats } from "@/api/refund";
+import { checkCurrentDistributor } from "@/api/live";
 import { getCenter } from "@/api/user";
 import { useUserStore } from "@/stores/user";
 import { logoutAndRedirect } from "@/services/logout";
@@ -201,9 +202,32 @@ function applyCenterPayload(data = {}) {
     applyCustomer(customer);
     useUserStore().setUserInfo(customer);
   }
-  isDistributor.value = !!data.isDistributor || Number(data.distributorStatus || 0) === 1;
-  distributorStatus.value = Number(data.distributorStatus || data.distributor_status || (isDistributor.value ? 1 : 0) || 0);
   enableShare.value = Number(data.enableShare ?? data.enable_share ?? enableShare.value);
+}
+
+async function loadDistributorStatus() {
+  try {
+    const result = await checkCurrentDistributor();
+    const nextIsDistributor = !!result?.isDistributor;
+    const nextDistributorStatus = Number(result?.status || 0);
+    const nextInvitationRecordVisible = nextIsDistributor && nextDistributorStatus === 1;
+    isDistributor.value = nextIsDistributor;
+    distributorStatus.value = nextDistributorStatus;
+    saveLiveRoomContext({
+      roomCode: liveRoomCode.value || liveRoomContext.value?.roomCode || "",
+      liveId: liveRoomId.value || "",
+      roomId: liveRoomId.value || "",
+      isDistributor: nextIsDistributor,
+      distributorStatus: nextDistributorStatus,
+      invitationRecordVisible: nextInvitationRecordVisible,
+    });
+  } catch (err) {
+    console.warn("[Center] checkDistributor fail:", err);
+  }
+}
+
+function refreshDistributorStatus() {
+  loadDistributorStatus();
 }
 
 async function loadCenter() {
@@ -234,7 +258,7 @@ function syncLiveContext(options = {}) {
   const ctx = liveRoomContext.value;
   liveRoomId.value = Number(normalized.roomId || normalized.liveId || ctx?.liveId || ctx?.roomId || 0);
   if (ctx) {
-    isDistributor.value = !!ctx.isDistributor && Number(ctx.distributorStatus || 0) === 1;
+    isDistributor.value = !!ctx.invitationRecordVisible || (!!ctx.isDistributor && Number(ctx.distributorStatus || 0) === 1);
     distributorStatus.value = Number(ctx.distributorStatus || (isDistributor.value ? 1 : 0) || 0);
     enableShare.value = Number(ctx.enableShare ?? ctx.enable_share ?? enableShare.value);
   }
@@ -244,11 +268,13 @@ onLoad((options = {}) => {
   lastQuery = options || {};
   syncLiveContext(options);
   applyCachedCustomer();
+  refreshDistributorStatus();
   loadCenter();
 });
 
 onShow(() => {
   syncLiveContext(lastQuery);
+  refreshDistributorStatus();
   loadCenter();
 });
 
@@ -285,12 +311,8 @@ function onAction(type) {
     return;
   }
   if (type === "invitationRecord") {
-    if (!liveRoomId.value) {
-      uni.showToast({ title: "请从直播间进入", icon: "none" });
-      return;
-    }
     uni.navigateTo({
-      url: withLiveQuery(`/pagesPlus/main/invitation-record/index?roomId=${liveRoomId.value}`),
+      url: "/pagesPlus/main/invitation-record/index",
     });
     return;
   }

@@ -83,7 +83,7 @@
 <script setup>
 import { computed, ref } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
-import { getDistributorInvitedUsers } from "@/api/live";
+import { checkCurrentDistributor, getDistributorInvitedUsers } from "@/api/live";
 import { loadLiveRoomContext } from "@/utils/live-room-context";
 
 const statusOptions = [
@@ -105,8 +105,6 @@ const finished = ref(false);
 const keyword = ref("");
 const selectedStatus = ref(0);
 const statusMenuVisible = ref(false);
-const roomId = ref(0);
-const checking = ref(true);
 
 const selectedStatusLabel = computed(() => {
   return statusOptions.find((item) => item.value === selectedStatus.value)?.label || "全部";
@@ -162,7 +160,6 @@ async function fetchRecordsWithRetry(params) {
 async function loadRecords(reset = false) {
   if (loading.value) return;
   if (!reset && finished.value) return;
-  if (!roomId.value) return;
   if (reset) {
     page.value = 1;
     finished.value = false;
@@ -170,7 +167,6 @@ async function loadRecords(reset = false) {
   }
   loading.value = true;
   const params = {
-    roomId: roomId.value,
     page: page.value,
     pageSize,
     keyword: keyword.value.trim(),
@@ -197,14 +193,14 @@ function loadMore() {
 }
 
 async function ensureDistributorAndLoad() {
-  if (!roomId.value) {
-    uni.showToast({ title: "请从直播间进入", icon: "none" });
-    setTimeout(() => uni.navigateBack(), 800);
-    return;
+  let ok = false;
+  try {
+    const result = await checkCurrentDistributor();
+    ok = !!result?.isDistributor && Number(result?.status || 0) === 1;
+  } catch (err) {
+    const ctx = loadLiveRoomContext();
+    ok = !!ctx?.invitationRecordVisible || (!!ctx?.isDistributor && Number(ctx?.distributorStatus || 0) === 1);
   }
-  // [分销员] 状态依赖进入直播间时写入的缓存，本页不重复调 checkDistributor
-  const ctx = loadLiveRoomContext();
-  const ok = !!ctx?.isDistributor && Number(ctx?.distributorStatus) === 1;
   if (!ok) {
     uni.showToast({ title: "仅分销员可查看邀请记录", icon: "none" });
     setTimeout(() => uni.navigateBack(), 1000);
@@ -213,14 +209,7 @@ async function ensureDistributorAndLoad() {
   loadRecords(true);
 }
 
-onLoad((options) => {
-  const optionRoomId = Number(options?.roomId || 0);
-  if (optionRoomId > 0) {
-    roomId.value = optionRoomId;
-  } else {
-    const ctx = loadLiveRoomContext();
-    roomId.value = Number(ctx?.liveId || 0);
-  }
+onLoad(() => {
   ensureDistributorAndLoad();
 });
 </script>

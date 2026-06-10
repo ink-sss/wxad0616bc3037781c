@@ -370,18 +370,23 @@ export function checkDistributor(roomId) {
   return h5Get('/h5/live/distributorCheck', { roomId: Number(roomId || 0) })
 }
 
+export function checkCurrentDistributor() {
+  return h5Get('/h5/live/distributorCurrent')
+}
+
 export function getDistributorShareUrl(roomId) {
   return h5Get('/h5/live/distributorShareUrl', { roomId: Number(roomId || 0) })
 }
 
 export function getDistributorInvitedUsers(params = {}) {
-  return h5Get('/h5/live/distributorInvitedUsers', {
-    roomId: Number(params.roomId || 0),
+  const data = {
     keyword: params.keyword || '',
     currentStatus: params.currentStatus || 0,
     page: params.page || 1,
     pageSize: params.pageSize || 10,
-  })
+  }
+  if (params.roomId) data.roomId = Number(params.roomId || 0)
+  return h5Get('/h5/live/distributorInvitedUsers', data)
 }
 
 export function getPrizeRecordList(params = {}) {
