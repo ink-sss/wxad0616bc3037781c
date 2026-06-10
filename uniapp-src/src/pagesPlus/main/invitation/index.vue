@@ -116,10 +116,11 @@ import { useInvitationDebug } from "./debug";
 import {
   createInvitationPosterTempFile,
   createInvitationShareCardTempFile,
-  getInvitationPosterFileCache,
-  getInvitationShareFileCache,
+  getUsableInvitationPosterFileCache,
+  getUsableInvitationShareFileCache,
   resetInvitationPosterRuntimeCache,
   resolveInvitationPosterFileCache,
+  resolveInvitationShareFileCache,
   setInvitationPosterFileCache,
   setInvitationShareFileCache,
 } from "./poster";
@@ -174,6 +175,7 @@ let shareRenderPromise = null;
 let posterPreloadPromise = null;
 let posterPreloadRunId = 0;
 let posterPreloadTimer = null;
+const posterPageInstanceId = `invitation-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 const miniProgramQrCodeSrcCache = new Map();
 const INVITATION_POSTER_CACHE_VERSION = "qrcode-image-required-v3";
 const POSTER_PRELOAD_DELAY_MS = 1200;
@@ -402,6 +404,7 @@ function resetPosterRuntimeCache(reason) {
 
 function createPosterDebugOptions() {
   return {
+    promiseScope: posterPageInstanceId,
     onEvent: (type, detail) => recordDebugEvent(type, detail),
   };
 }
@@ -571,8 +574,9 @@ async function selectTemplate(idx) {
   cancelPosterPreload("template_select");
   activeIdx.value = idx;
   const template = templates[idx];
-  posterImageSrc.value = getCachedPosterFile(template);
-  shareImageSrc.value = getCachedShareFile(template);
+  const posterDebugOptions = createPosterDebugOptions();
+  posterImageSrc.value = await getCachedPosterFile(template, buildRenderCacheKey(template, "poster"), posterDebugOptions);
+  shareImageSrc.value = await getCachedShareFile(template, buildRenderCacheKey(template, "share"), posterDebugOptions);
   await renderPoster();
   schedulePosterPreloadQueue("template_select_done");
 }
@@ -676,8 +680,9 @@ async function renderPosterTask(taskId) {
     return;
   }
   // #ifdef MP-WEIXIN
-  const cachedPoster = getCachedPosterFile(template, posterCacheKey);
-  const cachedShare = getCachedShareFile(template, shareCacheKey);
+  const posterDebugOptions = createPosterDebugOptions();
+  const cachedPoster = await getCachedPosterFile(template, posterCacheKey, posterDebugOptions);
+  const cachedShare = await getCachedShareFile(template, shareCacheKey, posterDebugOptions);
   posterImageSrc.value = cachedPoster;
   shareImageSrc.value = cachedShare;
   if (cachedPoster) {
@@ -691,7 +696,6 @@ async function renderPosterTask(taskId) {
   posterRendering.value = !cachedPoster;
   try {
     const posterPayload = buildPosterPayload();
-    const posterDebugOptions = createPosterDebugOptions();
     recordDebugEvent("render_payload", {
       taskId,
       hasAvatar: !!posterPayload.anchorAvatar,
@@ -711,6 +715,7 @@ async function renderPosterTask(taskId) {
       try {
         const result = await resolveInvitationPosterFileCache(posterCacheKey, () =>
           createInvitationPosterTempFile(template, posterPayload, posterDebugOptions),
+          posterDebugOptions,
         );
         const filePath = result.filePath;
         if (posterRenderTaskId.value !== taskId) return;
@@ -816,7 +821,8 @@ async function preloadPosterTemplates(runId, posterPayload, reason = "") {
     }
     const templateId = template?.id || "";
     const posterCacheKey = buildRenderCacheKey(template, "poster");
-    const cachedPoster = getCachedPosterFile(template, posterCacheKey);
+    const posterDebugOptions = createPosterDebugOptions();
+    const cachedPoster = await getCachedPosterFile(template, posterCacheKey, posterDebugOptions);
     if (cachedPoster) {
       recordDebugEvent("poster_preload_skip_cache", { runId, templateId });
       continue;
@@ -833,9 +839,9 @@ async function preloadPosterTemplates(runId, posterPayload, reason = "") {
     const startedAt = Date.now();
     try {
       recordDebugEvent("poster_preload_template_start", { runId, templateId });
-      const posterDebugOptions = createPosterDebugOptions();
       const result = await resolveInvitationPosterFileCache(posterCacheKey, () =>
         createInvitationPosterTempFile(template, posterPayload, posterDebugOptions),
+        posterDebugOptions,
       );
       if (posterPreloadRunId !== runId) {
         recordDebugEvent("poster_preload_template_stale", {
@@ -898,13 +904,8 @@ async function renderShareCard(taskId, template, posterPayload, posterDebugOptio
     });
     return;
   }
-  if (shareReadyMap.value[templateId]) {
-    shareImageSrc.value = shareReadyMap.value[templateId];
-    recordDebugEvent("share_card_cache_hit", { taskId, templateId });
-    return;
-  }
   const shareCacheKey = buildRenderCacheKey(template, "share");
-  const cachedShare = getCachedShareFile(template, shareCacheKey);
+  const cachedShare = await getCachedShareFile(template, shareCacheKey, posterDebugOptions);
   if (cachedShare) {
     shareImageSrc.value = cachedShare;
     recordDebugEvent("share_file_cache_hit", { taskId, templateId });
@@ -912,7 +913,12 @@ async function renderShareCard(taskId, template, posterPayload, posterDebugOptio
   }
   const startedAt = Date.now();
   try {
-    const shareFilePath = await createInvitationShareCardTempFile(template, posterPayload, posterDebugOptions);
+    const result = await resolveInvitationShareFileCache(
+      shareCacheKey,
+      () => createInvitationShareCardTempFile(template, posterPayload, posterDebugOptions),
+      posterDebugOptions,
+    );
+    const shareFilePath = result.filePath;
     if (posterRenderTaskId.value !== taskId) return;
     shareImageSrc.value = shareFilePath;
     shareReadyMap.value = { ...shareReadyMap.value, [templateId]: shareFilePath };
@@ -920,6 +926,7 @@ async function renderShareCard(taskId, template, posterPayload, posterDebugOptio
     recordDebugEvent("share_card_ready", {
       taskId,
       filePath: shareFilePath,
+      cacheHitAfterWait: result.cached,
       durationMs: Date.now() - startedAt,
     });
   } catch (error) {
@@ -930,14 +937,30 @@ async function renderShareCard(taskId, template, posterPayload, posterDebugOptio
   }
 }
 
-function getCachedPosterFile(template, cacheKey = buildRenderCacheKey(template, "poster")) {
+async function getCachedPosterFile(template, cacheKey = buildRenderCacheKey(template, "poster"), options = {}) {
   const templateId = template?.id || "";
-  return getInvitationPosterFileCache(cacheKey) || posterReadyMap.value[templateId] || "";
+  const cachedFile = await getUsableInvitationPosterFileCache(cacheKey, options);
+  if (cachedFile) return cachedFile;
+  const readyFile = posterReadyMap.value[templateId] || "";
+  if (!readyFile) return "";
+  setInvitationPosterFileCache(cacheKey, readyFile);
+  const checkedReadyFile = await getUsableInvitationPosterFileCache(cacheKey, options);
+  if (checkedReadyFile) return checkedReadyFile;
+  posterReadyMap.value = { ...posterReadyMap.value, [templateId]: "" };
+  return "";
 }
 
-function getCachedShareFile(template, cacheKey = buildRenderCacheKey(template, "share")) {
+async function getCachedShareFile(template, cacheKey = buildRenderCacheKey(template, "share"), options = {}) {
   const templateId = template?.id || "";
-  return getInvitationShareFileCache(cacheKey) || shareReadyMap.value[templateId] || "";
+  const cachedFile = await getUsableInvitationShareFileCache(cacheKey, options);
+  if (cachedFile) return cachedFile;
+  const readyFile = shareReadyMap.value[templateId] || "";
+  if (!readyFile) return "";
+  setInvitationShareFileCache(cacheKey, readyFile);
+  const checkedReadyFile = await getUsableInvitationShareFileCache(cacheKey, options);
+  if (checkedReadyFile) return checkedReadyFile;
+  shareReadyMap.value = { ...shareReadyMap.value, [templateId]: "" };
+  return "";
 }
 
 function getMiniProgramQrCodeField(data = {}) {

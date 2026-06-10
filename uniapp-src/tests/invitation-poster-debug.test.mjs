@@ -47,6 +47,37 @@ test("invitation poster preload is delayed and cancelled around template clicks"
   assert.match(selectTemplate, /schedulePosterPreloadQueue\("template_select_done"\);/);
 });
 
+test("invitation poster re-entry validates exported caches and does not wait for stale page tasks", async () => {
+  const page = await readSource("src/pagesPlus/main/invitation/index.vue");
+  const poster = await readSource("src/pagesPlus/main/invitation/poster.js");
+
+  assert.match(page, /const posterPageInstanceId = `invitation-\$\{Date\.now\(\)\}-/);
+  assert.match(page, /promiseScope:\s*posterPageInstanceId/);
+  assert.match(page, /posterImageSrc\.value = await getCachedPosterFile/);
+  assert.match(page, /shareImageSrc\.value = await getCachedShareFile/);
+  assert.match(page, /const cachedPoster = await getCachedPosterFile/);
+  assert.match(page, /const cachedShare = await getCachedShareFile/);
+  assert.match(page, /async function getCachedPosterFile/);
+  assert.match(page, /setInvitationPosterFileCache\(cacheKey, readyFile\)/);
+  assert.match(page, /async function getCachedShareFile/);
+  assert.match(page, /setInvitationShareFileCache\(cacheKey, readyFile\)/);
+  assert.doesNotMatch(page, /if \(shareReadyMap\.value\[templateId\]\) \{\s*shareImageSrc\.value = shareReadyMap\.value\[templateId\];/);
+
+  assert.match(poster, /const FILE_CACHE_VALIDATE_TIMEOUT = 800;/);
+  assert.match(poster, /export async function getUsableInvitationPosterFileCache/);
+  assert.match(poster, /export async function getUsableInvitationShareFileCache/);
+  assert.match(poster, /export async function resolveInvitationPosterFileCache\(cacheKey, createFile, options = \{\}\)/);
+  assert.match(poster, /const promiseScope = getPosterFilePromiseScope\(options\);/);
+  assert.match(poster, /canSharePosterFilePromise\(entry, promiseScope\)/);
+  assert.match(poster, /poster_file_promise_scope_mismatch/);
+  assert.match(poster, /poster_file_promise_stale_result/);
+  assert.match(poster, /posterFilePromiseCache\.set\(key, \{ promise, scope: promiseScope \}\);/);
+  assert.match(poster, /function shouldValidateLocalFile\(filePath\)/);
+  assert.match(poster, /manager\.access\(\{\s*path: value,/s);
+  assert.match(poster, /cached_file_validate_fail/);
+  assert.match(poster, /cached_file_unusable/);
+});
+
 test("invitation poster reuses mini-program QR temp file and skips packaged-image direct timeout", async () => {
   const sharePopup = await readSource("src/components/share-popup.vue");
   const page = await readSource("src/pagesPlus/main/invitation/index.vue");

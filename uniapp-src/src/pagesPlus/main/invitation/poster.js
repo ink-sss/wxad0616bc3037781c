@@ -19,6 +19,7 @@ const posterFileCache = new Map();
 const shareFileCache = new Map();
 const posterFilePromiseCache = new Map();
 const canvasImageCache = new WeakMap();
+const FILE_CACHE_VALIDATE_TIMEOUT = 800;
 
 export function resetInvitationPosterRuntimeCache() {
   const snapshot = {
@@ -37,6 +38,10 @@ export function getInvitationPosterFileCache(cacheKey) {
   return posterFileCache.get(String(cacheKey || "")) || "";
 }
 
+export async function getUsableInvitationPosterFileCache(cacheKey, options = {}) {
+  return resolveUsableFileCache(posterFileCache, String(cacheKey || ""), options, "poster_file");
+}
+
 export function setInvitationPosterFileCache(cacheKey, filePath) {
   const key = String(cacheKey || "");
   if (!key || !filePath) return "";
@@ -44,31 +49,54 @@ export function setInvitationPosterFileCache(cacheKey, filePath) {
   return filePath;
 }
 
-export async function resolveInvitationPosterFileCache(cacheKey, createFile) {
+export async function resolveInvitationPosterFileCache(cacheKey, createFile, options = {}) {
   const key = String(cacheKey || "");
   if (!key || typeof createFile !== "function") {
     return { filePath: "", cached: false, shared: false };
   }
+  const promiseScope = getPosterFilePromiseScope(options);
   const cached = getInvitationPosterFileCache(key);
-  if (cached) {
-    return { filePath: cached, cached: true, shared: false };
+  const usableCached = cached ? await resolveUsableFileCache(posterFileCache, key, options, "poster_file") : "";
+  if (usableCached) {
+    return { filePath: usableCached, cached: true, shared: false };
   }
   if (posterFilePromiseCache.has(key)) {
-    const filePath = await posterFilePromiseCache.get(key);
-    return { filePath, cached: false, shared: true };
+    const entry = posterFilePromiseCache.get(key);
+    if (canSharePosterFilePromise(entry, promiseScope)) {
+      const promisedFilePath = await entry.promise;
+      const filePath = await resolveUsableFilePath(posterFileCache, key, promisedFilePath, options, "poster_file");
+      return { filePath, cached: false, shared: true };
+    }
+    emitPosterEvent(options, "poster_file_promise_scope_mismatch", {
+      key: summarizeCacheKey(key),
+      currentScope: promiseScope,
+      cachedScope: entry?.scope || "",
+    });
   }
   const promise = Promise.resolve()
-    .then(() => getInvitationPosterFileCache(key) || createFile())
+    .then(async () => (await resolveUsableFileCache(posterFileCache, key, options, "poster_file")) || createFile())
     .then((filePath) => {
       if (filePath) {
-        posterFileCache.set(key, filePath);
+        const entry = posterFilePromiseCache.get(key);
+        if (!entry || entry.promise === promise) {
+          posterFileCache.set(key, filePath);
+        } else {
+          emitPosterEvent(options, "poster_file_promise_stale_result", {
+            key: summarizeCacheKey(key),
+            scope: promiseScope,
+            currentScope: entry.scope || "",
+          });
+        }
       }
       return filePath || "";
     })
     .finally(() => {
-      posterFilePromiseCache.delete(key);
+      const entry = posterFilePromiseCache.get(key);
+      if (entry?.promise === promise) {
+        posterFilePromiseCache.delete(key);
+      }
     });
-  posterFilePromiseCache.set(key, promise);
+  posterFilePromiseCache.set(key, { promise, scope: promiseScope });
   const filePath = await promise;
   return { filePath, cached: false, shared: false };
 }
@@ -77,11 +105,120 @@ export function getInvitationShareFileCache(cacheKey) {
   return shareFileCache.get(String(cacheKey || "")) || "";
 }
 
+export async function getUsableInvitationShareFileCache(cacheKey, options = {}) {
+  return resolveUsableFileCache(shareFileCache, String(cacheKey || ""), options, "share_file");
+}
+
 export function setInvitationShareFileCache(cacheKey, filePath) {
   const key = String(cacheKey || "");
   if (!key || !filePath) return "";
   shareFileCache.set(key, filePath);
   return filePath;
+}
+
+export async function resolveInvitationShareFileCache(cacheKey, createFile, options = {}) {
+  const key = String(cacheKey || "");
+  if (!key || typeof createFile !== "function") {
+    return { filePath: "", cached: false };
+  }
+  const cached = await resolveUsableFileCache(shareFileCache, key, options, "share_file");
+  if (cached) {
+    return { filePath: cached, cached: true };
+  }
+  const filePath = (await createFile()) || "";
+  if (filePath) {
+    shareFileCache.set(key, filePath);
+  }
+  return { filePath, cached: false };
+}
+
+async function resolveUsableFileCache(cache, key, options = {}, label = "file") {
+  if (!key || !cache.has(key)) return "";
+  return resolveUsableFilePath(cache, key, cache.get(key), options, label);
+}
+
+async function resolveUsableFilePath(cache, key, filePath, options = {}, label = "file") {
+  const value = String(filePath || "");
+  if (!value) {
+    cache.delete(key);
+    return "";
+  }
+  const usable = await isCachedFileUsable(value, options, label);
+  if (usable) return value;
+  cache.delete(key);
+  emitPosterEvent(options, "cached_file_unusable", {
+    label,
+    path: summarizeImageSource(value),
+  });
+  return "";
+}
+
+async function isCachedFileUsable(filePath, options = {}, label = "file") {
+  const value = String(filePath || "").trim();
+  if (!value) return false;
+  if (!shouldValidateLocalFile(value)) {
+    emitPosterEvent(options, "cached_file_validate_skip", {
+      label,
+      path: summarizeImageSource(value),
+    });
+    return true;
+  }
+  const api = getWeixinApi(null);
+  const manager = api && typeof api.getFileSystemManager === "function" ? api.getFileSystemManager() : null;
+  if (!manager || typeof manager.access !== "function") {
+    emitPosterEvent(options, "cached_file_validate_unavailable", {
+      label,
+      path: summarizeImageSource(value),
+    });
+    return true;
+  }
+  try {
+    await withTimeout(
+      new Promise((resolve, reject) => {
+        manager.access({
+          path: value,
+          success: resolve,
+          fail: reject,
+        });
+      }),
+      FILE_CACHE_VALIDATE_TIMEOUT,
+      "cached file access timeout",
+    );
+    emitPosterEvent(options, "cached_file_validate_success", {
+      label,
+      path: summarizeImageSource(value),
+    });
+    return true;
+  } catch (error) {
+    emitPosterEvent(options, "cached_file_validate_fail", {
+      label,
+      path: summarizeImageSource(value),
+      error: normalizePosterError(error),
+    });
+    return false;
+  }
+}
+
+function shouldValidateLocalFile(filePath) {
+  const value = String(filePath || "");
+  if (/^(?:https?:\/\/|data:image\/)/i.test(value)) return false;
+  return /^(?:wxfile:\/\/|file:\/\/|\/)/i.test(value);
+}
+
+function getPosterFilePromiseScope(options = {}) {
+  return String(options.promiseScope || "");
+}
+
+function canSharePosterFilePromise(entry, scope) {
+  if (!entry?.promise || typeof entry.promise.then !== "function") return false;
+  if (!entry.scope || !scope) return true;
+  return entry.scope === scope;
+}
+
+function summarizeCacheKey(key) {
+  const text = String(key || "");
+  if (text.length <= 80) return text;
+  return `${text.slice(0, 40)}...${text.slice(-24)}`;
 }
 
 export async function createInvitationPosterTempFile(template, payload = {}, options = {}) {

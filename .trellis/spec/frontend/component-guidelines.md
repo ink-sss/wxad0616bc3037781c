@@ -158,6 +158,18 @@ Components in the uni-app source project are Vue single-file components under
   images/canvases are runtime details. Cache exported poster/share file paths
   by template plus invitation payload and show that cached file immediately on
   re-entry; only rebuild when the cache key changes or no exported file exists.
+- Trusting an exported invitation poster/share cache string without checking
+  that the local `wxfile://` still exists. Re-entry, page unload, or native
+  cleanup can leave stale paths and make the page skip the first-entry canvas
+  composition while showing a broken or half-generated poster. Before any
+  poster/share cache hit, validate local `wxfile://`, `file://`, or absolute
+  paths with `FileSystemManager.access`; evict unreadable entries and continue
+  through the same canvas generation path used on first entry.
+- Letting a new invitation page instance wait for an in-flight poster Promise
+  created by an unloaded page. Module-level Promise caches are useful inside a
+  page instance, but page unload can leave a render that no longer has a valid
+  owner. Scope poster file promises by page instance; on scope mismatch, keep
+  final exported file cache reuse but start a fresh current-page canvas render.
 - Only caching the invitation poster that the user manually viewed. After the
   first visible poster export succeeds, start a sequential background queue for
   the remaining templates and cache each exported poster file with the same
