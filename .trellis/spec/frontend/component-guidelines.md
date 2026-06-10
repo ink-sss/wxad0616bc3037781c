@@ -114,10 +114,12 @@ Components in the uni-app source project are Vue single-file components under
   downloadable images in canvas composition. Those domains may be absent from
   the Mini Program download whitelist, so poster code must not block on
   `getImageInfo`/`downloadFile` for them. Prefer direct canvas image loading
-  for the first successful avatar render, then immediately convert that image
-  into a local temp-file cache and try the cached file first for later poster
-  canvases. A failed or empty temp-file avatar cache must be discarded before
-  retrying direct canvas image loading.
+  for the first successful avatar render, then immediately copy that decoded
+  image into an in-memory offscreen canvas and try the canvas cache first for
+  later poster canvases. Temp-file avatar paths are only a fallback because
+  repeated `createImage(wxfile://...)` reads can time out on later templates;
+  failed or empty temp-file caches must be discarded before retrying direct
+  canvas image loading.
 - Reusing the same short image-load timeout for both avatar probes and poster
   template backgrounds. Avatar probes should fail fast, but invitation template
   backgrounds are larger local package images and need a longer canvas

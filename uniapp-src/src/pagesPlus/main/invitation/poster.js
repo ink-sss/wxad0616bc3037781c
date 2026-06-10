@@ -10,6 +10,7 @@ const AVATAR_IMAGE_LOAD_TIMEOUT = 2500;
 const AVATAR_CACHE_SIZE = 320;
 const CANVAS_API_TIMEOUT = 3000;
 const imagePathCache = new Map();
+const avatarCanvasCache = new Map();
 const avatarTempFileCache = new Map();
 const canvasImageCache = new WeakMap();
 
@@ -344,6 +345,11 @@ async function loadCanvasImage(canvas, src, options = {}, label = "image", loadO
   });
   if (!src) return null;
   if (loadOptions.preferDirect && isUnwhitelistedAvatarUrl(src)) {
+    const cachedAvatarCanvas = await getCachedAvatarCanvas(src, options, label);
+    if (cachedAvatarCanvas) {
+      emitPosterEvent(options, "image_load_success", { label, mode: "avatar-canvas-cache" });
+      return cachedAvatarCanvas;
+    }
     const cachedAvatarPath = await getCachedAvatarTempFilePath(src, options, label);
     if (cachedAvatarPath) {
       const cachedAvatar = await createCanvasImage(canvas, cachedAvatarPath, options, label, "avatar-temp-cache", loadOptions);
@@ -356,7 +362,7 @@ async function loadCanvasImage(canvas, src, options = {}, label = "image", loadO
     }
     const directAvatar = await createCanvasImage(canvas, src, options, label, "avatar-direct", loadOptions);
     if (directAvatar) {
-      cacheAvatarTempFilePath(src, directAvatar, options, label);
+      cacheAvatarCanvas(src, directAvatar, options, label);
       emitPosterEvent(options, "image_load_success", { label, mode: "avatar-direct" });
       return directAvatar;
     }
@@ -412,6 +418,23 @@ async function loadCanvasImage(canvas, src, options = {}, label = "image", loadO
   return loadCanvasImageDirect(canvas, src, options, label, "direct", loadOptions);
 }
 
+async function getCachedAvatarCanvas(src, options = {}, label = "avatar") {
+  const value = String(src || "");
+  if (!value || !avatarCanvasCache.has(value)) return null;
+  const cachedCanvas = await avatarCanvasCache.get(value);
+  if (!cachedCanvas) {
+    avatarCanvasCache.delete(value);
+    emitPosterEvent(options, "avatar_canvas_cache_empty", { label });
+    return null;
+  }
+  emitPosterEvent(options, "avatar_canvas_cache_hit", {
+    label,
+    width: cachedCanvas.width || 0,
+    height: cachedCanvas.height || 0,
+  });
+  return cachedCanvas;
+}
+
 async function getCachedAvatarTempFilePath(src, options = {}, label = "avatar") {
   const value = String(src || "");
   if (!value || !avatarTempFileCache.has(value)) return "";
@@ -449,23 +472,23 @@ async function resolveAvatarTempFilePath(src, options = {}, label = "avatar") {
   return filePath;
 }
 
-async function cacheAvatarTempFilePath(src, image, options = {}, label = "avatar") {
+async function cacheAvatarCanvas(src, image, options = {}, label = "avatar") {
   const value = String(src || "");
-  if (!value || !image || avatarTempFileCache.has(value)) return "";
-  const promise = createAvatarTempFilePathFromImage(image, options, label).catch((error) => {
-    avatarTempFileCache.delete(value);
-    emitPosterEvent(options, "avatar_temp_file_from_direct_fail", {
+  if (!value || !image || avatarCanvasCache.has(value)) return null;
+  const promise = createAvatarCanvasFromImage(image, options, label).catch((error) => {
+    avatarCanvasCache.delete(value);
+    emitPosterEvent(options, "avatar_canvas_cache_fail", {
       label,
       error: normalizePosterError(error),
     });
-    return "";
+    return null;
   });
-  avatarTempFileCache.set(value, promise);
-  const filePath = await promise;
-  if (!filePath) {
-    avatarTempFileCache.delete(value);
+  avatarCanvasCache.set(value, promise);
+  const avatarCanvas = await promise;
+  if (!avatarCanvas) {
+    avatarCanvasCache.delete(value);
   }
-  return filePath;
+  return avatarCanvas;
 }
 
 async function createAvatarTempFilePath(src, options = {}, label = "avatar") {
@@ -489,8 +512,8 @@ async function createAvatarTempFilePath(src, options = {}, label = "avatar") {
   return filePath;
 }
 
-async function createAvatarTempFilePathFromImage(image, options = {}, label = "avatar") {
-  emitPosterEvent(options, "avatar_temp_file_from_direct_start", { label });
+async function createAvatarCanvasFromImage(image, options = {}, label = "avatar") {
+  emitPosterEvent(options, "avatar_canvas_cache_start", { label });
   const size = AVATAR_CACHE_SIZE;
   const canvas = createFixedCanvas(size, size);
   const ctx = canvas.getContext("2d");
@@ -504,12 +527,12 @@ async function createAvatarTempFilePathFromImage(image, options = {}, label = "a
   } else {
     ctx.drawImage(image, 0, 0, size, size);
   }
-  const filePath = await canvasToTempFilePath(canvas);
-  emitPosterEvent(options, "avatar_temp_file_from_direct_success", {
+  emitPosterEvent(options, "avatar_canvas_cache_success", {
     label,
-    filePath: summarizeImageSource(filePath),
+    width: canvas.width,
+    height: canvas.height,
   });
-  return filePath;
+  return canvas;
 }
 
 async function loadCanvasImageDirect(canvas, src, options = {}, label = "image", mode = "direct", loadOptions = {}) {
