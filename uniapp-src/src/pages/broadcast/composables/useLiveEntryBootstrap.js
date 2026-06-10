@@ -58,7 +58,7 @@ function buildLiveEntryContext(options = {}) {
   const roomCode = options.roomCode || options.code || options.room_code || "";
   const liveId = options.liveId || options.live_id || options.roomId || options.room_id || options.id || "";
   const roomId = options.roomId || options.room_id || liveId || "";
-  const cover = options.cover || options.liveCover || "";
+  const cover = options.cover || options.liveCover || options.live_cover || options.coverImage || options.cover_image || "";
   const context = {
     ...options,
     roomCode,
@@ -74,6 +74,9 @@ function buildLiveEntryContext(options = {}) {
     _tc: options._tc || options.tc || "",
     cover,
     liveCover: options.liveCover || cover,
+    live_cover: options.live_cover || cover,
+    coverImage: options.coverImage || cover,
+    cover_image: options.cover_image || cover,
   };
   stripRuntimeOnlyParams(context, [
     "scene",

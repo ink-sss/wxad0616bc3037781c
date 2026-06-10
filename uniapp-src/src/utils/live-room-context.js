@@ -29,6 +29,7 @@ export function normalizeLiveRoomContext(ctx = {}) {
   const termId = firstValue(raw, 'termId', 'term_id', 'liveTermId', 'live_term_id')
   const customerId = firstValue(raw, 'customerId', 'customer_id', 'userId', 'user_id')
   const replayVideoId = firstValue(raw, 'replayVideoId', 'replay_video_id', 'videoId', 'video_id')
+  const cover = firstValue(raw, 'cover', 'liveCover', 'live_cover', 'coverImage', 'cover_image', 'poster')
   const mode = firstValue(raw, 'mode')
   const replay = firstValue(raw, 'replay')
   const liveType = firstValue(raw, 'liveType', 'live_type')
@@ -73,6 +74,11 @@ export function normalizeLiveRoomContext(ctx = {}) {
     replay_video_id: isReplay ? replayVideoId : '',
     videoId: isReplay ? replayVideoId : '',
     video_id: isReplay ? replayVideoId : '',
+    cover,
+    liveCover: cover,
+    live_cover: cover,
+    coverImage: cover,
+    cover_image: cover,
     liveType: isReplay ? 'replay' : liveType,
     live_type: isReplay ? 'replay' : liveType,
     replay: isReplay ? '1' : '',

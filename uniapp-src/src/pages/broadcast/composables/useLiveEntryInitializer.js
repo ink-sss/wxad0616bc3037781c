@@ -580,6 +580,7 @@ export function useLiveEntryInitializer(ctx) {
 
   function saveDetailContextOptions(state) {
     try {
+      const cover = state.entryLiveType === "replay" ? (replayCover?.value || "") : (liveCover.value || "");
       saveContextOptions({
         roomCode: roomCode.value || "",
         tenantId: liveTenantId.value || "",
@@ -587,7 +588,11 @@ export function useLiveEntryInitializer(ctx) {
         _ad: "",
         _tc: state.options._tc || "",
         liveName: liveName.value || "",
-        cover: state.entryLiveType === "replay" ? (replayCover?.value || "") : (liveCover.value || ""),
+        cover,
+        liveCover: cover,
+        live_cover: cover,
+        coverImage: cover,
+        cover_image: cover,
         liveType: state.entryLiveType,
         isReplay: state.entryLiveType === "replay",
         replay: state.entryLiveType === "replay" ? "1" : "",

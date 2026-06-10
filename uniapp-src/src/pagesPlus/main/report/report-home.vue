@@ -76,10 +76,10 @@ onLoad((options) => {
   replayVideoId.value = options.replayVideoId || options.replay_video_id || options.videoId || options.video_id || "";
   liveType.value = options.liveType || options.live_type || (options.replay === "1" ? "replay" : "");
   liveName.value = options.liveName || "";
-  cover.value = options.cover || "";
+  cover.value = options.cover || options.liveCover || options.live_cover || options.coverImage || options.cover_image || "";
   fromPath.value = options.fromPath || "";
 
-  if (!liveId.value || !roomCode.value) {
+  if (!liveId.value || !roomCode.value || !cover.value) {
     try {
       const ctx = loadLiveRoomContext();
       if (ctx) {
@@ -91,7 +91,7 @@ onLoad((options) => {
         replayVideoId.value = replayVideoId.value || ctx.replayVideoId || ctx.replay_video_id || ctx.videoId || ctx.video_id || "";
         liveType.value = liveType.value || ctx.liveType || ctx.live_type || (ctx.replay === "1" ? "replay" : "");
         liveName.value = liveName.value || ctx.liveName || "";
-        cover.value = cover.value || ctx.cover || "";
+        cover.value = cover.value || ctx.cover || ctx.liveCover || ctx.live_cover || ctx.coverImage || ctx.cover_image || "";
         fromPath.value = fromPath.value || buildBroadcastReturnPath(ctx);
       }
     } catch (_) {}

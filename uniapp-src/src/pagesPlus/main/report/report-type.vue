@@ -92,12 +92,12 @@ onLoad((options) => {
   replayVideoId.value = options.replayVideoId || options.replay_video_id || options.videoId || options.video_id || "";
   liveType.value = options.liveType || options.live_type || (options.replay === "1" ? "replay" : "");
   liveName.value = options.liveName || "";
-  cover.value = options.cover || "";
+  cover.value = options.cover || options.liveCover || options.live_cover || options.coverImage || options.cover_image || "";
   from.value = options.from || "";
   fromPath.value = options.fromPath || "";
 
   // [2026-05-13] 个人中心入口缺少直播间或返回参数时，从 live_room_ctx_v1 缓存兜底
-  if (!liveId.value || !roomCode.value || !fromPath.value) {
+  if (!liveId.value || !roomCode.value || !fromPath.value || !cover.value) {
     try {
       const ctx = loadLiveRoomContext();
       if (ctx && (ctx.liveId || ctx.roomId)) {
@@ -109,7 +109,7 @@ onLoad((options) => {
         replayVideoId.value = replayVideoId.value || ctx.replayVideoId || ctx.replay_video_id || ctx.videoId || ctx.video_id || "";
         liveType.value = liveType.value || ctx.liveType || ctx.live_type || (ctx.replay === "1" ? "replay" : "");
         liveName.value = liveName.value || ctx.liveName || "";
-        cover.value = cover.value || ctx.cover || "";
+        cover.value = cover.value || ctx.cover || ctx.liveCover || ctx.live_cover || ctx.coverImage || ctx.cover_image || "";
         fromPath.value = fromPath.value || buildBroadcastReturnPath(ctx);
       }
     } catch (_) {}

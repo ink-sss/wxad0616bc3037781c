@@ -8,7 +8,9 @@ function recoverFromLiveRoomContext(state, options, helpers) {
     if (!options.tenantId && cached.tenantId) options.tenantId = cached.tenantId;
     if (!options._tc && cached._tc) options._tc = cached._tc;
     if (!state.liveType && cached.liveType) state.liveType = cached.liveType;
-    if (!options.cover && cached.cover) options.cover = cached.cover;
+    if (!options.cover) {
+      options.cover = cached.cover || cached.liveCover || cached.live_cover || cached.coverImage || cached.cover_image || "";
+    }
   } catch (e) {
     console.warn("[Live] loadLiveRoomContext fail:", e);
   }
@@ -29,8 +31,8 @@ function recoverCoverFromContext(state, options, helpers) {
   if (options.cover || options.liveCover || !state.roomCode || !helpers.loadLiveRoomContext) return;
   try {
     const cached = helpers.loadLiveRoomContext();
-    if (cached && cached.roomCode === state.roomCode && cached.cover) {
-      options.cover = cached.cover;
+    if (cached && cached.roomCode === state.roomCode) {
+      options.cover = cached.cover || cached.liveCover || cached.live_cover || cached.coverImage || cached.cover_image || "";
     }
   } catch (_) {}
 }

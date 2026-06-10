@@ -187,6 +187,25 @@ test("wx_token entry stores token and live-room context before initLive", async 
   assert.equal(initCalls[0].wx_token, undefined);
 });
 
+test("coverImage entry persists cover aliases in live-room context", async () => {
+  const { ctx, storage, initCalls } = createHarness();
+  ctx.userStore.token = "token-cover";
+  const { runLiveEntryBootstrap } = await loadBootstrapModule();
+
+  await runLiveEntryBootstrap({
+    roomCode: "cover-room",
+    tenantId: "15",
+    liveType: "live",
+    coverImage: "https://example.test/live-cover.jpg",
+  }, ctx);
+
+  const saved = storage.get("mp_live_room_context_v1");
+  assert.equal(saved.cover, "https://example.test/live-cover.jpg");
+  assert.equal(saved.liveCover, "https://example.test/live-cover.jpg");
+  assert.equal(saved.coverImage, "https://example.test/live-cover.jpg");
+  assert.equal(initCalls[0].coverImage, "https://example.test/live-cover.jpg");
+});
+
 test("scene can carry equivalent live-room params", async () => {
   const { ctx, storage, initCalls } = createHarness();
   const { runLiveEntryBootstrap } = await loadBootstrapModule();
