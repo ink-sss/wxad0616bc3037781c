@@ -178,6 +178,7 @@ let posterPreloadTimer = null;
 const posterPageInstanceId = `invitation-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 const miniProgramQrCodeSrcCache = new Map();
 const INVITATION_POSTER_CACHE_VERSION = "qrcode-image-required-v3";
+const MINI_PROGRAM_QRCODE_FILE_TIMEOUT_MS = 1200;
 const POSTER_PRELOAD_DELAY_MS = 1200;
 const POSTER_PRELOAD_STEP_DELAY_MS = 180;
 
@@ -540,7 +541,11 @@ async function resolveMiniProgramQrCodeSrc(value, filePath = "") {
     }
   }
   try {
-    const filePath = await writeBase64ImageToTempFile(image, `invitation-qrcode-${hashText(image)}.png`);
+    const filePath = await withTimeout(
+      writeBase64ImageToTempFile(image, `invitation-qrcode-${hashText(image)}.png`),
+      MINI_PROGRAM_QRCODE_FILE_TIMEOUT_MS,
+      "mini program QR code temp file timeout",
+    );
     miniProgramQrCodeSrcCache.set(image, filePath);
     recordDebugEvent("mini_program_qrcode_temp_file_success", {
       type: "data-url",
@@ -552,6 +557,34 @@ async function resolveMiniProgramQrCodeSrc(value, filePath = "") {
   }
   // #endif
   return image;
+}
+
+function withTimeout(promise, timeoutMs, message) {
+  return new Promise((resolve, reject) => {
+    let settled = false;
+    const timer = setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      const error = new Error(message);
+      error.code = "TIMEOUT";
+      reject(error);
+    }, timeoutMs);
+
+    Promise.resolve(promise).then(
+      (value) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (error) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        reject(error);
+      },
+    );
+  });
 }
 
 function hashText(value) {

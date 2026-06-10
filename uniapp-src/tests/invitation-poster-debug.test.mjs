@@ -21,6 +21,9 @@ test("invitation debug panel stays enabled and reports QR-code source", async ()
   assert.match(debug, /qrcodeFieldSource:\s*qrcodeFieldSource\?\.value/);
   assert.match(debug, /ordinaryQrCodeCandidateSource:\s*ordinaryQrCodeCandidateSource\?\.value/);
   assert.match(debug, /hasPreloadPromise:/);
+  assert.match(debug, /function sanitizeDebugString\(text, keyName = ""\)/);
+  assert.match(debug, /\[\$\{variableName\}:data-url:\$\{mime\}:len=\$\{value\.length\}\]/);
+  assert.match(debug, /\[\$\{variableName\}:base64:len=\$\{compact\.length\}\]/);
 
   assert.match(page, /<text class="inv-debug-line">二维码: \{\{ qrcodeStatusText \}\}<\/text>/);
   assert.match(page, /function getMiniProgramQrCodeField\(data = \{\}\)/);
@@ -52,6 +55,7 @@ test("invitation poster re-entry validates exported caches and does not wait for
   const poster = await readSource("src/pagesPlus/main/invitation/poster.js");
 
   assert.match(page, /const posterPageInstanceId = `invitation-\$\{Date\.now\(\)\}-/);
+  assert.match(page, /const MINI_PROGRAM_QRCODE_FILE_TIMEOUT_MS = 1200;/);
   assert.match(page, /promiseScope:\s*posterPageInstanceId/);
   assert.match(page, /posterImageSrc\.value = await getCachedPosterFile/);
   assert.match(page, /shareImageSrc\.value = await getCachedShareFile/);
@@ -70,12 +74,17 @@ test("invitation poster re-entry validates exported caches and does not wait for
   assert.match(poster, /const promiseScope = getPosterFilePromiseScope\(options\);/);
   assert.match(poster, /canSharePosterFilePromise\(entry, promiseScope\)/);
   assert.match(poster, /poster_file_promise_scope_mismatch/);
+  assert.match(poster, /posterFilePromiseCache\.delete\(key\);/);
   assert.match(poster, /poster_file_promise_stale_result/);
   assert.match(poster, /posterFilePromiseCache\.set\(key, \{ promise, scope: promiseScope \}\);/);
   assert.match(poster, /function shouldValidateLocalFile\(filePath\)/);
   assert.match(poster, /manager\.access\(\{\s*path: value,/s);
   assert.match(poster, /cached_file_validate_fail/);
   assert.match(poster, /cached_file_unusable/);
+  assert.match(poster, /const BASE64_IMAGE_FILE_TIMEOUT = 1200;/);
+  assert.match(poster, /mode: "base64-direct"/);
+  assert.match(poster, /"base64 image temp file timeout"/);
+  assert.match(poster, /function sanitizePosterString\(text, keyName = ""\)/);
 });
 
 test("invitation poster reuses mini-program QR temp file and skips packaged-image direct timeout", async () => {

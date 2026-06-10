@@ -170,6 +170,20 @@ Components in the uni-app source project are Vue single-file components under
   page instance, but page unload can leave a render that no longer has a valid
   owner. Scope poster file promises by page instance; on scope mismatch, keep
   final exported file cache reuse but start a fresh current-page canvas render.
+- Keeping the stale in-flight poster Promise entry after detecting a page
+  scope mismatch. Delete the old entry before registering the new page's
+  Promise, otherwise the new render can finish but be treated as a stale result
+  and never populate the exported file cache.
+- Waiting indefinitely for base64 Mini Program code or poster image writes
+  before starting canvas composition. Native `FileSystemManager.writeFile`
+  callbacks can be delayed or lost on real devices; every base64-to-temp-file
+  conversion in invitation generation must have a short timeout and must fall
+  back to direct dataURL drawing or continue the current render instead of
+  leaving the page in "生成中".
+- Copying raw dataURL/base64 values into the invitation debug report. Debug
+  output should use field-aware summaries such as `miniProgramQrCode:data-url`
+  with type and length, so the report stays small and does not expose full
+  encoded images.
 - Only caching the invitation poster that the user manually viewed. After the
   first visible poster export succeeds, start a sequential background queue for
   the remaining templates and cache each exported poster file with the same

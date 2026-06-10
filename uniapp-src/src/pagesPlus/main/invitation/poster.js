@@ -11,6 +11,7 @@ const AVATAR_CACHE_SIZE = 320;
 const QRCODE_IMAGE_CACHE_SIZE = 360;
 const CANVAS_API_TIMEOUT = 3000;
 const PACKAGED_IMAGE_LOAD_TIMEOUT = 1200;
+const BASE64_IMAGE_FILE_TIMEOUT = 1200;
 const imagePathCache = new Map();
 const avatarCanvasCache = new Map();
 const avatarTempFileCache = new Map();
@@ -72,6 +73,7 @@ export async function resolveInvitationPosterFileCache(cacheKey, createFile, opt
       currentScope: promiseScope,
       cachedScope: entry?.scope || "",
     });
+    posterFilePromiseCache.delete(key);
   }
   const promise = Promise.resolve()
     .then(async () => (await resolveUsableFileCache(posterFileCache, key, options, "poster_file")) || createFile())
@@ -684,6 +686,14 @@ async function loadCanvasImage(canvas, src, options = {}, label = "image", loadO
     }
   }
   if (/^data:image\//.test(String(src || ""))) {
+    const direct = await createCanvasImage(canvas, src, options, label, "base64-direct", {
+      ...loadOptions,
+      timeoutMs: Math.min(Number(loadOptions.timeoutMs || CANVAS_IMAGE_LOAD_TIMEOUT), BASE64_IMAGE_FILE_TIMEOUT),
+    });
+    if (direct) {
+      emitPosterEvent(options, "image_load_success", { label, mode: "base64-direct" });
+      return direct;
+    }
     const localPath = await resolveBase64ImagePath(src, options, label);
     if (!localPath) {
       emitPosterEvent(options, "image_base64_path_empty", { label });
@@ -788,7 +798,11 @@ async function resolveBase64ImagePath(src, options = {}, label = "image") {
     return cached;
   }
   try {
-    const filePath = await writeBase64ImageToTempFile(dataUrl, `poster-${label}-${Date.now()}.png`);
+    const filePath = await withTimeout(
+      writeBase64ImageToTempFile(dataUrl, `poster-${label}-${Date.now()}.png`),
+      BASE64_IMAGE_FILE_TIMEOUT,
+      "base64 image temp file timeout",
+    );
     imagePathCache.set(dataUrl, filePath);
     emitPosterEvent(options, "image_base64_path_success", {
       label,
@@ -1243,19 +1257,33 @@ function emitPosterEvent(options = {}, type, detail = {}) {
   } catch (_) {}
 }
 
-function sanitizePosterDetail(value, depth = 0) {
+function sanitizePosterDetail(value, depth = 0, keyName = "") {
   if (depth > 3) return "[MaxDepth]";
   if (value == null) return value;
-  if (typeof value === "string") return value.length > 180 ? `${value.slice(0, 180)}...` : value;
+  if (typeof value === "string") return sanitizePosterString(value, keyName);
   if (typeof value === "number" || typeof value === "boolean") return value;
-  if (Array.isArray(value)) return value.slice(0, 20).map((item) => sanitizePosterDetail(item, depth + 1));
+  if (Array.isArray(value)) return value.slice(0, 20).map((item, index) => sanitizePosterDetail(item, depth + 1, `${keyName}[${index}]`));
   if (typeof value === "object") {
     return Object.keys(value).reduce((result, key) => {
-      result[key] = sanitizePosterDetail(value[key], depth + 1);
+      result[key] = sanitizePosterDetail(value[key], depth + 1, key);
       return result;
     }, {});
   }
   return String(value);
+}
+
+function sanitizePosterString(text, keyName = "") {
+  const value = String(text || "");
+  const variableName = String(keyName || "value");
+  if (/^data:image\//i.test(value)) {
+    const mime = value.match(/^data:([^;]+);/i)?.[1] || "image";
+    return `[${variableName}:data-url:${mime}:len=${value.length}]`;
+  }
+  const compact = value.replace(/\s+/g, "");
+  if (/^[A-Za-z0-9+/]+={0,2}$/.test(compact) && compact.length > 160) {
+    return `[${variableName}:base64:len=${compact.length}]`;
+  }
+  return value.length > 180 ? `${value.slice(0, 180)}...` : value;
 }
 
 function normalizePosterError(error) {

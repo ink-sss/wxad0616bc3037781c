@@ -162,15 +162,15 @@ function getCurrentRouteOptions() {
   }
 }
 
-function sanitizeDebugValue(value, depth = 0) {
+function sanitizeDebugValue(value, depth = 0, keyName = "") {
   if (depth > 4) return "[MaxDepth]";
   if (value == null) return value;
-  if (typeof value === "string") return maskSensitiveText(value);
+  if (typeof value === "string") return sanitizeDebugString(value, keyName);
   if (typeof value === "number" || typeof value === "boolean") return value;
-  if (Array.isArray(value)) return value.slice(0, 30).map((item) => sanitizeDebugValue(item, depth + 1));
+  if (Array.isArray(value)) return value.slice(0, 30).map((item, index) => sanitizeDebugValue(item, depth + 1, `${keyName}[${index}]`));
   if (typeof value === "object") {
     return Object.keys(value).reduce((result, key) => {
-      result[key] = isSensitiveKey(key) ? "[Masked]" : sanitizeDebugValue(value[key], depth + 1);
+      result[key] = isSensitiveKey(key) ? "[Masked]" : sanitizeDebugValue(value[key], depth + 1, key);
       return result;
     }, {});
   }
@@ -186,6 +186,20 @@ function maskSensitiveText(text) {
   return value
     .replace(/([?&](?:token|access_token|auth|signature|sign|code)=)[^&]+/gi, "$1[Masked]")
     .replace(/(Bearer\s+)[A-Za-z0-9._-]+/gi, "$1[Masked]");
+}
+
+function sanitizeDebugString(text, keyName = "") {
+  const value = String(text || "");
+  const variableName = String(keyName || "value");
+  if (/^data:image\//i.test(value)) {
+    const mime = value.match(/^data:([^;]+);/i)?.[1] || "image";
+    return `[${variableName}:data-url:${mime}:len=${value.length}]`;
+  }
+  const compact = value.replace(/\s+/g, "");
+  if (/^[A-Za-z0-9+/]+={0,2}$/.test(compact) && compact.length > 160) {
+    return `[${variableName}:base64:len=${compact.length}]`;
+  }
+  return maskSensitiveText(value);
 }
 
 function normalizeError(error) {
