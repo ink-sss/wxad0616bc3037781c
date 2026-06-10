@@ -15,7 +15,7 @@
           id="liveMiniVideo"
           class="live-mini__video"
           :src="playUrl"
-          :poster="poster"
+          poster=""
           :controls="false"
           :show-play-btn="false"
           :show-center-play-btn="false"

@@ -787,6 +787,7 @@ export function useLiveMiniWindow(props = {}) {
 
   function onMiniLoadedMetadata(event = {}) {
     recordDebug('video_loadedmetadata', getMiniVideoEventPayload(event))
+    markMiniVideoFrameReady('loadedmetadata', event)
   }
 
   function onMiniLoadedData(event = {}) {

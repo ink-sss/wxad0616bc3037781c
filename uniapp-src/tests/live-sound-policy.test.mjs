@@ -175,6 +175,8 @@ test("live mini-window removes overlays only after video frame readiness", async
   const globalMiniComponent = await readSource("src/components/live-mini-window.vue");
   const globalMini = await readSource("src/composables/useLiveMiniWindow.js");
 
+  assert.match(globalMiniComponent, /poster=""/);
+  assert.doesNotMatch(globalMiniComponent, /:poster="poster"/);
   assert.match(globalMiniComponent, /v-if="hasPlayableSource && poster && !videoFrameReady"/);
   assert.match(globalMiniComponent, /v-else-if="!hasPlayableSource && poster"/);
   assert.match(globalMiniComponent, /v-else-if="!hasPlayableSource"\s+class="live-mini__empty"/);
@@ -182,6 +184,7 @@ test("live mini-window removes overlays only after video frame readiness", async
   assert.doesNotMatch(globalMiniComponent, /v-else-if="poster"/);
   assert.match(globalMini, /const\s+videoFrameReady\s*=\s*ref\(false\)/);
   assert.match(globalMini, /function\s+markMiniVideoFrameReady\(source,\s*event\s*=\s*\{\}\)/);
+  assert.match(globalMini, /markMiniVideoFrameReady\('loadedmetadata',\s*event\)/);
   assert.match(globalMini, /video_frame_ready/);
 });
 
@@ -212,7 +215,7 @@ test("live mini-window exposes secondary page debug report", async () => {
   assert.match(globalMiniComponent, /<live-mini-debug-float/);
   assert.match(globalMiniComponent, /:show="debugVisible"/);
   assert.match(globalMiniComponent, /@copy="copyDebugInfo"/);
-  assert.match(globalMini, /const\s+debugVisible\s*=\s*computed\(\(\)\s*=>\s*true\)/);
+  assert.match(globalMini, /const\s+debugVisible\s*=\s*computed\(\(\)\s*=>\s*false\)/);
   assert.match(globalMini, /function\s+buildDebugReport\(\)/);
   assert.match(globalMini, /hideReason/);
   assert.match(globalMini, /snapshotStorage\(\)/);
