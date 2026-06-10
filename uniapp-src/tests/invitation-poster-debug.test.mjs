@@ -68,3 +68,36 @@ test("invitation poster reuses mini-program QR temp file and skips packaged-imag
   assert.match(poster, /function isPackagedImagePath\(src\)/);
   assert.match(poster, /function getPackagedImageCandidates\(src\)/);
 });
+
+test("explicit mini-program QR image cannot silently fall back to ordinary QR matrix", async () => {
+  const page = await readSource("src/pagesPlus/main/invitation/index.vue");
+  const poster = await readSource("src/pagesPlus/main/invitation/poster.js");
+
+  assert.match(page, /const INVITATION_POSTER_CACHE_VERSION = "qrcode-image-required-v3";/);
+  assert.match(page, /const qrcodeImageCandidates = \[/);
+  assert.match(page, /\n\s+qrcodeImageCandidates,\n/);
+  assert.match(page, /miniProgramQrCodeSrc\.value,/);
+  assert.match(page, /payload\.value\.miniProgramQrCode,/);
+
+  const cacheKeyStart = page.indexOf("function buildRenderCacheKey");
+  const cacheKeyEnd = page.indexOf("function normalizeNavDomain", cacheKeyStart);
+  const cacheKeyFn = cacheKeyStart >= 0 && cacheKeyEnd > cacheKeyStart ? page.slice(cacheKeyStart, cacheKeyEnd) : "";
+  assert.doesNotMatch(cacheKeyFn, /miniProgramQrCodeFilePath/);
+  assert.doesNotMatch(cacheKeyFn, /miniProgramQrCodeSrc/);
+
+  assert.match(poster, /const qrcodeCanvasCache = new Map\(\);/);
+  const resetRuntimeCache = poster.match(/export function resetInvitationPosterRuntimeCache\(\) \{[\s\S]*?\n\}/)?.[0] || "";
+  assert.match(resetRuntimeCache, /qrcodeCanvasCount:\s*qrcodeCanvasCache\.size/);
+  assert.doesNotMatch(resetRuntimeCache, /qrcodeCanvasCache\.clear\(\)/);
+  assert.match(poster, /function normalizeQrcodeImageSources\(imageSrc\)/);
+  assert.match(poster, /async function getCachedQrcodeCanvas\(src/);
+  assert.match(poster, /async function cacheQrcodeCanvas\(src, image/);
+  assert.match(poster, /function cacheQrcodeCanvasAliases\(sources, qrcodeCanvas/);
+  assert.match(poster, /qrcode_image_required_fail/);
+  assert.match(poster, /throw new Error\("邀请函小程序码加载失败"\);/);
+
+  const start = poster.indexOf("async function drawQrcodeImageOrMatrix");
+  const end = poster.indexOf("function drawQrcodeImage", start);
+  const drawQrcode = start >= 0 && end > start ? poster.slice(start, end) : "";
+  assert.doesNotMatch(drawQrcode, /emitPosterEvent\(options, "qrcode_image_draw_fail"[\s\S]*?drawQrMatrix/);
+});

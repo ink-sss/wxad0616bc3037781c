@@ -178,3 +178,8 @@ Components in the uni-app source project are Vue single-file components under
   Program code composition. Generic QR fields may be logged as fallback
   candidates, but the poster must report when it has fallen back to ordinary QR
   generation.
+- Silently falling back to generated QR matrices after an explicit invitation
+  Mini Program code image fails to load. Mini Program code images are required
+  composition inputs: cache the decoded image/canvas for later templates, retry
+  alternate explicit sources when available, and fail that render with debug
+  events instead of exporting an ordinary QR-code poster.

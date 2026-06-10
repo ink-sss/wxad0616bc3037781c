@@ -8,11 +8,13 @@ const SHARE_CARD_HEIGHT = 400;
 const CANVAS_IMAGE_LOAD_TIMEOUT = 5000;
 const AVATAR_IMAGE_LOAD_TIMEOUT = 2500;
 const AVATAR_CACHE_SIZE = 320;
+const QRCODE_IMAGE_CACHE_SIZE = 360;
 const CANVAS_API_TIMEOUT = 3000;
 const PACKAGED_IMAGE_LOAD_TIMEOUT = 1200;
 const imagePathCache = new Map();
 const avatarCanvasCache = new Map();
 const avatarTempFileCache = new Map();
+const qrcodeCanvasCache = new Map();
 const posterFileCache = new Map();
 const shareFileCache = new Map();
 const posterFilePromiseCache = new Map();
@@ -23,6 +25,7 @@ export function resetInvitationPosterRuntimeCache() {
     imagePathCount: imagePathCache.size,
     avatarCanvasCount: avatarCanvasCache.size,
     avatarTempFileCount: avatarTempFileCache.size,
+    qrcodeCanvasCount: qrcodeCanvasCache.size,
     posterFileCount: posterFileCache.size,
     shareFileCount: shareFileCache.size,
     posterFilePromiseCount: posterFilePromiseCache.size,
@@ -191,7 +194,7 @@ async function drawShareCard(canvas, ctx, template, payload, options = {}) {
   await drawQrcodeImageOrMatrix(
     canvas,
     ctx,
-    payload.qrcodeImage,
+    payload.qrcodeImageCandidates || payload.qrcodeImage,
     payload.qrcodeText || payload.miniProgramPath || payload.link || "/pages/broadcast/entry",
     qrX,
     qrY,
@@ -301,7 +304,7 @@ async function drawSlots(canvas, ctx, width, height, slots, payload, options = {
     width,
     height,
     slots.qrcode,
-    payload.qrcodeImage,
+    payload.qrcodeImageCandidates || payload.qrcodeImage,
     payload.qrcodeText || payload.miniProgramPath || payload.link || "/pages/broadcast/entry",
     options,
   );
@@ -362,25 +365,76 @@ async function drawQrcodeSlot(canvas, ctx, width, height, slot, imageSrc, text, 
 }
 
 async function drawQrcodeImageOrMatrix(canvas, ctx, imageSrc, text, x, y, size, options = {}, label = "qrcode") {
-  if (imageSrc) {
+  const imageSources = normalizeQrcodeImageSources(imageSrc);
+  if (imageSources.length > 0) {
     emitPosterEvent(options, "qrcode_image_draw_start", {
       label,
       size,
       hasImage: true,
+      sourceCount: imageSources.length,
     });
-    const image = await loadCanvasImage(canvas, imageSrc, options, label, {
-      timeoutMs: CANVAS_IMAGE_LOAD_TIMEOUT,
-    });
-    if (image) {
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(x, y, size, size);
-      ctx.drawImage(image, x, y, size, size);
-      emitPosterEvent(options, "qrcode_image_draw_success", { label });
-      return;
+    for (const source of imageSources) {
+      const cachedCanvas = await getCachedQrcodeCanvas(source, options, label);
+      if (cachedCanvas) {
+        drawQrcodeImage(ctx, cachedCanvas, x, y, size);
+        emitPosterEvent(options, "qrcode_image_draw_success", {
+          label,
+          mode: "qrcode-canvas-cache",
+          source: summarizeImageSource(source),
+        });
+        return;
+      }
+      const image = await loadCanvasImage(canvas, source, options, label, {
+        timeoutMs: CANVAS_IMAGE_LOAD_TIMEOUT,
+      });
+      if (image) {
+        const cached = await cacheQrcodeCanvas(source, image, options, label);
+        if (cached) {
+          cacheQrcodeCanvasAliases(imageSources, cached, options, label);
+          drawQrcodeImage(ctx, cached, x, y, size);
+          emitPosterEvent(options, "qrcode_image_draw_success", {
+            label,
+            mode: "qrcode-canvas",
+            source: summarizeImageSource(source),
+          });
+          return;
+        }
+        drawQrcodeImage(ctx, image, x, y, size);
+        emitPosterEvent(options, "qrcode_image_draw_success", {
+          label,
+          mode: "image",
+          source: summarizeImageSource(source),
+        });
+        return;
+      }
+      emitPosterEvent(options, "qrcode_image_candidate_fail", {
+        label,
+        source: summarizeImageSource(source),
+      });
     }
-    emitPosterEvent(options, "qrcode_image_draw_fail", { label });
+    emitPosterEvent(options, "qrcode_image_draw_fail", {
+      label,
+      fallback: false,
+      sourceCount: imageSources.length,
+    });
+    emitPosterEvent(options, "qrcode_image_required_fail", {
+      label,
+      textLength: String(text || "").length,
+    });
+    throw new Error("邀请函小程序码加载失败");
   }
   drawQrMatrix(ctx, text, x, y, size, options, label);
+}
+
+function drawQrcodeImage(ctx, image, x, y, size) {
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(x, y, size, size);
+  ctx.drawImage(image, x, y, size, size);
+}
+
+function normalizeQrcodeImageSources(imageSrc) {
+  const sources = Array.isArray(imageSrc) ? imageSrc : [imageSrc];
+  return [...new Set(sources.map((source) => String(source || "").trim()).filter(Boolean))];
 }
 
 function drawQrMatrix(ctx, text, x, y, size, options = {}, label = "qrcode") {
@@ -708,6 +762,73 @@ async function createAvatarCanvasFromImage(image, options = {}, label = "avatar"
     ctx.drawImage(image, 0, 0, size, size);
   }
   emitPosterEvent(options, "avatar_canvas_cache_success", {
+    label,
+    width: canvas.width,
+    height: canvas.height,
+  });
+  return canvas;
+}
+
+async function getCachedQrcodeCanvas(src, options = {}, label = "qrcode") {
+  const value = String(src || "");
+  if (!value || !qrcodeCanvasCache.has(value)) return null;
+  const cachedCanvas = await qrcodeCanvasCache.get(value);
+  if (!cachedCanvas) {
+    qrcodeCanvasCache.delete(value);
+    emitPosterEvent(options, "qrcode_canvas_cache_empty", { label });
+    return null;
+  }
+  emitPosterEvent(options, "qrcode_canvas_cache_hit", {
+    label,
+    width: cachedCanvas.width || 0,
+    height: cachedCanvas.height || 0,
+  });
+  return cachedCanvas;
+}
+
+async function cacheQrcodeCanvas(src, image, options = {}, label = "qrcode") {
+  const value = String(src || "");
+  if (!value || !image) return null;
+  if (qrcodeCanvasCache.has(value)) {
+    return getCachedQrcodeCanvas(value, options, label);
+  }
+  const promise = createQrcodeCanvasFromImage(image, options, label).catch((error) => {
+    qrcodeCanvasCache.delete(value);
+    emitPosterEvent(options, "qrcode_canvas_cache_fail", {
+      label,
+      error: normalizePosterError(error),
+    });
+    return null;
+  });
+  qrcodeCanvasCache.set(value, promise);
+  const qrcodeCanvas = await promise;
+  if (!qrcodeCanvas) {
+    qrcodeCanvasCache.delete(value);
+  }
+  return qrcodeCanvas;
+}
+
+function cacheQrcodeCanvasAliases(sources, qrcodeCanvas, options = {}, label = "qrcode") {
+  if (!qrcodeCanvas) return;
+  normalizeQrcodeImageSources(sources).forEach((source) => {
+    if (qrcodeCanvasCache.has(source)) return;
+    qrcodeCanvasCache.set(source, Promise.resolve(qrcodeCanvas));
+    emitPosterEvent(options, "qrcode_canvas_cache_alias", {
+      label,
+      source: summarizeImageSource(source),
+    });
+  });
+}
+
+async function createQrcodeCanvasFromImage(image, options = {}, label = "qrcode") {
+  emitPosterEvent(options, "qrcode_canvas_cache_start", { label });
+  const size = QRCODE_IMAGE_CACHE_SIZE;
+  const canvas = createFixedCanvas(size, size);
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, size, size);
+  ctx.drawImage(image, 0, 0, size, size);
+  emitPosterEvent(options, "qrcode_canvas_cache_success", {
     label,
     width: canvas.width,
     height: canvas.height,

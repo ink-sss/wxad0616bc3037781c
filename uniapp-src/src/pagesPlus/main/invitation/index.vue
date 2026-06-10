@@ -174,6 +174,7 @@ let shareRenderPromise = null;
 let posterPreloadPromise = null;
 let posterPreloadRunId = 0;
 let posterPreloadTimer = null;
+const INVITATION_POSTER_CACHE_VERSION = "qrcode-image-required-v3";
 const POSTER_PRELOAD_DELAY_MS = 1200;
 const POSTER_PRELOAD_STEP_DELAY_MS = 180;
 
@@ -373,12 +374,19 @@ function buildShareOptions() {
 }
 
 function buildPosterPayload() {
+  const qrcodeImage = miniProgramQrCodeSrc.value || payload.value.miniProgramQrCode || "";
+  const qrcodeImageCandidates = [
+    miniProgramQrCodeSrc.value,
+    payload.value.miniProgramQrCodeFilePath,
+    payload.value.miniProgramQrCode,
+  ].filter(Boolean);
   return {
     ...payload.value,
     displayTime: displayTime.value || "敬请期待",
     link: payload.value.link || shareMiniProgramPath.value,
     qrcodeText: shareMiniProgramPath.value,
-    qrcodeImage: miniProgramQrCodeSrc.value || payload.value.miniProgramQrCode || "",
+    qrcodeImage,
+    qrcodeImageCandidates,
     qrcodeImageSource: qrcodeSource.value,
   };
 }
@@ -962,6 +970,7 @@ function buildRenderCacheKey(template, kind) {
   const data = payload.value || {};
   return [
     kind,
+    INVITATION_POSTER_CACHE_VERSION,
     template.id,
     data.anchorAvatar || "",
     data.inviterName || "",
