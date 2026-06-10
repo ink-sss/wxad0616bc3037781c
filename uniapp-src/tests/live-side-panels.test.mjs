@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { buildCenterStats, useLiveSidePanels } from "../src/pages/broadcast/composables/useLiveSidePanels.js";
+import { buildCenterStats, mergePendingOrderTotal, useLiveSidePanels } from "../src/pages/broadcast/composables/useLiveSidePanels.js";
 
 test("buildCenterStats maps H5 unread stat fields", () => {
   assert.deepEqual(
@@ -60,7 +60,25 @@ test("buildCenterStats maps missing or blank values to zero", () => {
   );
 });
 
+test("mergePendingOrderTotal keeps pending pay badge after unread stats are consumed", () => {
+  assert.deepEqual(
+    mergePendingOrderTotal(
+      { waitPay: 0, waitShip: 0, waitReceive: 0, refunding: 0 },
+      { total: 1 },
+    ),
+    { waitPay: 1, waitShip: 0, waitReceive: 0, refunding: 0 },
+  );
+  assert.deepEqual(
+    mergePendingOrderTotal(
+      { waitPay: 3, waitShip: 0, waitReceive: 0, refunding: 0 },
+      { total: 1 },
+    ),
+    { waitPay: 3, waitShip: 0, waitReceive: 0, refunding: 0 },
+  );
+});
+
 test("refreshCenterOrderStats updates pending payment badge data", async () => {
+  const orderListCalls = [];
   const panels = useLiveSidePanels({
     liveId: { value: 77 },
     roomCode: { value: "room-code" },
@@ -86,7 +104,11 @@ test("refreshCenterOrderStats updates pending payment badge data", async () => {
     addressPopupSource: { value: "" },
     showAddressPopup: { value: false },
     getCenter: async () => ({ customer: { nickname: "viewer" } }),
-    getOrderUnreadStats: async () => ({ unpay: "2", unsend: 0, unreceive: 0 }),
+    getOrderUnreadStats: async () => ({ unpay: "0", unsend: 0, unreceive: 0 }),
+    getOrderList: async (params) => {
+      orderListCalls.push(params);
+      return { total: 2, list: [{}] };
+    },
     getRefundUnreadStats: async () => ({ refund: 0 }),
     checkSigned: async () => ({}),
     uniApi: {
@@ -104,4 +126,5 @@ test("refreshCenterOrderStats updates pending payment badge data", async () => {
   await panels.refreshCenterOrderStats();
 
   assert.equal(panels.centerPopupOrderStats.value.waitPay, 2);
+  assert.deepEqual(orderListCalls, [{ page: 1, pageSize: 1, orderStatus: 1 }]);
 });

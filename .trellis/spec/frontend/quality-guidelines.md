@@ -60,6 +60,12 @@ and no dependency on compiled Mini Program output.
   with local legacy userInfo cache only as a display fallback.
 - Personal center order badges must use the H5 unread stats APIs first:
   `/h5/order/unreadStats` and `/h5/refund/unreadStats`.
+- Live-room personal-center pending-payment badges must not rely only on
+  `/h5/order/unreadStats`, because visiting `/pages/order/list?status=unpay`
+  can consume the unread reminder while the unpaid order still exists. When the
+  live-room center popup refreshes, merge the unread value with
+  `/h5/order/list` using `orderStatus=1`, `page=1`, and `pageSize=1`, then keep
+  the larger `waitPay` count.
 - Personal-center secondary pages for order, payment, receipt, refund, address,
   complaint/report, prize-record, and invitation-record flows must migrate the
   H5 page/component structure and visual behavior as the source of truth. Do not

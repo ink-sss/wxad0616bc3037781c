@@ -30,7 +30,7 @@ defineOptions({ inheritAttrs: false });
 import LiveBroadcastStageHost from "./components/LiveBroadcastStageHost.vue";
 import LiveImDebugFloat from "./components/LiveImDebugFloat.vue";
 import { enterLiveRoom, getCommentHistory, getCurrentProduct, getLiveDetail, getLiveProducts, getLiveStatus, leaveLiveRoom, liveHeartbeat, sendBuyReminder, sendLike, checkSigned, reportViewProgress } from "@/api/live.js";
-import { confirmOrder, createOrder, getOrderDetail, getOrderUnreadStats } from "@/api/order";
+import { confirmOrder, createOrder, getOrderDetail, getOrderList, getOrderUnreadStats } from "@/api/order";
 import { getUsableCoupons } from "@/api/coupon";
 import { getCenter } from "@/api/user";
 import { getRefundUnreadStats } from "@/api/refund";
@@ -473,7 +473,7 @@ const {
   refreshCenterOrderStats: refreshCenterOrderStatsAction,
 } = useLiveSidePanels({
   liveId, roomCode, roomCurrentTermId, myUserId, liveTenantId, shareCode, liveBindId, isReplay, replayCurrentVideoId, anchorName, anchorAvatar, userStore, getLiveRedirectUrl, isDebugLocalLogin,
-  ensureBuyAddressLoaded, addressPopupSource, showAddressPopup, getCenter, getOrderUnreadStats, getRefundUnreadStats, checkSigned,
+  ensureBuyAddressLoaded, addressPopupSource, showAddressPopup, getCenter, getOrderUnreadStats, getOrderList, getRefundUnreadStats, checkSigned,
 });
 refreshCenterOrderStats = refreshCenterOrderStatsAction;
 const displayState = useLiveDisplayState({

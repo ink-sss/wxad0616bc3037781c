@@ -40,6 +40,16 @@ export function buildCenterStats(orderStats = {}, refundStats = {}) {
   };
 }
 
+export function mergePendingOrderTotal(stats = {}, pendingOrderList = {}) {
+  const total = firstStatValue(pendingOrderList, ["total", "count", "totalCount", "total_count"]);
+  if (total === undefined) return stats;
+  const pendingTotal = toNumber(total);
+  return {
+    ...stats,
+    waitPay: Math.max(toNumber(stats.waitPay), pendingTotal),
+  };
+}
+
 function normalizeSignCheckResult(result = {}) {
   const raw = result && typeof result === "object" ? result : {};
   const data = {
@@ -155,6 +165,7 @@ export function useLiveSidePanels({
   showAddressPopup,
   getCenter,
   getOrderUnreadStats,
+  getOrderList,
   getRefundUnreadStats,
   checkSigned,
   uniApi,
@@ -226,11 +237,15 @@ export function useLiveSidePanels({
 
   async function refreshCenterOrderStats() {
     try {
-      const [orderStats, refundStats] = await Promise.all([
+      const [orderStats, refundStats, pendingOrderList] = await Promise.all([
         getOrderUnreadStats(),
         getRefundUnreadStats(),
+        getOrderList?.({ page: 1, pageSize: 1, orderStatus: 1 }),
       ]);
-      centerPopupOrderStats.value = buildCenterStats(orderStats, refundStats);
+      centerPopupOrderStats.value = mergePendingOrderTotal(
+        buildCenterStats(orderStats, refundStats),
+        pendingOrderList,
+      );
     } catch (err) {
       logger.error("[Live] refreshCenterOrderStats fail:", err);
     }
