@@ -107,13 +107,17 @@
 
 <script setup>
 import { computed, onMounted, ref } from "vue";
-import { onShareAppMessage, onShareTimeline } from "@dcloudio/uni-app";
+import { onShareAppMessage, onShareTimeline, onUnload } from "@dcloudio/uni-app";
 import templates from "./templates";
 import { getProfile } from "@/api/user";
 import { useUserStore } from "@/stores/user";
 import { saveImageToAlbumWithAuth } from "@/platform/weixin/file";
 import { useInvitationDebug } from "./debug";
-import { createInvitationPosterTempFile, createInvitationShareCardTempFile } from "./poster";
+import {
+  createInvitationPosterTempFile,
+  createInvitationShareCardTempFile,
+  resetInvitationPosterRuntimeCache,
+} from "./poster";
 
 const payload = ref({
   link: "",
@@ -222,6 +226,7 @@ onMounted(async () => {
     debugReason: debugState.reason,
     routeOptions: getCurrentRouteOptions(),
   });
+  resetPosterRuntimeCache("page_mounted");
   let data = {};
   try {
     data = uni.getStorageSync("invitation_payload") || {};
@@ -274,6 +279,13 @@ onMounted(async () => {
   await renderPoster();
 });
 
+onUnload(() => {
+  posterRenderTaskId.value += 1;
+  posterRenderPromise = null;
+  shareRenderPromise = null;
+  resetPosterRuntimeCache("page_unload");
+});
+
 onShareAppMessage(() => {
   const options = buildShareOptions();
   recordDebugEvent("share_app_message", {
@@ -313,6 +325,14 @@ function buildPosterPayload() {
     link: payload.value.link || shareMiniProgramPath.value,
     qrcodeText: shareMiniProgramPath.value,
   };
+}
+
+function resetPosterRuntimeCache(reason) {
+  const snapshot = resetInvitationPosterRuntimeCache();
+  recordDebugEvent("poster_runtime_cache_reset", {
+    reason,
+    ...snapshot,
+  });
 }
 
 async function ensureShareImageReady() {

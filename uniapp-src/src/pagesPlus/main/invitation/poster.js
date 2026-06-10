@@ -14,6 +14,18 @@ const avatarCanvasCache = new Map();
 const avatarTempFileCache = new Map();
 const canvasImageCache = new WeakMap();
 
+export function resetInvitationPosterRuntimeCache() {
+  const snapshot = {
+    imagePathCount: imagePathCache.size,
+    avatarCanvasCount: avatarCanvasCache.size,
+    avatarTempFileCount: avatarTempFileCache.size,
+  };
+  imagePathCache.clear();
+  avatarCanvasCache.clear();
+  avatarTempFileCache.clear();
+  return snapshot;
+}
+
 export async function createInvitationPosterTempFile(template, payload = {}, options = {}) {
   if (!template?.bgImg) {
     throw new Error("邀请函模板为空");
@@ -592,7 +604,8 @@ function createCanvasImage(canvas, src, options = {}, label = "image", mode = "d
 async function resolveLocalImagePath(src, options = {}, label = "image") {
   const value = String(src || "");
   if (imagePathCache.has(value)) {
-    const cached = imagePathCache.get(value);
+    const cached = normalizePackagedImagePath(value, imagePathCache.get(value));
+    imagePathCache.set(value, cached);
     emitPosterEvent(options, "image_local_path_cache_hit", {
       label,
       path: summarizeImageSource(cached),
@@ -614,13 +627,14 @@ async function resolveLocalImagePath(src, options = {}, label = "image") {
       "getImageInfo timeout",
     );
     if (info?.path) {
-      imagePathCache.set(value, info.path);
+      const infoPath = normalizePackagedImagePath(value, info.path);
+      imagePathCache.set(value, infoPath);
       emitPosterEvent(options, "image_local_path_success", {
         label,
         mode: "getImageInfo",
-        path: summarizeImageSource(info.path),
+        path: summarizeImageSource(infoPath),
       });
-      return info.path;
+      return infoPath;
     }
   } catch (error) {
     emitPosterEvent(options, "image_get_info_fail", {
@@ -662,12 +676,13 @@ async function resolvePackagedImagePath(src, options = {}, label = "image") {
       "getImageInfo timeout",
     );
     if (info?.path) {
+      const infoPath = normalizePackagedImagePath(src, info.path);
       emitPosterEvent(options, "image_local_path_success", {
         label,
         mode: "packaged-getImageInfo",
-        path: summarizeImageSource(info.path),
+        path: summarizeImageSource(infoPath),
       });
-      return info.path;
+      return infoPath;
     }
   } catch (error) {
     emitPosterEvent(options, "image_get_info_fail", {
@@ -677,6 +692,14 @@ async function resolvePackagedImagePath(src, options = {}, label = "image") {
     });
   }
   return src;
+}
+
+function normalizePackagedImagePath(src, path) {
+  const value = String(path || "");
+  if (!value) return "";
+  if (/^(?:https?:\/\/|wxfile:\/\/|data:|\/)/i.test(value)) return value;
+  if (String(src || "").startsWith("/")) return `/${value}`;
+  return value;
 }
 
 function canvasToTempFilePath(canvas) {

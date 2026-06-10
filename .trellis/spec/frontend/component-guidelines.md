@@ -135,3 +135,10 @@ Components in the uni-app source project are Vue single-file components under
   Program offscreen canvas. For invitation posters, if direct `createImage`
   loading of `/pagesPlus/static/...` fails, call `getImageInfo` for the packaged
   path and draw the returned local `path` before failing the render.
+- Keeping Mini Program invitation poster runtime caches across page instances.
+  Module-level image-path, avatar-canvas, and avatar-temp-file caches can retain
+  paths or offscreen canvases from a previous page lifecycle; after navigating
+  away and back, those cached objects may time out before the new page has a
+  poster. Reset poster runtime caches on invitation page mount/unload, and
+  normalize packaged `getImageInfo` paths so cached package images keep their
+  leading `/pagesPlus/...` form.
