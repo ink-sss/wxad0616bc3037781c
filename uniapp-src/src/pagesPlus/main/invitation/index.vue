@@ -128,6 +128,7 @@ const payload = ref({
   link: "",
   miniProgramPath: "",
   miniProgramQrCode: "",
+  miniProgramQrCodeFilePath: "",
   roomCode: "",
   roomId: "",
   liveId: "",
@@ -156,6 +157,8 @@ const qrcodeSrc = ref("");
 const miniProgramQrCodeSrc = ref("");
 const qrcodeSource = ref("none");
 const qrcodeFallbackReason = ref("");
+const qrcodeFieldSource = ref("");
+const ordinaryQrCodeCandidateSource = ref("");
 const posterImageSrc = ref("");
 const shareImageSrc = ref("");
 const posterRenderTaskId = ref(0);
@@ -186,7 +189,11 @@ const shareMiniProgramPath = computed(() => {
 
 const qrcodeStatusText = computed(() => {
   if (!qrcodeSrc.value) return "空";
-  if (qrcodeSource.value === "miniProgramQrCodeTempFile" || qrcodeSource.value === "miniProgramQrCode") {
+  if (
+    qrcodeSource.value === "miniProgramQrCodeFilePath" ||
+    qrcodeSource.value === "miniProgramQrCodeTempFile" ||
+    qrcodeSource.value === "miniProgramQrCode"
+  ) {
     return "小程序码";
   }
   return qrcodeFallbackReason.value ? `普通二维码(${qrcodeFallbackReason.value})` : "普通二维码";
@@ -236,6 +243,8 @@ const {
   qrcodeSrc,
   qrcodeSource,
   qrcodeFallbackReason,
+  qrcodeFieldSource,
+  ordinaryQrCodeCandidateSource,
   miniProgramQrCodeSrc,
   posterImageSrc,
   shareImageSrc,
@@ -264,16 +273,22 @@ onMounted(async () => {
     hasLink: !!data.link,
     hasAvatar: !!data.anchorAvatar,
     hasMiniProgramPath: !!data.miniProgramPath,
+    miniProgramQrCodeField: getMiniProgramQrCodeField(data) || data.miniProgramQrCodeSource || "",
+    ordinaryQrCodeCandidateField: getOrdinaryQrCodeCandidateField(data) || data.ordinaryQrCodeCandidateSource || "",
     hasMiniProgramQrCode: !!getMiniProgramQrCodeFromData(data),
+    hasMiniProgramQrCodeFilePath: !!data.miniProgramQrCodeFilePath,
     hasRoomCode: !!data.roomCode,
     hasLiveId: !!(data.liveId || data.roomId),
     hasTenantId: !!data.tenantId,
   });
+  qrcodeFieldSource.value = getMiniProgramQrCodeField(data) || data.miniProgramQrCodeSource || "";
+  ordinaryQrCodeCandidateSource.value = getOrdinaryQrCodeCandidateField(data) || data.ordinaryQrCodeCandidateSource || "";
   const inviter = await resolveInviterProfile();
   payload.value = {
     link: data.link || "/pages/broadcast/entry",
     miniProgramPath: data.miniProgramPath || buildMiniProgramPath(data),
     miniProgramQrCode: normalizeImageSource(getMiniProgramQrCodeFromData(data)),
+    miniProgramQrCodeFilePath: data.miniProgramQrCodeFilePath || "",
     roomCode: data.roomCode || "",
     roomId: data.roomId || "",
     liveId: data.liveId || data.roomId || "",
@@ -296,7 +311,10 @@ onMounted(async () => {
     replayVideoId: data.replayVideoId || data.videoId || data.video_id || data.replay_video_id || "",
     replay_video_id: data.replay_video_id || data.replayVideoId || data.videoId || data.video_id || "",
   };
-  miniProgramQrCodeSrc.value = await resolveMiniProgramQrCodeSrc(payload.value.miniProgramQrCode);
+  miniProgramQrCodeSrc.value = await resolveMiniProgramQrCodeSrc(
+    payload.value.miniProgramQrCode,
+    payload.value.miniProgramQrCodeFilePath,
+  );
   navDomain.value = normalizeNavDomain(data);
   recordDebugEvent("payload_resolved", {
     hasAvatar: !!payload.value.anchorAvatar,
@@ -304,7 +322,10 @@ onMounted(async () => {
     sharePath: shareMiniProgramPath.value,
     qrcodeText: payload.value.link || shareMiniProgramPath.value,
     hasMiniProgramQrCode: !!payload.value.miniProgramQrCode,
+    hasMiniProgramQrCodeFilePath: !!payload.value.miniProgramQrCodeFilePath,
     miniProgramQrCodeType: getImageSourceType(payload.value.miniProgramQrCode),
+    miniProgramQrCodeField: qrcodeFieldSource.value,
+    ordinaryQrCodeCandidateField: ordinaryQrCodeCandidateSource.value,
   });
   await renderQrcode();
   await renderPoster();
@@ -448,12 +469,18 @@ function renderQrcode() {
   const miniProgramCode = miniProgramQrCodeSrc.value || payload.value.miniProgramQrCode || "";
   if (miniProgramCode) {
     qrcodeSrc.value = miniProgramCode;
-    qrcodeSource.value = miniProgramQrCodeSrc.value ? "miniProgramQrCodeTempFile" : "miniProgramQrCode";
+    qrcodeSource.value = payload.value.miniProgramQrCodeFilePath
+      ? "miniProgramQrCodeFilePath"
+      : miniProgramQrCodeSrc.value
+        ? "miniProgramQrCodeTempFile"
+        : "miniProgramQrCode";
     qrcodeFallbackReason.value = "";
   } else {
     qrcodeSrc.value = buildQrcodeImageUrl(text);
     qrcodeSource.value = qrcodeSrc.value ? "ordinaryQrCode" : "none";
-    qrcodeFallbackReason.value = qrcodeSrc.value ? "payload缺少小程序码" : "二维码内容为空";
+    qrcodeFallbackReason.value = qrcodeSrc.value
+      ? getOrdinaryQrCodeFallbackReason()
+      : "二维码内容为空";
   }
   recordDebugEvent("qrcode_rendered", {
     hasImage: !!qrcodeSrc.value,
@@ -461,17 +488,30 @@ function renderQrcode() {
     source: qrcodeSource.value,
     fallbackReason: qrcodeFallbackReason.value,
     hasMiniProgramQrCode: !!payload.value.miniProgramQrCode,
+    hasMiniProgramQrCodeFilePath: !!payload.value.miniProgramQrCodeFilePath,
+    miniProgramQrCodeField: qrcodeFieldSource.value,
+    ordinaryQrCodeCandidateField: ordinaryQrCodeCandidateSource.value,
     miniProgramQrCodeType: getImageSourceType(payload.value.miniProgramQrCode),
     imageUrl: qrcodeSrc.value,
   });
 }
 
-async function resolveMiniProgramQrCodeSrc(value) {
+async function resolveMiniProgramQrCodeSrc(value, filePath = "") {
+  const existingFilePath = String(filePath || "").trim();
+  if (existingFilePath) {
+    recordDebugEvent("mini_program_qrcode_src_ready", {
+      type: getImageSourceType(existingFilePath),
+      source: "payload-file-path",
+      tempFile: true,
+    });
+    return existingFilePath;
+  }
   const image = normalizeImageSource(value);
   if (!image) return "";
   if (!/^data:image\//i.test(image)) {
     recordDebugEvent("mini_program_qrcode_src_ready", {
       type: getImageSourceType(image),
+      source: "payload-image",
       tempFile: false,
     });
     return image;
@@ -628,6 +668,9 @@ async function renderPosterTask(taskId) {
       hasAvatar: !!posterPayload.anchorAvatar,
       inviterName: posterPayload.inviterName,
       hasQrcodeText: !!posterPayload.qrcodeText,
+      hasQrcodeImage: !!posterPayload.qrcodeImage,
+      qrcodeImageSource: posterPayload.qrcodeImageSource || "",
+      qrcodeFallbackReason: qrcodeFallbackReason.value,
       qrcodeText: maskSensitiveText(posterPayload.qrcodeText),
       hasLink: !!posterPayload.link,
     });
@@ -678,12 +721,43 @@ async function renderPosterTask(taskId) {
   // #endif
 }
 
-function startPosterPreloadQueue() {
+function schedulePosterPreloadQueue(reason) {
+  // #ifdef MP-WEIXIN
+  if (posterPreloadTimer) {
+    clearTimeout(posterPreloadTimer);
+    posterPreloadTimer = null;
+  }
+  recordDebugEvent("poster_preload_scheduled", {
+    reason,
+    delayMs: POSTER_PRELOAD_DELAY_MS,
+  });
+  posterPreloadTimer = setTimeout(() => {
+    posterPreloadTimer = null;
+    startPosterPreloadQueue(reason);
+  }, POSTER_PRELOAD_DELAY_MS);
+  // #endif
+}
+
+function cancelPosterPreload(reason) {
+  if (posterPreloadTimer) {
+    clearTimeout(posterPreloadTimer);
+    posterPreloadTimer = null;
+  }
+  posterPreloadRunId += 1;
+  recordDebugEvent("poster_preload_cancel_requested", {
+    reason,
+    runId: posterPreloadRunId,
+    hasPromise: !!posterPreloadPromise,
+  });
+  posterPreloadPromise = null;
+}
+
+function startPosterPreloadQueue(reason = "") {
   // #ifdef MP-WEIXIN
   const runId = posterPreloadRunId + 1;
   posterPreloadRunId = runId;
   const posterPayload = buildPosterPayload();
-  const promise = preloadPosterTemplates(runId, posterPayload);
+  const promise = preloadPosterTemplates(runId, posterPayload, reason);
   posterPreloadPromise = promise;
   promise.finally(() => {
     if (posterPreloadPromise === promise) {
@@ -693,12 +767,15 @@ function startPosterPreloadQueue() {
   // #endif
 }
 
-async function preloadPosterTemplates(runId, posterPayload) {
+async function preloadPosterTemplates(runId, posterPayload, reason = "") {
   recordDebugEvent("poster_preload_start", {
     runId,
+    reason,
     total: templates.length,
     hasAvatar: !!posterPayload.anchorAvatar,
     hasQrcodeText: !!posterPayload.qrcodeText,
+    hasQrcodeImage: !!posterPayload.qrcodeImage,
+    qrcodeImageSource: posterPayload.qrcodeImageSource || "",
   });
   for (const template of templates) {
     if (posterPreloadRunId !== runId) {
@@ -714,6 +791,15 @@ async function preloadPosterTemplates(runId, posterPayload) {
     if (cachedPoster) {
       recordDebugEvent("poster_preload_skip_cache", { runId, templateId });
       continue;
+    }
+    await waitPosterPreloadStep(runId, templateId);
+    if (posterPreloadRunId !== runId) {
+      recordDebugEvent("poster_preload_cancel", {
+        runId,
+        currentRunId: posterPreloadRunId,
+        templateId,
+      });
+      return;
     }
     const startedAt = Date.now();
     try {
@@ -756,6 +842,17 @@ async function preloadPosterTemplates(runId, posterPayload) {
     }
   }
   recordDebugEvent("poster_preload_done", { runId });
+}
+
+function waitPosterPreloadStep(runId, templateId) {
+  recordDebugEvent("poster_preload_step_wait", {
+    runId,
+    templateId,
+    delayMs: POSTER_PRELOAD_STEP_DELAY_MS,
+  });
+  return new Promise((resolve) => {
+    setTimeout(resolve, POSTER_PRELOAD_STEP_DELAY_MS);
+  });
 }
 
 async function renderShareCard(taskId, template, posterPayload, posterDebugOptions) {
@@ -812,6 +909,52 @@ function getCachedPosterFile(template, cacheKey = buildRenderCacheKey(template, 
 function getCachedShareFile(template, cacheKey = buildRenderCacheKey(template, "share")) {
   const templateId = template?.id || "";
   return getInvitationShareFileCache(cacheKey) || shareReadyMap.value[templateId] || "";
+}
+
+function getMiniProgramQrCodeField(data = {}) {
+  const candidates = [
+    ["miniProgramQrCode", data.miniProgramQrCode],
+    ["mini_program_qr_code", data.mini_program_qr_code],
+    ["miniProgramCode", data.miniProgramCode],
+    ["mini_program_code", data.mini_program_code],
+    ["wxaCode", data.wxaCode],
+    ["wxacode", data.wxacode],
+  ];
+  const found = candidates.find(([, value]) => !!value);
+  return found?.[0] || "";
+}
+
+function getMiniProgramQrCodeFromData(data = {}) {
+  const field = getMiniProgramQrCodeField(data);
+  return field ? data[field] || "" : "";
+}
+
+function getOrdinaryQrCodeCandidateField(data = {}) {
+  const candidates = [
+    ["qrCode", data.qrCode],
+    ["qr_code", data.qr_code],
+    ["qrcode", data.qrcode],
+  ];
+  const found = candidates.find(([, value]) => !!value);
+  return found?.[0] || "";
+}
+
+function getOrdinaryQrCodeFallbackReason() {
+  if (ordinaryQrCodeCandidateSource.value) {
+    return `payload缺少小程序码，存在${ordinaryQrCodeCandidateSource.value}普通二维码候选`;
+  }
+  return "payload缺少小程序码";
+}
+
+function getImageSourceType(value) {
+  const text = String(value || "").trim();
+  if (!text) return "";
+  if (/^data:image\//i.test(text)) return "data-url";
+  if (/^https?:\/\//i.test(text)) return "url";
+  if (/^wxfile:\/\//i.test(text)) return "wxfile";
+  if (/^\//.test(text)) return "local-path";
+  if (/^[A-Za-z0-9+/]+={0,2}$/.test(text.replace(/\s+/g, "")) && text.length > 80) return "base64";
+  return "text";
 }
 
 function buildRenderCacheKey(template, kind) {

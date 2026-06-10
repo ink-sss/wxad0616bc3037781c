@@ -7,17 +7,23 @@ export function useInvitationDebug({
   shareMiniProgramPath,
   displayTime,
   qrcodeSrc,
+  qrcodeSource,
+  qrcodeFallbackReason,
+  qrcodeFieldSource,
+  ordinaryQrCodeCandidateSource,
+  miniProgramQrCodeSrc,
   posterImageSrc,
   shareImageSrc,
   posterRendering,
   posterRenderTaskId,
   getPosterRenderPromise,
   getShareRenderPromise,
+  getPosterPreloadPromise,
 }) {
-  const debugVisible = ref(false);
+  const debugVisible = ref(true);
   const debugCopyText = ref("复制信息");
   const debugEvents = ref([]);
-  const debugEnableReason = ref("hidden");
+  const debugEnableReason = ref("always-on-invitation-debug");
 
   const debugBrief = computed(() => {
     if (posterRendering.value) return "生成中";
@@ -101,17 +107,25 @@ export function useInvitationDebug({
       }),
       assets: sanitizeDebugValue({
         qrcodeSrc: qrcodeSrc.value,
+        qrcodeSource: qrcodeSource?.value || "",
+        qrcodeFallbackReason: qrcodeFallbackReason?.value || "",
+        qrcodeFieldSource: qrcodeFieldSource?.value || "",
+        ordinaryQrCodeCandidateSource: ordinaryQrCodeCandidateSource?.value || "",
+        miniProgramQrCodeSrc: miniProgramQrCodeSrc?.value || "",
         posterImageSrc: posterImageSrc.value,
         shareImageSrc: shareImageSrc.value,
         hasAvatar: !!payload.value.anchorAvatar,
         hasNick: !!payload.value.inviterName,
         hasQrcode: !!qrcodeSrc.value,
+        hasMiniProgramQrCode: !!payload.value.miniProgramQrCode,
+        hasMiniProgramQrCodeSrc: !!miniProgramQrCodeSrc?.value,
         hasPosterImage: !!posterImageSrc.value,
         hasShareImage: !!shareImageSrc.value,
         posterRendering: posterRendering.value,
         renderTaskId: posterRenderTaskId.value,
         hasRenderPromise: !!getPosterRenderPromise(),
         hasShareRenderPromise: typeof getShareRenderPromise === "function" && !!getShareRenderPromise(),
+        hasPreloadPromise: typeof getPosterPreloadPromise === "function" && !!getPosterPreloadPromise(),
       }),
       recentEvents: debugEvents.value,
     };
@@ -134,7 +148,7 @@ export function useInvitationDebug({
 }
 
 function getDebugFloatState() {
-  return { enabled: false, reason: "hidden" };
+  return { enabled: true, reason: "always-on-invitation-debug" };
 }
 
 function getCurrentRouteOptions() {

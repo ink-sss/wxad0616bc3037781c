@@ -195,6 +195,8 @@ const currentLink = ref("");
 const loadedShareUrl = ref("");
 const loadedShareCode = ref("");
 const loadedMiniProgramQrCode = ref("");
+const loadedMiniProgramQrCodeSource = ref("");
+const loadedOrdinaryQrCodeCandidateSource = ref("");
 const loadedMiniProgramQrCodeFilePath = ref("");
 const loadedMiniProgramShortLink = ref("");
 const shareUrlLoading = ref(false);
@@ -302,6 +304,8 @@ watch(
       loadedShareUrl.value = "";
       loadedShareCode.value = "";
       loadedMiniProgramQrCode.value = "";
+      loadedMiniProgramQrCodeSource.value = "";
+      loadedOrdinaryQrCodeCandidateSource.value = "";
       loadedMiniProgramQrCodeFilePath.value = "";
       loadedMiniProgramShortLink.value = "";
     }
@@ -315,6 +319,8 @@ async function loadShareUrl() {
     loadedShareUrl.value = "";
     loadedShareCode.value = "";
     loadedMiniProgramQrCode.value = "";
+    loadedMiniProgramQrCodeSource.value = "";
+    loadedOrdinaryQrCodeCandidateSource.value = "";
     loadedMiniProgramQrCodeFilePath.value = "";
     loadedMiniProgramShortLink.value = "";
     shareUrlRequestKey.value = "";
@@ -325,6 +331,8 @@ async function loadShareUrl() {
   loadedShareUrl.value = "";
   loadedShareCode.value = "";
   loadedMiniProgramQrCode.value = "";
+  loadedMiniProgramQrCodeSource.value = "";
+  loadedOrdinaryQrCodeCandidateSource.value = "";
   loadedMiniProgramQrCodeFilePath.value = "";
   loadedMiniProgramShortLink.value = "";
   shareUrlRequestKey.value = requestKey;
@@ -334,11 +342,15 @@ async function loadShareUrl() {
     const data = res?.data || res || {};
     const url = data.shareUrl || data.share_url || "";
     const code = data.shareCode || data.share_code || "";
+    const miniProgramQrCodeSource = getMiniProgramQrCodeField(data);
+    const ordinaryQrCodeCandidateSource = getOrdinaryQrCodeCandidateField(data);
     const qrCode = normalizeImageSource(getMiniProgramQrCodeFromData(data));
     const shortLink = String(data.miniProgramShortLink || data.mini_program_short_link || "").trim();
     if (url) loadedShareUrl.value = url;
     if (code) loadedShareCode.value = code;
     if (shortLink) loadedMiniProgramShortLink.value = shortLink;
+    loadedMiniProgramQrCodeSource.value = miniProgramQrCodeSource;
+    loadedOrdinaryQrCodeCandidateSource.value = ordinaryQrCodeCandidateSource;
     if (qrCode) {
       loadedMiniProgramQrCode.value = qrCode;
       // #ifdef MP-WEIXIN
@@ -357,19 +369,32 @@ async function loadShareUrl() {
   }
 }
 
+function getMiniProgramQrCodeField(data = {}) {
+  const candidates = [
+    ["miniProgramQrCode", data.miniProgramQrCode],
+    ["mini_program_qr_code", data.mini_program_qr_code],
+    ["miniProgramCode", data.miniProgramCode],
+    ["mini_program_code", data.mini_program_code],
+    ["wxaCode", data.wxaCode],
+    ["wxacode", data.wxacode],
+  ];
+  const found = candidates.find(([, value]) => !!value);
+  return found?.[0] || "";
+}
+
 function getMiniProgramQrCodeFromData(data = {}) {
-  return (
-    data.miniProgramQrCode ||
-    data.mini_program_qr_code ||
-    data.miniProgramCode ||
-    data.mini_program_code ||
-    data.wxaCode ||
-    data.wxacode ||
-    data.qrCode ||
-    data.qr_code ||
-    data.qrcode ||
-    ""
-  );
+  const field = getMiniProgramQrCodeField(data);
+  return field ? data[field] || "" : "";
+}
+
+function getOrdinaryQrCodeCandidateField(data = {}) {
+  const candidates = [
+    ["qrCode", data.qrCode],
+    ["qr_code", data.qr_code],
+    ["qrcode", data.qrcode],
+  ];
+  const found = candidates.find(([, value]) => !!value);
+  return found?.[0] || "";
 }
 
 // [2026-05-21] 等待 distributorShareUrl 接口 resolve，避免在 loading 期间点击导致归因链接缺失
@@ -395,6 +420,9 @@ function buildInvitationPayload() {
     link: resolvedLongLink.value,
     miniProgramPath: miniProgramRoomLink.value,
     miniProgramQrCode: preferredMiniProgramQrCode.value,
+    miniProgramQrCodeSource: loadedMiniProgramQrCodeSource.value,
+    ordinaryQrCodeCandidateSource: loadedOrdinaryQrCodeCandidateSource.value,
+    miniProgramQrCodeFilePath: loadedMiniProgramQrCodeFilePath.value,
     shareCode: loadedShareCode.value || props.shareCode || "",
     bindId: props.bindId || readBindId() || "",
     roomCode: props.roomCode || "",

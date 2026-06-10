@@ -165,3 +165,16 @@ Components in the uni-app source project are Vue single-file components under
   template-plus-payload key. Re-entry must reuse those final files for every
   template instead of asking the new page instance to decode untouched template
   backgrounds again.
+- Letting the invitation poster preload queue compete with the currently
+  selected template render. Background exports are only an optimization: delay
+  them after the visible poster finishes, cancel them on template selection or
+  page unload, and restart them only after the selected poster render completes.
+  Debug reports for this flow must include QR-code source, Mini Program code
+  field name, ordinary QR-code fallback reason, and whether a preload promise is
+  still active.
+- Treating generic `qrCode`/`qrcode` fields as guaranteed Mini Program codes in
+  invitation payloads. Only explicit fields such as `miniProgramQrCode`,
+  `mini_program_qr_code`, `miniProgramCode`, or `wxaCode` should drive Mini
+  Program code composition. Generic QR fields may be logged as fallback
+  candidates, but the poster must report when it has fallen back to ordinary QR
+  generation.

@@ -9,6 +9,7 @@ const CANVAS_IMAGE_LOAD_TIMEOUT = 5000;
 const AVATAR_IMAGE_LOAD_TIMEOUT = 2500;
 const AVATAR_CACHE_SIZE = 320;
 const CANVAS_API_TIMEOUT = 3000;
+const PACKAGED_IMAGE_LOAD_TIMEOUT = 1200;
 const imagePathCache = new Map();
 const avatarCanvasCache = new Map();
 const avatarTempFileCache = new Map();
@@ -526,7 +527,47 @@ async function loadCanvasImage(canvas, src, options = {}, label = "image", loadO
     if (localImage) return localImage;
     return loadCanvasImageDirect(canvas, src, options, label, "remote-direct-fallback");
   }
+  if (isPackagedImagePath(src)) {
+    return loadPackagedCanvasImage(canvas, src, options, label, loadOptions);
+  }
   return loadCanvasImageDirect(canvas, src, options, label, "direct", loadOptions);
+}
+
+async function loadPackagedCanvasImage(canvas, src, options = {}, label = "image", loadOptions = {}) {
+  const value = String(src || "");
+  const timeoutOptions = {
+    ...loadOptions,
+    timeoutMs: Math.min(Number(loadOptions.timeoutMs || CANVAS_IMAGE_LOAD_TIMEOUT), PACKAGED_IMAGE_LOAD_TIMEOUT),
+  };
+  const candidates = getPackagedImageCandidates(value);
+  for (const candidate of candidates) {
+    const image = await createCanvasImage(canvas, candidate, options, label, "packaged-direct", timeoutOptions);
+    if (image) {
+      emitPosterEvent(options, "image_load_success", {
+        label,
+        mode: "packaged-direct",
+        path: summarizeImageSource(candidate),
+      });
+      return image;
+    }
+  }
+  const localPath = await resolveLocalImagePath(value, options, label);
+  if (localPath && !candidates.includes(localPath)) {
+    const localImage = await createCanvasImage(canvas, localPath, options, label, "packaged-local", timeoutOptions);
+    emitPosterEvent(options, localImage ? "image_load_success" : "image_load_fail", {
+      label,
+      mode: "packaged-local",
+      localPath: summarizeImageSource(localPath),
+    });
+    if (localImage) return localImage;
+  }
+  emitPosterEvent(options, "image_load_fail", {
+    label,
+    mode: "packaged",
+    candidates: candidates.map((candidate) => summarizeImageSource(candidate)),
+    localPath: summarizeImageSource(localPath),
+  });
+  return null;
 }
 
 async function resolveBase64ImagePath(src, options = {}, label = "image") {
@@ -827,6 +868,27 @@ function normalizePackagedImagePath(src, path) {
   if (/^(?:https?:\/\/|wxfile:\/\/|data:|\/)/i.test(value)) return value;
   if (String(src || "").startsWith("/")) return `/${value}`;
   return value;
+}
+
+function isPackagedImagePath(src) {
+  const value = String(src || "");
+  return /^\/(?!tmp\/)/.test(value) || value.startsWith("./") || value.startsWith("../");
+}
+
+function getPackagedImageCandidates(src) {
+  const value = String(src || "");
+  const candidates = [value];
+  if (value.startsWith("/")) {
+    candidates.push(value.slice(1));
+    candidates.push(`.${value}`);
+  } else if (value.startsWith("./")) {
+    candidates.push(value.slice(2));
+    candidates.push(`/${value.slice(2)}`);
+  } else if (!value.startsWith("../")) {
+    candidates.push(`/${value}`);
+    candidates.push(`./${value}`);
+  }
+  return [...new Set(candidates.filter(Boolean))];
 }
 
 function canvasToTempFilePath(canvas) {
