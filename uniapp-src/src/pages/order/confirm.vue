@@ -73,7 +73,7 @@
         <text class="pay-label">实付款</text>
         <text class="pay-price">¥ {{ totalPrice }}</text>
       </view>
-      <view class="pay-btn" @click="onPay">立即支付</view>
+      <view class="pay-btn" @tap.stop="onPay">立即支付</view>
     </view>
 
     <bottom-sheet-popup
@@ -108,7 +108,7 @@
       @close="showAddressFormPopup = false"
       @saved="onAddressSaved"
     />
-    <live-mini-window :room-code="liveRoomCode" :bottom-offset="180" />
+    <!-- <live-mini-window :room-code="liveRoomCode" :bottom-offset="180" /> -->
   </view>
 </template>
 
@@ -117,6 +117,7 @@ import { computed, ref } from "vue";
 import { onLoad, onShow } from "@dcloudio/uni-app";
 import { confirmOrder, createOrder, getOrderDetail } from "@/api/order";
 import { executeYeepayPayment } from "@/services/payment-action";
+import { navigatePaymentSuccessOrderDetail } from "@/services/order-payment-navigation";
 import { handleCreatedOrderPaymentCancel } from "@/services/order-payment-cancel.js";
 import { getAddressList, deleteAddress } from "@/api/address";
 import { importWxAddress } from "@/services/wechat-address";
@@ -192,11 +193,6 @@ const totalPrice = computed(() => {
   const total = Number(product.value.price || 0) * quantity.value;
   return total.toFixed(2);
 });
-
-function getOrderListUrl(status) {
-  const code = String(liveRoomCode.value || "").trim();
-  return `/pages/order/list?status=${status}${code ? `&roomCode=${encodeURIComponent(code)}` : ""}`;
-}
 
 const shippingFee = computed(() => {
   if (confirmData.value) return confirmData.value.shippingFee || "0.00";
@@ -279,11 +275,15 @@ onShow(async () => {
       const detail = await getOrderDetail(pendingOrderId.value);
       const status = Number(detail?.orderStatus || 0);
       if (status >= 2) {
+        const orderId = detail?.id || pendingOrderId.value;
+        const orderNo = detail?.orderNo || "";
         pendingOrderId.value = 0;
         uni.showToast({ title: "支付成功", icon: "none" });
-        setTimeout(() => {
-          uni.redirectTo({ url: getOrderListUrl("unsend") });
-        }, 1200);
+        navigatePaymentSuccessOrderDetail({
+          orderId,
+          orderNo,
+          roomCode: liveRoomCode.value,
+        }, { replace: true, delay: 1200 });
         return;
       }
     } catch (e) {
@@ -466,6 +466,13 @@ async function onPay() {
       roomCode: liveRoomCode.value,
     });
     if (payResult?.confirmed) {
+      const orderId = pendingOrderId.value;
+      uni.showToast({ title: "支付成功", icon: "none" });
+      navigatePaymentSuccessOrderDetail({
+        orderId,
+        orderNo: orderRes.orderNo,
+        roomCode: liveRoomCode.value,
+      }, { replace: true, delay: 1200 });
       pendingOrderId.value = 0;
     }
   } catch (err) {
@@ -473,6 +480,7 @@ async function onPay() {
       err,
       orderNo: createdOrderNo,
       roomCode: liveRoomCode.value,
+      navigationMethod: "redirectTo",
     })) {
       return;
     }
@@ -651,6 +659,7 @@ async function onPay() {
   left: 0;
   right: 0;
   bottom: 0;
+  z-index: 10;
   height: calc(136rpx + env(safe-area-inset-bottom));
   padding: 0 30rpx env(safe-area-inset-bottom);
   background: #fff;

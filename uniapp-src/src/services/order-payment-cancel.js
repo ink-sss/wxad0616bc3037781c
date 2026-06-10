@@ -5,7 +5,7 @@ export function isPaymentCancelError(err = {}) {
     err?.err_msg,
     err?.code,
   ].filter(Boolean).join(" ");
-  return /用户取消支付|requestPayment:fail cancel|requestPayment:fail.*cancel|pay.*cancel|cancel payment/i.test(text);
+  return /用户取消支付|支付取消|requestPayment:fail.*(cancel|取消)|get_brand_wcpay_request:cancel|pay.*(cancel|取消)|cancel(?:led)? payment|user[_\s-]?cancel/i.test(text);
 }
 
 export function buildPendingOrderListUrl(roomCodeValue) {
@@ -18,9 +18,21 @@ export function handleCreatedOrderPaymentCancel({
   orderNo,
   roomCode,
   uniApi = uni,
+  navigationMethod = "navigateTo",
 }) {
   if (!orderNo || !isPaymentCancelError(err)) return false;
-  uniApi.navigateTo({ url: buildPendingOrderListUrl(roomCode) });
+  const url = buildPendingOrderListUrl(roomCode);
+  const navigate = typeof uniApi?.[navigationMethod] === "function"
+    ? uniApi[navigationMethod].bind(uniApi)
+    : uniApi.navigateTo.bind(uniApi);
+  navigate({
+    url,
+    fail() {
+      if (navigationMethod === "redirectTo" && typeof uniApi.navigateTo === "function") {
+        uniApi.navigateTo({ url });
+      }
+    },
+  });
   uniApi.showToast({ title: "用户取消支付", icon: "none" });
   return true;
 }

@@ -83,6 +83,67 @@ test("business uploads use complaint getUploadUrl and return legacy file_path", 
   assert.equal(uploaded.extra, "kept");
 });
 
+test("business uploads use H5 blob PUT without platform upload fallback", async () => {
+  const originalXmlHttpRequest = globalThis.XMLHttpRequest;
+  const h5Calls = [];
+  const putCalls = [];
+  const uploadFileFallbackCalls = [];
+  globalThis.__h5Post = async (url, data) => {
+    h5Calls.push({ url, data });
+    return {
+      uploadUrl: "https://oss.example.test/presigned",
+      fileUrl: "/uploads/refund.jpg",
+    };
+  };
+  globalThis.__putFileToPresignedUrl = async (...args) => {
+    uploadFileFallbackCalls.push(args);
+    return { statusCode: 200 };
+  };
+  globalThis.XMLHttpRequest = class {
+    open(method, url) {
+      this.method = method;
+      this.url = url;
+    }
+    setRequestHeader(key, value) {
+      this.headers = { ...(this.headers || {}), [key]: value };
+    }
+    send(file) {
+      putCalls.push({
+        method: this.method,
+        url: this.url,
+        headers: this.headers,
+        file,
+      });
+      this.status = 200;
+      this.readyState = 4;
+      this.onload?.();
+    }
+  };
+
+  try {
+    const { uploadFileWithComplaintUploadUrl } = await loadUploadModule();
+    const file = new Blob(["fake-image"], { type: "image/jpeg" });
+    const uploaded = await uploadFileWithComplaintUploadUrl({
+      filePath: "blob:http://localhost/fake",
+      file,
+      fileName: "refund.jpg",
+      contentType: "image/jpeg",
+      fileType: "image",
+      data: { orderId: 123, roomId: 88 },
+    });
+
+    assert.equal(h5Calls.length, 1);
+    assert.equal(putCalls.length, 1);
+    assert.equal(putCalls[0].method, "PUT");
+    assert.equal(putCalls[0].headers["Content-Type"], "image/jpeg");
+    assert.equal(putCalls[0].file, file);
+    assert.equal(uploadFileFallbackCalls.length, 0);
+    assert.equal(uploaded.rawUrl, "/uploads/refund.jpg");
+  } finally {
+    globalThis.XMLHttpRequest = originalXmlHttpRequest;
+  }
+});
+
 test("refund voucher upload forwards roomId into unified upload metadata", async () => {
   const uploadCalls = [];
   globalThis.__h5Get = async () => ({});

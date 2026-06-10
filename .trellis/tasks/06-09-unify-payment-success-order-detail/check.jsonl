@@ -1,0 +1,5 @@
+{"file":".trellis/spec/frontend/index.md","reason":"Frontend guideline index for verification."}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Validate payment/order route changes against frontend quality rules."}
+{"file":".trellis/spec/frontend/directory-structure.md","reason":"Validate route/source boundaries."}
+{"file":".trellis/spec/guides/code-reuse-thinking-guide.md","reason":"Check duplicated payment success navigation was reduced."}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"Check API/service/page flow consistency."}

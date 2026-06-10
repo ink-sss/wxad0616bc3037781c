@@ -1,0 +1,5 @@
+{"file":".trellis/spec/frontend/index.md","reason":"Frontend guideline index for uni-app source changes."}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Payment/order route changes must preserve API boundary and mp-weixin quality rules."}
+{"file":".trellis/spec/frontend/directory-structure.md","reason":"Confirms source boundaries under uniapp-src and route/source layout."}
+{"file":".trellis/spec/guides/code-reuse-thinking-guide.md","reason":"This task unifies repeated payment success navigation."}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"Payment flow crosses API, service, page, and route boundaries."}

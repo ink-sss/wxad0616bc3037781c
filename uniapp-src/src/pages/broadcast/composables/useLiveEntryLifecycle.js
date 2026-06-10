@@ -1,5 +1,6 @@
 import { onBeforeUnmount } from "vue";
 import { onHide, onShow } from "@dcloudio/uni-app";
+import { navigatePaymentSuccessOrderDetail } from "@/services/order-payment-navigation";
 
 /**
  * uni-app 页面生命周期收口。
@@ -16,7 +17,6 @@ export function useLiveEntryLifecycle(ctx) {
     scheduleLiveSoundIntentRestore,
     pendingOrderId,
     getOrderDetail,
-    getOrderListUrl,
     pauseLivePlaybackForMiniWindow,
     clearLiveMiniWindowState,
     persistReplayProgress,
@@ -77,11 +77,14 @@ export function useLiveEntryLifecycle(ctx) {
       .then((detail) => {
         const status = Number(detail?.orderStatus || 0);
         if (status >= 2) {
+          const orderId = detail?.id || pendingOrderId.value;
           pendingOrderId.value = 0;
           uni.showToast({ title: "支付成功", icon: "none" });
-          setTimeout(() => {
-            uni.navigateTo({ url: getOrderListUrl("unsend") });
-          }, 1200);
+          navigatePaymentSuccessOrderDetail({
+            orderId,
+            orderNo: detail?.orderNo || "",
+            roomCode: ctx.roomCode?.value || "",
+          }, { delay: 1200 });
           return;
         }
         pendingOrderId.value = 0;

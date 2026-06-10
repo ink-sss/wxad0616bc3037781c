@@ -292,10 +292,11 @@ async function uploadImages(filePaths = [], tempFiles = []) {
     for (let i = 0; i < validPaths.length; i++) {
       const filePath = validPaths[i];
       const fileObj = tempFiles[i] || null;
-      const realName = fileObj?.name || "";
+      const rawFile = fileObj?.file || fileObj;
+      const realName = rawFile?.name || fileObj?.name || "";
       const fileName = realName || filePath.split("/").pop() || `refund_${Date.now()}.jpg`;
       const ext = (fileName.split(".").pop() || "").toLowerCase();
-      const contentType = fileObj?.type || contentTypeMap[ext] || "image/jpeg";
+      const contentType = rawFile?.type || fileObj?.type || contentTypeMap[ext] || "image/jpeg";
       const uploadId = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
       const tempItem = {
         id: uploadId,
@@ -310,8 +311,9 @@ async function uploadImages(filePaths = [], tempFiles = []) {
           orderId: orderId.value,
           roomId: roomId.value,
           filePath,
+          file: rawFile,
           fileName,
-          contentType: contentTypeMap[ext] || "image/jpeg",
+          contentType,
         });
         refundImages.value = refundImages.value.map((item) =>
           item?.id === uploadId

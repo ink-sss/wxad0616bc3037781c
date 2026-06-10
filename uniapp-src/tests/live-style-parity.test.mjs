@@ -56,16 +56,41 @@ test("landscape product shelf owns H5 product tab sizing for mp-weixin", async (
   assert.match(productList, /\.product-list--landscape \.buy-btn \{[\s\S]*width: 144rpx;[\s\S]*background: linear-gradient\(270deg, #ff0e4c 0%, #ff6089 100%\);/);
 });
 
-test("landscape comment lottery entry follows H5 interaction placement", async () => {
+test("landscape comment lottery entry keeps landscape-only placement", async () => {
   const stage = await readSource("src/pages/broadcast/components/LiveLandscapeStage.vue");
+  const lotteryTools = await readSource("src/pages/broadcast/components/LiveExternalLotteryTools.vue");
+  const landscapeStyles = await readSource("src/pages/broadcast/styles/entry-landscape.scss");
   const liveStageStyles = await readSource("src/pages/broadcast/styles/live-landscape-stage.scss");
   const liveStyles = await readSource("src/pages/broadcast/styles/entry-landscape-live.scss");
 
   assert.match(stage, /class="interact-content"[\s\S]*<live-external-lottery-tools/);
   assert.match(stage, /<live-external-lottery-tools[\s\S]*v-if="\(!isWaitingSchedule \|\| allowWarmupInteraction\) && !anyBusinessPopupOpen"/);
+  assert.match(stage, /<live-external-lottery-tools[\s\S]*variant="landscape"/);
   assert.match(stage, /:comment-lottery-visible="showLandscapeCommentLotteryEntry"/);
-  assert.match(liveStageStyles, /\.landscape-lottery-tools \{[^}]*top: 536rpx;[^}]*z-index: 5;[^}]*\}/);
+  assert.match(lotteryTools, /external-lottery-tools--landscape/);
+  assert.match(lotteryTools, /\.external-lottery-tools \{[^}]*top: calc\(96rpx \+ var\(--broadcast-nav-height, 0px\)\);[^}]*\}/);
+  assert.match(lotteryTools, /\.external-lottery-tools--landscape \{[^}]*top: 22rpx;[^}]*\}/);
+  assert.match(landscapeStyles, /\.interact-content \{[^}]*position: relative;[^}]*\}/);
+  assert.match(liveStageStyles, /\.landscape-lottery-tools\s+\{[^}]*z-index: 5;[^}]*\}/);
+  assert.doesNotMatch(liveStageStyles, /\.landscape-lottery-tools\s+\{[^}]*top:/);
+  assert.doesNotMatch(liveStageStyles, /\.landscape-lottery-tools \{[^}]*top: 536rpx;[^}]*\}/);
   assert.doesNotMatch(liveStageStyles, /\.landscape-lottery-tools \{[^}]*--broadcast-nav-height[^}]*\}/);
-  assert.match(liveStyles, /:deep\(\.external-lottery-tools\) \{[^}]*top: 528rpx;[^}]*right: 24rpx;[^}]*z-index: 1001;[^}]*width: 88rpx;[^}]*gap: 10rpx;[^}]*\}/);
-  assert.doesNotMatch(liveStyles, /:deep\(\.external-lottery-tools\) \{[^}]*--broadcast-nav-height[^}]*\}/);
+  assert.match(liveStyles, /:deep\(\.external-lottery-tools--landscape\) \{[^}]*top: 22rpx;[^}]*right: 24rpx;[^}]*z-index: 1001;[^}]*width: 88rpx;[^}]*gap: 10rpx;[^}]*\}/);
+  assert.doesNotMatch(liveStyles, /:deep\(\.external-lottery-tools--landscape\) \{[^}]*top: 528rpx;[^}]*\}/);
+  assert.doesNotMatch(liveStyles, /:deep\(\.external-lottery-tools--landscape\) \{[^}]*--broadcast-nav-height[^}]*\}/);
+});
+
+test("landscape collapsed video state follows H5 collapsed header", async () => {
+  const stage = await readSource("src/pages/broadcast/components/LiveLandscapeStage.vue");
+  const controls = await readSource("src/pages/broadcast/styles/entry-landscape-live-controls.scss");
+
+  assert.match(stage, /<view class="landscape-navbar-placeholder">\s*<text v-if="!stageCollapsed" class="landscape-navbar-title">/);
+  assert.match(stage, /<view v-if="!stageCollapsed" class="video-top">/);
+  assert.match(stage, /<view v-if="stageCollapsed" class="live-landscape-collapsed-header"/);
+  assert.match(stage, /class="live-landscape-collapsed-header__fire"[\s\S]*fire\.png/);
+  assert.match(stage, /class="live-landscape-collapsed-header__count"[\s\S]*\{\{ displayViewerCount \}\}[\s\S]*<\/text>/);
+  assert.match(stage, /class="live-landscape-collapsed-header__restore" @click\.stop="toggleCollapse"/);
+  assert.doesNotMatch(stage, /<view v-show="!stageCollapsed" class="video-top">/);
+  assert.match(controls, /\.live-landscape-collapsed-header \{[\s\S]*height: 80rpx;[\s\S]*background: linear-gradient\(135deg, #1a0533 0%, #3d1a6e 50%, #6b21a8 100%\);/);
+  assert.match(controls, /\.live-landscape-collapsed-header__restore \{[\s\S]*border-radius: 50%;[\s\S]*background: rgba\(255, 255, 255, 0\.2\);/);
 });

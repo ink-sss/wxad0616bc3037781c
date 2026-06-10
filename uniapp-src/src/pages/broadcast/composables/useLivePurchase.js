@@ -1,5 +1,6 @@
 import { computed, ref } from "vue";
 import { getProductDetail } from "@/api/product.js";
+import { navigatePaymentSuccessOrderDetail } from "@/services/order-payment-navigation";
 import { handleCreatedOrderPaymentCancel } from "@/services/order-payment-cancel.js";
 
 export function getUniApi(explicitUni) {
@@ -436,6 +437,12 @@ export function useLivePurchase({
         roomCode: roomCode.value,
       });
       if (payResult?.confirmed) {
+        uniRuntime.showToast({ title: "支付成功", icon: "none" });
+        navigatePaymentSuccessOrderDetail({
+          orderId: pendingOrderId.value,
+          orderNo: orderRes.orderNo,
+          roomCode: roomCode.value,
+        }, { delay: 1200 });
         pendingOrderId.value = 0;
         showBuyPopup.value = false;
       }

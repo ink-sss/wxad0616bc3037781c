@@ -1,5 +1,9 @@
 <template>
-  <view class="external-lottery-tools" @click.stop>
+  <view
+    class="external-lottery-tools"
+    :class="{ 'external-lottery-tools--landscape': variant === 'landscape' }"
+    @click.stop
+  >
     <view v-if="commentLotteryVisible && showCommentLotteryEntry" class="external-lottery-tools__comment">
       <view
         v-if="showCommentLotteryBubble"
@@ -78,6 +82,10 @@ const props = defineProps({
     type: String,
     default: "领取",
   },
+  variant: {
+    type: String,
+    default: "portrait",
+  },
 });
 const emit = defineEmits(["open-comment-lottery", "open-watch-reward"]);
 
@@ -139,6 +147,10 @@ function openWatchReward() {
   align-items: center;
   gap: 10rpx;
   pointer-events: auto;
+}
+
+.external-lottery-tools--landscape {
+  top: 22rpx;
 }
 
 .external-lottery-tools__comment {

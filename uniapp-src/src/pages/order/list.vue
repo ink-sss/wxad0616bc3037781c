@@ -153,6 +153,7 @@ import {
 } from "@/api/order";
 import { getRefundList } from "@/api/refund";
 import { executeYeepayPayment } from "@/services/payment-action";
+import { navigatePaymentSuccessOrderDetail } from "@/services/order-payment-navigation";
 import { resolveLiveRoomCode } from "@/utils/live-room-context";
 import OrderLogisticsSheet from "./components/order-logistics-sheet.vue";
 import LiveMiniWindow from "@/components/live-mini-window.vue";
@@ -503,11 +504,11 @@ async function handlePayAction(item) {
     const payResult = await executeYeepayPayment(item.orderNo, { roomCode: code });
     if (payResult?.confirmed) {
       uni.showToast({ title: "支付成功", icon: "none" });
-      setTimeout(() => {
-        uni.redirectTo({
-          url: `/pages/order/list?status=unsend${code ? `&roomCode=${encodeURIComponent(code)}` : ""}`,
-        });
-      }, 1200);
+      navigatePaymentSuccessOrderDetail({
+        orderId: item.id,
+        orderNo: item.orderNo,
+        roomCode: code,
+      }, { delay: 1200 });
     }
   } catch (err) {
     uni.showToast({ title: err?.message || "支付失败", icon: "none" });

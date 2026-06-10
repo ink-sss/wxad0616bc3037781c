@@ -98,7 +98,7 @@
         <view v-if="canBackLive" class="pay-btn pay-btn-ghost" @click="goBackLiveRoom">
           返回直播间
         </view>
-        <view class="pay-btn pay-btn-primary" @click="goOrderList">
+        <view class="pay-btn pay-btn-primary" @click="goOrderDetail">
           查看订单
         </view>
       </view>
@@ -106,7 +106,7 @@
         <view v-if="canBackLive" class="pay-btn pay-btn-ghost" @click="goBackLiveRoom">
           返回直播间
         </view>
-        <view class="pay-btn pay-btn-ghost" @click="goOrderList">
+        <view class="pay-btn pay-btn-ghost" @click="goOrderDetail">
           查看订单
         </view>
         <view class="pay-btn pay-btn-primary" @click="retryPay">
@@ -123,6 +123,7 @@ import { ref, computed } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
 import { getOrderDetail, markOrderUnread } from "@/api/order";
 import { executeYeepayPayment } from "@/services/payment-action";
+import { navigatePaymentSuccessOrderDetail } from "@/services/order-payment-navigation";
 import { resolveLiveRoomCode } from "@/utils/live-room-context";
 import { returnToLiveRoom } from "@/utils/live-room-navigation";
 import LiveMiniWindow from "@/components/live-mini-window.vue";
@@ -134,6 +135,7 @@ const orderId = ref(0);
 const liveRoomCode = ref("");
 const preferredChannelType = ref(0);
 const returnOrigin = ref("");
+const returnTo = ref("");
 const orderDetail = ref(null);
 
 const canBackLive = computed(() => !!returnOrigin.value && !!liveRoomCode.value);
@@ -202,6 +204,18 @@ async function doPay() {
       return;
     }
     status.value = "success";
+    navigatePaymentSuccessOrderDetail(
+      {
+        orderId: orderId.value,
+        orderNo: orderNo.value,
+        roomCode: liveRoomCode.value,
+      },
+      {
+        returnTo: returnTo.value,
+        replace: true,
+        delay: 600,
+      },
+    );
   } catch (err) {
     status.value = "fail";
     errorMsg.value = err?.message || "支付失败，请重试";
@@ -216,10 +230,11 @@ function retryPay() {
   doPay();
 }
 
-function goOrderList() {
-  const code = String(liveRoomCode.value || "").trim();
-  uni.reLaunch({
-    url: `/pages/order/list?status=unpay${code ? `&roomCode=${encodeURIComponent(code)}` : ""}`,
+function goOrderDetail() {
+  navigatePaymentSuccessOrderDetail({
+    orderId: orderId.value,
+    orderNo: orderNo.value,
+    roomCode: liveRoomCode.value,
   });
 }
 
@@ -235,6 +250,7 @@ onLoad(async (query) => {
   liveRoomCode.value = resolveLiveRoomCode(query?.roomCode);
   preferredChannelType.value = Number(query?.channelType) || 0;
   returnOrigin.value = decodeURIComponent(query?.returnOrigin || "");
+  returnTo.value = query?.returnTo || "";
   if (!orderNo.value) {
     status.value = "fail";
     errorMsg.value = "订单号缺失";

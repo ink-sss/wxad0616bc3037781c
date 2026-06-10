@@ -48,8 +48,7 @@
         <image src="https://man.lqjy.cc/static/remote-icons/s-nuoyun-income-nodata.png" mode="aspectFit" />
       </view>
 
-      <view v-if="loading" class="loading-text">加载中...</view>
-      <view v-else-if="finished && records.length" class="loading-text">没有更多了</view>
+      <view v-if="footerText" class="loading-text">{{ footerText }}</view>
     </scroll-view>
 
     <view v-if="filterVisible" class="search-box">
@@ -146,6 +145,11 @@ const pendingMonthLabel = computed(() => formatMonthLabel(pendingMonth.value));
 const selectedTypeLabel = computed(() => {
   return typeOptions.find((item) => item.value === selectedWinType.value)?.label || "全部";
 });
+const footerText = computed(() => {
+  if (finished.value && records.value.length) return "没有更多了";
+  if (loading.value) return "加载中...";
+  return "";
+});
 
 function formatMonthLabel(value) {
   if (!value) return "全部";
@@ -170,6 +174,25 @@ function toNumber(value, fallback = 0) {
 function toFlag(value) {
   if (value === true || value === 1 || value === "1" || value === "true") return true;
   return false;
+}
+
+function toFalseFlag(value) {
+  if (value === false || value === 0 || value === "0" || value === "false") return true;
+  return false;
+}
+
+function resolveFinishedState(data = {}, list = []) {
+  const pageInfo = firstValue(data, "pagination", "pageInfo", "page_info") || data;
+  const noMore = firstValue(pageInfo, "noMore", "no_more", "finished", "isEnd", "is_end", "isLast", "is_last", "isLastPage", "is_last_page");
+  const hasMore = firstValue(pageInfo, "hasMore", "has_more");
+  if (toFlag(noMore) || toFalseFlag(hasMore)) return true;
+
+  const currentPage = toNumber(firstValue(pageInfo, "currentPage", "current_page", "page"), page.value);
+  const lastPage = toNumber(firstValue(pageInfo, "lastPage", "last_page", "totalPage", "total_page", "pages", "pageCount", "page_count"));
+  if (lastPage > 0) return currentPage >= lastPage;
+
+  if (total.value > 0) return records.value.length >= total.value;
+  return list.length < pageSize;
 }
 
 function appendQuery(route, params = {}) {
@@ -256,11 +279,12 @@ async function loadRecords(reset = false) {
       winType: selectedWinType.value,
       month: selectedMonth.value,
     });
-    const rawList = firstValue(data, "list", "records", "recordList", "record_list") || [];
+    const pageInfo = firstValue(data, "pagination", "pageInfo", "page_info") || data || {};
+    const rawList = firstValue(data, "list", "records", "recordList", "record_list", "items", "data") || [];
     const list = Array.isArray(rawList) ? rawList.map(normalizePrizeRecord) : [];
-    total.value = Number(firstValue(data, "total", "totalCount", "total_count", "count") || 0);
+    total.value = toNumber(firstValue(data, "total", "totalCount", "total_count", "count") || firstValue(pageInfo, "total", "totalCount", "total_count", "count"), 0);
     records.value = reset ? list : records.value.concat(list);
-    finished.value = records.value.length >= total.value || list.length < pageSize;
+    finished.value = resolveFinishedState(pageInfo, list);
     if (!finished.value) {
       page.value += 1;
     }

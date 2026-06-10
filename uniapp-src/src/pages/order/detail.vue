@@ -163,15 +163,17 @@
 
 <script setup>
 import { computed, ref } from "vue";
-import { onLoad, onUnload } from "@dcloudio/uni-app";
+import { onLoad, onShow, onUnload } from "@dcloudio/uni-app";
 import {
   cancelOrder,
   confirmReceive,
   extendReceive,
   getLogistics,
   getOrderDetail,
+  getOrderList,
   updatePrizeOrderAddress,
 } from "@/api/order";
+import { ORDER_PAYMENT_SUCCESS_EVENT } from "@/services/order-payment-navigation";
 import { resolveLiveRoomCode } from "@/utils/live-room-context";
 import OrderLogisticsSheet from "./components/order-logistics-sheet.vue";
 import LiveMiniWindow from "@/components/live-mini-window.vue";
@@ -181,6 +183,9 @@ const logisticsVisible = ref(false);
 const logisticsData = ref(null);
 const logisticsLoading = ref(false);
 const addressUpdating = ref(false);
+const currentOrderId = ref(0);
+const currentOrderNo = ref("");
+const routeRoomCode = ref("");
 
 const ORDER_STATUS_META = {
   1: {
@@ -362,15 +367,37 @@ function mapOrderDetail(detail = {}) {
   };
 }
 
-async function loadOrderDetail(orderId) {
-  const id = Number(orderId || 0);
+async function resolveOrderIdByOrderNo(orderNo) {
+  const text = String(orderNo || "").trim();
+  if (!text) return 0;
+  const data = await getOrderList({ page: 1, pageSize: 1, orderNo: text });
+  const list = Array.isArray(data?.list) ? data.list : [];
+  const matched = list.find((item) => String(item?.orderNo || "").trim() === text) || list[0];
+  return Number(matched?.id || matched?.orderId || 0);
+}
+
+async function loadOrderDetail(orderId, orderNo = currentOrderNo.value) {
+  let id = Number(orderId || 0);
+  if (!id && orderNo) {
+    try {
+      id = await resolveOrderIdByOrderNo(orderNo);
+    } catch (err) {
+      uni.showToast({ title: err?.message || "获取订单详情失败", icon: "none" });
+      return;
+    }
+  }
   if (!id) {
     uni.showToast({ title: "订单参数错误", icon: "none" });
     return;
   }
   try {
+    currentOrderId.value = id;
     const data = await getOrderDetail(id);
     orderDetail.value = mapOrderDetail(data || {});
+    currentOrderNo.value = orderDetail.value?.orderNo || currentOrderNo.value;
+    if (routeRoomCode.value && orderDetail.value && !orderDetail.value.roomCode) {
+      orderDetail.value.roomCode = routeRoomCode.value;
+    }
   } catch (err) {
     uni.showToast({ title: err?.message || "获取订单详情失败", icon: "none" });
   }
@@ -457,7 +484,7 @@ function navigatePay() {
     return;
   }
   uni.navigateTo({
-    url: `/pages/order/pay?orderNo=${encodeURIComponent(orderNo)}&id=${encodeURIComponent(detail.id || "")}${getRoomCodeQuery()}`,
+    url: `/pages/order/pay?orderNo=${encodeURIComponent(orderNo)}&id=${encodeURIComponent(detail.id || "")}&returnTo=detail${getRoomCodeQuery()}`,
   });
 }
 
@@ -537,6 +564,7 @@ function navigateRebuy() {
       skuId: firstItem.skuId || 0,
       quantity: firstItem.quantity || 1,
       roomId: raw.liveRoomId || raw.roomId || 0,
+      roomCode: orderDetail.value?.roomCode || raw.roomCode || raw.liveRoomCode || raw._roomCode || "",
       title: firstItem.productName || "",
       image: firstItem.coverImage || "",
       price: firstItem.price || 0,
@@ -545,19 +573,32 @@ function navigateRebuy() {
   uni.navigateTo({ url: "/pages/order/confirm?payload=" + payload });
 }
 
+function onPaymentSuccess(payload = {}) {
+  const orderId = Number(payload.orderId || payload.id || currentOrderId.value || 0);
+  const orderNo = payload.orderNo || payload.order_no || currentOrderNo.value;
+  if (orderId && currentOrderId.value && orderId !== currentOrderId.value) return;
+  loadOrderDetail(orderId || currentOrderId.value, orderNo);
+}
+
 onLoad((options) => {
   uni.$off("address-selected", onAddressSelected);
   uni.$on("address-selected", onAddressSelected);
-  const routeRoomCode = resolveLiveRoomCode(options?.roomCode);
-  loadOrderDetail(options?.id || options?.orderId).then(() => {
-    if (routeRoomCode && orderDetail.value && !orderDetail.value.roomCode) {
-      orderDetail.value.roomCode = routeRoomCode;
-    }
-  });
+  uni.$off(ORDER_PAYMENT_SUCCESS_EVENT, onPaymentSuccess);
+  uni.$on(ORDER_PAYMENT_SUCCESS_EVENT, onPaymentSuccess);
+  currentOrderId.value = Number(options?.id || options?.orderId) || 0;
+  currentOrderNo.value = options?.orderNo || options?.order_no || "";
+  routeRoomCode.value = resolveLiveRoomCode(options?.roomCode);
+  loadOrderDetail(currentOrderId.value, currentOrderNo.value);
+});
+
+onShow(() => {
+  if (!orderDetail.value || !currentOrderId.value) return;
+  loadOrderDetail(currentOrderId.value, currentOrderNo.value);
 });
 
 onUnload(() => {
   uni.$off("address-selected", onAddressSelected);
+  uni.$off(ORDER_PAYMENT_SUCCESS_EVENT, onPaymentSuccess);
 });
 </script>
 

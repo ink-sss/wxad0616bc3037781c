@@ -32,6 +32,61 @@ function normalizeUploadInfo(uploadInfo = {}) {
   return { data, uploadUrl, fileUrl }
 }
 
+function isBlobLike(file) {
+  if (!file || typeof file !== 'object') return false
+  if (typeof Blob !== 'undefined' && file instanceof Blob) return true
+  return typeof file.arrayBuffer === 'function' && typeof file.size === 'number'
+}
+
+function putBlobToPresignedUrl(url, file, contentType) {
+  const headerValue = contentType || file?.type || 'application/octet-stream'
+  if (typeof XMLHttpRequest !== 'undefined') {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest()
+      let settled = false
+      const finish = (handler) => {
+        if (settled) return
+        settled = true
+        handler()
+      }
+      xhr.open('PUT', url, true)
+      xhr.setRequestHeader('Content-Type', headerValue)
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          finish(() => resolve({ statusCode: xhr.status }))
+          return
+        }
+        finish(() => reject(new Error(`OSS上传失败: HTTP ${xhr.status}`)))
+      }
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState !== 4) return
+        if (xhr.status >= 200 && xhr.status < 300) {
+          finish(() => resolve({ statusCode: xhr.status }))
+          return
+        }
+        if (xhr.status > 0) {
+          finish(() => reject(new Error(`OSS上传失败: HTTP ${xhr.status}`)))
+        }
+      }
+      xhr.onerror = () => finish(() => reject(new Error('OSS上传网络错误')))
+      xhr.onabort = () => finish(() => reject(new Error('OSS上传已取消')))
+      xhr.ontimeout = () => finish(() => reject(new Error('OSS上传超时')))
+      xhr.send(file)
+    })
+  }
+  if (typeof fetch === 'function') {
+    return fetch(url, {
+      method: 'PUT',
+      headers: { 'Content-Type': headerValue },
+      body: file,
+    }).then((response) => {
+      if (response.ok) return response
+      throw new Error(`OSS上传失败: HTTP ${response.status}`)
+    })
+  }
+  return Promise.reject(new Error('当前环境不支持文件上传'))
+}
+
 function firstValue(source = {}, ...keys) {
   for (const key of keys) {
     const value = source?.[key]
@@ -104,11 +159,15 @@ export async function uploadFileWithComplaintUploadUrl(payload = {}) {
   const { data, uploadUrl, fileUrl } = normalizeUploadInfo(await getUploadUrl(applyRoomIdAliases(requestData)))
   if (!uploadUrl || !fileUrl) throw new Error('获取上传地址失败')
 
-  await putFileToPresignedUrl(uploadUrl, filePath, {
-    contentType,
-    name: payload.name || 'file',
-    header: payload.header,
-  })
+  if (isBlobLike(payload.file)) {
+    await putBlobToPresignedUrl(uploadUrl, payload.file, contentType)
+  } else {
+    await putFileToPresignedUrl(uploadUrl, filePath, {
+      contentType,
+      name: payload.name || 'file',
+      header: payload.header,
+    })
+  }
   return normalizeUploadedFile(fileUrl, data)
 }
 

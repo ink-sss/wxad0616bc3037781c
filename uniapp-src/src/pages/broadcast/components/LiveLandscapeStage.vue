@@ -13,7 +13,7 @@
     :style="landscapeRootStyle"
   >
     <view class="landscape-navbar-placeholder">
-      <text class="landscape-navbar-title">{{ liveName || '直播间' }}</text>
+      <text v-if="!stageCollapsed" class="landscape-navbar-title">{{ liveName || '直播间' }}</text>
     </view>
     <!-- 视频主区域：播放器、兜底播放按钮、封面占位与结束/未开播蒙层 -->
     <view
@@ -178,7 +178,7 @@
       </view>
     </view>
     <!-- 顶部信息区：主播资料、观看人数与投诉入口 -->
-    <view v-show="!stageCollapsed" class="video-top">
+    <view v-if="!stageCollapsed" class="video-top">
       <view class="anchor-left">
         <view class="anchor-info" :class="{ 'anchor-info--hidden': !anchorName }">
           <view class="anchor-avatar-wrap">
@@ -335,6 +335,7 @@
         <live-external-lottery-tools
           v-if="(!isWaitingSchedule || allowWarmupInteraction) && !anyBusinessPopupOpen"
           class="landscape-lottery-tools"
+          variant="landscape"
           :comment-lottery-visible="showLandscapeCommentLotteryEntry"
           :keyword="commentLotteryEntryKeyword"
           :bubble-visible="commentLotteryBubbleVisible"

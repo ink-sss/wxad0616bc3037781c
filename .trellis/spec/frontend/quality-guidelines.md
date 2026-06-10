@@ -736,8 +736,10 @@ import { hideShareMenu, exitMiniProgram } from "@/platform/weixin/share.js";
   backend-required `RoomId` alias as well as the local `roomId` alias.
 - The returned descriptor must keep `url`, `rawUrl`, `file_path`, and
   `filePath` so migrated pages that still read legacy `file_path` keep working.
-- The actual file write must use the platform upload adapter, currently
-  `putFileToPresignedUrl`, against the backend-provided `uploadUrl`.
+- The actual file write must upload the raw file bytes against the
+  backend-provided `uploadUrl`: H5-selected `File`/`Blob` objects use raw
+  XHR/fetch `PUT`, while Mini Program temp file paths use the platform
+  `putFileToPresignedUrl` adapter.
 
 ### 4. Validation & Error Matrix
 
@@ -747,6 +749,9 @@ import { hideShareMenu, exitMiniProgram } from "@/platform/weixin/share.js";
 - Missing `uploadUrl` or `fileUrl` from the backend -> throw `获取上传地址失败`.
 - File PUT/upload failure -> propagate the error to the page or component so it
   can show the existing upload failure toast/modal.
+- H5 uploads with a `File`/`Blob` must not fall back to `uni.uploadFile`
+  multipart uploads, because OSS presigned `PUT` URLs expect the raw object
+  body and may reject multipart form bodies.
 
 ### 5. Good/Base/Bad Cases
 
@@ -754,6 +759,8 @@ import { hideShareMenu, exitMiniProgram } from "@/platform/weixin/share.js";
   components all call `uploadFileWithComplaintUploadUrl`.
 - Good: refund evidence uploads pass order id plus live room id, and the helper
   posts both `RoomId` and `roomId` to `/h5/complaint/getUploadUrl`.
+- Good: H5 refund evidence passes the selected `File` object into the unified
+  helper so the file write is a raw `PUT` to OSS.
 - Base: video uploads pass `fileType: "video"` and infer a video content type
   when the extension is known.
 - Bad: a page or component directly calls `uni.uploadFile` with a backend

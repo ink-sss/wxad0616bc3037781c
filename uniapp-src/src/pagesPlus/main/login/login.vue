@@ -20,7 +20,6 @@
       <!-- #ifndef MP-WEIXIN -->
       <button class="primary" :loading="submitting" @tap="userLogin">微信一键登录</button>
       <!-- #endif -->
-      <button class="ghost" @tap="onNotLogin">暂不登录</button>
     </view>
 
     <view class="agreement" @tap="isRead = !isRead">

@@ -13,7 +13,6 @@
           :src="posterImageSrc"
           mode="scaleToFill"
           show-menu-by-longpress
-          @longpress="saveQrcode"
         />
         <image
           v-else
@@ -58,7 +57,7 @@
           :src="qrcodeSrc"
           mode="aspectFit"
           :style="qrcodeStyle"
-          @longpress="saveQrcode"
+          show-menu-by-longpress
         />
       </view>
       <view v-else class="inv-preview-placeholder">
@@ -87,8 +86,7 @@
     <view
       v-if="debugVisible"
       class="inv-debug-float"
-      @click.stop
-      @touchstart.stop
+       @click.stop="copyDebugInfo"
     >
       <view class="inv-debug-title">
         <text class="inv-debug-title-text">邀请函调试</text>
@@ -100,7 +98,7 @@
         <text class="inv-debug-line">二维码: {{ qrcodeSrc ? "有" : "空" }}</text>
         <text class="inv-debug-line">分享图: {{ shareImageSrc ? "已生成" : "空" }}</text>
       </view>
-      <view class="inv-debug-button" @click.stop="copyDebugInfo">
+      <view class="inv-debug-button">
         <text class="inv-debug-button-text">{{ debugCopyText }}</text>
       </view>
     </view>
