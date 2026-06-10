@@ -50,6 +50,10 @@ and no dependency on compiled Mini Program output.
 - Do not expose migrated navigation entries that terminate in an empty
   `TODO:migration` shell; route them to a functional fallback page or keep the
   entry out of the user-facing flow.
+- Do not show selectable empty-state copy such as "请选择收货地址" unless the same
+  view's click/tap handler can actually perform that action. If business rules
+  disable the action, render non-actionable copy such as "暂无收货地址" or show a
+  toast explaining why the action is unavailable.
 - Do not let Mini Program personal-center order, refund, payment, address,
   complaint, prize, or invitation paths prefer legacy v1 transaction endpoints
   such as `user.order/lists`, `user.order/detail`, or `user.order/pay`.
@@ -98,6 +102,10 @@ and no dependency on compiled Mini Program output.
   in both places.
 - Scan `uniapp-src/src` for forbidden compiled-output dependencies and direct
   high-risk WeChat API calls outside `platform/weixin`.
+- For cross-page order/address selection flows, verify the target page route is
+  registered in `src/pages.json`, the selection page emits a stable payload
+  containing the selected id, and navigation failures surface a toast instead
+  of failing silently.
 - Real-device or WeChat Developer Tools validation is required for login, phone
   binding, payment, merchant transfer, scan code, map/location, customer
   service, official account, web-view, live-player/live-pusher, TRTC, and IM.
@@ -723,8 +731,10 @@ return this.sendRaw({
 ### 3. Contracts
 
 - Supported entry fields: `roomCode`, `tenantId`, `liveType`, `_tc`,
-  `liveId/live_id`, `roomId/room_id`, `shareCode/share_code`, `bindId/bind_id`,
-  `referee_id`, `uid`, and `shop_supplier_id`.
+  `liveId/live_id`, `roomId/room_id`, `shareCode/share_code`, `sc`,
+  `lt`, `bindId/bind_id`, `referee_id`, `uid`, and `shop_supplier_id`.
+- Short QR scene aliases map as `sc -> roomCode/shareCode` and
+  `lt -> liveType`.
 - `scene` must support encoded URL/hash query, `key=value`, and legacy
   comma-separated `key:value` pairs.
 - `loginSetting` writes `mpState`, `wxOpen`, `wxBinding`, `smsOpen`, and

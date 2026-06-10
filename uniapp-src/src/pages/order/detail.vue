@@ -22,7 +22,8 @@
         <view
           class="address-card section-card"
           :class="{ 'address-card-selectable': orderDetail.canSelectAddress }"
-          @click="openAddressSelect"
+          @tap="openAddressSelect"
+          v-if="orderDetail.canSelectAddress"
         >
           <view class="address-head">
             <image
@@ -40,12 +41,14 @@
               <text v-if="orderDetail.address.fullAddress" class="address-text">{{
                 orderDetail.address.fullAddress
               }}</text>
-              <text v-else class="address-placeholder">请选择收货地址</text>
+              <text v-else class="address-placeholder">{{
+                orderDetail.canSelectAddress ? "请选择收货地址" : "暂无收货地址"
+              }}</text>
             </view>
             <view
               v-if="orderDetail.canSelectAddress"
               class="address-select-action"
-              @click.stop="openAddressSelect"
+              @tap.stop="openAddressSelect"
             >
               <text>{{ orderDetail.address.fullAddress ? "更换" : "选择" }}</text>
               <text class="address-select-arrow">›</text>
@@ -341,6 +344,7 @@ function mapOrderDetail(detail = {}) {
     expressType: detail.shipping?.logisticsCompany || "暂无物流信息",
     expressNo: detail.shipping?.trackingNo || "--",
     address: {
+      id: Number(detail.addressId || detail.address_id || detail.receiverAddressId || 0),
       name: detail.receiverName || "",
       phone: detail.receiverPhone || "",
       fullAddress: buildReceiverFullAddress(detail),
@@ -419,12 +423,23 @@ function onExpressNoClick() {
 }
 
 function openAddressSelect() {
-  if (!orderDetail.value?.canSelectAddress) return;
-  uni.navigateTo({ url: "/pagesPlus/main/address/index?select=1" });
+  const detail = orderDetail.value;
+  if (!detail?.canSelectAddress) return;
+  const query = [`select=1`];
+  if (detail.address?.id) {
+    query.push(`selectedId=${encodeURIComponent(detail.address.id)}`);
+  }
+  uni.navigateTo({
+    url: `/pagesPlus/main/address/index?${query.join("&")}`,
+    fail(err) {
+      console.error("[OrderDetail] openAddressSelect fail:", err);
+      uni.showToast({ title: "地址选择页打开失败", icon: "none" });
+    },
+  });
 }
 
-async function onAddressSelected(addressId) {
-  const id = Number(addressId || 0);
+async function onAddressSelected(payload) {
+  const id = Number(payload?.id || payload?.addressId || payload || 0);
   const orderId = orderDetail.value?.id || 0;
   if (!id || !orderId || addressUpdating.value) return;
   addressUpdating.value = true;

@@ -14,10 +14,10 @@ export function useInvitationDebug({
   getPosterRenderPromise,
   getShareRenderPromise,
 }) {
-  const debugVisible = ref(true);
+  const debugVisible = ref(false);
   const debugCopyText = ref("复制信息");
   const debugEvents = ref([]);
-  const debugEnableReason = ref("forced-current-diagnosis");
+  const debugEnableReason = ref("hidden");
 
   const debugBrief = computed(() => {
     if (posterRendering.value) return "生成中";
@@ -134,16 +134,7 @@ export function useInvitationDebug({
 }
 
 function getDebugFloatState() {
-  const routeOptions = getCurrentRouteOptions();
-  const rawFlag = routeOptions.debug || routeOptions.invitation_debug || routeOptions.inv_debug || "";
-  if (String(rawFlag) === "0") return { enabled: false, reason: "route-disabled" };
-  if (String(rawFlag) === "1") return { enabled: true, reason: "route-enabled" };
-  try {
-    const storageFlag = uni.getStorageSync("_invitation_debug") || uni.getStorageSync("_debug");
-    if (String(storageFlag) === "0") return { enabled: false, reason: "storage-disabled" };
-    if (String(storageFlag) === "1") return { enabled: true, reason: "storage-enabled" };
-  } catch (_) {}
-  return { enabled: true, reason: "forced-current-diagnosis" };
+  return { enabled: false, reason: "hidden" };
 }
 
 function getCurrentRouteOptions() {

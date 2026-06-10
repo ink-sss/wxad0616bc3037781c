@@ -310,7 +310,7 @@ export function useLiveMiniWindow(props = {}) {
     left: `${position.value.left}px`,
     top: `${position.value.top}px`,
   }))
-  const debugVisible = computed(() => true)
+  const debugVisible = computed(() => false)
   const debugSummary = computed(() => [
     `visible:${visible.value ? 1 : 0}`,
     `reason:${hideReason.value || '-'}`,

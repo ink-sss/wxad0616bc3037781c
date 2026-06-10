@@ -1,5 +1,6 @@
 import { firstTruthyQueryValue, isWxAddrDoneHit } from "./useLivePurchase.js";
 import { normalizeLiveRouteOptions } from "@/utils/live-route.js";
+import { logLiveRouteInput, logLiveRouteNormalized } from "@/utils/live-route-debug.js";
 import { bindIDManager } from "@/services/bindid";
 import { saveH5AuthContext, syncH5AuthSession } from "@/services/h5-auth-context";
 import { saveLiveRoomContext } from "@/utils/live-room-context";
@@ -271,7 +272,16 @@ function applyDebugLiveEntryOptions(options, ctx) {
 }
 
 export async function runLiveEntryBootstrap(options, ctx) {
+  logLiveRouteInput("page-onload-raw-options", options || {}, {
+    source: "pages/broadcast/entry",
+  });
   options = normalizeLiveRouteOptions({ ...(options || {}) });
+  logLiveRouteNormalized("page-short-link-parse-result", options, {
+    source: "pages/broadcast/entry",
+  });
+  logLiveRouteNormalized("page-normalized-options", options, {
+    source: "pages/broadcast/entry",
+  });
   options = applyDebugLiveEntryOptions(options, ctx);
   handleWxAddressReturn(options, ctx);
   handleSubscribeBack(options, ctx);

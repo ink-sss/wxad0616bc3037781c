@@ -300,7 +300,7 @@
         <button v-if="!ispresale && !detail.custom_form" class="add-cart" @tap="handleAddCartClick">加入购物车</button>
         <button v-else class="add-cart-no" @tap="handleAddCartClick">加入购物车</button>
         <button v-if="!ispresale" class="buy" @tap="handleBuyNowClick">立即购买</button>
-        <button v-else class="buy ispresale" @tap="openPopup('deposit')">
+        <button v-else class="buy ispresale" @tap="handleBuyNowClick">
           <block v-if="activeName === 'advance'"><view class="f28">支付定金</view><view class="f22">￥{{ detail[activeName].money }}</view></block>
           <block v-else>立即购买</block>
         </button>
@@ -328,6 +328,68 @@
       </view>
     </uni-popup>
     <coupon :is-coupon="isCoupon" :discount="discount" :coupon-list="discount.product_coupon" @close="closeCouponFunc" />
+    <product-buy-popup
+      v-if="showBuyPopup"
+      :visible="showBuyPopup"
+      :product="buyProduct"
+      :address-text="buyAddressText"
+      :address-detail="selectedAddress || {}"
+      :shipping-fee="buyShippingFee"
+      :goods-amount="buyGoodsAmount"
+      :total-price="buyTotalPrice"
+      :discount-amount="buyDiscountAmount"
+      :remark="buyRemark"
+      :loading="buyLoading"
+      :require-address="buyRequireAddress"
+      :usable-coupons="usableCoupons"
+      :unusable-coupons="unusableCoupons"
+      :selected-coupon-id="selectedCouponId"
+      :coupon-loading="couponLoading"
+      :confirm-text="buyConfirmText"
+      :allow-missing-address-confirm="buyAllowMissingAddressConfirm"
+      @close="showBuyPopup = false"
+      @select-address="openBuyAddressPopup"
+      @update:remark="buyRemark = $event"
+      @update:quantity="onBuyQuantityChange"
+      @update:sku="onBuySkuChange"
+      @select-coupon="onBuyCouponSelect"
+      @confirm="onBuyConfirm"
+    />
+    <bottom-sheet-popup
+      v-if="showAddressPopup"
+      :visible="showAddressPopup"
+      :height="addressList.length === 0 ? '66vh' : '78vh'"
+      radius="24rpx 24rpx 0 0"
+      :duration="500"
+      :z-index="100000002"
+      :with-mask="true"
+      mask-color="rgba(0, 0, 0, 0.35)"
+      @close="showAddressPopup = false"
+    >
+      <address-list-panel
+        :list="addressList"
+        :selected-id="selectedAddressId"
+        title="地址管理"
+        button-text="确定"
+        :show-default-row="false"
+        :button-disabled="!selectedAddressId"
+        @select="selectedAddressId = $event"
+        @save="confirmBuyAddress"
+        @edit="onEditBuyAddress"
+        @add="onAddBuyAddress"
+        @delete="onDeleteBuyAddress"
+        @import-wx="onImportWxAddress"
+      />
+    </bottom-sheet-popup>
+    <address-form-popup
+      v-if="showAddressFormPopup"
+      :visible="showAddressFormPopup"
+      :edit-data="editAddressData"
+      popup-height="78vh"
+      :z-index="100000003"
+      @close="showAddressFormPopup = false"
+      @saved="onBuyAddressSaved"
+    />
     <uni-popup v-if="chatSetting !== null" :show="isKefuPop" type="middle" @hidePopup="hideKefuPop">
       <view class="kf-pop-view">
         <view class="kf-pop-title">客服二维码</view>
@@ -346,9 +408,14 @@ import coupon from './popup/coupon.vue'
 import previewProduct from './productinfo/previewProduct.vue'
 import countdown from '../../../components/countdown/countdown-presale.vue'
 import guarantee from '../../../components/guarantee.vue'
+import ProductBuyPopup from '../../../components/product-buy-popup.vue'
+import BottomSheetPopup from '../../../components/bottom-sheet-popup.vue'
+import AddressListPanel from '../../../components/address-list-panel.vue'
+import AddressFormPopup from '../../../components/address-form-popup.vue'
 import { openCustomerServiceChat } from '../../../platform/weixin/navigation.js'
 import { fetchProductDetail, normalizeProductDetail } from '../../../services/miniprogram-products.js'
 import { addLocalCartItem } from '../../../services/local-cart.js'
+import { useProductDetailPurchase } from '../../../composables/useProductDetailPurchase.js'
 
 function sceneDecode(scene) {
   if (scene === undefined) return {}
@@ -378,7 +445,14 @@ export default {
     coupon,
     countdown,
     previewProduct,
-    guarantee
+    guarantee,
+    ProductBuyPopup,
+    BottomSheetPopup,
+    AddressListPanel,
+    AddressFormPopup
+  },
+  setup() {
+    return useProductDetailPurchase()
   },
   data() {
     return {
@@ -480,6 +554,9 @@ export default {
   onReady() {
     this.init()
     this.getData()
+  },
+  onShow() {
+    this.checkPendingProductOrder()
   },
   onShareAppMessage() {
     const params = this.getShareUrlParams({
@@ -669,56 +746,26 @@ export default {
       this.cart_total_num = summary.totalNum
       uni.showToast({ title: '已加入购物车', icon: 'success' })
     },
+    getBuyOrderType() {
+      if (this.detail.custom_form) return 'custom_form'
+      if (this.ispresale || this.activeName === 'advance') return 'deposit'
+      if (this.detail.secKill) return 'seckill'
+      return 'buy'
+    },
     handleBuyNowClick() {
-      if (this.detail.custom_form) {
-        uni.showToast({ title: '该商品需填写表单，暂不支持直接购买', icon: 'none' })
-        return
-      }
-      if (this.detail.spec_type === 20 && this.specData) {
-        this.openPopup('order')
-        return
-      }
-      this.gotoBuyConfirm()
-    },
-    buildLiveQuery() {
-      const params = []
-      if (this.room_id !== 0 && this.room_id !== '') {
-        params.push(['roomId', this.room_id])
-        params.push(['room_id', this.room_id])
-        params.push(['liveRoomId', this.room_id])
-        params.push(['live_room_id', this.room_id])
-      }
-      if (this.room_code !== '') {
-        params.push(['roomCode', this.room_code])
-        params.push(['room_code', this.room_code])
-      }
-      if (this.term_id !== 0 && this.term_id !== '') {
-        params.push(['termId', this.term_id])
-        params.push(['term_id', this.term_id])
-        params.push(['liveTermId', this.term_id])
-        params.push(['live_term_id', this.term_id])
-      }
-      if (this.tenant_id !== 0 && this.tenant_id !== '') {
-        params.push(['tenantId', this.tenant_id])
-        params.push(['tenant_id', this.tenant_id])
-      }
-      if (this.share_code !== '') {
-        params.push(['shareCode', this.share_code])
-        params.push(['share_code', this.share_code])
-      }
-      return params
-        .filter(([, value]) => value !== undefined && value !== null && value !== '')
-        .map(([key, value]) => `${key}=${encodeURIComponent(String(value))}`)
-        .join('&')
-    },
-    gotoBuyConfirm() {
-      const sku = this.detail.product_sku || {}
-      const productId = this.detail.product_id
-      const totalNum = this.detail.single_num > 0 ? this.detail.single_num : 1
-      const specSkuId = sku.spec_sku_id || sku.product_sku_id || 0
-      const liveQuery = this.buildLiveQuery()
-      const livePart = liveQuery ? `&${liveQuery}` : ''
-      this.gotoPage(`/pages/order/confirm?product_id=${productId}&productId=${productId}&product_num=${totalNum}&quantity=${totalNum}&product_sku_id=${specSkuId}&skuId=${specSkuId}&order_type=buy${livePart}`)
+      this.openProductDetailBuyPopup({
+        detail: this.detail,
+        productId: this.product_id,
+        specData: this.specData,
+        orderType: this.getBuyOrderType(),
+        liveContext: {
+          roomId: this.room_id,
+          roomCode: this.room_code,
+          termId: this.term_id,
+          tenantId: this.tenant_id,
+          shareCode: this.share_code
+        }
+      })
     },
     closePopup(specData, cartTotalNum) {
       this.isPopup = false

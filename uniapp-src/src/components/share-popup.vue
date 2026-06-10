@@ -11,7 +11,7 @@
           <text class="close-x">✕</text>
         </view>
       </view>
-      <view class="share-options">
+      <view :class="['share-options', loadedMiniProgramShortLink ? 'share-options--three' : '']">
         <view class="share-item" @click="onShare('invitation')">
           <view class="share-icon invitation-bg">
             <image
@@ -22,7 +22,16 @@
           </view>
           <text class="share-label">生成邀请函</text>
         </view>
-       
+        <view v-if="loadedMiniProgramShortLink" class="share-item" @click="onShare('link')">
+          <view class="share-icon link-bg">
+            <image
+              class="icon-svg"
+              src="https://man.lqjy.cc/static/icons/Frame_115.svg"
+              mode="aspectFit"
+            />
+          </view>
+          <text class="share-label">复制链接</text>
+        </view>
         <view class="share-item" @click="onShare('qrcode')">
           <view class="share-icon qrcode-bg">
             <image
@@ -96,7 +105,7 @@
 import { ref, computed, watch } from "vue";
 import { getLiveDistributorShareUrl } from "@/services/live-share";
 import { readBindId } from "@/services/h5-auth-context";
-import { saveImageToAlbumWithAuth, saveImageUrlToAlbum } from "@/platform/weixin/file";
+import { normalizeBase64ImageDataUrl, saveImageToAlbumWithAuth, saveImageUrlToAlbum, writeBase64ImageToTempFile } from "@/platform/weixin/file";
 import { createQrCodeTempFile } from "@/platform/weixin/qrcode";
 
 const props = defineProps({
@@ -185,6 +194,9 @@ const currentLink = ref("");
 // [2026-05-21] 分销员专属分享链接，每次打开弹窗都重新拉取（后端追踪需要，不做本地缓存）
 const loadedShareUrl = ref("");
 const loadedShareCode = ref("");
+const loadedMiniProgramQrCode = ref("");
+const loadedMiniProgramQrCodeFilePath = ref("");
+const loadedMiniProgramShortLink = ref("");
 const shareUrlLoading = ref(false);
 const shareUrlRequestKey = ref("");
 
@@ -218,6 +230,7 @@ const linkStatusText = computed(() => {
 const qrcodeSrc = ref("");
 const qrcodeTempFilePath = ref("");
 const qrcodeRenderTaskId = ref(0);
+const preferredMiniProgramQrCode = computed(() => loadedMiniProgramQrCode.value);
 
 function buildQrcodeImageUrl(text) {
   const value = String(text || "").trim();
@@ -229,6 +242,10 @@ async function renderQrcode(text) {
   const taskId = qrcodeRenderTaskId.value + 1;
   qrcodeRenderTaskId.value = taskId;
   qrcodeTempFilePath.value = "";
+  if (preferredMiniProgramQrCode.value && props.visible && activePanel.value === "qrcode") {
+    qrcodeSrc.value = loadedMiniProgramQrCodeFilePath.value || preferredMiniProgramQrCode.value;
+    return;
+  }
   if (!text || !props.visible || activePanel.value !== "qrcode") {
     qrcodeSrc.value = "";
     return;
@@ -249,7 +266,14 @@ async function renderQrcode(text) {
 
 // [2026-06-06] 主包不再打包 qrcode 库；打开二维码面板时用图片 URL 渲染。
 watch(
-  [() => currentLink.value, () => resolvedLongLink.value, () => props.visible, () => activePanel.value],
+  [
+    () => currentLink.value,
+    () => resolvedLongLink.value,
+    () => props.visible,
+    () => activePanel.value,
+    () => preferredMiniProgramQrCode.value,
+    () => loadedMiniProgramQrCodeFilePath.value,
+  ],
   ([cur, long]) => {
     renderQrcode(cur || long);
   },
@@ -277,6 +301,9 @@ watch(
       qrcodeTempFilePath.value = "";
       loadedShareUrl.value = "";
       loadedShareCode.value = "";
+      loadedMiniProgramQrCode.value = "";
+      loadedMiniProgramQrCodeFilePath.value = "";
+      loadedMiniProgramShortLink.value = "";
     }
   },
   { immediate: true },
@@ -287,6 +314,9 @@ async function loadShareUrl() {
   if (!canUseDistributorShare.value || !rid) {
     loadedShareUrl.value = "";
     loadedShareCode.value = "";
+    loadedMiniProgramQrCode.value = "";
+    loadedMiniProgramQrCodeFilePath.value = "";
+    loadedMiniProgramShortLink.value = "";
     shareUrlRequestKey.value = "";
     return;
   }
@@ -294,6 +324,9 @@ async function loadShareUrl() {
   if (shareUrlLoading.value && shareUrlRequestKey.value === requestKey) return;
   loadedShareUrl.value = "";
   loadedShareCode.value = "";
+  loadedMiniProgramQrCode.value = "";
+  loadedMiniProgramQrCodeFilePath.value = "";
+  loadedMiniProgramShortLink.value = "";
   shareUrlRequestKey.value = requestKey;
   shareUrlLoading.value = true;
   try {
@@ -301,8 +334,21 @@ async function loadShareUrl() {
     const data = res?.data || res || {};
     const url = data.shareUrl || data.share_url || "";
     const code = data.shareCode || data.share_code || "";
+    const qrCode = normalizeBase64ImageDataUrl(data.miniProgramQrCode || data.mini_program_qr_code || "");
+    const shortLink = String(data.miniProgramShortLink || data.mini_program_short_link || "").trim();
     if (url) loadedShareUrl.value = url;
     if (code) loadedShareCode.value = code;
+    if (shortLink) loadedMiniProgramShortLink.value = shortLink;
+    if (qrCode) {
+      loadedMiniProgramQrCode.value = qrCode;
+      // #ifdef MP-WEIXIN
+      try {
+        loadedMiniProgramQrCodeFilePath.value = await writeBase64ImageToTempFile(qrCode, `live-room-${rid}-qrcode.png`);
+      } catch (error) {
+        console.warn("[share-popup] miniProgramQrCode temp file fail:", error);
+      }
+      // #endif
+    }
   } catch (e) {
     console.warn("[share-popup] getDistributorShareUrl fail:", e);
     // 不 toast，静默降级到当前小程序直播间路径，避免打扰用户
@@ -333,6 +379,7 @@ function buildInvitationPayload() {
   return {
     link: resolvedLongLink.value,
     miniProgramPath: miniProgramRoomLink.value,
+    miniProgramQrCode: preferredMiniProgramQrCode.value,
     shareCode: loadedShareCode.value || props.shareCode || "",
     bindId: props.bindId || readBindId() || "",
     roomCode: props.roomCode || "",
@@ -428,18 +475,15 @@ async function onShare(type) {
     shareCode: loadedShareCode.value || props.shareCode || "",
     shareUrl: resolvedLongLink.value || "",
     miniProgramPath: miniProgramRoomLink.value,
+    miniProgramQrCode: preferredMiniProgramQrCode.value,
+    miniProgramShortLink: loadedMiniProgramShortLink.value,
   });
   if (type === "link") {
-    activePanel.value = "link";
-    linkType.value = "long";
-    currentLink.value = resolvedLongLink.value;
-    uni.setClipboardData({
-      data: currentLink.value,
-      success: () => {},
-      fail: () => {
-        uni.showToast({ title: "复制失败", icon: "none" });
-      },
-    });
+    if (!loadedMiniProgramShortLink.value) {
+      uni.showToast({ title: "链接获取失败", icon: "none" });
+      return;
+    }
+    copyLinkValue(loadedMiniProgramShortLink.value);
     return;
   }
   if (type === "qrcode") {
@@ -470,6 +514,8 @@ async function onMiniProgramWechatShare() {
     shareCode: loadedShareCode.value || props.shareCode || "",
     shareUrl: resolvedLongLink.value || "",
     miniProgramPath: miniProgramRoomLink.value,
+    miniProgramQrCode: preferredMiniProgramQrCode.value,
+    miniProgramShortLink: loadedMiniProgramShortLink.value,
   });
   try {
     uni.showShareMenu?.({
@@ -507,6 +553,10 @@ function copyCurrentLink() {
     uni.showToast({ title: "链接获取失败", icon: "none" });
     return;
   }
+  copyLinkValue(link);
+}
+
+function copyLinkValue(link) {
   uni.setClipboardData({
     data: link,
     success: () => {
@@ -518,29 +568,15 @@ function copyCurrentLink() {
   });
 }
 
-function makeShortLink() {
-  currentLink.value = resolvedLongLink.value;
-  linkType.value = "long";
-  uni.setClipboardData({
-    data: currentLink.value,
-    success: () => {
-      uni.showToast({ title: "链接已复制", icon: "success" });
-    },
-    fail: () => {
-      uni.showToast({ title: "复制失败", icon: "none" });
-    },
-  });
-}
-
 async function saveQrcode() {
-  const image = qrcodeTempFilePath.value || qrcodeSrc.value;
+  const image = loadedMiniProgramQrCodeFilePath.value || qrcodeTempFilePath.value || qrcodeSrc.value;
   if (!image) {
     uni.showToast({ title: "二维码生成失败", icon: "none" });
     return;
   }
   try {
-    if (qrcodeTempFilePath.value) {
-      await saveImageToAlbumWithAuth(qrcodeTempFilePath.value);
+    if (loadedMiniProgramQrCodeFilePath.value || qrcodeTempFilePath.value) {
+      await saveImageToAlbumWithAuth(image);
     } else {
       await saveImageUrlToAlbum(image, `live-room-${props.roomId || Date.now()}.png`);
     }
@@ -756,6 +792,10 @@ async function saveQrcode() {
   flex-direction: column;
   align-items: center;
   gap: 26rpx;
+}
+
+.share-options--three .share-item {
+  width: 33.33%;
 }
 
 .share-item-button {

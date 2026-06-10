@@ -81,12 +81,25 @@ onShow(() => {
 function onSelect(id) {
   selectedAddressId.value = id;
   if (selectMode.value) {
+    const selected = addressList.value.find((item) => item.id === id);
     const pages = getCurrentPages();
     const prevPage = pages[pages.length - 2];
     if (prevPage) {
-      uni.$emit("address-selected", id);
+      uni.$emit("address-selected", {
+        id,
+        addressId: id,
+        address: selected?._raw || selected || null,
+      });
+    } else {
+      uni.showToast({ title: "无法返回订单详情", icon: "none" });
+      return;
     }
-    uni.navigateBack();
+    uni.navigateBack({
+      fail(err) {
+        console.error("[Address] navigateBack after select fail:", err);
+        uni.showToast({ title: "返回订单详情失败", icon: "none" });
+      },
+    });
   }
 }
 

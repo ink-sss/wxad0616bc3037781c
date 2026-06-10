@@ -2,6 +2,7 @@ import { fetchLoginSetting, reportMiniProgramVersion } from '@/api/login.js'
 import { getAccountInfo } from '@/platform/weixin/account.js'
 import { getRuntimeConfig } from '@/utils/runtime-config.js'
 import { normalizeLiveRouteOptions } from '@/utils/live-route.js'
+import { logLiveRouteInput, logLiveRouteNormalized } from '@/utils/live-route-debug.js'
 import { saveLiveRoomContext } from '@/utils/live-room-context.js'
 
 function safeGetApp() {
@@ -61,7 +62,15 @@ function getGlobalData(app) {
 
 export function persistMiniProgramStartupScene(options = {}, app) {
   const query = resolveLaunchQuery(options)
+  logLiveRouteInput('app-onlaunch-raw-options', query, {
+    source: 'App.onLaunch',
+    launchOptions: options,
+  })
   const normalized = normalizeLiveRouteOptions(query)
+  logLiveRouteNormalized('app-short-link-parse-result', normalized, {
+    source: 'App.onLaunch',
+    launchOptions: options,
+  })
   const globalData = getGlobalData(app)
   const refereeId = firstValue(normalized, 'referee_id', 'uid')
   const liveId = firstValue(normalized, 'liveId', 'live_id', 'roomId', 'room_id')

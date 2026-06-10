@@ -111,7 +111,7 @@ import { onShareAppMessage, onShareTimeline, onUnload } from "@dcloudio/uni-app"
 import templates from "./templates";
 import { getProfile } from "@/api/user";
 import { useUserStore } from "@/stores/user";
-import { saveImageToAlbumWithAuth } from "@/platform/weixin/file";
+import { normalizeBase64ImageDataUrl, saveImageToAlbumWithAuth, writeBase64ImageToTempFile } from "@/platform/weixin/file";
 import { useInvitationDebug } from "./debug";
 import {
   createInvitationPosterTempFile,
@@ -127,6 +127,7 @@ import {
 const payload = ref({
   link: "",
   miniProgramPath: "",
+  miniProgramQrCode: "",
   roomCode: "",
   roomId: "",
   liveId: "",
@@ -152,6 +153,7 @@ const payload = ref({
 
 const activeIdx = ref(0);
 const qrcodeSrc = ref("");
+const miniProgramQrCodeSrc = ref("");
 const posterImageSrc = ref("");
 const shareImageSrc = ref("");
 const posterRenderTaskId = ref(0);
@@ -245,6 +247,7 @@ onMounted(async () => {
     hasLink: !!data.link,
     hasAvatar: !!data.anchorAvatar,
     hasMiniProgramPath: !!data.miniProgramPath,
+    hasMiniProgramQrCode: !!(data.miniProgramQrCode || data.mini_program_qr_code),
     hasRoomCode: !!data.roomCode,
     hasLiveId: !!(data.liveId || data.roomId),
     hasTenantId: !!data.tenantId,
@@ -253,6 +256,7 @@ onMounted(async () => {
   payload.value = {
     link: data.link || "/pages/broadcast/entry",
     miniProgramPath: data.miniProgramPath || buildMiniProgramPath(data),
+    miniProgramQrCode: normalizeBase64ImageDataUrl(data.miniProgramQrCode || data.mini_program_qr_code || ""),
     roomCode: data.roomCode || "",
     roomId: data.roomId || "",
     liveId: data.liveId || data.roomId || "",
@@ -275,12 +279,14 @@ onMounted(async () => {
     replayVideoId: data.replayVideoId || data.videoId || data.video_id || data.replay_video_id || "",
     replay_video_id: data.replay_video_id || data.replayVideoId || data.videoId || data.video_id || "",
   };
+  miniProgramQrCodeSrc.value = await resolveMiniProgramQrCodeSrc(payload.value.miniProgramQrCode);
   navDomain.value = normalizeNavDomain(data);
   recordDebugEvent("payload_resolved", {
     hasAvatar: !!payload.value.anchorAvatar,
     inviterName: payload.value.inviterName,
     sharePath: shareMiniProgramPath.value,
     qrcodeText: payload.value.link || shareMiniProgramPath.value,
+    hasMiniProgramQrCode: !!payload.value.miniProgramQrCode,
   });
   await renderQrcode();
   await renderPoster();
@@ -334,6 +340,7 @@ function buildPosterPayload() {
     displayTime: displayTime.value || "敬请期待",
     link: payload.value.link || shareMiniProgramPath.value,
     qrcodeText: shareMiniProgramPath.value,
+    qrcodeImage: miniProgramQrCodeSrc.value || payload.value.miniProgramQrCode || "",
   };
 }
 
@@ -420,12 +427,26 @@ async function resolveInviterProfile() {
 
 function renderQrcode() {
   const text = payload.value.link || "/pages/broadcast/entry";
-  qrcodeSrc.value = buildQrcodeImageUrl(text);
+  qrcodeSrc.value = miniProgramQrCodeSrc.value || payload.value.miniProgramQrCode || buildQrcodeImageUrl(text);
   recordDebugEvent("qrcode_rendered", {
     hasImage: !!qrcodeSrc.value,
     text: maskSensitiveText(text),
+    source: payload.value.miniProgramQrCode ? "miniProgramQrCode" : "generated",
     imageUrl: qrcodeSrc.value,
   });
+}
+
+async function resolveMiniProgramQrCodeSrc(value) {
+  const image = normalizeBase64ImageDataUrl(value);
+  if (!image) return "";
+  // #ifdef MP-WEIXIN
+  try {
+    return await writeBase64ImageToTempFile(image, `invitation-qrcode-${Date.now()}.png`);
+  } catch (error) {
+    recordDebugEvent("mini_program_qrcode_temp_file_fail", normalizeError(error));
+  }
+  // #endif
+  return image;
 }
 
 function buildQrcodeImageUrl(text) {
@@ -760,6 +781,7 @@ function buildRenderCacheKey(template, kind) {
     data.liveName || "",
     displayTime.value || "",
     shareMiniProgramPath.value || "",
+    data.miniProgramQrCode || "",
   ].join("|");
 }
 

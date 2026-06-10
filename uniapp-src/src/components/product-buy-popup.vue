@@ -163,7 +163,7 @@
             @click="!isSoldOut && onConfirm()"
           >
             <text class="confirm-text">{{
-              isSoldOut ? "已售罄" : loading ? "提交中..." : "立即购买"
+              isSoldOut ? "已售罄" : loading ? "提交中..." : confirmText
             }}</text>
           </view>
         </view>
@@ -204,6 +204,8 @@ const props = defineProps({
   couponLoading: { type: Boolean, default: false },
   zIndex: { type: Number, default: 100000000 },
   couponZIndex: { type: Number, default: 100000001 },
+  confirmText: { type: String, default: "立即购买" },
+  allowMissingAddressConfirm: { type: Boolean, default: false },
 });
 
 const emit = defineEmits([
@@ -445,7 +447,11 @@ function onConfirm() {
     uni.showToast({ title: "请选择规格", icon: "none" });
     return;
   }
-  if (props.requireAddress !== 2 && !props.addressText) {
+  if (
+    props.requireAddress !== 2 &&
+    !props.allowMissingAddressConfirm &&
+    !props.addressText
+  ) {
     uni.showToast({ title: "请选择收货地址", icon: "none" });
     return;
   }
@@ -467,6 +473,7 @@ function onConfirm() {
     product: props.product,
     quantity: quantity.value,
     skuId: resolvedSkuId,
+    sku: currentSku.value || (skus.value.length === 1 ? skus.value[0] : null),
     selectedSpecText: selectedSpecText.value,
   });
 }

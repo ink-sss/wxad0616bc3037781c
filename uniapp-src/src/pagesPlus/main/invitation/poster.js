@@ -1,4 +1,4 @@
-import { downloadFile } from "@/platform/weixin/file";
+import { downloadFile, normalizeBase64ImageDataUrl, writeBase64ImageToTempFile } from "@/platform/weixin/file";
 import { getWeixinApi, promisifyApi, unsupportedError } from "@/platform/weixin/runtime";
 import { createQrMatrix } from "@/utils/qrcode-matrix.js";
 
@@ -95,6 +95,7 @@ export async function createInvitationPosterTempFile(template, payload = {}, opt
     templateId: template.id || "",
     hasAvatar: !!payload.anchorAvatar,
     hasQrcodeText: !!payload.qrcodeText,
+    hasQrcodeImage: !!payload.qrcodeImage,
   });
   const canvas = createCanvas(template);
   const ctx = canvas.getContext("2d");
@@ -121,6 +122,7 @@ export async function createInvitationShareCardTempFile(template, payload = {}, 
     templateId: template?.id || "",
     hasAvatar: !!payload.anchorAvatar,
     hasQrcodeText: !!payload.qrcodeText,
+    hasQrcodeImage: !!payload.qrcodeImage,
   });
   const canvas = createFixedCanvas(SHARE_CARD_WIDTH, SHARE_CARD_HEIGHT);
   const ctx = canvas.getContext("2d");
@@ -188,8 +190,10 @@ async function drawShareCard(canvas, ctx, template, payload, options = {}) {
   ctx.fillStyle = "#ffffff";
   roundRect(ctx, qrX - 10, qrY - 10, qrSize + 20, qrSize + 20, 14);
   ctx.fill();
-  drawQrMatrix(
+  await drawQrcodeImageOrMatrix(
+    canvas,
     ctx,
+    payload.qrcodeImage,
     payload.qrcodeText || payload.miniProgramPath || payload.link || "/pages/broadcast/entry",
     qrX,
     qrY,
@@ -293,11 +297,13 @@ async function drawSlots(canvas, ctx, width, height, slots, payload, options = {
   drawTextSlot(ctx, width, height, slots.liveName, payload.liveName || "精彩直播", 12);
   drawTextSlot(ctx, width, height, slots.time, payload.displayTime || "敬请期待", 18);
   await drawAvatarSlot(canvas, ctx, width, height, slots.avatar, payload.anchorAvatar, payload.inviterName, options);
-  drawQrcodeSlot(
+  await drawQrcodeSlot(
+    canvas,
     ctx,
     width,
     height,
     slots.qrcode,
+    payload.qrcodeImage,
     payload.qrcodeText || payload.miniProgramPath || payload.link || "/pages/broadcast/entry",
     options,
   );
@@ -346,15 +352,37 @@ async function drawAvatarSlot(canvas, ctx, width, height, slot, src, fallbackTex
   ctx.restore();
 }
 
-function drawQrcodeSlot(ctx, width, height, slot, text, options = {}) {
-  if (!slot || !text) {
-    emitPosterEvent(options, "poster_qrcode_skip", { hasSlot: !!slot, hasText: !!text });
+async function drawQrcodeSlot(canvas, ctx, width, height, slot, imageSrc, text, options = {}) {
+  if (!slot || (!imageSrc && !text)) {
+    emitPosterEvent(options, "poster_qrcode_skip", { hasSlot: !!slot, hasImage: !!imageSrc, hasText: !!text });
     return;
   }
   const size = Math.round(width * Number(slot.size || 0));
   const x = Math.round(width * Number(slot.cx || 0) - size / 2);
   const y = Math.round(height * Number(slot.cy || 0) - size / 2);
-  drawQrMatrix(ctx, text, x, y, size, options, "poster_qrcode");
+  await drawQrcodeImageOrMatrix(canvas, ctx, imageSrc, text, x, y, size, options, "poster_qrcode");
+}
+
+async function drawQrcodeImageOrMatrix(canvas, ctx, imageSrc, text, x, y, size, options = {}, label = "qrcode") {
+  if (imageSrc) {
+    emitPosterEvent(options, "qrcode_image_draw_start", {
+      label,
+      size,
+      hasImage: true,
+    });
+    const image = await loadCanvasImage(canvas, imageSrc, options, label, {
+      timeoutMs: CANVAS_IMAGE_LOAD_TIMEOUT,
+    });
+    if (image) {
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(x, y, size, size);
+      ctx.drawImage(image, x, y, size, size);
+      emitPosterEvent(options, "qrcode_image_draw_success", { label });
+      return;
+    }
+    emitPosterEvent(options, "qrcode_image_draw_fail", { label });
+  }
+  drawQrMatrix(ctx, text, x, y, size, options, label);
 }
 
 function drawQrMatrix(ctx, text, x, y, size, options = {}, label = "qrcode") {
@@ -469,6 +497,20 @@ async function loadCanvasImage(canvas, src, options = {}, label = "image", loadO
       return null;
     }
   }
+  if (/^data:image\//.test(String(src || ""))) {
+    const localPath = await resolveBase64ImagePath(src, options, label);
+    if (!localPath) {
+      emitPosterEvent(options, "image_base64_path_empty", { label });
+      return null;
+    }
+    const localImage = await createCanvasImage(canvas, localPath, options, label, "base64-temp", loadOptions);
+    emitPosterEvent(options, localImage ? "image_load_success" : "image_load_fail", {
+      label,
+      mode: "base64-temp",
+      localPath: summarizeImageSource(localPath),
+    });
+    return localImage;
+  }
   if (/^https?:\/\//.test(String(src || ""))) {
     const localPath = await resolveLocalImagePath(src, options, label);
     if (!localPath) {
@@ -488,6 +530,34 @@ async function loadCanvasImage(canvas, src, options = {}, label = "image", loadO
     return loadCanvasImageDirect(canvas, src, options, label, "remote-direct-fallback");
   }
   return loadCanvasImageDirect(canvas, src, options, label, "direct", loadOptions);
+}
+
+async function resolveBase64ImagePath(src, options = {}, label = "image") {
+  const dataUrl = normalizeBase64ImageDataUrl(src);
+  if (!dataUrl) return "";
+  if (imagePathCache.has(dataUrl)) {
+    const cached = imagePathCache.get(dataUrl);
+    emitPosterEvent(options, "image_base64_path_cache_hit", {
+      label,
+      path: summarizeImageSource(cached),
+    });
+    return cached;
+  }
+  try {
+    const filePath = await writeBase64ImageToTempFile(dataUrl, `poster-${label}-${Date.now()}.png`);
+    imagePathCache.set(dataUrl, filePath);
+    emitPosterEvent(options, "image_base64_path_success", {
+      label,
+      path: summarizeImageSource(filePath),
+    });
+    return filePath;
+  } catch (error) {
+    emitPosterEvent(options, "image_base64_path_fail", {
+      label,
+      error: normalizePosterError(error),
+    });
+    return "";
+  }
 }
 
 async function getCachedAvatarCanvas(src, options = {}, label = "avatar") {

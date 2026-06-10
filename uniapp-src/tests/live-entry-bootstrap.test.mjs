@@ -11,6 +11,7 @@ async function loadBootstrapModule() {
   const tempDir = await mkdtemp(join(tmpdir(), "live-entry-bootstrap-"));
   const sourcePath = join(root, "src/pages/broadcast/composables/useLiveEntryBootstrap.js");
   const routePath = pathToFileURL(join(root, "src/utils/live-route.js")).href;
+  const routeDebugPath = pathToFileURL(join(root, "src/utils/live-route-debug.js")).href;
   let source = await readFile(sourcePath, "utf8");
   source = source
     .replace(
@@ -18,8 +19,16 @@ async function loadBootstrapModule() {
       "const firstTruthyQueryValue = (value) => Array.isArray(value) ? value.find((item) => item) : value;\nconst isWxAddrDoneHit = (value) => value === '1' || value === 1 || value === true;"
     )
     .replace(
+      'import { normalizeLiveRouteOptions, parseScene } from "@/utils/live-route.js";',
+      `import { normalizeLiveRouteOptions, parseScene } from ${JSON.stringify(routePath)};`
+    )
+    .replace(
       'import { normalizeLiveRouteOptions } from "@/utils/live-route.js";',
       `import { normalizeLiveRouteOptions } from ${JSON.stringify(routePath)};`
+    )
+    .replace(
+      'import { logLiveRouteInput, logLiveRouteNormalized } from "@/utils/live-route-debug.js";',
+      `import { logLiveRouteInput, logLiveRouteNormalized } from ${JSON.stringify(routeDebugPath)};`
     )
     .replace(
       'import { bindIDManager } from "@/services/bindid";',
@@ -42,6 +51,7 @@ async function loadStartupModule() {
   const tempDir = await mkdtemp(join(tmpdir(), "miniprogram-startup-"));
   const sourcePath = join(root, "src/services/miniprogram-startup.js");
   const routePath = pathToFileURL(join(root, "src/utils/live-route.js")).href;
+  const routeDebugPath = pathToFileURL(join(root, "src/utils/live-route-debug.js")).href;
   let source = await readFile(sourcePath, "utf8");
   source = source
     .replace(
@@ -59,6 +69,10 @@ async function loadStartupModule() {
     .replace(
       "import { normalizeLiveRouteOptions } from '@/utils/live-route.js'",
       `import { normalizeLiveRouteOptions } from ${JSON.stringify(routePath)};`
+    )
+    .replace(
+      "import { logLiveRouteInput, logLiveRouteNormalized } from '@/utils/live-route-debug.js'",
+      `import { logLiveRouteInput, logLiveRouteNormalized } from ${JSON.stringify(routeDebugPath)};`
     )
     .replace(
       "import { saveLiveRoomContext } from '@/utils/live-room-context.js'",
@@ -184,6 +198,23 @@ test("scene can carry equivalent live-room params", async () => {
   assert.equal(storage.get("h5_token"), "token-2");
   assert.equal(storage.get("mp_live_room_context_v1").roomCode, "mrdrawwfd4wq");
   assert.equal(initCalls[0].roomCode, "mrdrawwfd4wq");
+  assert.equal(initCalls[0].liveType, "replay");
+});
+
+test("scene can carry short live-room aliases", async () => {
+  const { ctx, storage, initCalls } = createHarness();
+  const { runLiveEntryBootstrap } = await loadBootstrapModule();
+
+  await runLiveEntryBootstrap({
+    scene: encodeURIComponent("sc=mrdrawwfd4wq&lt=replay&tenantId=15&_tc=xthxirwe9f&wx_token=token-short"),
+  }, ctx);
+
+  assert.equal(storage.get("h5_token"), "token-short");
+  assert.equal(storage.get("mp_live_room_context_v1").roomCode, "mrdrawwfd4wq");
+  assert.equal(storage.get("mp_live_room_context_v1").shareCode, "mrdrawwfd4wq");
+  assert.equal(storage.get("mp_live_room_context_v1").liveType, "replay");
+  assert.equal(initCalls[0].roomCode, "mrdrawwfd4wq");
+  assert.equal(initCalls[0].shareCode, "mrdrawwfd4wq");
   assert.equal(initCalls[0].liveType, "replay");
 });
 
@@ -361,4 +392,35 @@ test("mini-program startup persists scene and loginSetting compatibility storage
   assert.equal(versionReports.length, 1);
   assert.equal(versionReports[0].version, "1.0.0");
   assert.equal(versionReports[0].options.appid, "wx-test");
+});
+
+test("mini-program startup maps short scene aliases", async () => {
+  const { storage } = createHarness();
+  globalThis.__fetchLoginSetting = async () => ({ appVersion: "1.0.0", setting: {}, im_setting: {} });
+  globalThis.__reportMiniProgramVersion = async () => ({ code: 1 });
+  globalThis.__getAccountInfo = () => ({
+    miniProgram: {
+      appId: "wx-test",
+      version: "1.0.0",
+    },
+  });
+  globalThis.__getRuntimeConfig = () => ({
+    app_id: 393016,
+    appid: "wx-config",
+    miniprogram_appid: "wx-config",
+  });
+  const app = { globalData: {} };
+  const { runMiniProgramStartup } = await loadStartupModule();
+
+  const normalized = await runMiniProgramStartup({
+    query: {
+      scene: encodeURIComponent("sc=mrdrawwfd4wq&lt=live&tenantId=15&_tc=xthxirwe9f"),
+    },
+  }, app);
+
+  assert.equal(normalized.roomCode, "mrdrawwfd4wq");
+  assert.equal(normalized.shareCode, "mrdrawwfd4wq");
+  assert.equal(normalized.liveType, "live");
+  assert.equal(storage.get("mp_live_room_context_v1").roomCode, "mrdrawwfd4wq");
+  assert.equal(storage.get("mp_live_room_context_v1").liveType, "live");
 });

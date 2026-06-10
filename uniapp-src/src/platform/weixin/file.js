@@ -105,10 +105,11 @@ function getFileSystemManager() {
 }
 
 export function writeBase64ImageToTempFile(dataUrl, fileName = `share-${Date.now()}.png`) {
-  if (!dataUrl || typeof dataUrl !== 'string') {
+  const normalizedDataUrl = normalizeBase64ImageDataUrl(dataUrl)
+  if (!normalizedDataUrl) {
     return Promise.reject(new Error('图片数据为空'))
   }
-  const match = dataUrl.match(/^data:image\/(\w+);base64,(.+)$/)
+  const match = normalizedDataUrl.match(/^data:image\/([\w.+-]+);base64,(.+)$/)
   if (!match) {
     return Promise.reject(new Error('不是有效的图片 dataURL'))
   }
@@ -129,6 +130,16 @@ export function writeBase64ImageToTempFile(dataUrl, fileName = `share-${Date.now
       fail: reject,
     })
   })
+}
+
+export function normalizeBase64ImageDataUrl(value, mimeType = 'image/png') {
+  const text = String(value || '').trim()
+  if (!text) return ''
+  const match = text.match(/^(data:image\/[a-zA-Z0-9.+-]+;base64,)([\s\S]+)$/)
+  if (match) return `${match[1]}${String(match[2] || '').replace(/\s+/g, '')}`
+  const compact = text.replace(/\s+/g, '')
+  if (!compact) return ''
+  return `data:${mimeType || 'image/png'};base64,${compact}`
 }
 
 export function saveImageToAlbum(filePath) {

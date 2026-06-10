@@ -741,7 +741,7 @@ getLiveSocket = webSocket.getLiveSocket;
 closeLiveSocket = webSocket.closeLiveSocket;
 sendFallbackEnter = webSocket.sendFallbackEnter;
 const imDebugVisible = computed(() => {
-  return isLiveDebugEnabled();
+  return false;
 });
 const liveTabDebugSummary = computed(() => {
   const state = getLiveTabDebugState();
