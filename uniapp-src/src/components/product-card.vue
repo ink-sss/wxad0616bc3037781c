@@ -15,9 +15,7 @@
         :current="visibleActiveIndex"
         previous-margin="0rpx"
         next-margin="0rpx"
-        circular="false"
-        autoplay
-        interval="5000"
+        :circular="canLoop"
         @change="onSwiperChange"
       >
         <swiper-item
@@ -87,10 +85,13 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, onBeforeUnmount, onMounted, watch } from "vue";
 import { toSizedImageUrl } from "@/utils/image-url";
 
 const PRODUCT_CARD_THUMB_SIZE = { width: 220, height: 220 };
+const AUTOPLAY_INTERVAL_MS = 5000;
+
+let autoplayTimer = null;
 
 const props = defineProps({
   visible: {
@@ -159,6 +160,36 @@ const visibleProductItems = computed(() => {
 });
 
 const visibleActiveIndex = computed(() => safeActiveIndex.value);
+const canLoop = computed(() => productItems.value.length > 1);
+const canAutoplay = computed(() => props.visible && canLoop.value);
+
+function stopAutoplay() {
+  if (!autoplayTimer) return;
+  clearInterval(autoplayTimer);
+  autoplayTimer = null;
+}
+
+function startAutoplay() {
+  stopAutoplay();
+  if (!canAutoplay.value) return;
+  autoplayTimer = setInterval(() => {
+    const total = productItems.value.length;
+    if (total <= 1) return;
+    emit("change", (safeActiveIndex.value + 1) % total);
+  }, AUTOPLAY_INTERVAL_MS);
+}
+
+onMounted(startAutoplay);
+
+onBeforeUnmount(stopAutoplay);
+
+watch(canAutoplay, () => {
+  startAutoplay();
+});
+
+watch(() => productItems.value.length, () => {
+  startAutoplay();
+});
 
 function close() {
   emit("close");
@@ -170,7 +201,9 @@ function onDetail(item) {
 }
 
 function onSwiperChange(e) {
-  emit("change", Number(e?.detail?.current || 0));
+  const nextIndex = Number(e?.detail?.current || 0);
+  if (nextIndex === safeActiveIndex.value) return;
+  emit("change", nextIndex);
 }
 
 function productImage(item) {

@@ -7,7 +7,7 @@ Stop the uni-app live-room floating product card from repeatedly sliding or jitt
 ## Requirements
 
 * Keep the floating product-card swiper automatic movement at 5 seconds per slide.
-* Avoid controlled `current` updates fighting the native swiper during automatic movement.
+* Avoid native `swiper` autoplay fighting controlled `current` updates during automatic movement on iOS.
 * Keep manual swipe and `change` event behavior for multiple explaining products.
 * Stabilize live product state updates so repeated product/current/stock/sold-out updates with the same product IDs do not replace list/object references unnecessarily.
 * Do not modify purchase flow, product popup API, backend request shape, root legacy mini-program source, or `uniapp-src/dist/`.
@@ -30,10 +30,12 @@ Stop the uni-app live-room floating product card from repeatedly sliding or jitt
 
 ## Technical Approach
 
-* Keep `autoplay` and `interval="5000"` on the product-card `swiper`.
-* Remove product-card window slicing so `swiper` `current` uses the same full-list index emitted by `change`.
+* Remove native `autoplay`/`interval` from the product-card `swiper`.
+* Use a component-owned 5-second timer to emit the next global index while keeping `swiper` `current` controlled by the existing parent state.
+* Keep `circular="true"` on the product-card `swiper` so the last-to-first transition does not reverse direction.
+* Keep product-card window slicing removed so `swiper` `current` uses the same full-list index emitted by `change`.
 * Add helper logic in live product composables/handlers to patch existing product objects in place when IDs and order are stable.
-* Add regression tests for source-level swiper autoplay interval, no window slicing, and repeated same-ID product update stability.
+* Add regression tests for the component-owned 5-second carousel interval, no native swiper autoplay, no window slicing, and repeated same-ID product update stability.
 
 ## Out of Scope
 
@@ -45,4 +47,5 @@ Stop the uni-app live-room floating product card from repeatedly sliding or jitt
 
 * CodeGraph is not initialized in this repository.
 * User clarified automatic carousel is required; the bug is continuous iOS jitter, not the 5-second auto-scroll itself.
+* iOS real device still reproduced with native `swiper` autoplay; the stable path is to avoid native autoplay and advance the controlled index from component code.
 * Relevant files inspected: `uniapp-src/src/components/product-card.vue`, `uniapp-src/src/pages/broadcast/composables/useLiveProducts.js`, `uniapp-src/src/pages/broadcast/composables/useLiveWsMessageHandler.js`, and existing live product tests.

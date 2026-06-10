@@ -57,6 +57,11 @@ Components in the uni-app source project are Vue single-file components under
   moving slice/window while also binding a parent-owned `current`, because iOS
   can fight the native autoplay transition and look like it is jittering left
   and right.
+- If an iOS Mini Program `swiper` still jitters after the index/list coordinate
+  spaces are aligned, avoid native `autoplay` on controlled swipers. Keep the
+  visible behavior by advancing the parent-owned `current` index with a
+  component timer, and use `circular="true"` when last-to-first should move
+  forward instead of snapping backward.
 
 ---
 
