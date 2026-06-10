@@ -1,4 +1,4 @@
-import { downloadFile, normalizeBase64ImageDataUrl, writeBase64ImageToTempFile } from "@/platform/weixin/file";
+import { downloadFile, normalizeBase64ImageDataUrl, readFileArrayBuffer, writeBase64ImageToTempFile } from "@/platform/weixin/file";
 import { getWeixinApi, promisifyApi, unsupportedError } from "@/platform/weixin/runtime";
 import { createQrMatrix } from "@/utils/qrcode-matrix.js";
 
@@ -739,7 +739,7 @@ async function loadPackagedCanvasImage(canvas, src, options = {}, label = "image
   const value = String(src || "");
   const timeoutOptions = {
     ...loadOptions,
-    timeoutMs: Math.min(Number(loadOptions.timeoutMs || CANVAS_IMAGE_LOAD_TIMEOUT), PACKAGED_IMAGE_LOAD_TIMEOUT),
+    timeoutMs: getPackagedImageLoadTimeout(label, loadOptions),
   };
   if (imagePathCache.has(value)) {
     const cachedPath = await resolveLocalImagePath(value, options, label);
@@ -777,6 +777,8 @@ async function loadPackagedCanvasImage(canvas, src, options = {}, label = "image
     if (localImage) return localImage;
     deleteImagePathCache(value, options, label, "packaged-local-load-fail");
   }
+  const dataUrlImage = await loadPackagedImageAsDataUrl(canvas, value, options, label, loadOptions);
+  if (dataUrlImage) return dataUrlImage;
   emitPosterEvent(options, "image_load_fail", {
     label,
     mode: "packaged",
@@ -784,6 +786,57 @@ async function loadPackagedCanvasImage(canvas, src, options = {}, label = "image
     localPath: summarizeImageSource(localPath),
   });
   return null;
+}
+
+function getPackagedImageLoadTimeout(label, loadOptions = {}) {
+  const timeoutMs = Number(loadOptions.timeoutMs || CANVAS_IMAGE_LOAD_TIMEOUT);
+  return label === "poster_background" ? timeoutMs : Math.min(timeoutMs, PACKAGED_IMAGE_LOAD_TIMEOUT);
+}
+
+async function loadPackagedImageAsDataUrl(canvas, src, options = {}, label = "image", loadOptions = {}) {
+  const dataUrl = await resolvePackagedImageDataUrl(src, options, label);
+  if (!dataUrl) return null;
+  const image = await createCanvasImage(canvas, dataUrl, options, label, "packaged-data-url", loadOptions);
+  emitPosterEvent(options, image ? "image_load_success" : "image_load_fail", {
+    label,
+    mode: "packaged-data-url",
+    src: summarizeImageSource(src),
+  });
+  return image;
+}
+
+async function resolvePackagedImageDataUrl(src, options = {}, label = "image") {
+  const value = String(src || "");
+  const dataUrlCacheKey = `data-url:${value}`;
+  if (imagePathCache.has(dataUrlCacheKey)) {
+    return imagePathCache.get(dataUrlCacheKey);
+  }
+  const candidates = getPackagedImageCandidates(value);
+  for (const candidate of candidates) {
+    try {
+      const buffer = await withTimeout(
+        readFileArrayBuffer(candidate),
+        CANVAS_API_TIMEOUT,
+        "packaged image readFile timeout",
+      );
+      const base64 = arrayBufferToBase64(buffer);
+      if (!base64) continue;
+      const dataUrl = `data:image/${getImageExtension(value) || "jpeg"};base64,${base64}`;
+      imagePathCache.set(dataUrlCacheKey, dataUrl);
+      emitPosterEvent(options, "image_packaged_data_url_success", {
+        label,
+        path: summarizeImageSource(candidate),
+      });
+      return dataUrl;
+    } catch (error) {
+      emitPosterEvent(options, "image_packaged_data_url_fail", {
+        label,
+        path: summarizeImageSource(candidate),
+        error: normalizePosterError(error),
+      });
+    }
+  }
+  return "";
 }
 
 async function resolveBase64ImagePath(src, options = {}, label = "image") {
@@ -1165,6 +1218,31 @@ function normalizePackagedImagePath(src, path) {
   if (/^(?:https?:\/\/|wxfile:\/\/|data:|\/)/i.test(value)) return value;
   if (String(src || "").startsWith("/")) return `/${value}`;
   return value;
+}
+
+function getImageExtension(path) {
+  const match = String(path || "").match(/\.([a-z0-9]+)(?:\?|#|$)/i);
+  const ext = (match?.[1] || "").toLowerCase();
+  if (ext === "jpg") return "jpeg";
+  if (ext === "jpeg" || ext === "png" || ext === "webp") return ext;
+  return "";
+}
+
+function arrayBufferToBase64(buffer) {
+  if (!buffer) return "";
+  const api = getWeixinApi(null);
+  if (api && typeof api.arrayBufferToBase64 === "function") {
+    return api.arrayBufferToBase64(buffer instanceof Uint8Array ? buffer.buffer : buffer);
+  }
+  const bytes = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer);
+  let binary = "";
+  const chunkSize = 0x8000;
+  for (let index = 0; index < bytes.length; index += chunkSize) {
+    const chunk = bytes.subarray(index, index + chunkSize);
+    binary += String.fromCharCode(...chunk);
+  }
+  if (typeof btoa === "function") return btoa(binary);
+  return "";
 }
 
 function isPackagedImagePath(src) {

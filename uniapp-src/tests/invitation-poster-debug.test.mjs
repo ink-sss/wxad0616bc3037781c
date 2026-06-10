@@ -55,6 +55,7 @@ test("invitation poster re-entry validates exported caches and does not wait for
   const poster = await readSource("src/pagesPlus/main/invitation/poster.js");
 
   assert.match(page, /const posterPageInstanceId = `invitation-\$\{Date\.now\(\)\}-/);
+  assert.match(page, /const INVITATION_POSTER_CACHE_VERSION = "qrcode-source-stable-v4";/);
   assert.match(page, /const MINI_PROGRAM_QRCODE_FILE_TIMEOUT_MS = 1200;/);
   assert.match(page, /promiseScope:\s*posterPageInstanceId/);
   assert.match(page, /posterImageSrc\.value = await getCachedPosterFile/);
@@ -65,6 +66,11 @@ test("invitation poster re-entry validates exported caches and does not wait for
   assert.match(page, /setInvitationPosterFileCache\(cacheKey, readyFile\)/);
   assert.match(page, /async function getCachedShareFile/);
   assert.match(page, /setInvitationShareFileCache\(cacheKey, readyFile\)/);
+  assert.match(page, /function getMiniProgramQrCodeCacheSignature\(data = \{\}\)/);
+  assert.match(page, /return `mini:\$\{field\}`;/);
+  assert.match(page, /return "mini:available";/);
+  assert.match(page, /return `ordinary:\$\{ordinaryField\}`;/);
+  assert.doesNotMatch(page.match(/function buildRenderCacheKey[\s\S]*?function normalizeNavDomain/)?.[0] || "", /data\.miniProgramQrCode \|\| ""/);
   assert.doesNotMatch(page, /if \(shareReadyMap\.value\[templateId\]\) \{\s*shareImageSrc\.value = shareReadyMap\.value\[templateId\];/);
 
   assert.match(poster, /const FILE_CACHE_VALIDATE_TIMEOUT = 800;/);
@@ -85,6 +91,11 @@ test("invitation poster re-entry validates exported caches and does not wait for
   assert.match(poster, /mode: "base64-direct"/);
   assert.match(poster, /"base64 image temp file timeout"/);
   assert.match(poster, /function sanitizePosterString\(text, keyName = ""\)/);
+  assert.match(poster, /function getPackagedImageLoadTimeout\(label, loadOptions = \{\}\)/);
+  assert.match(poster, /label === "poster_background" \? timeoutMs : Math\.min\(timeoutMs, PACKAGED_IMAGE_LOAD_TIMEOUT\)/);
+  assert.match(poster, /function loadPackagedImageAsDataUrl\(canvas, src/);
+  assert.match(poster, /image_packaged_data_url_success/);
+  assert.match(poster, /readFileArrayBuffer\(candidate\)/);
 });
 
 test("invitation poster reuses mini-program QR temp file and skips packaged-image direct timeout", async () => {
@@ -113,7 +124,7 @@ test("explicit mini-program QR image cannot silently fall back to ordinary QR ma
   const page = await readSource("src/pagesPlus/main/invitation/index.vue");
   const poster = await readSource("src/pagesPlus/main/invitation/poster.js");
 
-  assert.match(page, /const INVITATION_POSTER_CACHE_VERSION = "qrcode-image-required-v3";/);
+  assert.match(page, /const INVITATION_POSTER_CACHE_VERSION = "qrcode-source-stable-v4";/);
   assert.match(page, /const miniProgramQrCodeSrcCache = new Map\(\);/);
   assert.match(page, /mini_program_qrcode_temp_file_cache_hit/);
   assert.match(page, /`invitation-qrcode-\$\{hashText\(image\)\}\.png`/);
@@ -126,7 +137,9 @@ test("explicit mini-program QR image cannot silently fall back to ordinary QR ma
   const cacheKeyStart = page.indexOf("function buildRenderCacheKey");
   const cacheKeyEnd = page.indexOf("function normalizeNavDomain", cacheKeyStart);
   const cacheKeyFn = cacheKeyStart >= 0 && cacheKeyEnd > cacheKeyStart ? page.slice(cacheKeyStart, cacheKeyEnd) : "";
-  assert.doesNotMatch(cacheKeyFn, /miniProgramQrCodeFilePath/);
+  const cacheKeyReturn = page.match(/function buildRenderCacheKey[\s\S]*?return \[[\s\S]*?\]\.join\("\|"\);/)?.[0] || "";
+  assert.doesNotMatch(cacheKeyReturn, /data\.miniProgramQrCode \|\| ""/);
+  assert.doesNotMatch(cacheKeyReturn, /miniProgramQrCodeFilePath/);
   assert.doesNotMatch(cacheKeyFn, /miniProgramQrCodeSrc/);
 
   assert.match(poster, /const qrcodeCanvasCache = new Map\(\);/);

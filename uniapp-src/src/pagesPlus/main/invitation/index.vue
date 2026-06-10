@@ -177,7 +177,7 @@ let posterPreloadRunId = 0;
 let posterPreloadTimer = null;
 const posterPageInstanceId = `invitation-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 const miniProgramQrCodeSrcCache = new Map();
-const INVITATION_POSTER_CACHE_VERSION = "qrcode-image-required-v3";
+const INVITATION_POSTER_CACHE_VERSION = "qrcode-source-stable-v4";
 const MINI_PROGRAM_QRCODE_FILE_TIMEOUT_MS = 1200;
 const POSTER_PRELOAD_DELAY_MS = 1200;
 const POSTER_PRELOAD_STEP_DELAY_MS = 180;
@@ -1054,8 +1054,21 @@ function buildRenderCacheKey(template, kind) {
     data.liveName || "",
     displayTime.value || "",
     shareMiniProgramPath.value || "",
-    data.miniProgramQrCode || "",
+    getMiniProgramQrCodeCacheSignature(data),
   ].join("|");
+}
+
+function getMiniProgramQrCodeCacheSignature(data = {}) {
+  const field = qrcodeFieldSource.value || getMiniProgramQrCodeField(data) || data.miniProgramQrCodeSource || "";
+  if (field) return `mini:${field}`;
+  if (data.miniProgramQrCode || data.miniProgramQrCodeFilePath) return "mini:available";
+  const ordinaryField =
+    ordinaryQrCodeCandidateSource.value ||
+    getOrdinaryQrCodeCandidateField(data) ||
+    data.ordinaryQrCodeCandidateSource ||
+    "";
+  if (ordinaryField) return `ordinary:${ordinaryField}`;
+  return getImageSourceType(data.miniProgramQrCode || data.miniProgramQrCodeFilePath || "");
 }
 
 function normalizeNavDomain(data = {}) {

@@ -180,6 +180,16 @@ Components in the uni-app source project are Vue single-file components under
   conversion in invitation generation must have a short timeout and must fall
   back to direct dataURL drawing or continue the current render instead of
   leaving the page in "生成中".
+- Building invitation poster cache keys from raw Mini Program code image data.
+  Backends can return the same Mini Program code as a different dataURL string
+  between page entries, which makes a second entry miss already exported poster
+  files. Cache keys should use stable business fields plus a QR-code source
+  signature, not the full base64 image or temporary file path.
+- Treating packaged invitation template backgrounds like small optional assets.
+  Poster backgrounds are required and large; do not cap `poster_background`
+  canvas loading at the short packaged-image probe timeout. If direct packaged
+  `createImage` still fails on real devices, try reading the packaged file and
+  drawing a dataURL fallback before failing the poster.
 - Copying raw dataURL/base64 values into the invitation debug report. Debug
   output should use field-aware summaries such as `miniProgramQrCode:data-url`
   with type and length, so the report stays small and does not expose full
