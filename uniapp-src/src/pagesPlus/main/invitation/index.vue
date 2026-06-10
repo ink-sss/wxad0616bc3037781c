@@ -174,6 +174,7 @@ let shareRenderPromise = null;
 let posterPreloadPromise = null;
 let posterPreloadRunId = 0;
 let posterPreloadTimer = null;
+const miniProgramQrCodeSrcCache = new Map();
 const INVITATION_POSTER_CACHE_VERSION = "qrcode-image-required-v3";
 const POSTER_PRELOAD_DELAY_MS = 1200;
 const POSTER_PRELOAD_STEP_DELAY_MS = 180;
@@ -525,8 +526,19 @@ async function resolveMiniProgramQrCodeSrc(value, filePath = "") {
     return image;
   }
   // #ifdef MP-WEIXIN
+  if (miniProgramQrCodeSrcCache.has(image)) {
+    const cachedFilePath = miniProgramQrCodeSrcCache.get(image) || "";
+    if (cachedFilePath) {
+      recordDebugEvent("mini_program_qrcode_temp_file_cache_hit", {
+        type: "data-url",
+        filePath: cachedFilePath,
+      });
+      return cachedFilePath;
+    }
+  }
   try {
-    const filePath = await writeBase64ImageToTempFile(image, `invitation-qrcode-${Date.now()}.png`);
+    const filePath = await writeBase64ImageToTempFile(image, `invitation-qrcode-${hashText(image)}.png`);
+    miniProgramQrCodeSrcCache.set(image, filePath);
     recordDebugEvent("mini_program_qrcode_temp_file_success", {
       type: "data-url",
       filePath,
@@ -537,6 +549,15 @@ async function resolveMiniProgramQrCodeSrc(value, filePath = "") {
   }
   // #endif
   return image;
+}
+
+function hashText(value) {
+  let hash = 0;
+  const text = String(value || "");
+  for (let i = 0; i < text.length; i += 1) {
+    hash = ((hash << 5) - hash + text.charCodeAt(i)) | 0;
+  }
+  return Math.abs(hash).toString(36);
 }
 
 function buildQrcodeImageUrl(text) {

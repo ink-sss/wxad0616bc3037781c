@@ -30,9 +30,6 @@ export function resetInvitationPosterRuntimeCache() {
     shareFileCount: shareFileCache.size,
     posterFilePromiseCount: posterFilePromiseCache.size,
   };
-  imagePathCache.clear();
-  avatarCanvasCache.clear();
-  avatarTempFileCache.clear();
   return snapshot;
 }
 
@@ -561,6 +558,9 @@ async function loadCanvasImage(canvas, src, options = {}, label = "image", loadO
       mode: "base64-temp",
       localPath: summarizeImageSource(localPath),
     });
+    if (!localImage) {
+      deleteImagePathCache(normalizeBase64ImageDataUrl(src), options, label, "base64-temp-load-fail");
+    }
     return localImage;
   }
   if (/^https?:\/\//.test(String(src || ""))) {
@@ -579,6 +579,7 @@ async function loadCanvasImage(canvas, src, options = {}, label = "image", loadO
       localPath: summarizeImageSource(localPath),
     });
     if (localImage) return localImage;
+    deleteImagePathCache(src, options, label, "local-load-fail");
     return loadCanvasImageDirect(canvas, src, options, label, "remote-direct-fallback");
   }
   if (isPackagedImagePath(src)) {
@@ -593,6 +594,19 @@ async function loadPackagedCanvasImage(canvas, src, options = {}, label = "image
     ...loadOptions,
     timeoutMs: Math.min(Number(loadOptions.timeoutMs || CANVAS_IMAGE_LOAD_TIMEOUT), PACKAGED_IMAGE_LOAD_TIMEOUT),
   };
+  if (imagePathCache.has(value)) {
+    const cachedPath = await resolveLocalImagePath(value, options, label);
+    if (cachedPath) {
+      const cachedImage = await createCanvasImage(canvas, cachedPath, options, label, "packaged-cache", timeoutOptions);
+      emitPosterEvent(options, cachedImage ? "image_load_success" : "image_load_fail", {
+        label,
+        mode: "packaged-cache",
+        localPath: summarizeImageSource(cachedPath),
+      });
+      if (cachedImage) return cachedImage;
+      deleteImagePathCache(value, options, label, "packaged-cache-load-fail");
+    }
+  }
   const candidates = getPackagedImageCandidates(value);
   for (const candidate of candidates) {
     const image = await createCanvasImage(canvas, candidate, options, label, "packaged-direct", timeoutOptions);
@@ -614,6 +628,7 @@ async function loadPackagedCanvasImage(canvas, src, options = {}, label = "image
       localPath: summarizeImageSource(localPath),
     });
     if (localImage) return localImage;
+    deleteImagePathCache(value, options, label, "packaged-local-load-fail");
   }
   emitPosterEvent(options, "image_load_fail", {
     label,
@@ -954,6 +969,16 @@ async function resolveLocalImagePath(src, options = {}, label = "image") {
     });
   }
   return "";
+}
+
+function deleteImagePathCache(src, options = {}, label = "image", reason = "") {
+  const value = String(src || "");
+  if (!value || !imagePathCache.delete(value)) return;
+  emitPosterEvent(options, "image_path_cache_delete", {
+    label,
+    reason,
+    src: summarizeImageSource(value),
+  });
 }
 
 async function resolvePackagedImagePath(src, options = {}, label = "image") {

@@ -74,6 +74,10 @@ test("explicit mini-program QR image cannot silently fall back to ordinary QR ma
   const poster = await readSource("src/pagesPlus/main/invitation/poster.js");
 
   assert.match(page, /const INVITATION_POSTER_CACHE_VERSION = "qrcode-image-required-v3";/);
+  assert.match(page, /const miniProgramQrCodeSrcCache = new Map\(\);/);
+  assert.match(page, /mini_program_qrcode_temp_file_cache_hit/);
+  assert.match(page, /`invitation-qrcode-\$\{hashText\(image\)\}\.png`/);
+  assert.match(page, /function hashText\(value\)/);
   assert.match(page, /const qrcodeImageCandidates = \[/);
   assert.match(page, /\n\s+qrcodeImageCandidates,\n/);
   assert.match(page, /miniProgramQrCodeSrc\.value,/);
@@ -88,7 +92,14 @@ test("explicit mini-program QR image cannot silently fall back to ordinary QR ma
   assert.match(poster, /const qrcodeCanvasCache = new Map\(\);/);
   const resetRuntimeCache = poster.match(/export function resetInvitationPosterRuntimeCache\(\) \{[\s\S]*?\n\}/)?.[0] || "";
   assert.match(resetRuntimeCache, /qrcodeCanvasCount:\s*qrcodeCanvasCache\.size/);
+  assert.match(resetRuntimeCache, /imagePathCount:\s*imagePathCache\.size/);
+  assert.match(resetRuntimeCache, /avatarCanvasCount:\s*avatarCanvasCache\.size/);
+  assert.doesNotMatch(resetRuntimeCache, /imagePathCache\.clear\(\)/);
+  assert.doesNotMatch(resetRuntimeCache, /avatarCanvasCache\.clear\(\)/);
+  assert.doesNotMatch(resetRuntimeCache, /avatarTempFileCache\.clear\(\)/);
   assert.doesNotMatch(resetRuntimeCache, /qrcodeCanvasCache\.clear\(\)/);
+  assert.match(poster, /mode:\s*"packaged-cache"/);
+  assert.match(poster, /function deleteImagePathCache\(src/);
   assert.match(poster, /function normalizeQrcodeImageSources\(imageSrc\)/);
   assert.match(poster, /async function getCachedQrcodeCanvas\(src/);
   assert.match(poster, /async function cacheQrcodeCanvas\(src, image/);
