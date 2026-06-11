@@ -1,12 +1,14 @@
-import { onBeforeUnmount, watch } from "vue";
+import { onBeforeUnmount, ref, watch } from "vue";
 import {
-  hideOnCapture,
+  onUserCaptureScreen,
+  offUserCaptureScreen,
+  setVisualEffectOnCapture,
   onScreenRecordingStateChanged,
   offScreenRecordingStateChanged,
   resetCaptureEffect,
 } from "@/platform/weixin/capture.js";
 import { exitMiniProgram, hideShareMenu, showShareMenu } from "@/platform/weixin/share.js";
-import { isMpWeixinRuntime } from "@/platform/weixin/runtime.js";
+import { getWeixinApi, isMpWeixinRuntime } from "@/platform/weixin/runtime.js";
 
 function toNumber(value, fallback = 0) {
   const n = Number(value);
@@ -30,13 +32,47 @@ function callAndIgnore(promise) {
 
 export function useLiveMiniProgramParity(ctx = {}) {
   const { roomSetting, liveInitResolved } = ctx;
+  const screenRecording = ref(false);
   if (!isMpWeixinRuntime() || !roomSetting) {
-    return { syncMiniProgramParity: () => {}, stopMiniProgramParity: () => {} };
+    return { screenRecording, syncMiniProgramParity: () => {}, stopMiniProgramParity: () => {} };
+  }
+
+  const captureScreenHandler = () => {};
+
+  function exitCurrentMiniProgram() {
+    callAndIgnore(exitMiniProgram({
+      success() {
+        console.log("退出成功");
+      },
+      fail(error) {
+        console.error("退出失败:", error);
+      },
+    }));
+  }
+
+  function showScreenRecordingModal() {
+    const api = getWeixinApi("showModal", { preferUni: true });
+    if (!api || typeof api.showModal !== "function") return;
+    api.showModal({
+      title: "提示",
+      content: "检测到录屏，将退出小程序以确保内容安全。",
+      showCancel: false,
+      confirmText: "确定退出",
+      success(result = {}) {
+        if (result.confirm) {
+          exitCurrentMiniProgram();
+        }
+      },
+    });
   }
 
   const recordingHandler = (result = {}) => {
-    if (!result || result.state === "start") {
-      callAndIgnore(exitMiniProgram());
+    if (result && result.state === "start") {
+      screenRecording.value = true;
+      showScreenRecordingModal();
+    }
+    if (result && result.state === "stop") {
+      screenRecording.value = false;
     }
   };
 
@@ -55,7 +91,13 @@ export function useLiveMiniProgramParity(ctx = {}) {
 
   function syncCapture(setting = roomSetting.value || {}) {
     if (shouldHideOnCapture(setting)) {
-      callAndIgnore(hideOnCapture());
+      callAndIgnore(setVisualEffectOnCapture({
+        visualEffect: "hidden",
+        success() {},
+        fail() {},
+        complete() {},
+      }));
+      onUserCaptureScreen(captureScreenHandler);
     } else {
       callAndIgnore(resetCaptureEffect());
     }
@@ -76,6 +118,8 @@ export function useLiveMiniProgramParity(ctx = {}) {
 
   function stopMiniProgramParity() {
     offScreenRecordingStateChanged(recordingHandler);
+    offUserCaptureScreen(captureScreenHandler);
+    screenRecording.value = false;
     callAndIgnore(resetCaptureEffect());
   }
 
@@ -87,5 +131,5 @@ export function useLiveMiniProgramParity(ctx = {}) {
   );
   onBeforeUnmount(stopMiniProgramParity);
 
-  return { syncMiniProgramParity, stopMiniProgramParity };
+  return { screenRecording, syncMiniProgramParity, stopMiniProgramParity };
 }

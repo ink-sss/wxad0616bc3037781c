@@ -11,7 +11,7 @@
           <text class="close-x">✕</text>
         </view>
       </view>
-      <view :class="['share-options', loadedMiniProgramShortLink ? 'share-options--three' : '']">
+      <view class="share-options share-options--three">
         <view class="share-item" @tap.stop="onShare('invitation')">
           <view class="share-icon invitation-bg">
             <image
@@ -22,7 +22,13 @@
           </view>
           <text class="share-label">生成邀请函</text>
         </view>
-        <view v-if="loadedMiniProgramShortLink" class="share-item" @tap.stop="onShare('link')">
+        <view
+          :class="[
+            'share-item',
+            showCopyLinkItem ? '' : 'share-item--hidden',
+          ]"
+          @tap.stop="onShare('link')"
+        >
           <view class="share-icon link-bg">
             <image
               class="icon-svg"
@@ -201,6 +207,7 @@ const loadedMiniProgramQrCodeFilePath = ref("");
 const loadedMiniProgramShortLink = ref("");
 const shareUrlLoading = ref(false);
 const shareUrlRequestKey = ref("");
+const copyLinkVisible = ref(false);
 
 const miniProgramRoomLink = computed(() => {
   const params = [];
@@ -217,6 +224,10 @@ const miniProgramRoomLink = computed(() => {
 
 const canUseDistributorShare = computed(() => {
   return props.isDistributor && Number(props.distributorStatus) === 1;
+});
+
+const showCopyLinkItem = computed(() => {
+  return copyLinkVisible.value;
 });
 
 const resolvedLongLink = computed(() => {
@@ -283,18 +294,11 @@ watch(
 );
 
 watch(
-  [
-    () => props.visible,
-    () => props.roomId,
-    () => props.isDistributor,
-    () => props.distributorStatus,
-  ],
-  ([visible]) => {
+  () => props.visible,
+  (visible) => {
     if (visible) {
-      // [2026-05-21] 每次打开弹窗都重新拉 distributorShareUrl（不缓存）
-      //   该接口走进来的前提是付父组件已用 isDistributor && status===1 筛过按钮可见性，
-      //   这里不再重复权限判断；如后端返错，降级使用当前小程序直播间路径
-      loadShareUrl();
+      activePanel.value = "main";
+      copyLinkVisible.value = canUseDistributorShare.value;
     } else {
       activePanel.value = "main";
       linkType.value = "long";
@@ -308,6 +312,7 @@ watch(
       loadedOrdinaryQrCodeCandidateSource.value = "";
       loadedMiniProgramQrCodeFilePath.value = "";
       loadedMiniProgramShortLink.value = "";
+      copyLinkVisible.value = false;
     }
   },
   { immediate: true },
@@ -405,6 +410,30 @@ async function ensureShareUrlReady() {
     while (shareUrlLoading.value) {
       await new Promise((r) => setTimeout(r, 50));
     }
+  } finally {
+    uni.hideLoading();
+  }
+}
+
+function hasLoadedSharePayload() {
+  return !!(
+    loadedShareUrl.value ||
+    loadedShareCode.value ||
+    loadedMiniProgramQrCode.value ||
+    loadedMiniProgramShortLink.value
+  );
+}
+
+async function ensureShareUrlLoaded() {
+  if (!canUseDistributorShare.value || !Number(props.roomId)) return;
+  if (hasLoadedSharePayload()) return;
+  if (shareUrlLoading.value) {
+    await ensureShareUrlReady();
+    return;
+  }
+  uni.showLoading({ title: "正在生成分享链接..." });
+  try {
+    await loadShareUrl();
   } finally {
     uni.hideLoading();
   }
@@ -511,8 +540,8 @@ function navigateToInvitation() {
 }
 
 async function onShare(type) {
-  // 先等分销专属链接拉取完成，避免手速过快使用兑底链接丢归因
-  await ensureShareUrlReady();
+  // 用户执行分享动作时再拉取分销专属链接，避免弹框打开后异步刷新重排主面板。
+  await ensureShareUrlLoaded();
   emit("share", {
     type,
     shareCode: loadedShareCode.value || props.shareCode || "",
@@ -522,11 +551,12 @@ async function onShare(type) {
     miniProgramShortLink: loadedMiniProgramShortLink.value,
   });
   if (type === "link") {
-    if (!loadedMiniProgramShortLink.value) {
+    const link = loadedMiniProgramShortLink.value || resolvedLongLink.value;
+    if (!link) {
       uni.showToast({ title: "链接获取失败", icon: "none" });
       return;
     }
-    copyLinkValue(loadedMiniProgramShortLink.value);
+    copyLinkValue(link);
     return;
   }
   if (type === "qrcode") {
@@ -640,8 +670,6 @@ async function saveQrcode() {
   bottom: 0;
   z-index: 999;
   background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: flex-end;
   backdrop-filter: blur(10rpx);
   -webkit-backdrop-filter: blur(10rpx);
 }
@@ -656,15 +684,20 @@ async function saveQrcode() {
 
 .mask-center {
   align-items: center;
+  justify-content: center;
 }
 
 .share-panel {
-  position: relative;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 1;
   width: 750rpx;
   background: #fff;
   border-radius: 30rpx 30rpx 0 0;
   padding: 38rpx 32rpx 90rpx 33rpx;
+  box-sizing: border-box;
 }
 
 .panel-header {
@@ -730,7 +763,10 @@ async function saveQrcode() {
 }
 
 .link-panel {
-  position: relative;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 1;
   width: 750rpx;
   background: #fff;
@@ -770,13 +806,16 @@ async function saveQrcode() {
 }
 
 .qrcode-panel {
-  position: relative;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   z-index: 1;
   width: 640rpx;
   background: #fff;
   border-radius: 30rpx;
   padding: 40rpx 44rpx;
-  margin: 0 auto;
+  margin: 0;
   box-sizing: border-box;
 }
 
@@ -851,21 +890,13 @@ async function saveQrcode() {
   gap: 26rpx;
 }
 
+.share-item--hidden {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 .share-options--three .share-item {
   width: 33.33%;
-}
-
-.share-item-button {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  line-height: 1;
-  text-align: center;
-}
-
-.share-item-button::after {
-  border: 0;
 }
 
 .share-icon {
@@ -875,10 +906,6 @@ async function saveQrcode() {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.wechat-bg {
-  background: linear-gradient(148deg, #2cc547 21%, #4be177 85%);
 }
 
 .link-bg {
@@ -891,10 +918,6 @@ async function saveQrcode() {
 
 .invitation-bg {
   background: linear-gradient(148deg, #ff5e8e 21%, #ff8ab4 85%);
-}
-
-.icon-text {
-  font-size: 48rpx;
 }
 
 .icon-svg {

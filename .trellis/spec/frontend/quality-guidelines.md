@@ -741,6 +741,16 @@ return this.sendRaw({
   `setting_${app_id}`; IM and review fields write to `globalData`.
 - WeChat-only share, capture, screen-recording, and app-exit behavior must stay
   behind `src/platform/weixin/` wrappers.
+- Broadcast screen-recording handling must match the source Mini Program live
+  pages: register `onScreenRecordingStateChanged`, set a black
+  `onScreenRecord` overlay and show a non-cancelable modal when
+  `state === "start"`, call `exitMiniProgram` only after the user confirms
+  the modal, and clear the overlay when `state === "stop"`. Do not call
+  `exitMiniProgram` directly from the recording callback.
+- When `room_setting.is_capture_screen === 0`, broadcast entry must call
+  `setVisualEffectOnCapture({ visualEffect: "hidden" })` through the WeChat
+  platform wrapper and register `onUserCaptureScreen`; cleanup must unregister
+  listeners and reset capture effects.
 
 ### 4. Validation & Error Matrix
 

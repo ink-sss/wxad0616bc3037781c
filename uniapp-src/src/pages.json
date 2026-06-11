@@ -79,18 +79,6 @@
       "style": {
         "navigationBarTitleText": "商户列表"
       }
-    },
-    {
-      "path": "pages/agreement/service",
-      "style": {
-        "navigationBarTitleText": "服务协议"
-      }
-    },
-    {
-      "path": "pages/agreement/privacy",
-      "style": {
-        "navigationBarTitleText": "隐私政策"
-      }
     }
   ],
 
@@ -147,6 +135,23 @@
   "componentFramework": "exparser",
   "lazyCodeLoading": "requiredComponents",
   "subPackages": [
+    {
+      "root": "pages/agreement/",
+      "pages": [
+        {
+          "path": "service",
+          "style": {
+            "navigationBarTitleText": "服务协议"
+          }
+        },
+        {
+          "path": "privacy",
+          "style": {
+            "navigationBarTitleText": "隐私政策"
+          }
+        }
+      ]
+    },
     {
       "root": "pages/live-push/",
       "pages": [

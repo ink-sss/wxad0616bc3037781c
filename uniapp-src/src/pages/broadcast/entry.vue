@@ -21,6 +21,7 @@
     :copy-status="imDebugCopyStatus"
     @copy="copyImDebugInfo"
   />
+  <view v-if="screenRecording" class="onScreenRecord" />
 </template>
 <script setup>
 import { computed, nextTick, onBeforeUnmount, ref, watch } from "vue";
@@ -161,7 +162,7 @@ const roomSetting = ref({
   buySuccessReminder: 0,
   showHotSale: 1,
 });
-useLiveMiniProgramParity({ roomSetting, liveInitResolved });
+const { screenRecording } = useLiveMiniProgramParity({ roomSetting, liveInitResolved });
 const {
   userMuted, userBlocked, muteTipVisible, muteRemainText, chatDisabled, startMuteCountdown, stopMuteCountdown,
 } = useLiveMuteState({ roomSetting });

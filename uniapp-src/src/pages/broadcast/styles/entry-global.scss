@@ -1,5 +1,15 @@
 /* [2026-04-28] 原有位置从居中移到 8vh 的 popup-open 变体已移除：用户反馈被顶走看不见，保持居中更直观，
    即便 buy popup 开着，按钮位于屏幕正中仵然在 popup 上方（z-index:150 > popup:100）。 */
+.onScreenRecord {
+  background: #000;
+  height: 100vh;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100vw;
+  z-index: 999;
+}
+
 /* 圆形外圈使用独立子节点，避免小程序 WXSS 伪元素兼容问题。 */
 .video-play-btn__triangle {
   position: relative;
