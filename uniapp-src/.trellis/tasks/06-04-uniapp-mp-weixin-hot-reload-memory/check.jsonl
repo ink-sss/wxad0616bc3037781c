@@ -1,0 +1,3 @@
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "route coverage and mp-weixin build checks"}
+{"file": ".trellis/spec/frontend/directory-structure.md", "reason": "remaining pages must match source files"}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "verify config edits did not drift from existing patterns"}

@@ -1,0 +1,12 @@
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend migration must follow project frontend guidance."}
+{"file": ".trellis/spec/frontend/directory-structure.md", "reason": "New uniapp-src layout and generated source structure."}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Component recovery and replacement decisions."}
+{"file": ".trellis/spec/frontend/state-management.md", "reason": "Vuex and Pinia compatibility during migration."}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Build, verification, and quality expectations."}
+{"file": ".trellis/spec/guides/index.md", "reason": "Cross-layer and reuse thinking guide index."}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "Avoid duplicating request, navigation, and platform wrappers."}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "Migration spans config, runtime, components, pages, and platform APIs."}
+{"file": ".trellis/tasks/05-29-uniapp-vue3-js-migration/research/page-inventory.md", "reason": "Route recovery scope and placeholder boundary."}
+{"file": ".trellis/tasks/05-29-uniapp-vue3-js-migration/research/runtime-dependencies.md", "reason": "Dependencies and global runtime reconstruction."}
+{"file": ".trellis/tasks/05-29-uniapp-vue3-js-migration/research/component-inventory.md", "reason": "Component migration strategy."}
+{"file": ".trellis/tasks/05-29-uniapp-vue3-js-migration/research/weixin-risk.md", "reason": "mp-weixin-only API isolation and high-risk validation."}

@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend spec index for uni-app task context."}
+{"file": ".trellis/spec/frontend/directory-structure.md", "reason": "Confirms uniapp-src is the implementation boundary and compiled output is not source."}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Component and mp-weixin styling rules for the live stage player components."}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Build, mp-weixin live playback source, and forbidden-pattern requirements."}

@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Confirmed rpx sizing, component-owned styles, and concrete scroll-view height requirements before adjusting landscape live layout."}
+{"file": "/Users/apple/Desktop/code/live_h5/src/pages/broadcast/", "reason": "Used as read-only visual and behavior reference for H5 landscape live bottom bar and comment area sizing."}

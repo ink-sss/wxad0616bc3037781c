@@ -1,0 +1,4 @@
+{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python3 .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend layer index for uniapp login API change"}
+{"file": ".trellis/spec/guides/index.md", "reason": "Shared thinking guide index for scoped frontend change"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Login/API quality rules for mp-weixin and H5 auth boundaries"}

@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/frontend/directory-structure.md", "reason": "uniapp-src source layout and route-source alignment rules"}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "component recovery and registration conventions"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "compile-safe Mini Program route coverage and validation requirements"}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "config changes require search-first and reuse checks"}

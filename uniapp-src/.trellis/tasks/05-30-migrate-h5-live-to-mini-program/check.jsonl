@@ -1,0 +1,3 @@
+{"file":".trellis/spec/frontend/index.md","reason":"Frontend quality checks and migration constraints."}
+{"file":".trellis/spec/backend/index.md","reason":"API boundary checks for mixed endpoint use."}
+{"file":".trellis/tasks/05-30-migrate-h5-live-to-mini-program/prd.md","reason":"Task acceptance criteria for verification."}
