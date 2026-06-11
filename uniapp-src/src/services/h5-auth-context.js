@@ -710,15 +710,10 @@ export function redirectAfterH5Login(input = {}) {
 export function redirectAfterH5LoginSkipped(input = {}) {
   clearH5AuthContext();
 
-  uni.redirectTo({
+  uni.switchTab({
     url: "/pages/index/index",
     fail() {
-      uni.switchTab({
-        url: "/pages/user/index/index",
-        fail() {
-          uni.reLaunch({ url: "/pages/index/index" });
-        },
-      });
+      uni.reLaunch({ url: "/pages/index/index" });
     },
   });
 }

@@ -124,3 +124,8 @@ unpackage/
 # 小程序上传密钥文件
 # wx_keys/*.key
 key
+
+.trellis/
+.agents/
+.codex/
+.codegraph/

@@ -14,22 +14,14 @@
     :marketing-runtime="marketingRuntime"
     @copy-uid="copyAccessDeniedUid"
   />
-  <LiveImDebugFloat
-    :show="imDebugVisible"
-    title="直播调试"
-    :summary="imDebugSummary"
-    :copy-status="imDebugCopyStatus"
-    @copy="copyImDebugInfo"
-  />
   <view v-if="screenRecording" class="onScreenRecord" />
 </template>
 <script setup>
 import { computed, nextTick, onBeforeUnmount, ref, watch } from "vue";
 import { onShareAppMessage, onShareTimeline } from "@dcloudio/uni-app";
-import { getLiveSocketDebugSnapshot, installLiveSocketDebug, setLiveSocketDebugEnabled } from "@/utils/live-socket-debug.js";
+import { installLiveSocketDebug, setLiveSocketDebugEnabled } from "@/utils/live-socket-debug.js";
 defineOptions({ inheritAttrs: false });
 import LiveBroadcastStageHost from "./components/LiveBroadcastStageHost.vue";
-import LiveImDebugFloat from "./components/LiveImDebugFloat.vue";
 import { enterLiveRoom, getCommentHistory, getCurrentProduct, getLiveDetail, getLiveProducts, getLiveStatus, leaveLiveRoom, liveHeartbeat, sendBuyReminder, sendLike, checkSigned, reportViewProgress } from "@/api/live.js";
 import { confirmOrder, createOrder, getOrderDetail, getOrderList, getOrderUnreadStats } from "@/api/order";
 import { getUsableCoupons } from "@/api/coupon";
@@ -144,7 +136,6 @@ const entryInitRuntime = {
   pendingSubscribeBack: false,
 };
 const liveDebugOptions = ref({});
-const imDebugCopyStatus = ref("");
 let isScheduleWarmupMode = false;
 const roomSetting = ref({
   enableChat: 1,
@@ -341,40 +332,6 @@ function syncLiveSocketDebug(options = liveDebugOptions.value || {}) {
 function setLiveDebugOptions(options = {}) {
   liveDebugOptions.value = { ...(options || {}) };
   syncLiveSocketDebug(liveDebugOptions.value);
-}
-function safeStringify(value) {
-  try {
-    return JSON.stringify(value, null, 2);
-  } catch (_) {
-    return String(value || "");
-  }
-}
-function maskDebugString(value = "") {
-  return String(value).replace(
-    /([?&](?:token|wx_token|auth|auth_key|sign|signature|secret|_tc)=)[^&]*/gi,
-    "$1***",
-  );
-}
-function maskDebugObject(value = {}) {
-  if (!value || typeof value !== "object") return value;
-  return Object.fromEntries(Object.entries(value).map(([key, rawValue]) => {
-    if (/token|auth|sign|signature|secret|_tc/i.test(key)) {
-      return [key, "***"];
-    }
-    return [key, typeof rawValue === "string" ? maskDebugString(rawValue) : rawValue];
-  }));
-}
-function getCurrentRouteInfo() {
-  try {
-    const pages = typeof getCurrentPages === "function" ? getCurrentPages() : [];
-    const page = pages[pages.length - 1];
-    return {
-      route: page?.route || "",
-      options: maskDebugObject(page?.options || {}),
-    };
-  } catch (_) {
-    return { route: "", options: {} };
-  }
 }
 function getProductListDebugLength() {
   return Array.isArray(productList?.value) ? productList.value.length : 0;
@@ -741,110 +698,6 @@ initWebSocket = webSocket.initWebSocket;
 getLiveSocket = webSocket.getLiveSocket;
 closeLiveSocket = webSocket.closeLiveSocket;
 sendFallbackEnter = webSocket.sendFallbackEnter;
-const imDebugVisible = computed(() => {
-  return false;
-});
-const liveTabDebugSummary = computed(() => {
-  const state = getLiveTabDebugState();
-  const lastEvent = tabDebugEvents.value[tabDebugEvents.value.length - 1];
-  const last = lastEvent
-    ? `${lastEvent.type}:${lastEvent.detail?.parsedName || lastEvent.state?.activeTabIndex || "-"}`
-    : "-";
-  return `tab:${state.activeTab}/${state.activeTabIndex} goods:${state.productListLength} loading:${state.productLoading ? "Y" : "N"} showProduct:${state.roomSetting.showProduct ?? "-"} last:${last}`;
-});
-const imDebugSummary = computed(() => {
-  const state = webSocket.channelDebugState.value || {};
-  const im = state.im || {};
-  const ws = state.ws || {};
-  const socketDebug = getLiveSocketDebugSnapshot();
-  const socketEvents = Array.isArray(socketDebug.events) ? socketDebug.events : [];
-  const lastSocketClose = socketEvents
-    .slice()
-    .reverse()
-    .find((event) => String(event?.event || "").startsWith("socket_close"));
-  const err = im.openError || im.joinError || im.tokenError || im.lastSendSkipReason || "";
-  const close = im.lastClose || {};
-  const closeReason = close.code || close.reason ? `${close.code || "-"}:${close.reason || "-"}` : "-";
-  const wsSend = ws.lastSendOk === null || ws.lastSendOk === undefined ? "-" : (ws.lastSendOk ? "Y" : "N");
-  const socketClose = lastSocketClose ? `${lastSocketClose.event}#${lastSocketClose.taskId || "-"}` : "-";
-  return `${liveTabDebugSummary.value} | mode:${state.mode || "-"} send:${state.sendChannel || "-"} ws:${ws.state || state.wsState || "-"} wsSend:${wsSend} wsEvent:${ws.lastEvent || "-"} wsFail:${ws.lastSendFail || "-"} im:${im.state || "-"} imOpen:${im.isOpened ? "Y" : "N"} imSend:${im.lastSendOk === null ? "-" : (im.lastSendOk ? "Y" : "N")} imEvent:${im.lastEvent || "-"} close:${closeReason}${im.expectedClose ? "(expected)" : ""} sockClose:${socketClose} err:${err || "-"}`;
-});
-const imDebugReport = computed(() => safeStringify({
-  generatedAt: new Date().toISOString(),
-  route: getCurrentRouteInfo(),
-  live: {
-    liveId: liveId.value,
-    roomCode: roomCode.value,
-    roomGroupType: roomGroupType.value,
-    roomBroadcastMethod: roomBroadcastMethod.value,
-    pushStatus: pushStatus.value,
-    isReplay: isReplay.value,
-    replayCurrentVideoId: replayCurrentVideoId.value,
-    tokenPresent: Boolean(userStore.token),
-  },
-  tabs: {
-    ...getLiveTabDebugState(),
-    recentEvents: tabDebugEvents.value.slice(-30),
-  },
-  playback: {
-    videoUrl: maskDebugString(videoUrl.value),
-    displayVideoUrl: maskDebugString(displayVideoUrl.value),
-    pullUrl: maskDebugString(pullUrl.value),
-    isPlaying: isPlaying.value,
-    videoFrameReady: videoFrameReady.value,
-    isMuted: isMuted.value,
-    mediaSourceComponent: mediaSourceComponent.value,
-    mediaSourceType: mediaSourceType.value,
-    videoDebugInfo: videoDebugInfo.value,
-  },
-  messageChannel: webSocket.channelDebugState.value,
-  wsDebug: webSocket.channelDebugState.value?.ws || null,
-  socketDebug: getLiveSocketDebugSnapshot(),
-}));
-function copyImDebugInfo() {
-  const report = imDebugReport.value;
-  imDebugCopyStatus.value = "复制中...";
-  function markCopied() {
-    imDebugCopyStatus.value = "已复制";
-  }
-  function fallbackCopy(reason = "") {
-    const nav = typeof navigator !== "undefined" ? navigator : null;
-    if (nav?.clipboard?.writeText) {
-      nav.clipboard.writeText(report).then(markCopied).catch(() => {
-        imDebugCopyStatus.value = reason ? `复制失败:${reason}` : "复制失败";
-      });
-      return;
-    }
-    if (typeof document !== "undefined") {
-      try {
-        const textarea = document.createElement("textarea");
-        textarea.value = report;
-        textarea.style.position = "fixed";
-        textarea.style.opacity = "0";
-        document.body.appendChild(textarea);
-        textarea.select();
-        const copied = document.execCommand("copy");
-        document.body.removeChild(textarea);
-        imDebugCopyStatus.value = copied ? "已复制" : (reason ? `复制失败:${reason}` : "复制失败");
-        return;
-      } catch (_) {}
-    }
-    imDebugCopyStatus.value = reason ? `复制失败:${reason}` : "复制失败";
-  }
-  if (!uni?.setClipboardData) {
-    fallbackCopy("noapi");
-    return;
-  }
-  uni.setClipboardData({
-    data: report,
-    success() {
-      markCopied();
-    },
-    fail(error) {
-      fallbackCopy(error?.errMsg || "uni");
-    },
-  });
-}
 const heartbeatStatus = useLiveHeartbeatStatus({
   liveId, sessionId,
   getEnterTimestamp: () => enterTimestamp,

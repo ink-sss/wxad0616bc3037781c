@@ -62,12 +62,12 @@ test("live socket debug captures close failures and masks signed URLs", async ()
   delete globalThis.uni;
 });
 
-test("broadcast debug report includes socket and playback diagnostics", async () => {
+test("broadcast keeps socket debug instrumentation without visible debug report", async () => {
   const source = await readFile(join(root, "src/pages/broadcast/entry.vue"), "utf8");
 
-  assert.match(source, /getLiveSocketDebugSnapshot/);
-  assert.match(source, /socketDebug:\s*getLiveSocketDebugSnapshot\(\)/);
-  assert.match(source, /sockClose:/);
-  assert.match(source, /playback:\s*\{/);
-  assert.match(source, /videoFrameReady:\s*videoFrameReady\.value/);
+  assert.match(source, /installLiveSocketDebug\(enabled\)/);
+  assert.match(source, /setLiveSocketDebugEnabled\(enabled\)/);
+  assert.doesNotMatch(source, /socketDebug:\s*getLiveSocketDebugSnapshot\(\)/);
+  assert.doesNotMatch(source, /imDebugReport/);
+  assert.doesNotMatch(source, /LiveImDebugFloat/);
 });

@@ -128,18 +128,11 @@
       </cover-view>
     </cover-view>
     <!-- #endif -->
-    <live-mini-debug-float
-      :show="debugVisible"
-      :summary="debugSummary"
-      :copy-status="debugCopyStatus"
-      @copy="copyDebugInfo"
-    />
   </view>
 </template>
 
 <script setup>
 import { useLiveMiniWindow } from "@/composables/useLiveMiniWindow";
-import LiveMiniDebugFloat from "@/components/live-mini-debug-float.vue";
 
 const props = defineProps({
   roomCode: {
@@ -188,10 +181,6 @@ const {
   onDragStart,
   onDragMove,
   onDragEnd,
-  debugVisible,
-  debugSummary,
-  debugCopyStatus,
-  copyDebugInfo,
 } = useLiveMiniWindow(props);
 
 function noopMiniTouch() {}

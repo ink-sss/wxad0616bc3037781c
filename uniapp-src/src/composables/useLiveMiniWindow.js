@@ -99,14 +99,6 @@ function safeNumber(value, fallback = 0) {
   return Number.isFinite(next) ? next : fallback
 }
 
-function safeJson(value) {
-  try {
-    return JSON.stringify(value, null, 2)
-  } catch (error) {
-    return String(value || '')
-  }
-}
-
 function maskUrl(value = '') {
   return String(value || '')
     .replace(/([?&](?:token|access_token|auth_key|key|sign|signature|wx_token)=)[^&#]*/gi, '$1***')
@@ -130,26 +122,6 @@ function resolveCachedMiniVideoState(state = null) {
     playUrl: backupHlsUrl,
     backupUrl: state.backupUrl || state.playUrl || '',
     backupHlsUrl,
-  }
-}
-
-function snapshotStorage() {
-  let miniState = null
-  let liveContext = null
-  let closedState = null
-  try {
-    miniState = loadLiveMiniState()
-  } catch (error) {}
-  try {
-    liveContext = loadLiveRoomContext()
-  } catch (error) {}
-  try {
-    closedState = uni.getStorageSync(CLOSED_KEY)
-  } catch (error) {}
-  return {
-    miniState,
-    liveContext,
-    closedState,
   }
 }
 
@@ -277,7 +249,6 @@ export function useLiveMiniWindow(props = {}) {
   const position = ref(getFallbackPosition())
   const hideReason = ref('init')
   const lastError = ref('')
-  const debugCopyStatus = ref('')
   const debugEvents = ref([])
 
   let activePlayState = null
@@ -316,18 +287,6 @@ export function useLiveMiniWindow(props = {}) {
     width: `${rpxToPx(MINI_WIDTH_RPX)}px`,
     height: `${rpxToPx(MINI_HEIGHT_RPX)}px`,
   }))
-  const debugVisible = computed(() => false)
-  const debugSummary = computed(() => [
-    `visible:${visible.value ? 1 : 0}`,
-    `reason:${hideReason.value || '-'}`,
-    `prop:${safeString(props.roomCode) || '-'}`,
-    `room:${stateRoomCode.value || resolveRoomCode() || '-'}`,
-    `url:${playUrl.value ? 'yes' : 'no'}`,
-    `playing:${isPlaying.value ? 1 : 0}`,
-    `frame:${videoFrameReady.value ? 1 : 0}`,
-    `err:${lastError.value || '-'}`,
-  ].join(' '))
-
   function recordDebug(event, payload = {}) {
     const item = {
       at: new Date().toISOString(),
@@ -833,66 +792,6 @@ export function useLiveMiniWindow(props = {}) {
     recoverMiniVideoFrame('video_error', event)
   }
 
-  function buildDebugReport() {
-    const storage = snapshotStorage()
-    return safeJson({
-      timestamp: new Date().toISOString(),
-      route: getCurrentRoute(),
-      props: {
-        roomCode: safeString(props.roomCode),
-        enabled: props.enabled !== false,
-        bottomOffset: props.bottomOffset,
-        returnOrigin: props.returnOrigin,
-      },
-      state: {
-        visible: visible.value,
-        hideReason: hideReason.value,
-        stateRoomCode: stateRoomCode.value,
-        resolvedRoomCode: resolveRoomCode(),
-        hasPlayableSource: hasPlayableSource.value,
-        playUrl: maskUrl(playUrl.value),
-        poster: maskUrl(poster.value),
-        muted: muted.value,
-        isPlaying: isPlaying.value,
-        videoFrameReady: videoFrameReady.value,
-        videoKey: videoKey.value,
-        title: title.value,
-        lastError: lastError.value,
-        liveSourceInStack: hasLiveSourceRouteInStack(),
-        liveRoutes: getLiveSourceRoutesInStack(),
-      },
-      storage: {
-        miniState: storage.miniState ? {
-          ...storage.miniState,
-          playUrl: maskUrl(storage.miniState.playUrl),
-          backupUrl: maskUrl(storage.miniState.backupUrl),
-          backupFlvUrl: maskUrl(storage.miniState.backupFlvUrl),
-          backupHlsUrl: maskUrl(storage.miniState.backupHlsUrl),
-          poster: maskUrl(storage.miniState.poster),
-        } : null,
-        liveContext: storage.liveContext,
-        closedState: storage.closedState,
-      },
-      events: debugEvents.value,
-    })
-  }
-
-  function copyDebugInfo() {
-    const report = buildDebugReport()
-    debugCopyStatus.value = '复制中...'
-    uni.setClipboardData({
-      data: report,
-      showToast: false,
-      success() {
-        debugCopyStatus.value = '已复制'
-      },
-      fail(error) {
-        debugCopyStatus.value = '复制失败'
-        recordDebug('copy_failed', { error: error?.errMsg || String(error || '') })
-      },
-    })
-  }
-
   onMounted(() => {
     scheduleRefreshMini()
   })
@@ -954,9 +853,5 @@ export function useLiveMiniWindow(props = {}) {
     onDragStart,
     onDragMove,
     onDragEnd,
-    debugVisible,
-    debugSummary,
-    debugCopyStatus,
-    copyDebugInfo,
   }
 }

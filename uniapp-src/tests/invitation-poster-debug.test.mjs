@@ -10,12 +10,15 @@ async function readSource(path) {
   return readFile(join(root, path), "utf8");
 }
 
-test("invitation debug panel stays enabled and reports QR-code source", async () => {
+test("invitation diagnostics report QR-code source without rendering debug float", async () => {
   const debug = await readSource("src/pagesPlus/main/invitation/debug.js");
   const page = await readSource("src/pagesPlus/main/invitation/index.vue");
 
-  assert.match(debug, /const debugVisible = ref\(true\);/);
-  assert.match(debug, /always-on-invitation-debug/);
+  assert.doesNotMatch(debug, /debugVisible/);
+  assert.doesNotMatch(debug, /always-on-invitation-debug/);
+  assert.doesNotMatch(page, /inv-debug-float/);
+  assert.doesNotMatch(page, /邀请函调试/);
+  assert.doesNotMatch(page, /copyDebugInfo/);
   assert.match(debug, /qrcodeSource:\s*qrcodeSource\?\.value/);
   assert.match(debug, /qrcodeFallbackReason:\s*qrcodeFallbackReason\?\.value/);
   assert.match(debug, /qrcodeFieldSource:\s*qrcodeFieldSource\?\.value/);
@@ -25,7 +28,6 @@ test("invitation debug panel stays enabled and reports QR-code source", async ()
   assert.match(debug, /\[\$\{variableName\}:data-url:\$\{mime\}:len=\$\{value\.length\}\]/);
   assert.match(debug, /\[\$\{variableName\}:base64:len=\$\{compact\.length\}\]/);
 
-  assert.match(page, /<text class="inv-debug-line">二维码: \{\{ qrcodeStatusText \}\}<\/text>/);
   assert.match(page, /function getMiniProgramQrCodeField\(data = \{\}\)/);
   assert.match(page, /function getOrdinaryQrCodeCandidateField\(data = \{\}\)/);
   assert.match(page, /data\.miniProgramQrCodeSource/);

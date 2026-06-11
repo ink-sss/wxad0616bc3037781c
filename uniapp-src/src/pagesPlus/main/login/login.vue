@@ -68,6 +68,7 @@ export default {
         wx_phone_compulsory: false,
       },
       loginContext: {},
+      leavingWithAuthRedirect: false,
     }
   },
   onLoad(query = {}) {
@@ -80,6 +81,10 @@ export default {
     this.redirectWhenAlreadyLoggedIn()
   },
   methods: {
+    goHomeFromLogin() {
+      this.leavingWithAuthRedirect = true
+      redirectAfterSkippedH5Login(this.loginContext)
+    },
     isWechatDevtools() {
       try {
         const info = uni.getSystemInfoSync()
@@ -124,6 +129,7 @@ export default {
     },
     redirectWhenAlreadyLoggedIn() {
       if (!alreadyH5LoggedIn()) return
+      this.leavingWithAuthRedirect = true
       redirectAfterExistingH5Login(this.loginContext)
     },
     afterLogin(data) {
@@ -131,6 +137,7 @@ export default {
         uni.setStorageSync('get_phone', true)
         uni.setStorageSync('wx_phone_compulsory', this.setting.wx_phone_compulsory)
       }
+      this.leavingWithAuthRedirect = true
       redirectAfterExistingH5Login(this.loginContext)
     },
     async devtoolsLogin() {
@@ -176,9 +183,11 @@ export default {
       if (!this.ensureRead() || this.submitting) return
       this.submitting = true
       uni.showLoading({ title: '正在处理', mask: true })
+      this.leavingWithAuthRedirect = true
       try {
         await h5MiniWechatLogin(this.loginContext)
       } catch (error) {
+        this.leavingWithAuthRedirect = false
         const message = error?.message || error?.msg || '授权失败，请重新登录'
         toast(message)
       } finally {
@@ -193,8 +202,16 @@ export default {
       this.gotoPage(type === 'service' ? '/pages/agreement/service' : '/pages/agreement/privacy')
     },
     onNotLogin() {
-      redirectAfterSkippedH5Login(this.loginContext)
+      this.goHomeFromLogin()
     },
+  },
+  onBackPress() {
+    this.goHomeFromLogin()
+    return true
+  },
+  onUnload() {
+    if (this.leavingWithAuthRedirect) return
+    this.goHomeFromLogin()
   },
 }
 </script>

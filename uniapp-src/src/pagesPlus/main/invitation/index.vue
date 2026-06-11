@@ -82,26 +82,6 @@
         </view>
       </view>
     </scroll-view>
-
-    <view
-      v-if="debugVisible"
-      class="inv-debug-float"
-       @click.stop="copyDebugInfo"
-    >
-      <view class="inv-debug-title">
-        <text class="inv-debug-title-text">邀请函调试</text>
-        <text class="inv-debug-status">{{ debugBrief }}</text>
-      </view>
-      <view class="inv-debug-lines">
-        <text class="inv-debug-line">头像: {{ payload.anchorAvatar ? "有" : "空" }}</text>
-        <text class="inv-debug-line">昵称: {{ payload.inviterName || "空" }}</text>
-        <text class="inv-debug-line">二维码: {{ qrcodeStatusText }}</text>
-        <text class="inv-debug-line">分享图: {{ shareImageSrc ? "已生成" : "空" }}</text>
-      </view>
-      <view class="inv-debug-button">
-        <text class="inv-debug-button-text">{{ debugCopyText }}</text>
-      </view>
-    </view>
   </view>
 </template>
 
@@ -231,12 +211,7 @@ const qrcodeStyle = computed(() => {
 });
 
 const {
-  debugVisible,
-  debugCopyText,
-  debugBrief,
-  initializeDebugFloat,
   recordDebugEvent,
-  copyDebugInfo,
   getCurrentRouteOptions,
   maskSensitiveText,
   normalizeError,
@@ -261,9 +236,7 @@ const {
 });
 
 onMounted(async () => {
-  const debugState = initializeDebugFloat();
   recordDebugEvent("page_mounted", {
-    debugReason: debugState.reason,
     routeOptions: getCurrentRouteOptions(),
   });
   resetPosterRuntimeCache("page_mounted");
@@ -1349,69 +1322,4 @@ function goBack() {
   line-height: 1;
 }
 
-.inv-debug-float {
-  position: fixed;
-  right: 18rpx;
-  bottom: calc(190rpx + env(safe-area-inset-bottom));
-  z-index: 99;
-  width: 310rpx;
-  padding: 14rpx;
-  border-radius: 12rpx;
-  background: rgba(17, 17, 26, 0.92);
-  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.25);
-  box-sizing: border-box;
-}
-
-.inv-debug-title {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10rpx;
-}
-
-.inv-debug-title-text {
-  font-size: 22rpx;
-  line-height: 1.3;
-  color: #fff;
-  font-weight: 700;
-}
-
-.inv-debug-status {
-  flex-shrink: 0;
-  font-size: 18rpx;
-  line-height: 1.3;
-  color: #7cffb7;
-}
-
-.inv-debug-lines {
-  margin-top: 8rpx;
-}
-
-.inv-debug-line {
-  display: block;
-  width: 100%;
-  font-size: 19rpx;
-  line-height: 1.45;
-  color: rgba(255, 255, 255, 0.78);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.inv-debug-button {
-  height: 44rpx;
-  margin-top: 10rpx;
-  border-radius: 8rpx;
-  background: #ff6b2e;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.inv-debug-button-text {
-  font-size: 20rpx;
-  line-height: 1;
-  color: #fff;
-  font-weight: 600;
-}
 </style>

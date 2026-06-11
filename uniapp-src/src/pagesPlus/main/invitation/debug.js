@@ -20,10 +20,7 @@ export function useInvitationDebug({
   getShareRenderPromise,
   getPosterPreloadPromise,
 }) {
-  const debugVisible = ref(true);
-  const debugCopyText = ref("复制信息");
   const debugEvents = ref([]);
-  const debugEnableReason = ref("always-on-invitation-debug");
 
   const debugBrief = computed(() => {
     if (posterRendering.value) return "生成中";
@@ -33,15 +30,7 @@ export function useInvitationDebug({
     return "待生成";
   });
 
-  function initializeDebugFloat() {
-    const debugState = getDebugFloatState();
-    debugVisible.value = debugState.enabled;
-    debugEnableReason.value = debugState.reason;
-    return debugState;
-  }
-
   function recordDebugEvent(type, detail = {}) {
-    if (!debugVisible.value && type !== "page_mounted") return;
     const entry = {
       at: new Date().toISOString(),
       type,
@@ -50,38 +39,11 @@ export function useInvitationDebug({
     debugEvents.value = [...debugEvents.value.slice(-39), entry];
   }
 
-  function copyDebugInfo() {
-    const report = buildDebugReport();
-    debugCopyText.value = "复制中...";
-    recordDebugEvent("debug_copy_requested", { length: report.length });
-    uni.setClipboardData({
-      data: report,
-      success: () => {
-        debugCopyText.value = "已复制";
-        recordDebugEvent("debug_copy_success", { length: report.length });
-        uni.showToast({ title: "调试信息已复制", icon: "success" });
-        setTimeout(() => {
-          debugCopyText.value = "复制信息";
-        }, 1200);
-      },
-      fail: (error) => {
-        debugCopyText.value = "复制失败";
-        recordDebugEvent("debug_copy_fail", normalizeError(error));
-        uni.showToast({ title: "复制失败", icon: "none" });
-        setTimeout(() => {
-          debugCopyText.value = "复制信息";
-        }, 1200);
-      },
-    });
-  }
-
   function buildDebugReport() {
     const report = {
       timestamp: new Date().toISOString(),
       page: "pagesPlus/main/invitation/index",
       debug: {
-        visible: debugVisible.value,
-        reason: debugEnableReason.value,
         summary: debugBrief.value,
       },
       routeOptions: sanitizeDebugValue(getCurrentRouteOptions()),
@@ -133,22 +95,14 @@ export function useInvitationDebug({
   }
 
   return {
-    debugVisible,
-    debugCopyText,
     debugEvents,
-    debugEnableReason,
     debugBrief,
-    initializeDebugFloat,
     recordDebugEvent,
-    copyDebugInfo,
+    buildDebugReport,
     getCurrentRouteOptions,
     maskSensitiveText,
     normalizeError,
   };
-}
-
-function getDebugFloatState() {
-  return { enabled: true, reason: "always-on-invitation-debug" };
 }
 
 function getCurrentRouteOptions() {

@@ -35,6 +35,28 @@ async function loadLoginPageToolsModule() {
   return import(pathToFileURL(modulePath).href);
 }
 
+async function loadH5AuthContextModule() {
+  const tempDir = await mkdtemp(join(tmpdir(), "h5-auth-context-"));
+  const sourcePath = join(root, "src/services/h5-auth-context.js");
+  let source = await readFile(sourcePath, "utf8");
+  source = source
+    .replace(
+      'import { buildBroadcastEntryUrl, normalizeLiveRouteOptions } from "@/utils/live-route";',
+      'const buildBroadcastEntryUrl = () => "/pages/broadcast/entry"; const normalizeLiveRouteOptions = (value) => value;'
+    )
+    .replace(
+      'import { saveLiveRoomContext } from "@/utils/live-room-context";',
+      "const saveLiveRoomContext = () => {};"
+    )
+    .replace(
+      'import { useUserStore } from "@/stores/user";',
+      "const useUserStore = () => ({ token: '' });"
+    );
+  const modulePath = join(tempDir, "h5-auth-context.mjs");
+  await writeFile(modulePath, source, "utf8");
+  return import(pathToFileURL(modulePath).href);
+}
+
 test("developer tools login reuses the local session without calling login APIs", async () => {
   const storage = new Map();
   const app = {
@@ -127,6 +149,55 @@ test("developer tools login reuses the local session without calling login APIs"
   assert.equal(app.imLoginCalled, true);
   assert.equal(syncedSession.token, session.token);
   assert.equal(persistedSession.token, session.token);
+});
+
+test("skipped login switches to the home tab", async () => {
+  const removals = [];
+  let switchPayload;
+  let relaunchPayload;
+
+  globalThis.uni = {
+    removeStorageSync(key) {
+      removals.push(key);
+    },
+    switchTab(payload) {
+      switchPayload = payload;
+    },
+    reLaunch(payload) {
+      relaunchPayload = payload;
+    },
+  };
+
+  const { redirectAfterH5LoginSkipped } = await loadH5AuthContextModule();
+  redirectAfterH5LoginSkipped();
+
+  assert.equal(removals.includes("mp_h5_auth_context_v1"), true);
+  assert.equal(switchPayload.url, "/pages/index/index");
+  assert.equal(relaunchPayload, undefined);
+
+  switchPayload.fail();
+  assert.equal(relaunchPayload.url, "/pages/index/index");
+});
+
+test("login page back and skip actions go home", async () => {
+  const loginPageSource = await readFile(loginPageSourcePath, "utf8");
+
+  assert.match(
+    loginPageSource,
+    /goHomeFromLogin\(\)\s*\{[\s\S]*?redirectAfterSkippedH5Login\(this\.loginContext\)/,
+  );
+  assert.match(
+    loginPageSource,
+    /onNotLogin\(\)\s*\{[\s\S]*?this\.goHomeFromLogin\(\)/,
+  );
+  assert.match(
+    loginPageSource,
+    /onBackPress\(\)\s*\{[\s\S]*?this\.goHomeFromLogin\(\)[\s\S]*?return true/,
+  );
+  assert.match(
+    loginPageSource,
+    /onUnload\(\)\s*\{[\s\S]*?if \(this\.leavingWithAuthRedirect\) return[\s\S]*?this\.goHomeFromLogin\(\)/,
+  );
 });
 
 test("login page declares the wechat-login plugin component", async () => {
