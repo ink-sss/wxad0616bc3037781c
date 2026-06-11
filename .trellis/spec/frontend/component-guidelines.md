@@ -200,6 +200,10 @@ Components in the uni-app source project are Vue single-file components under
   template-plus-payload key. Re-entry must reuse those final files for every
   template instead of asking the new page instance to decode untouched template
   backgrounds again.
+- Truncating invitation poster live time text. Live time is a required business
+  field and should be drawn completely in both the preview and exported canvas;
+  keep truncation for bounded fields such as inviter name or live room name,
+  but do not pass the time slot through `...` shortening.
 - Letting the invitation poster preload queue compete with the currently
   selected template render. Background exports are only an optimization: delay
   them after the visible poster finishes, cancel them on template selection or

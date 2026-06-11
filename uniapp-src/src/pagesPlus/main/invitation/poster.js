@@ -317,7 +317,7 @@ async function drawShareCard(canvas, ctx, template, payload, options = {}) {
 
   ctx.font = "22px sans-serif";
   ctx.fillStyle = "rgba(255,255,255,0.72)";
-  ctx.fillText(truncate(payload.displayTime || "敬请期待", 16), 42, 162);
+  ctx.fillText(payload.displayTime || "敬请期待", 42, 162);
 
   await drawShareAvatar(canvas, ctx, payload, options);
 
@@ -432,7 +432,7 @@ async function drawTemplateBackground(canvas, ctx, src, width, height, options =
 async function drawSlots(canvas, ctx, width, height, slots, payload, options = {}) {
   drawTextSlot(ctx, width, height, slots.inviterName, payload.inviterName || "游客", 8);
   drawTextSlot(ctx, width, height, slots.liveName, payload.liveName || "精彩直播", 12);
-  drawTextSlot(ctx, width, height, slots.time, payload.displayTime || "敬请期待", 18);
+  drawTextSlot(ctx, width, height, slots.time, payload.displayTime || "敬请期待", Number.POSITIVE_INFINITY);
   await drawAvatarSlot(canvas, ctx, width, height, slots.avatar, payload.anchorAvatar, payload.inviterName, options);
   await drawQrcodeSlot(
     canvas,

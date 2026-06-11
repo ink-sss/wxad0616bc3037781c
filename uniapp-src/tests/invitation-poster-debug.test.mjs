@@ -50,6 +50,16 @@ test("invitation poster preload is delayed and cancelled around template clicks"
   assert.match(selectTemplate, /schedulePosterPreloadQueue\("template_select_done"\);/);
 });
 
+test("invitation poster keeps live time text complete", async () => {
+  const page = await readSource("src/pagesPlus/main/invitation/index.vue");
+  const poster = await readSource("src/pagesPlus/main/invitation/poster.js");
+
+  assert.match(page, /\{\{ displayTime \|\| "敬请期待" \}\}/);
+  assert.match(poster, /drawTextSlot\(ctx, width, height, slots\.time, payload\.displayTime \|\| "敬请期待", Number\.POSITIVE_INFINITY\)/);
+  assert.doesNotMatch(poster, /drawTextSlot\(ctx, width, height, slots\.time, payload\.displayTime \|\| "敬请期待", 18\)/);
+  assert.doesNotMatch(poster, /truncate\(payload\.displayTime \|\| "敬请期待", 16\)/);
+});
+
 test("invitation poster re-entry validates exported caches and does not wait for stale page tasks", async () => {
   const page = await readSource("src/pagesPlus/main/invitation/index.vue");
   const poster = await readSource("src/pagesPlus/main/invitation/poster.js");
